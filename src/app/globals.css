@@ -26,3 +26,80 @@ body {
 .font-manrope {
   font-family: var(--font-manrope), sans-serif;
 }
+
+/* Hide Google Translate Elements */
+.goog-te-banner-frame,
+.skiptranslate,
+.goog-te-gadget > span,
+.goog-te-gadget > div {
+  display: none !important;
+}
+
+.goog-te-gadget {
+  font-size: 0 !important;
+  color: transparent !important;
+}
+
+.VIpgJd-ZVi9od-l4eHX-hSRGPd {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
+
+#google_translate_element {
+  visibility: hidden;
+  height: 0;
+  width: 0;
+  position: absolute;
+}
+
+/* Remove Google Translate highlights */
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Hide Google Translate top bar */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+/* Hide Google Translate popup */
+.goog-tooltip,
+.goog-tooltip:hover {
+  display: none !important;
+}
+
+.goog-text-highlight {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Hide all Google branding */
+.goog-logo-link,
+.goog-logo-link:link,
+.goog-logo-link:visited,
+.goog-logo-link:hover,
+.goog-logo-link:active {
+  display: none !important;
+}
+.skiptranslate {
+  display: none !important;
+}
+/* Hide scrollbars but keep scrolling enabled */
+html,
+body {
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
