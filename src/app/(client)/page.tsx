@@ -21,7 +21,7 @@ export default function ClientHomePage() {
 			<HowCanYouHelpSection />
 			<Missionsection />
 			<RippleEffectSection />
-			<GeographicFootprint />
+			{/* <GeographicFootprint /> */}
 			<ThreePathsSection />
 			<CTAsection />
 		</div>
