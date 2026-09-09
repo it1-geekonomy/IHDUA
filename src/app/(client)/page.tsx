@@ -9,6 +9,7 @@ import RippleEffectSection from "@/domains/home/components/RippleEffectSection";
 import GeographicFootprint from "@/domains/home/components/GeographicFootprint";
 import ThreePathsSection from "@/domains/home/components/ThreePathsSection";
 import StoriesFromField from "@/domains/home/components/StoriesFromField";
+import LastingChangeSection from "@/domains/home/components/LastingChangeSection";
 import CTAsection from "@/domains/home/components/CTAsection";
 
 export default function ClientHomePage() {
@@ -22,6 +23,7 @@ export default function ClientHomePage() {
 			<HowCanYouHelpSection />
 			<Missionsection />
 			<RippleEffectSection />
+			<LastingChangeSection />
 			{/* <GeographicFootprint /> */}
 			<StoriesFromField />
 			<ThreePathsSection />
