@@ -1,5 +1,12 @@
+"use client";
+
+import { useState } from "react";
 import { PILLARS } from "@/domains/home/constants/missionsection";
+
 export default function MissionSection() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activePillar = PILLARS[activeIndex];
+
   return (
     <section className="w-full bg-white">
       <div className="w-full px-6 pt-6 lg:py-6 lg:pb-26 lg:px-10 2xl:px-40">
@@ -29,32 +36,41 @@ export default function MissionSection() {
         {/* Two parts: pillar cards on the left, image on the right, matched heights */}
         <div className="mt-8 grid grid-cols-1 items-stretch gap-6 sm:mt-10 lg:grid-cols-2 lg:gap-16">
           <div className="flex flex-col gap-3 sm:gap-4">
-            {PILLARS.map((pillar) => (
-              <div
-                key={pillar.number}
-                className="flex flex-1 items-center gap-4 border-l-4 border-[#9739A8] bg-[#FAF9F5] px-4 py-4 transition-colors duration-200 hover:bg-[#FFD638] sm:gap-6 sm:px-6 sm:py-5"
-              >
-                <span className="font-serif text-3xl leading-none text-[#6D3F76]/[0.37] sm:text-4xl lg:text-5xl">
-                  {pillar.number}
-                </span>
+            {PILLARS.map((pillar, index) => {
+              const isActive = index === activeIndex;
 
-                <div>
-                  <h3 className="font-serif text-base text-[#383217] sm:text-lg lg:text-xl">
-                    {pillar.title}
-                  </h3>
-                  <p className="mt-1.5 text-xs leading-relaxed text-[#716B52]/[0.58] sm:text-sm">
-                    {pillar.description}
-                  </p>
-                </div>
-              </div>
-            ))}
+              return (
+                <button
+                  key={pillar.number}
+                  type="button"
+                  onClick={() => setActiveIndex(index)}
+                  aria-pressed={isActive}
+                  className={`flex flex-1 items-center gap-4 border-l-4 border-[#9739A8] px-4 py-4 text-left transition-colors duration-200 sm:gap-6 sm:px-6 sm:py-5 ${
+                    isActive ? "bg-[#FFD638]" : "bg-[#FAF9F5] hover:bg-[#FFD638]"
+                  }`}
+                >
+                  <span className="font-serif text-3xl leading-none text-[#6D3F76]/[0.37] sm:text-4xl lg:text-5xl">
+                    {pillar.number}
+                  </span>
+
+                  <div>
+                    <h3 className="font-serif text-base text-[#383217] sm:text-lg lg:text-xl">
+                      {pillar.title}
+                    </h3>
+                    <p className="mt-1.5 text-xs leading-relaxed text-[#716B52]/[0.58] sm:text-sm">
+                      {pillar.description}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
           </div>
 
           <div className="h-64 sm:h-80 md:h-[26rem] lg:h-auto">
             <img
-              src="/missionsection/missionimg.png"
-              alt="IHDUA team engaging with a rural community"
-              className="h-full w-full object-cover"
+              src={activePillar.image}
+              alt={activePillar.title}
+              className="h-full w-full object-cover transition-opacity duration-300"
             />
           </div>
         </div>
