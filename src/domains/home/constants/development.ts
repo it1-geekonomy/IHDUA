@@ -1,6 +1,7 @@
 export const GRID_ITEMS = [
   {
     image: "/development/dev1.png",
+    hoverImage: "/development/dev11.png",
     icon: "/development/Dicon1.png",
     caption: ["Empowering communities,", "Creating opportunities."],
     bg: "#FFD638",
@@ -19,6 +20,7 @@ export const GRID_ITEMS = [
   },
   {
     image: "/development/dev3.png",
+    hoverImage: "/development/dev33.png",
     icon: "/development/Dicon3.png",
     caption: ["Stronger together,", "better forever."],
     bg: "#FFD638",
@@ -37,6 +39,7 @@ export const GRID_ITEMS = [
   },
   {
     image: "/development/dev5.png",
+    hoverImage: "/development/dev55.png",
     icon: "/development/Dicon5.png",
     caption: ["Healthier families,", "stronger communities"],
     bg: "#FFD638",
