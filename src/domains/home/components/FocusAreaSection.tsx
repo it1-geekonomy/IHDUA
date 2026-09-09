@@ -1,25 +1,27 @@
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { FOCUS_AREAS } from "@/domains/home/constants/focusarea";
+import Typography from "@/lib/Typography";
+
 export default function FocusAreaSection() {
   return (
     <section className="w-full bg-[#FAF9F5]">
       <div className="w-full px-6 pt-6 lg:py-24 lg:px-10 2xl:px-40">
-        <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
+        <div className="mx-auto flex flex-col items-center text-center">
           <div className="mb-4 flex items-center gap-3">
             <span className="h-px w-8 bg-[#9739A8]" />
-            <span className="text-xs font-semibold tracking-wide text-[#9739A8]">
+            <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
               OUR FOCUS AREAS
-            </span>
+            </Typography>
             <span className="h-px w-8 bg-[#9739A8]" />
           </div>
-          <h2 className="text-3xl font-serif text-[#00191B] sm:text-4xl">
+          <Typography variant="display-2xl" className="font-normal font-lora text-[#00191B]">
             Building Stronger Rural Communities
-          </h2>
-          <p className="mt-3 text-sm leading-relaxed text-[#5F6C6D] sm:text-base">
+          </Typography>
+          <Typography variant="body-lg" className="mt-3 leading-relaxed text-[#5F6C6D] w-full lg:max-w-2xl font-normal font-figtree">
             Creating opportunities through education, healthcare, sustainable
             livelihoods, and community-led development.
-          </p>
+          </Typography>
         </div>
 
         <div className="mt-12">
@@ -30,12 +32,15 @@ export default function FocusAreaSection() {
             >
               <div className="relative z-10 flex items-center justify-between gap-6 py-6 sm:py-8">
                 <div className="w-full">
-                  <h3 className="text-xl font-serif text-[#00191B] sm:text-2xl">
+                  <Typography variant="h3" className="font-lora font-normal text-[#00191B]">
                     {area.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-[#5F6C6D] transition-colors duration-300 group-hover:text-[#725B03] sm:text-base">
+                  </Typography>
+                  <Typography
+                    variant="body-xl"
+                    className="mt-2 text-[#5F6C6D] transition-colors duration-300 group-hover:text-[#725B03] font-normal font-figtree"
+                  >
                     {area.description}
-                  </p>
+                  </Typography>
                 </div>
 
                 <ArrowUpRight
