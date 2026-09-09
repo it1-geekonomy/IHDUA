@@ -10,3 +10,4 @@ export { default as RippleEffectSection } from "./components/RippleEffectSection
 export { default as GeographicFootprint } from "./components/GeographicFootprint";
 export { default as CTAsection } from "./components/CTAsection";
 export { default as ThreePathsSection } from "./components/ThreePathsSection";
+export { default as StoriesFromField } from "./components/StoriesFromField";
