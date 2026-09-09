@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PILLARS } from "@/domains/home/constants/missionsection";
+import Typography from "@/lib/Typography";
 
 export default function MissionSection() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -15,22 +16,25 @@ export default function MissionSection() {
           <div>
             <div className="flex items-center gap-3">
               <span className="h-px w-8 bg-[#9739A8]" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-[#9739A8]">
+              <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
                 Mission
-              </span>
+              </Typography>
             </div>
 
-            <h2 className="mt-4 font-serif text-3xl text-[#00191B] sm:text-4xl lg:text-5xl">
+            <Typography variant="display-xl" className="mt-4 font-lora font-normal text-[#00191B]">
               The Mission of IHDUA
-            </h2>
+            </Typography>
           </div>
 
-          <p className="w-full lg:max-w-md xl:max-w-3xl text-sm leading-relaxed text-[#5F6C6D] sm:text-base lg:text-left">
+          <Typography
+            variant="body-lg"
+            className="w-full lg:max-w-md xl:max-w-3xl leading-relaxed text-[#5F6C6D] lg:text-left font-normal font-figtree"
+          >
             Building stronger communities through sustainable development.
             IHDUA works with rural communities to create better access to
             education, healthcare, sustainable livelihoods, and opportunities
             for long-term growth.
-          </p>
+          </Typography>
         </div>
 
         {/* Two parts: pillar cards on the left, image on the right, matched heights */}
@@ -49,17 +53,23 @@ export default function MissionSection() {
                     isActive ? "bg-[#FFD638]" : "bg-[#FAF9F5] hover:bg-[#FFD638]"
                   }`}
                 >
-                  <span className="font-serif text-3xl leading-none text-[#6D3F76]/[0.37] sm:text-4xl lg:text-5xl">
+                  <Typography
+                    variant="display-2xl"
+                    className="font-lora font-normal leading-none text-[#6D3F76]/[0.37]"
+                  >
                     {pillar.number}
-                  </span>
+                  </Typography>
 
                   <div>
-                    <h3 className="font-serif text-base text-[#383217] sm:text-lg lg:text-xl">
+                    <Typography variant="body-xl" className="font-lora font-normal text-[#383217]">
                       {pillar.title}
-                    </h3>
-                    <p className="mt-1.5 text-xs leading-relaxed text-[#716B52]/[0.58] sm:text-sm">
+                    </Typography>
+                    <Typography
+                      variant="body-sm"
+                      className="mt-1.5 leading-relaxed text-[#716B52]/[0.58] font-figtree font-normal"
+                    >
                       {pillar.description}
-                    </p>
+                    </Typography>
                   </div>
                 </button>
               );

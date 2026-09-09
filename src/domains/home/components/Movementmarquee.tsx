@@ -1,5 +1,6 @@
 import React from "react";
 import { ICON_SRC, ITEMS } from "@/domains/home/constants/marquee";
+import Typography from "@/lib/Typography";
 
 const REPEAT_COUNT = 4;
 const REPEATED_ITEMS = Array.from({ length: REPEAT_COUNT }).flatMap(() => ITEMS);
@@ -16,9 +17,12 @@ function MarqueeTrack({ ariaHidden }: MarqueeTrackProps) {
     <div className="flex flex-shrink-0 items-center leading-none" aria-hidden={ariaHidden}>
       {REPEATED_ITEMS.map((label, i) => (
         <span key={i} className="flex items-center whitespace-nowrap leading-none">
-          <span className="text-[15px] sm:text-lg font-semibold tracking-wide text-white leading-none">
+          <Typography
+            variant="body-xl"
+            className="font-semibold font-figtree tracking-wide text-white leading-none"
+          >
             {label}
-          </span>
+          </Typography>
           <img
             src={ICON_SRC}
             alt=""

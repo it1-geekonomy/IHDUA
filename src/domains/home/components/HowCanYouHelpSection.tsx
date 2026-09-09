@@ -1,19 +1,24 @@
 import Image from "next/image";
 import { HELP_ITEMS } from "@/domains/home/constants/howcanwehelp";
+import Typography from "@/lib/Typography";
+
 export default function HowCanYouHelpSection() {
   return (
     <section className="w-full bg-white">
       <div className="w-full px-6 pt-6 lg:py-30 lg:px-10 2xl:px-40">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <h2 className="text-3xl font-serif text-[#00191B] sm:text-5xl">
+          <Typography variant="display-xl" className="font-lora font-normal text-[#00191B]">
             How can you help?
-          </h2>
-          <p className="w-full lg:max-w-xl xl:max-w-3xl text-sm leading-relaxed text-[#5F6C6D] sm:text-lg md:text-left">
+          </Typography>
+          <Typography
+            variant="body-lg"
+            className="w-full lg:max-w-xl xl:max-w-3xl leading-relaxed text-[#5F6C6D] md:text-left font-normal font-figtree"
+          >
             Together, we can create stronger communities and lasting
             opportunities. Your support helps IHDUA strengthen rural
             communities through education, sustainable livelihoods,
             healthcare, and community-led development.
-          </p>
+          </Typography>
         </div>
 
         <div className="mt-10 grid grid-cols-1 justify-items-center gap-6 sm:justify-items-stretch sm:grid-cols-2 lg:mt-16 lg:grid-cols-4 lg:gap-8">
@@ -31,12 +36,12 @@ export default function HowCanYouHelpSection() {
                   />
                 </div>
 
-                <h3 className="mt-6 text-lg font-serif text-[#00191B] sm:text-xl">
+                <Typography variant="h4" className="mt-6 font-lora font-normal text-[#00191B]">
                   {item.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#5F6C6D] sm:text-base">
+                </Typography>
+                <Typography variant="body-sm" className="mt-2 leading-relaxed text-[#5F6C6D] font-normal font-figtree">
                   {item.description}
-                </p>
+                </Typography>
               </div>
             </div>
           ))}

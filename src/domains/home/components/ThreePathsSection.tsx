@@ -1,18 +1,20 @@
 import { PATHS } from "@/domains/home/constants/ThreePathsSection";
+import Typography from "@/lib/Typography";
+
 export default function ThreePathsSection() {
   return (
     <section className="w-full bg-[#FFD638]">
       <div className="w-full px-6 py-14 sm:px-10 sm:py-20 lg:px-10 lg:py-16 2xl:px-40">
         <div className="flex items-center gap-3">
           <span className="h-px w-8 bg-[#9739A8]" />
-          <span className="text-xs font-semibold uppercase tracking-widest text-[#9739A8]">
+          <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
             Get Involved
-          </span>
+          </Typography>
         </div>
 
-        <h2 className="mt-4 font-serif text-3xl text-[#00191B] sm:text-4xl lg:text-5xl">
+        <Typography variant="h2" className="mt-4 font-lora font-normal text-[#00191B]">
           Three Paths to Shared Progress
-        </h2>
+        </Typography>
 
         <div className="mt-10 grid grid-cols-1 justify-items-center gap-6 sm:mt-12 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4 xl:gap-12">
           {PATHS.map((path, index) => (
@@ -24,20 +26,22 @@ export default function ThreePathsSection() {
                   : ""
               }`}
             >
-              <span className="text-xs font-bold uppercase tracking-widest text-[#9739A8]">
+              <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
                 {path.label}
-              </span>
+              </Typography>
 
-              <h3 className="mt-4 font-serif text-2xl text-[#00191B] sm:text-4xl">
+              <Typography variant="h3" className="mt-4 font-lora font-normal text-[#00191B]">
                 {path.title}
-              </h3>
+              </Typography>
 
-              <p className="mt-6 text-sm leading-relaxed text-[#5F6C6D] sm:text-lg">
+              <Typography variant="body-lg" className="mt-6 leading-relaxed text-[#5F6C6D] font-normal font-figtree">
                 {path.description}
-              </p>
+              </Typography>
 
-              <button className="mt-12 mb-4 w-full bg-[#9739A8] px-6 py-4 text-md font-semibold text-white sm:w-fit">
-                {path.button}
+              <button className="mt-12 mb-4 w-full bg-[#9739A8] px-6 py-4 sm:w-fit cursor-pointer">
+                <Typography variant="body-sm" className="font-medium font-figtree text-white">
+                  {path.button}
+                </Typography>
               </button>
             </div>
           ))}
