@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { NAV_LINKS } from "@/shared/constants/navbar";
+import Typography from "@/lib/Typography";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,11 +54,14 @@ export default function Navbar() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className={`text-xl text-white ${
-                    isActive ? "font-bold" : "font-normal"
-                  }`}
+                  className="font-medium"
                 >
-                  {link.label}
+                  <Typography
+                    variant="body-lg"
+                    className={`font-manrope font-medium ${isActive ? "text-[#FFD638]" : "text-white"}`}
+                  >
+                    {link.label}
+                  </Typography>
                 </Link>
               </li>
             );
@@ -68,9 +72,11 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           <Link
             href="/Contact"
-            className="hidden sm:inline-flex items-center justify-center bg-white px-6 py-2.5 text-[18px] font-bold text-[#9739A8] transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]"
+            className="hidden sm:inline-flex items-center justify-center bg-white px-6 py-2.5 text-[#9739A8] transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98]"
           >
-            Contact Us
+            <Typography variant="body-lg" className="font-semibold font-manrope">
+              Contact Us
+            </Typography>
           </Link>
 
           {/* Hamburger button - shrinks on small screens */}
@@ -122,11 +128,14 @@ export default function Navbar() {
                 <Link
                   href={link.href}
                   onClick={(e) => handleMobileLinkClick(e, link.href)}
-                  className={`block py-3 text-center text-xl text-white ${
-                    isActive ? "font-bold" : "font-medium"
-                  }`}
+                  className="block py-3 text-center text-xl font-medium"
                 >
-                  {link.label}
+                  <Typography
+                    variant="body-xl"
+                    className={`font-medium font-manrope ${isActive ? "text-[#FFD638]" : "text-white"}`}
+                  >
+                    {link.label}
+                  </Typography>
                 </Link>
               </li>
             );
@@ -144,7 +153,9 @@ export default function Navbar() {
               onClick={(e) => handleMobileLinkClick(e, "/Contact")}
               className="inline-flex w-40 items-center justify-center bg-white px-6 py-3 text-base font-semibold text-[#9739A8]"
             >
-              Contact Us
+              <Typography variant="body-lg" className="text-base font-semibold">
+                Contact Us
+              </Typography>
             </Link>
           </li>
         </ul>
