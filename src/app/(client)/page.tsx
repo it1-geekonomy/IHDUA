@@ -8,6 +8,7 @@ import Missionsection from "@/domains/home/components/Missionsection";
 import RippleEffectSection from "@/domains/home/components/RippleEffectSection";
 import GeographicFootprint from "@/domains/home/components/GeographicFootprint";
 import ThreePathsSection from "@/domains/home/components/ThreePathsSection";
+import StoriesFromField from "@/domains/home/components/StoriesFromField";
 import CTAsection from "@/domains/home/components/CTAsection";
 
 export default function ClientHomePage() {
@@ -22,6 +23,7 @@ export default function ClientHomePage() {
 			<Missionsection />
 			<RippleEffectSection />
 			{/* <GeographicFootprint /> */}
+			<StoriesFromField />
 			<ThreePathsSection />
 			<CTAsection />
 		</div>
