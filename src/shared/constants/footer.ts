@@ -1,8 +1,9 @@
 export const FOOTER_WHAT_WE_DO = [
-  "Why IHDUA",
-  "Our Work",
-  "Impact Metrics",
-  "Field Stories",
+  "Home",
+  "About us",
+  "Our Impact",
+  "Farms & Diary",
+  "Blogs",
 ];
 
 export const FOOTER_GET_INVOLVED = [
