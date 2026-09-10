@@ -115,75 +115,78 @@ export default function RuralDevelopmentSection() {
   const [item1, item2, item3, item4, item5] = GRID_ITEMS;
 
   return (
-    <section className="bg-[#FAF9F5] px-6 pt-8 lg:py-20">
-      <div className="mx-auto max-w-6xl text-center">
-        {/* Kicker */}
-        <div className="mb-4 flex items-center justify-center gap-3 font-semibold uppercase tracking-wider text-[#9739A8]">
-          <span className="h-px w-6 bg-[#9739A8]" />
-          <Typography variant="caption" className="font-bold font-figtree tracking-normal">
-            Rural Development · Karnataka
+    <section className="bg-[#FAF9F5] pt-8 lg:px-6 lg:py-20">
+      {/* Same px-6 gutter as other sections below lg */}
+      <div className="w-full px-6">
+        <div className="mx-auto max-w-6xl text-left lg:text-center">
+          {/* Kicker */}
+          <div className="mb-4 flex items-center justify-start gap-3 font-semibold uppercase tracking-wider text-[#9739A8] lg:justify-center">
+            <span className="h-px w-6 bg-[#9739A8]" />
+            <Typography variant="caption" className="font-bold font-figtree tracking-normal">
+              Rural Development · Karnataka
+            </Typography>
+            <span className="h-px w-6 bg-[#9739A8]" />
+          </div>
+
+          {/* Heading — h1 scale below lg (same as other long section titles); large from lg */}
+          <Typography
+            variant="h1"
+            className="max-w-5xl font-normal font-lora leading-tight text-[#00191B] lg:mx-auto lg:text-[56px]"
+          >
+            Building Stronger Communities, Creating Lasting Change
           </Typography>
-          <span className="h-px w-6 bg-[#9739A8]" />
-        </div>
 
-        {/* Heading */}
-        <Typography
-          variant="display-2xl"
-          className="mx-auto max-w-5xl font-normal font-lora leading-tight text-[#00191B]"
-        >
-          Building Stronger Communities, Creating Lasting Change
-        </Typography>
-
-        {/* Subtext */}
-        <Typography variant="body-lg" className="mx-auto mt-4 lg:mt-8 w-full lg:max-w-2xl text-[#5F6C6D] font-regular font-figtree">
-          Empowering rural communities through education, sustainable livelihoods, healthcare, and opportunities for a better future.
-        </Typography>
-
-        {/* Buttons */}
-        <div className="mt-8 flex items-center justify-center gap-3">
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-md bg-[#FFD638] px-6 py-3 font-bold text-[#1E1E1E] cursor-pointer"
+          {/* Subtext */}
+          <Typography
+            variant="body-lg"
+            className="mt-4 w-full max-w-2xl text-[#5F6C6D] font-regular font-figtree leading-relaxed lg:mx-auto lg:mt-8"
           >
-            <Typography variant="body-sm" className="font-semibold font-figtree text-[#1E1E1E]">
-              Donate Now
-            </Typography>
-            <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth={2.2}>
-              <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            className="rounded-md border border-black bg-white px-6 py-3 font-bold text-[#00191B] cursor-pointer"
-          >
-            <Typography variant="body-sm" className="font-semibold font-figtree text-[#00191B]">
-              Explore Our Work
-            </Typography>
-          </button>
-        </div>
-      </div>
+            Empowering rural communities through education, sustainable livelihoods, healthcare, and opportunities for a better future.
+          </Typography>
 
-      {/* Mobile / tablet layout: below lg (1024px) */}
-      <div className="mx-auto mt-14 flex max-w-[1600px] flex-col gap-3 px-2 sm:gap-4 sm:px-4 lg:hidden">
-        {/* Item 1: mobileimg.png used as base image across whole mobile/tablet range, hover crossfades to dev11.png */}
-        <GridCell
-          item={item1}
-          mobileAspectClass="aspect-[16/9]"
-          mobileObjectPositionClass="object-top"
-          forceCompactCaption
-          mobileImage="/development/mobileimg.png"
-        />
-
-        {/* Items 2 & 3 side by side, 2 columns at all sizes below lg */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
-          <GridCell item={item2} mobileAspectClass="aspect-square" />
-          <GridCell item={item3} mobileAspectClass="aspect-square" mobileUseHoverImage />
+          {/* Buttons */}
+          <div className="mt-8 flex flex-row gap-3 sm:flex-row sm:items-center lg:items-center lg:justify-center">
+            <button
+              type="button"
+              className="inline-flex w-fit items-center justify-center gap-2 rounded-md bg-[#FFD638] px-6 py-3 font-bold text-[#1E1E1E] cursor-pointer"
+            >
+              <Typography variant="body-sm" className="font-semibold font-figtree text-[#1E1E1E]">
+                Donate Now
+              </Typography>
+              <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth={2.2}>
+                <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="inline-flex w-fit rounded-md border border-black bg-white px-6 py-3 font-bold text-[#00191B] cursor-pointer"
+            >
+              <Typography variant="body-sm" className="font-semibold font-figtree text-[#00191B]">
+                Explore Our Work
+              </Typography>
+            </button>
+          </div>
         </div>
 
-        {/* Items 5 & 4 side by side (swapped order), 2 columns at all sizes below lg, own colors */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4">
-          <GridCell item={item5} mobileAspectClass="aspect-square" forceCompactCaption mobileUseHoverImage />
-          <GridCell item={item4} mobileAspectClass="aspect-square" />
+        {/* Mobile / tablet layout: below lg — same horizontal edges as text above */}
+        <div className="mx-auto mt-14 flex max-w-[1600px] flex-col gap-3 sm:gap-4 lg:hidden">
+          <GridCell
+            item={item1}
+            mobileAspectClass="aspect-[16/9]"
+            mobileObjectPositionClass="object-top"
+            forceCompactCaption
+            mobileImage="/development/mobileimg.png"
+          />
+
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <GridCell item={item2} mobileAspectClass="aspect-square" />
+            <GridCell item={item3} mobileAspectClass="aspect-square" mobileUseHoverImage />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <GridCell item={item5} mobileAspectClass="aspect-square" forceCompactCaption mobileUseHoverImage />
+            <GridCell item={item4} mobileAspectClass="aspect-square" />
+          </div>
         </div>
       </div>
 
