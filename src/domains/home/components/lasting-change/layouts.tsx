@@ -1,3 +1,5 @@
+"use client";
+
 import { LASTING_CHANGE } from "@/domains/home/constants/lastingchange";
 import { ImageCard } from "./ImageCard";
 import { YellowImpactCard } from "./YellowImpactCard";
