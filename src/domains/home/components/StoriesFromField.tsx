@@ -22,8 +22,9 @@ export default function StoriesFromField() {
     [featuredId]
   );
 
+  /** Always only 2 side stories */
   const sideStories = useMemo(
-    () => FIELD_STORIES.filter((s) => s.id !== featuredId),
+    () => FIELD_STORIES.filter((s) => s.id !== featuredId).slice(0, 2),
     [featuredId]
   );
 
@@ -62,34 +63,85 @@ export default function StoriesFromField() {
           </Link>
         </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-6 xl:mt-10 xl:grid-cols-12 xl:items-start xl:gap-x-8 xl:gap-y-5 2xl:gap-x-10">
-          {/* Featured image */}
-          <div className="order-1 xl:col-span-8 xl:row-start-1">
-            <div className="relative aspect-16/10 w-full overflow-hidden">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={featured.id}
-                  className="absolute inset-0"
-                  initial={{ opacity: 0, scale: 1.04 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        {/*
+          < lg: stacked
+          lg–xl: flex row — side stories set height, image stretches to match (aligned)
+          xl+: original grid stretch behavior
+        */}
+        <div className="mt-8 grid grid-cols-1 gap-6 lg:mt-10 lg:grid-cols-12 lg:items-stretch lg:gap-x-5 lg:gap-y-5 xl:gap-x-8 2xl:gap-x-10">
+          {/*
+            lg–xl only wrapper: image + sides share one height
+            xl:contents → wrapper disappears, original grid resumes
+          */}
+          <div className="order-1 contents lg:col-span-12 lg:row-start-1 lg:flex lg:items-stretch lg:gap-5 xl:contents">
+            {/* Featured image */}
+            <div className="lg:w-[58%] lg:shrink-0 xl:w-auto xl:col-span-8 xl:row-start-1">
+              <div className="relative aspect-2/1 w-full overflow-hidden lg:aspect-auto lg:aspect-video xl:aspect-2/1 lg:h-full xl:h-auto">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={featured.id}
+                    className="absolute inset-0"
+                    initial={{ opacity: 0, scale: 1.04 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <Image
+                      src={featured.image}
+                      alt={featured.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 66vw"
+                      priority
+                    />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
+
+            {/* Side stories */}
+            <div className="order-3 mt-6 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:gap-6 lg:order-none lg:mt-0 lg:w-[42%] lg:flex-col lg:justify-between lg:gap-5 xl:col-span-4 xl:row-start-1 xl:w-auto xl:h-full xl:justify-between">
+              {sideStories.map((story) => (
+                <button
+                  key={story.id}
+                  type="button"
+                  onClick={() => selectStory(story)}
+                  className="group flex min-h-0 min-w-0 flex-1 cursor-pointer items-center gap-3 text-left sm:gap-4 md:flex-1 lg:flex-none lg:shrink-0 xl:flex-1"
                 >
-                  <Image
-                    src={featured.image}
-                    alt={featured.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1280px) 100vw, 66vw"
-                    priority
-                  />
-                </motion.div>
-              </AnimatePresence>
+                  <div className="relative aspect-square size-[112px] shrink-0 overflow-hidden sm:size-[128px] md:size-[100px] lg:size-[168px] lg:h-[168px] lg:w-[168px] lg:max-w-none xl:h-full xl:w-auto xl:max-w-[46%] xl:size-auto">
+                    <Image
+                      src={story.image}
+                      alt={story.title}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                      sizes="(max-width: 1024px) 128px, 220px"
+                    />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={`block font-manrope font-semibold uppercase tracking-wider text-[#9739A8] ${figmaTypeScale[14]}`}
+                    >
+                      {story.category}
+                    </p>
+                    <p
+                      className={`mt-1.5 block font-lora font-medium leading-snug text-[#00191B] transition-colors group-hover:text-[#9739A8] lg:text-[15px] xl:text-[20px] ${figmaTypeScale[20]}`}
+                    >
+                      {story.title}
+                    </p>
+                    <p
+                      className={`mt-1.5 block font-manrope font-normal text-[#8A9394] ${figmaTypeScale[12]}`}
+                    >
+                      {story.date}
+                    </p>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
 
           {/* Featured copy */}
-          <div className="order-2 xl:col-span-8 xl:row-start-2">
+          <div className="order-2 lg:col-span-7 xl:col-span-8 lg:row-start-2">
             <AnimatePresence mode="wait">
               <motion.div key={featured.id} {...fadeSlide}>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -130,48 +182,6 @@ export default function StoriesFromField() {
                 </Link>
               </motion.div>
             </AnimatePresence>
-          </div>
-
-          {/* Side stories */}
-          <div className="order-3 flex flex-col gap-5 md:flex-row md:gap-6 xl:col-span-4 xl:row-start-1 xl:flex-col xl:gap-6 2xl:h-full 2xl:justify-between">
-            {sideStories.map((story, index) => (
-              <button
-                key={story.id}
-                type="button"
-                onClick={() => selectStory(story)}
-                className={`group flex min-w-0 cursor-pointer items-center gap-3 text-left sm:gap-4 md:flex-1 xl:flex-none ${
-                  index >= 2 ? "hidden xl:flex" : ""
-                }`}
-              >
-                <div className="relative size-[112px] shrink-0 overflow-hidden sm:size-[128px] md:size-[100px] lg:size-[120px] xl:size-[140px] 2xl:size-[160px]">
-                  <Image
-                    src={story.image}
-                    alt={story.title}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                    sizes="160px"
-                  />
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <p
-                    className={`font-manrope font-semibold uppercase tracking-wider text-[#9739A8] ${figmaTypeScale[14]}`}
-                  >
-                    {story.category}
-                  </p>
-                  <p
-                    className={`mt-1.5 font-lora font-medium leading-snug text-[#00191B] transition-colors group-hover:text-[#9739A8] ${figmaTypeScale[20]}`}
-                  >
-                    {story.title}
-                  </p>
-                  <p
-                    className={`mt-1.5 font-manrope font-normal text-[#8A9394] ${figmaTypeScale[12]}`}
-                  >
-                    {story.date}
-                  </p>
-                </div>
-              </button>
-            ))}
           </div>
         </div>
       </div>
