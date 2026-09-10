@@ -42,14 +42,14 @@ export default function StoriesFromField() {
             <div className="flex items-center gap-3">
               <span className="h-px w-8 bg-[#9739A8]" />
               <Typography
-                className={`font-manrope font-bold text-[#9739A8] ${figmaTypeScale[15]}`}
+                className={`font-figtree font-bold text-[#9739A8] ${figmaTypeScale[15]}`}
               >
                 Field Updates
               </Typography>
             </div>
             <Typography
               variant="h2"
-              className="mt-3 font-lora font-medium leading-tight text-[#00191B]"
+              className="mt-3 font-lora font-normal leading-tight"
             >
               Stories From the Field
             </Typography>
@@ -57,7 +57,7 @@ export default function StoriesFromField() {
 
           <Link
             href="/Stories"
-            className={`mx-auto inline-flex w-fit shrink-0 items-center justify-center border border-[#00191B] bg-transparent px-5 py-2.5 ${figmaTypeScale[18]} font-lora font-semibold text-[#00191B] transition-opacity hover:opacity-80 sm:mx-0`}
+            className={`mx-auto inline-flex w-fit shrink-0 items-center justify-center border border-[#00191B] bg-transparent px-5 py-2.5 ${figmaTypeScale[18]} font-figtree font-semibold transition-opacity hover:opacity-80 sm:mx-0`}
           >
             Browse All Stories
           </Link>
@@ -120,17 +120,17 @@ export default function StoriesFromField() {
 
                   <div className="min-w-0 flex-1">
                     <p
-                      className={`block font-manrope font-semibold uppercase tracking-wider text-[#9739A8] ${figmaTypeScale[14]}`}
+                      className={`block font-figtree font-bold uppercase tracking-wider text-[#9739A8] ${figmaTypeScale[14]}`}
                     >
                       {story.category}
                     </p>
                     <p
-                      className={`mt-1.5 block font-lora font-medium leading-snug text-[#00191B] transition-colors group-hover:text-[#9739A8] lg:text-[15px] xl:text-[20px] ${figmaTypeScale[20]}`}
+                      className={`mt-1.5 block font-lora font-normal leading-snug text-[#00191B] transition-colors group-hover:text-[#9739A8] lg:text-[15px] xl:text-[20px] ${figmaTypeScale[20]}`}
                     >
                       {story.title}
                     </p>
                     <p
-                      className={`mt-1.5 block font-manrope font-normal text-[#8A9394] ${figmaTypeScale[12]}`}
+                      className={`mt-1.5 block font-figtree font-normal text-[#5F6C6D] ${figmaTypeScale[12]}`}
                     >
                       {story.date}
                     </p>
@@ -147,13 +147,13 @@ export default function StoriesFromField() {
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                   <Typography
                     variant="caption"
-                    className="font-manrope font-semibold text-[#9739A8]"
+                    className="font-figtree font-bold text-[#9739A8]"
                   >
                     {featured.category}
                   </Typography>
                   <Typography
                     variant="overline"
-                    className="normal-case tracking-normal font-manrope font-normal text-[#8A9394]"
+                    className="normal-case tracking-normal font-figtree font-normal text-[#5F6C6D]"
                   >
                     {featured.date}
                   </Typography>
@@ -161,7 +161,7 @@ export default function StoriesFromField() {
 
                 <Typography
                   variant="h3"
-                  className="mt-2 max-w-2xl font-lora font-medium leading-snug text-[#00191B]"
+                  className="mt-2 max-w-2xl font-lora font-normal leading-snug text-[#00191B]"
                 >
                   {featured.title}
                 </Typography>
@@ -175,7 +175,7 @@ export default function StoriesFromField() {
 
                 <Link
                   href={featured.href}
-                  className={`mx-auto mt-5 flex w-fit items-center gap-2 bg-[#FFD638] px-5 py-3 ${figmaTypeScale[15]} font-manrope font-bold text-[#1E1E1E] transition-opacity hover:opacity-90 sm:mx-0`}
+                  className={`mx-auto mt-5 flex w-fit items-center gap-2 bg-[#FFD638] px-5 py-3 ${figmaTypeScale[18]} font-figtree font-normal transition-opacity hover:opacity-90 sm:mx-0`}
                 >
                   Read Full Update
                   <span aria-hidden="true">→</span>
