@@ -1,3 +1,5 @@
+"use client";
+
 import {
   MobileStack,
   SmToLgLayout,
