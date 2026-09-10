@@ -6,10 +6,9 @@ export type FieldStory = {
   title: string;
   description: string;
   href: string;
-  /** Extra side slot only from xl+ */
-  xlOnly?: boolean;
 };
 
+/** Featured + side pool; UI always shows 2 side stories */
 export const FIELD_STORIES: FieldStory[] = [
   {
     id: "grama-sabha",
@@ -40,16 +39,5 @@ export const FIELD_STORIES: FieldStory[] = [
     description:
       "A women-led self-help guild completed its first wholesale hand-loom shipment, opening a steady market link with a Bangalore retail partner.",
     href: "/Stories",
-  },
-  {
-    id: "learning-circles",
-    image: "/home/featured-story-image.png",
-    category: "Education Access",
-    date: "January 10, 2026",
-    title: "Village Learning Circles Cut Dropout Rates Across Four Mandals",
-    description:
-      "Evening learning circles run by local mentors helped families keep children in school, cutting dropout rates across four neighbouring mandals.",
-    href: "/Stories",
-    xlOnly: true,
   },
 ];
