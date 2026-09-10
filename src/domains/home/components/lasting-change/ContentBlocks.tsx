@@ -87,8 +87,8 @@ function GetInvolvedButton({ className }: { className?: string }) {
     <Link
       href={LASTING_CHANGE.ctaHref}
       className={cn(
-        "inline-flex items-center gap-2 bg-[#FFD638] px-5 py-3 font-figtree font-medium transition-opacity hover:opacity-90",
-        figmaTypeScale[15],
+        "inline-flex items-center gap-2 bg-[#FFD638] px-5 py-3 font-figtree font-semibold transition-opacity hover:opacity-90",
+        figmaTypeScale[18],
         className
       )}
     >
