@@ -24,7 +24,7 @@ export default function ClientHomePage() {
 			<Missionsection />
 			<RippleEffectSection />
 			<LastingChangeSection />
-			{/* <GeographicFootprint /> */}
+			<GeographicFootprint />
 			<StoriesFromField />
 			<ThreePathsSection />
 			<CTAsection />
