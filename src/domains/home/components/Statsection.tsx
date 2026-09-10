@@ -67,7 +67,7 @@ function StatItem({
 
   return (
     <motion.div
-      className={`flex items-start gap-4 px-4 ${className ?? ""}`}
+      className={`flex min-w-0 items-start gap-2.5 sm:gap-4 sm:px-4 ${className ?? ""}`}
       initial={{ opacity: 0, y: 14 }}
       animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
       transition={{
@@ -77,7 +77,7 @@ function StatItem({
       }}
     >
       <div
-        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg sm:h-12 sm:w-12 sm:rounded-xl"
         style={{ backgroundColor: stat.bg }}
       >
         <Image
@@ -85,20 +85,20 @@ function StatItem({
           alt={stat.label}
           width={24}
           height={24}
-          className="h-6 w-6 object-contain"
+          className="h-4 w-4 object-contain sm:h-6 sm:w-6"
         />
       </div>
-      <div className="flex flex-col gap-0.5 text-left">
+      <div className="flex min-w-0 flex-col gap-0.5 text-left">
         <Typography
           variant="h2"
-          className="font-bold font-lora leading-none text-[#00191B] tabular-nums !mb-0"
+          className="!mb-0 !text-[22px] font-bold font-lora leading-none text-[#00191B] tabular-nums sm:!text-[31px] md:!text-[36px] lg:!text-[41px]"
         >
           {formatStat(value)}
           {stat.suffix}
         </Typography>
         <Typography
           variant="body-sm"
-          className="leading-snug text-[#5F6C6D] font-medium font-figtree !mb-0"
+          className="!mb-0 !text-[11px] leading-snug text-[#5F6C6D] font-medium font-figtree sm:!text-[12px] md:!text-[14px] lg:!text-[16px]"
         >
           {stat.label}
         </Typography>
@@ -129,10 +129,10 @@ export default function StatSection() {
 
       <div
         ref={ref}
-        className="mt-10 mx-auto grid w-fit grid-cols-1 justify-items-start gap-y-8 sm:mx-0 sm:w-auto sm:grid-cols-2 lg:mt-16 lg:flex lg:w-full lg:items-start lg:justify-between lg:gap-y-0"
+        className="mt-8 mx-auto grid w-full grid-cols-2 justify-items-stretch gap-x-4 gap-y-6 sm:mx-0 sm:mt-10 sm:w-auto sm:justify-items-start sm:gap-x-4 sm:gap-y-8 lg:mt-16 lg:flex lg:w-full lg:items-start lg:justify-between lg:gap-y-0"
       >
         {STATS.flatMap((stat, index) => {
-          const orderMap = ["sm:order-1", "sm:order-2", "sm:order-4", "sm:order-3"];
+          const orderMap = ["order-1", "order-2", "order-4", "order-3"];
           const nodes = [];
 
           if (index !== 0) {

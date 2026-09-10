@@ -117,25 +117,81 @@ export default function Footer() {
 
       <div className="bg-[#FFD638] py-2">
         <div className={CONTAINER}>
-          <div className="flex flex-col lg:flex-row justify-between items-center gap-1 lg:gap-0">
-            <Typography variant="body-sm" className="text-[#00191B] font-regular font-figtree">
+          <div className="flex w-full flex-col gap-1.5 lg:flex-row lg:items-center lg:justify-between lg:gap-0">
+            {/* Mobile: links + lang on top row; copyright below at start. Desktop: copyright left. */}
+            <Typography
+              variant="body-sm"
+              className="order-2 self-center text-center text-[#00191B] font-regular font-figtree lg:order-1 lg:self-auto lg:text-left"
+            >
               © {new Date().getFullYear()} IHDUA. All rights reserved.
             </Typography>
 
-            <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
-              <Link href="/" className="text-[#00191B] hover:underline">
-                <Typography variant="body-sm" className="font-regular font-figtree">
-                  Privacy Policy
-                </Typography>
-              </Link>
-              <Link href="/" className="text-[#00191B] hover:underline">
-                <Typography variant="body-sm" className="font-regular font-figtree">
-                  Terms of Service
-                </Typography>
-              </Link>
+            <div className="order-1 flex w-full items-center justify-between gap-3 lg:order-2 lg:w-auto lg:justify-end lg:gap-4">
+              <div className="flex items-center gap-4">
+                <Link href="/" className="text-[#00191B] hover:underline">
+                  <Typography variant="body-sm" className="font-regular font-figtree">
+                    Privacy Policy
+                  </Typography>
+                </Link>
+                <Link href="/" className="text-[#00191B] hover:underline">
+                  <Typography variant="body-sm" className="font-regular font-figtree">
+                    Terms of Service
+                  </Typography>
+                </Link>
+              </div>
 
+              {/* Mobile: on/off language switch */}
+              <button
+                type="button"
+                role="switch"
+                aria-checked={language === LANGUAGES.KANNADA}
+                aria-label="Toggle language"
+                disabled={isChanging}
+                onClick={() =>
+                  setLanguage(
+                    language === LANGUAGES.ENGLISH
+                      ? LANGUAGES.KANNADA
+                      : LANGUAGES.ENGLISH,
+                  )
+                }
+                className={`flex shrink-0 items-center gap-2 lg:hidden transition-opacity ${
+                  isChanging ? "opacity-50 pointer-events-none" : ""
+                }`}
+              >
+                <span
+                  className={`text-xs font-figtree ${
+                    language === LANGUAGES.ENGLISH
+                      ? "font-bold text-[#00191B]"
+                      : "font-normal text-[#00191B]/70"
+                  }`}
+                >
+                  EN
+                </span>
+                <span
+                  className={`relative h-6 w-11 rounded-full bg-black p-0.5 transition-colors ${
+                    language === LANGUAGES.KANNADA ? "bg-[#00191B]" : "bg-black"
+                  }`}
+                >
+                  <span
+                    className={`block h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ease-out ${
+                      language === LANGUAGES.KANNADA ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </span>
+                <span
+                  className={`text-xs font-figtree ${
+                    language === LANGUAGES.KANNADA
+                      ? "font-bold text-[#00191B]"
+                      : "font-normal text-[#00191B]/70"
+                  }`}
+                >
+                  ಕನ್ನಡ
+                </span>
+              </button>
+
+              {/* Desktop: segmented control */}
               <div
-                className={`flex items-center gap-1 rounded-full bg-black px-1 py-1 transition-opacity ${
+                className={`hidden shrink-0 items-center gap-1 rounded-full bg-black px-1 py-1 transition-opacity lg:flex ${
                   isChanging ? "opacity-50 pointer-events-none" : ""
                 }`}
               >
