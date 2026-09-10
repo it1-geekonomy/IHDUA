@@ -1,83 +1,111 @@
 import Image from "next/image";
+import Typography from "@/lib/Typography";
 
 export default function GeographicFootprint() {
   return (
-    <section className="max-w-[1180px] mx-auto px-6 py-16 sm:py-20">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
+    <section className="w-full bg-white">
+      <div className="w-full px-6 pt-6 pb-6 lg:py-24 lg:px-10 2xl:px-40">
+        <div className="grid grid-cols-1 items-stretch gap-10 lg:grid-cols-2 lg:gap-6 xl:gap-16">
 
-        {/* Left: Map panel */}
-        <div className="relative bg-[#F3F1EE] rounded-2xl p-6 min-h-[320px] md:min-h-[400px] flex items-center justify-center overflow-hidden">
-
-          <div className="relative w-full max-w-[340px] mx-auto aspect-[340/380]">
-            <Image
-              src="/geographicfootprint/mapimg.png"
-              alt="Map showing active districts of Mysore and Chamarajanagar"
-              fill
-              className="object-contain"
-              sizes="(max-width: 768px) 90vw, 340px"
-            />
-          </div>
-        </div>
-
-        {/* Right: Content */}
-        <div className="flex flex-col">
-          <div className="flex items-center gap-3 mb-5">
-            <span className="h-px w-7 bg-[#9739A8] shrink-0" />
-            <span className="text-xs font-bold tracking-wider text-[#9739A8] whitespace-nowrap">
-              GEOGRAPHIC FOOTPRINT
-            </span>
-            <span className="h-px flex-1 max-w-[60px] bg-[#9739A8]" />
-          </div>
-
-          <h2 className="font-serif text-[26px] sm:text-3xl md:text-[36px] leading-tight text-[#00191B] mb-5">
-            Rooted in communities. Creating change where it matters.
-          </h2>
-
-          <p className="text-sm sm:text-[15px] leading-relaxed text-[#5F6C6D] mb-8 max-w-[480px]">
-            Our physical headquarters are established directly in rural Mysore,
-            allowing our coordinators to live as neighbors beside the families
-            we serve.
-          </p>
-
-          <div className="flex flex-col">
-            <div className="flex items-center justify-between py-4 border-b border-[#E3ECEC]">
-              <span className="text-sm sm:text-[15px] font-semibold text-[#1E2627]">
-                Mysore Villages
-              </span>
-              <span className="text-sm sm:text-[15px] font-bold text-[#9739A8]">
-                34 Villages
-              </span>
+          {/* Left: Map image */}
+          <div className="order-2 relative w-full max-w-md mx-auto lg:order-1 lg:max-w-none lg:mx-0 lg:h-full">  {/* Below lg: natural aspect ratio, no letterboxing */}
+            <div className="relative w-full overflow-hidden rounded-md lg:hidden">
+              <Image
+                src="/geographicfootprint/map1.png"
+                alt="Map showing active districts of Mysore and Chamarajanagar"
+                width={800}
+                height={900}
+                className="h-auto w-full object-contain object-center"
+                sizes="90vw"
+                priority={false}
+              />
             </div>
-            <div className="flex items-center justify-between py-4 border-b border-[#E3ECEC]">
-              <span className="text-sm sm:text-[15px] font-semibold text-[#1E2627]">
-                Chamarajanagar Villages
-              </span>
-              <span className="text-sm sm:text-[15px] font-bold text-[#9739A8]">
-                25 Villages
-              </span>
+
+            {/* lg and up: fill container, cover */}
+            <div className="relative hidden h-full w-full overflow-hidden rounded-md lg:block">
+              <Image
+                src="/geographicfootprint/map1.png"
+                alt="Map showing active districts of Mysore and Chamarajanagar"
+                fill
+                className="object-cover object-center"
+                sizes="500px"
+              />
+            </div>
+
+            {/* Active Districts card */}
+            <div className="absolute left-2 top-2 rounded-sm border border-[#FFD638] bg-white px-2.5 py-2 shadow-sm sm:left-3 sm:top-3 lg:left-6 lg:top-6 lg:px-4 lg:py-3">
+              <Typography variant="body-sm" className="font-bold font-figtree text-[#00191B] ">
+                Active Districts
+              </Typography>
+              <Typography variant="body-sm" className="mt-0.5 font-medium font-figtree text-[#5F6C6D] lg:mt-1">
+                Mysore &amp; Chamarajanagar
+              </Typography>
             </div>
           </div>
 
-          <a
-            href="#"
-            className="inline-flex items-center gap-2 mt-8 px-6 py-3.5 rounded-md bg-[#FFD638] text-[#212121] text-sm font-bold self-start transition-transform hover:-translate-y-0.5"
-          >
-            Learn About Regional Partnerships
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-4 h-4 shrink-0"
+          {/* Right: Content */}
+          <div className="order-1 flex flex-col lg:order-2">
+            <div className="flex items-center gap-3">
+              <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
+              <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
+                GEOGRAPHIC FOOTPRINT
+              </Typography>
+              <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
+            </div>
+
+            <Typography
+              variant="h1"
+              className="mt-5 max-w-3xl lg:max-w-4xl leading-tight text-[#00191B] font-normal font-lora"
             >
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </a>
-        </div>
+              Rooted in communities. Creating change where it matters.
+            </Typography>
 
+            <Typography variant="body-lg" className="mt-5 leading-relaxed text-[#5F6C6D] font-normal font-figtree max-w-2xl">
+              Our physical headquarters are established directly in rural Mysore,
+              allowing our coordinators to live as neighbors beside the families
+              we serve.
+            </Typography>
+
+            <div className="mt-8 lg:mt-16 flex flex-col">
+              <div className="flex items-center justify-between py-4 border-b border-[#E3ECEC]">
+                <Typography variant="body-lg" className="font-semibold font-figtree text-[#1E2627]">
+                  Mysore Villages
+                </Typography>
+                <Typography variant="body-lg" className="font-semibold font-figtree text-[#9739A8]">
+                  34 Villages
+                </Typography>
+              </div>
+              <div className="flex items-center justify-between py-4 border-b border-[#E3ECEC]">
+                <Typography variant="body-lg" className="font-semibold font-figtree text-[#1E2627]">
+                  Chamarajanagar Villages
+                </Typography>
+                <Typography variant="body-lg" className="font-semibold font-figtree text-[#9739A8]">
+                  25 Villages
+                </Typography>
+              </div>
+            </div>
+            <a href="#"
+              className="mt-9 lg:mt-14 mx-auto flex w-fit items-center gap-2 rounded bg-[#FFD638] px-6 py-3 transition-opacity lg:mx-0"
+            >
+              <Typography variant="body-lg" className="font-medium font-figtree text-[#1E1E1E]">
+                Learn About Regional Partnerships
+              </Typography>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={3}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-4 h-4 shrink-0"
+                aria-hidden="true"
+              >
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </a>
+          </div>
+        </div>
       </div>
     </section>
   );
