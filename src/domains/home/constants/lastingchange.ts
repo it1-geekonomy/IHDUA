@@ -11,7 +11,9 @@ export const LASTING_CHANGE = {
     seal: "/home/impact-seal.png",
   },
   purpleCard: {
-    stat: "59+",
+    /** Numeric value used for count-up animation */
+    statValue: 59,
+    statSuffix: "+",
     label: "Villages Reached",
     note: "Community trust",
     years: ["2024", "2025", "2026"] as const,
