@@ -10,7 +10,7 @@ export default function FocusAreaSection() {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section className="w-full bg-[#FAF9F5]">
+    <section id="focus-areas" className="w-full bg-[#FAF9F5]">
       <div className="w-full px-6 pt-6 lg:py-24 lg:px-10 2xl:px-40">
         <div className="flex flex-col items-start text-left">
           <div className="mb-4 flex items-center gap-3">

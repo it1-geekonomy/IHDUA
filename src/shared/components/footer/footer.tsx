@@ -121,12 +121,23 @@ export default function Footer() {
             {/* Mobile: links + lang on top row; copyright below at start. Desktop: copyright left. */}
             <Typography
               variant="body-sm"
-              className="order-2 self-center text-center text-[#00191B] font-regular font-figtree lg:order-1 lg:self-auto lg:text-left"
+              className="order-3 self-center text-center text-[#00191B] font-regular font-figtree lg:order-1 lg:self-auto lg:text-left"
             >
               © {new Date().getFullYear()} IHDUA. All rights reserved.
             </Typography>
 
-            <div className="order-1 flex w-full items-center justify-between gap-3 lg:order-2 lg:w-auto lg:justify-end lg:gap-4">
+            <a
+              href="https://thegeekonomy.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="order-2 self-center text-center text-[#00191B] transition-opacity hover:opacity-80 lg:order-2 lg:self-auto"
+            >
+              <Typography variant="body-sm" className="font-regular font-figtree">
+                Designed &amp; Developed By Geekonomy
+              </Typography>
+            </a>
+
+            <div className="order-1 flex w-full items-center justify-between gap-3 lg:order-3 lg:w-auto lg:justify-end lg:gap-4">
               <div className="flex items-center gap-4">
                 <Link href="/" className="text-[#00191B] hover:underline">
                   <Typography variant="body-sm" className="font-regular font-figtree">

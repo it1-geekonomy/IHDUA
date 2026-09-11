@@ -73,18 +73,18 @@ export default function GeographicFootprint() {
             <div className="mt-8 lg:mt-16 flex flex-col">
               <div className="flex items-center justify-between py-4 border-b border-[#E3ECEC]">
                 <Typography variant="body-lg" className="font-semibold font-figtree text-[#1E2627]">
-                  Mysore Villages
+                  Gundlupet Villages
                 </Typography>
                 <Typography variant="body-lg" className="font-semibold font-figtree text-[#9739A8]">
-                  34 Villages
+                  100 Villages
                 </Typography>
               </div>
               <div className="flex items-center justify-between py-4 border-b border-[#E3ECEC]">
                 <Typography variant="body-lg" className="font-semibold font-figtree text-[#1E2627]">
-                  Chamarajanagar Villages
+                  Begur Villages
                 </Typography>
                 <Typography variant="body-lg" className="font-semibold font-figtree text-[#9739A8]">
-                  25 Villages
+                  58 Villages
                 </Typography>
               </div>
             </div>
