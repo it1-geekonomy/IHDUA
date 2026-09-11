@@ -8,8 +8,9 @@ export default function GeographicFootprint() {
         <div className="grid grid-cols-1 items-stretch gap-10 lg:grid-cols-2 lg:gap-6 xl:gap-16">
 
           {/* Left: Map image */}
-          <div className="order-2 relative w-full max-w-md mx-auto lg:order-1 lg:max-w-none lg:mx-0 lg:h-full">  {/* Below lg: natural aspect ratio, no letterboxing */}
-            <div className="relative w-full overflow-hidden rounded-md lg:hidden">
+          <div className="order-2 relative w-full max-w-md mx-auto lg:order-1 lg:max-w-none lg:mx-0 lg:h-full">
+            {/* Below lg: natural aspect ratio */}
+            <div className="relative w-full overflow-hidden rounded-md bg-[#F3F1EC] lg:hidden">
               <Image
                 src="/geographicfootprint/map1.png"
                 alt="Map showing active districts of Mysore and Chamarajanagar"
@@ -21,20 +22,23 @@ export default function GeographicFootprint() {
               />
             </div>
 
-            {/* lg and up: fill container, cover */}
-            <div className="relative hidden h-full w-full overflow-hidden rounded-md lg:block">
+            {/*
+              lg+
+            
+            */}
+            <div className="relative hidden h-full min-h-[420px] w-full overflow-hidden rounded-md bg-[#F3F1EC] lg:block">
               <Image
                 src="/geographicfootprint/map1.png"
                 alt="Map showing active districts of Mysore and Chamarajanagar"
                 fill
-                className="object-cover object-center"
-                sizes="500px"
+                className="object-contain object-center lg:scale-[1.35] 2xl:scale-[1.25]"
+                sizes="(min-width: 1024px) 45vw, 100vw"
               />
             </div>
 
             {/* Active Districts card */}
-            <div className="absolute left-2 top-2 rounded-sm border border-[#FFD638] bg-white px-2.5 py-2 shadow-sm sm:left-3 sm:top-3 lg:left-6 lg:top-6 lg:px-4 lg:py-3">
-              <Typography variant="body-sm" className="font-bold font-figtree text-[#00191B] ">
+            <div className="absolute left-2 top-2 z-10 rounded-sm border border-[#FFD638] bg-white px-2.5 py-2 shadow-sm sm:left-3 sm:top-3 lg:left-4 lg:top-4 lg:px-4 lg:py-3">
+              <Typography variant="body-sm" className="font-bold font-figtree">
                 Active Districts
               </Typography>
               <Typography variant="body-sm" className="mt-0.5 font-medium font-figtree text-[#5F6C6D] lg:mt-1">
@@ -55,7 +59,7 @@ export default function GeographicFootprint() {
 
             <Typography
               variant="h1"
-              className="mt-5 max-w-3xl lg:max-w-4xl leading-tight text-[#00191B] font-normal font-lora"
+              className="mt-5 max-w-3xl lg:max-w-4xl leading-tight font-normal font-lora"
             >
               Rooted in communities. Creating change where it matters.
             </Typography>
