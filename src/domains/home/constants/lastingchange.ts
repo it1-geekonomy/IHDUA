@@ -12,7 +12,7 @@ export const LASTING_CHANGE = {
   },
   purpleCard: {
     /** Numeric value used for count-up animation */
-    statValue: 59,
+    statValue: 158,
     statSuffix: "+",
     label: "Villages Reached",
     note: "Community trust",

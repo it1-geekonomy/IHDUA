@@ -8,9 +8,9 @@ const TARGET = LASTING_CHANGE.purpleCard.statValue;
 const SUFFIX = LASTING_CHANGE.purpleCard.statSuffix;
 
 const CHART_POINTS = [
-  { x: 52, y: 68, year: "2024", value: 12 },
-  { x: 160, y: 40, year: "2025", value: 28 },
-  { x: 268, y: 12, year: "2026", value: 59 },
+  { x: 52, y: 68, year: "2024", value: 42 },
+  { x: 160, y: 40, year: "2025", value: 98 },
+  { x: 268, y: 12, year: "2026", value: 158 },
 ] as const;
 
 const CHART_BASELINE = 84;
