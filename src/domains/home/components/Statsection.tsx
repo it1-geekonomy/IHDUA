@@ -112,8 +112,8 @@ export default function StatSection() {
   const inView = useInView(ref, { once: true, amount: 0.35 });
 
   return (
-    <section className="w-full px-6 py-14 lg:py-24 2xl:py-10 lg:px-10 2xl:px-40 bg-[#FAF9F5]">
-      <div className="flex max-w-3xl flex-col items-start text-left">
+    <section className="w-full bg-[#FAF9F5] px-6 py-14 lg:px-10 lg:py-24 2xl:px-40 lg:pt-36 2xl:pt-28">
+      <div className="flex max-w-3xl flex-col items-start text-left lg:mx-auto lg:items-center lg:text-center">
         <div className="mb-4 flex items-center gap-3">
           <span className="h-px w-8 bg-[#9739A8]" />
           <Typography variant="caption" className="font-bold font-figtree tracking-wide text-[#9739A8]">
@@ -129,7 +129,7 @@ export default function StatSection() {
 
       <div
         ref={ref}
-        className="mt-8 grid w-full grid-cols-2 justify-items-stretch gap-x-5 gap-y-6 sm:mt-10 sm:gap-x-6 sm:gap-y-8 lg:mt-16 lg:flex lg:items-start lg:justify-between lg:gap-y-0"
+        className="mt-8 grid w-full grid-cols-2 justify-items-stretch gap-x-5 gap-y-6 sm:mt-10 sm:gap-x-6 sm:gap-y-8 lg:mx-auto lg:mt-16 lg:flex lg:max-w-5xl lg:items-center lg:justify-between lg:gap-y-0 xl:max-w-6xl"
       >
         {STATS.flatMap((stat, index) => {
           const orderMap = ["order-1", "order-2", "order-4", "order-3"];
