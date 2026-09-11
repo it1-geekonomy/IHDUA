@@ -8,9 +8,9 @@ const TARGET = LASTING_CHANGE.purpleCard.statValue;
 const SUFFIX = LASTING_CHANGE.purpleCard.statSuffix;
 
 const CHART_POINTS = [
-  { x: 52, y: 68, year: "2024" },
-  { x: 160, y: 40, year: "2025" },
-  { x: 268, y: 12, year: "2026" },
+  { x: 52, y: 68, year: "2024", value: 12 },
+  { x: 160, y: 40, year: "2025", value: 28 },
+  { x: 268, y: 12, year: "2026", value: 59 },
 ] as const;
 
 const CHART_BASELINE = 84;
@@ -30,6 +30,7 @@ export function PurpleStatsCard({
   const rootRef = useRef<HTMLDivElement>(null);
   const [play, setPlay] = useState(false);
   const [count, setCount] = useState(0);
+  const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
   const startedRef = useRef(false);
 
   useEffect(() => {
@@ -133,7 +134,7 @@ export function PurpleStatsCard({
         </p>
       </div>
 
-      <div className="w-full">
+      <div className="relative w-full">
         <p
           className={cn(
             "mb-1 font-figtree font-normal text-white/90",
@@ -143,89 +144,138 @@ export function PurpleStatsCard({
           {LASTING_CHANGE.purpleCard.note}
         </p>
 
-        <svg
-          viewBox="0 0 320 108"
-          className="h-auto w-full"
-          fill="none"
-          aria-hidden="true"
-        >
-          <line
-            x1="12"
-            y1={CHART_BASELINE}
-            x2="308"
-            y2={CHART_BASELINE}
-            stroke="#FFFFFF"
-            strokeWidth="1.25"
-            strokeDasharray="1.5 3.5"
-            opacity={0.7}
-          />
-          {CHART_POINTS.map((point) => (
+        <div className="relative w-full">
+          <svg
+            viewBox="0 0 320 108"
+            className="h-auto w-full"
+            fill="none"
+            role="img"
+            aria-label="Community trust trend from 2024 to 2026"
+          >
             <line
-              key={`g-${point.year}`}
-              x1={point.x}
-              y1={point.y}
-              x2={point.x}
+              x1="12"
+              y1={CHART_BASELINE}
+              x2="308"
               y2={CHART_BASELINE}
               stroke="#FFFFFF"
               strokeWidth="1.25"
               strokeDasharray="1.5 3.5"
               opacity={0.7}
             />
-          ))}
+            {CHART_POINTS.map((point) => (
+              <line
+                key={`g-${point.year}`}
+                x1={point.x}
+                y1={point.y}
+                x2={point.x}
+                y2={CHART_BASELINE}
+                stroke="#FFFFFF"
+                strokeWidth="1.25"
+                strokeDasharray="1.5 3.5"
+                opacity={0.7}
+              />
+            ))}
 
-          <path
-            d={CHART_PATH}
-            pathLength={PATH_LEN}
-            stroke="#FFFFFF"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-            strokeDasharray={PATH_LEN}
-            strokeDashoffset={play ? 0 : PATH_LEN}
-            style={{
-              transition: play
-                ? "stroke-dashoffset 1.5s cubic-bezier(0.22, 1, 0.36, 1)"
-                : "none",
-            }}
-          />
-
-          {CHART_POINTS.map((point, i) => (
-            <circle
-              key={`d-${point.year}`}
-              cx={point.x}
-              cy={point.y}
-              r="5"
-              fill="#FFFFFF"
+            <path
+              d={CHART_PATH}
+              pathLength={PATH_LEN}
+              stroke="#FFFFFF"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+              strokeDasharray={PATH_LEN}
+              strokeDashoffset={play ? 0 : PATH_LEN}
               style={{
-                opacity: play ? 1 : 0,
                 transition: play
-                  ? `opacity 0.4s ease ${0.55 + i * 0.22}s`
+                  ? "stroke-dashoffset 1.5s cubic-bezier(0.22, 1, 0.36, 1)"
                   : "none",
               }}
             />
-          ))}
 
-          {CHART_POINTS.map((point, i) => (
-            <text
-              key={`y-${point.year}`}
-              x={point.x}
-              y={CHART_BASELINE + 18}
-              textAnchor="middle"
-              fill="#FFFFFF"
-              fontSize="12"
-              fontFamily="var(--font-manrope), Manrope, sans-serif"
-              style={{
-                opacity: play ? 1 : 0,
-                transition: play
-                  ? `opacity 0.4s ease ${0.65 + i * 0.2}s`
-                  : "none",
-              }}
-            >
-              {point.year}
-            </text>
-          ))}
-        </svg>
+            {CHART_POINTS.map((point, i) => {
+              const isHovered = hoveredPoint === i;
+              return (
+                <g
+                  key={`d-${point.year}`}
+                  onMouseEnter={() => setHoveredPoint(i)}
+                  onMouseLeave={() => setHoveredPoint(null)}
+                  className="cursor-pointer"
+                  style={{
+                    opacity: play ? 1 : 0,
+                    transition: play
+                      ? `opacity 0.4s ease ${0.55 + i * 0.22}s`
+                      : "none",
+                  }}
+                >
+                  {isHovered && (
+                    <circle
+                      cx={point.x}
+                      cy={point.y}
+                      r="9"
+                      fill="#FFFFFF"
+                      opacity={0.22}
+                    />
+                  )}
+                  <circle
+                    cx={point.x}
+                    cy={point.y}
+                    r={isHovered ? 6 : 5}
+                    fill="#FFFFFF"
+                  />
+                  <circle cx={point.x} cy={point.y} r="16" fill="transparent" />
+                </g>
+              );
+            })}
+
+            {CHART_POINTS.map((point, i) => (
+              <text
+                key={`y-${point.year}`}
+                x={point.x}
+                y={CHART_BASELINE + 18}
+                textAnchor="middle"
+                fill="#FFFFFF"
+                fontSize="12"
+                fontFamily="var(--font-manrope), Manrope, sans-serif"
+                style={{
+                  opacity: play ? 1 : 0,
+                  transition: play
+                    ? `opacity 0.4s ease ${0.65 + i * 0.2}s`
+                    : "none",
+                  pointerEvents: "none",
+                }}
+              >
+                {point.year}
+              </text>
+            ))}
+          </svg>
+
+          {/* HTML tooltip — clean floating label, no SVG chrome */}
+          {hoveredPoint !== null && play && (() => {
+            const point = CHART_POINTS[hoveredPoint];
+            const left = (point.x / 320) * 100;
+            const top = (point.y / 108) * 100;
+            const flipDown = point.y < 28;
+
+            return (
+              <div
+                className="pointer-events-none absolute z-10"
+                style={{
+                  left: `${left}%`,
+                  top: `${top}%`,
+                  transform: flipDown
+                    ? "translate(-50%, 12px)"
+                    : "translate(-50%, calc(-100% - 10px))",
+                }}
+              >
+                <div className="rounded bg-[#00191B]/90 px-2 py-1 font-figtree text-[11px] font-semibold tabular-nums leading-none text-white shadow-sm backdrop-blur-[2px]">
+                  {point.value}
+                  {SUFFIX}
+                </div>
+              </div>
+            );
+          })()}
+        </div>
       </div>
     </div>
   );
