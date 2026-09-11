@@ -40,7 +40,7 @@ export default function Overlayform({ onClose }: OverlayformProps) {
     };
   }, []);
 
-  const pillBase = `rounded-md border transition-colors ${figmaTypeScale[15]} shrink-0 px-3 py-2.5 text-center lg:px-4 lg:py-3`;
+  const pillBase = `rounded-md border transition-colors ${figmaTypeScale[15]} shrink-0 px-3 py-2.5 text-center lg:px-3 lg:py-2 xl:px-3.5 xl:py-2.5 2xl:px-4 2xl:py-3`;
   const pillUnselected = "bg-[#FFFAF2] border-[#D4CEC5] text-[#9739A8] hover:bg-[#F3E7F6]";
   const pillSelected = "bg-[#9739A8] border-[#9739A8] text-white";
 
@@ -53,15 +53,15 @@ export default function Overlayform({ onClose }: OverlayformProps) {
     >
       {/*
         <lg: full-screen stack
-        lg–xl: content-height, roomy form column (no collapse)
-        2xl (1920): Figma tall panel replica
+        lg–xl: narrower width (side inset), full content height — no vertical crush
+        2xl (1536+): Figma tall panel replica
       */}
       <div
         className="
           relative flex h-dvh w-full flex-col overflow-hidden bg-white shadow-2xl
-          lg:absolute lg:left-1/2 lg:top-1/2 lg:h-auto lg:max-h-[calc(100dvh-4rem)]
-          lg:w-[min(1200px,calc(100vw-4rem))] lg:-translate-x-1/2 lg:-translate-y-1/2 lg:flex-row
-          xl:w-[min(1280px,calc(100vw-4rem))] xl:max-h-[calc(100dvh-4rem)]
+          lg:absolute lg:left-1/2 lg:top-1/2 lg:h-auto lg:max-h-[calc(100dvh-2rem)]
+          lg:w-[min(860px,calc(100vw-5rem))] lg:-translate-x-1/2 lg:-translate-y-1/2 lg:flex-row
+          xl:w-[min(980px,calc(100vw-6rem))] xl:max-h-[calc(100dvh-2.5rem)]
           2xl:h-[min(880px,calc(100dvh-6rem))] 2xl:max-h-[calc(100dvh-6rem)]
           2xl:w-[min(1600px,calc(100vw-6rem))]
         "
@@ -99,15 +99,15 @@ export default function Overlayform({ onClose }: OverlayformProps) {
 
         {/*
           Form
-          lg/xl: even gaps, content height — nothing crushed
+          lg/xl: roomy vertical spacing; width is constrained by the panel
           2xl: Figma fill with justify-between
         */}
         <div
           className="
             flex w-full shrink-0 flex-col bg-[#F6F2EC] px-4 py-3 sm:px-6 sm:py-4
-            lg:w-[60%] lg:gap-5 lg:overflow-hidden lg:px-9 lg:py-8
-            xl:w-[58%] xl:gap-6 xl:px-10 xl:py-9
-            2xl:h-full 2xl:w-1/2 2xl:justify-between 2xl:gap-0 2xl:px-16 2xl:py-14
+            lg:w-[60%] lg:gap-5 lg:overflow-y-auto lg:px-7 lg:py-7
+            xl:w-[58%] xl:gap-5 xl:px-8 xl:py-8
+            2xl:h-full 2xl:w-1/2 2xl:overflow-hidden 2xl:justify-between 2xl:gap-0 2xl:px-16 2xl:py-14
             [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
           "
         >
@@ -115,20 +115,20 @@ export default function Overlayform({ onClose }: OverlayformProps) {
             <Typography
               id="overlayform-title"
               variant="h2"
-              className="font-regular font-lora leading-[1.2] text-[#00191B] !text-[1.125rem] sm:!text-[1.5rem] lg:!text-[36px] xl:!text-[38px] 2xl:!text-[45px]"
+              className="font-regular font-lora leading-[1.2] text-[#00191B] !text-[1.125rem] sm:!text-[1.5rem] lg:!text-[30px] xl:!text-[34px] 2xl:!text-[45px]"
             >
               Strengthening Rural Lives, Building Better Futures
             </Typography>
 
             <Typography
               variant="body-lg"
-              className="font-regular font-figtree leading-snug text-[#5F6C6D] !text-[0.6875rem] sm:!text-[0.875rem] lg:!text-[16px] xl:!text-[17px] 2xl:!text-[18px] lg:max-w-xl"
+              className="font-regular font-figtree leading-snug text-[#5F6C6D] !text-[0.6875rem] sm:!text-[0.875rem] lg:!text-[15px] xl:!text-[16px] 2xl:!text-[18px] lg:max-w-lg 2xl:max-w-xl"
             >
               Your support helps us create sustainable opportunities and empower rural communities to thrive.
             </Typography>
           </div>
 
-          <div className="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-3 sm:mt-3 lg:mt-0 lg:grid-cols-4 lg:gap-x-5 xl:gap-x-6">
+          <div className="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-3 sm:mt-3 lg:mt-0 lg:grid-cols-4 lg:gap-x-4 xl:gap-x-5">
             {IMPACT_ITEMS.map((item) => (
               <div
                 key={item.title}
@@ -137,18 +137,18 @@ export default function Overlayform({ onClose }: OverlayformProps) {
                 <img
                   src={item.icon}
                   alt=""
-                  className="h-7 w-7 object-contain sm:h-8 sm:w-8 lg:h-11 lg:w-11 xl:h-12 xl:w-12 2xl:h-14 2xl:w-14"
+                  className="h-7 w-7 object-contain sm:h-8 sm:w-8 lg:h-10 lg:w-10 xl:h-11 xl:w-11 2xl:h-14 2xl:w-14"
                 />
                 <div className="min-w-0">
                   <Typography
                     variant="overline"
-                    className="block font-bold font-manrope leading-snug text-[#00191B] normal-case tracking-normal !text-[9px] sm:!text-[11px] lg:!text-[12px] xl:!text-[13px] 2xl:!text-[14px]"
+                    className="block font-bold font-manrope leading-snug text-[#00191B] normal-case tracking-normal !text-[9px] sm:!text-[11px] lg:!text-[12px] xl:!text-[12px] 2xl:!text-[14px]"
                   >
                     {item.title}
                   </Typography>
                   <Typography
                     variant="overline"
-                    className="mt-0.5 block font-normal font-manrope leading-snug text-[#5F6C6D] normal-case tracking-normal !text-[8px] sm:!text-[10px] lg:!text-[11px] xl:!text-[12px] 2xl:!text-[13px]"
+                    className="mt-0.5 block font-normal font-manrope leading-snug text-[#5F6C6D] normal-case tracking-normal !text-[8px] sm:!text-[10px] lg:!text-[11px] xl:!text-[11px] 2xl:!text-[13px]"
                   >
                     {item.description}
                   </Typography>
@@ -160,7 +160,7 @@ export default function Overlayform({ onClose }: OverlayformProps) {
           <div className="mt-2.5 flex flex-col gap-2 sm:mt-3 lg:mt-0 lg:gap-3">
             <Typography
               variant="caption"
-              className="font-bold font-manrope tracking-normal text-[#6B6660] !text-[10px] lg:!text-[14px] xl:!text-[15px]"
+              className="font-bold font-manrope tracking-normal text-[#6B6660] !text-[10px] lg:!text-[13px] xl:!text-[14px]"
             >
               Choose an amount
             </Typography>
@@ -222,7 +222,7 @@ export default function Overlayform({ onClose }: OverlayformProps) {
           <div className="mt-2 flex flex-col items-center gap-2 sm:mt-3 lg:mt-0 lg:gap-2 2xl:gap-3">
             <button
               type="button"
-              className={`mx-auto flex w-[250px] items-center justify-center gap-2 rounded-md bg-[#FDC61D] px-4 py-2.5 font-bold font-manrope text-[#1C1C1C] transition-transform hover:scale-[1.01] active:scale-[0.99] sm:w-[300px] lg:w-full lg:py-3.5 2xl:py-4 ${figmaTypeScale[18]}`}
+              className={`mx-auto flex w-[250px] items-center justify-center gap-2 rounded-md bg-[#FDC61D] px-4 py-2.5 font-bold font-manrope text-[#1C1C1C] transition-transform hover:scale-[1.01] active:scale-[0.99] sm:w-[300px] lg:w-full lg:py-3 xl:py-3.5 2xl:py-4 ${figmaTypeScale[18]}`}
             >
               Donate Now
               <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth={2.2}>
