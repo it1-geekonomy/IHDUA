@@ -12,7 +12,7 @@ export default function FocusAreaSection() {
   return (
     <section className="w-full bg-[#FAF9F5]">
       <div className="w-full px-6 pt-6 lg:py-24 lg:px-10 2xl:px-40">
-        <div className="mx-auto flex flex-col items-center text-center">
+        <div className="flex flex-col items-start text-left">
           <div className="mb-4 flex items-center gap-3">
             <span className="h-px w-8 bg-[#9739A8]" />
             <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
