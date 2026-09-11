@@ -8,10 +8,15 @@ import { usePathname, useRouter } from "next/navigation";
 import { NAV_LINKS, type NavLink } from "@/shared/constants/navbar";
 import Typography from "@/lib/Typography";
 import { cn } from "@/lib/utils";
+import { smoothScrollToTop } from "@/domains/home/lib/donationCheckout";
 
 const MENU_BG = "bg-[#1A0F1C]";
 const MENU_ACCENT = "bg-[#9739A8]/19";
 const MENU_HOVER = "hover:bg-[#9739A8]/19";
+
+function isHomePath(pathname: string) {
+  return pathname === "/" || pathname === "";
+}
 
 function Chevron({ open, className }: { open?: boolean; className?: string }) {
   return (
@@ -442,9 +447,26 @@ export default function Navbar() {
   ) => {
     e.preventDefault();
     setIsOpen(false);
+
+    if (href === "/" && isHomePath(pathname)) {
+      setHidden(false);
+      window.setTimeout(() => {
+        void smoothScrollToTop();
+      }, 280);
+      return;
+    }
+
     setTimeout(() => {
       router.push(href);
     }, 280);
+  };
+
+  const handleHomeClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (!isHomePath(pathname)) return;
+    e.preventDefault();
+    setIsOpen(false);
+    setHidden(false);
+    void smoothScrollToTop();
   };
 
   return (
@@ -471,7 +493,7 @@ export default function Navbar() {
         )}
       >
         <nav className="relative z-50 flex items-center justify-between px-5 py-4 sm:px-6 2xl:px-40">
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" onClick={handleHomeClick} className="flex items-center gap-3">
             <Image
               src="/idhualogo1.png"
               alt="IHDUA logo"
@@ -497,7 +519,11 @@ export default function Navbar() {
               const isActive = isLinkActive(pathname, link);
               return (
                 <li key={link.href}>
-                  <Link href={link.href} className="font-medium">
+                  <Link
+                    href={link.href}
+                    onClick={link.href === "/" ? handleHomeClick : undefined}
+                    className="font-medium"
+                  >
                     <Typography
                       variant="body-lg"
                       className={cn(

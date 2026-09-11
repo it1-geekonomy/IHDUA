@@ -6,6 +6,7 @@ import {
   GRID_ITEMS,
   ROW_OFFSET,
 } from "@/domains/home/constants/development";
+import { scrollToDonateSection, smoothScrollToId } from "@/domains/home/lib/donationCheckout";
 import Typography from "@/lib/Typography";
 
 type GridItem = (typeof GRID_ITEMS)[number];
@@ -115,7 +116,7 @@ export default function RuralDevelopmentSection() {
   const [item1, item2, item3, item4, item5] = GRID_ITEMS;
 
   return (
-    <section className="bg-[#FAF9F5] pt-8 lg:px-6 lg:py-20">
+    <section id="home-top" className="bg-[#FAF9F5] pt-8 lg:px-6 lg:py-20">
       {/* Same px-6 gutter as other sections below lg */}
       <div className="w-full px-6">
         <div className="mx-auto max-w-6xl text-left lg:text-center">
@@ -148,6 +149,7 @@ export default function RuralDevelopmentSection() {
           <div className="mt-8 flex flex-row gap-3 sm:flex-row sm:items-center lg:items-center lg:justify-center">
             <button
               type="button"
+              onClick={() => scrollToDonateSection()}
               className="inline-flex w-fit items-center justify-center gap-2 rounded-md bg-[#FFD638] px-6 py-3 font-bold text-[#1E1E1E] cursor-pointer"
             >
               <Typography variant="body-sm" className="font-semibold font-figtree text-[#1E1E1E]">
@@ -157,14 +159,18 @@ export default function RuralDevelopmentSection() {
                 <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
-            <button
-              type="button"
+            <a
+              href="#focus-areas"
+              onClick={(e) => {
+                e.preventDefault();
+                smoothScrollToId("focus-areas");
+              }}
               className="inline-flex w-fit rounded-md border border-black bg-white px-6 py-3 font-bold text-[#00191B] cursor-pointer"
             >
               <Typography variant="body-sm" className="font-semibold font-figtree text-[#00191B]">
                 Explore Our Work
               </Typography>
-            </button>
+            </a>
           </div>
         </div>
 
