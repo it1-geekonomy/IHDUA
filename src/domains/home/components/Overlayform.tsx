@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { DONATION_AMOUNTS, IMPACT_ITEMS } from "@/domains/home/constants/overlayform";
+import { openDonationCheckout } from "@/domains/home/lib/donationCheckout";
 import Typography, { figmaTypeScale } from "@/lib/Typography";
 
 interface OverlayformProps {
@@ -13,14 +14,25 @@ export default function Overlayform({ onClose }: OverlayformProps) {
   const [selectedAmount, setSelectedAmount] = useState("₹999");
   const [showCustom, setShowCustom] = useState(false);
   const [customAmount, setCustomAmount] = useState("");
+  const [exiting, setExiting] = useState(false);
+  const pendingDonateRef = useRef<string | null>(null);
+  const lockedScrollY = useRef(0);
 
   const handlePickAmount = (amount: string) => {
     setSelectedAmount(amount);
     setShowCustom(false);
   };
 
+  const beginClose = (donateAmount?: string) => {
+    if (exiting) return;
+    if (donateAmount) pendingDonateRef.current = donateAmount;
+    setExiting(true);
+    window.setTimeout(() => onClose(), 450);
+  };
+
   useEffect(() => {
     const scrollY = window.scrollY;
+    lockedScrollY.current = scrollY;
     const { body } = document;
     const original = {
       position: body.style.position,
@@ -36,7 +48,14 @@ export default function Overlayform({ onClose }: OverlayformProps) {
 
     return () => {
       Object.assign(body.style, original);
-      window.scrollTo(0, scrollY);
+      window.scrollTo(0, lockedScrollY.current);
+
+      const pending = pendingDonateRef.current;
+      if (pending) {
+        pendingDonateRef.current = null;
+        // Short beat after unlock so the fade-out finishes, then glide down
+        openDonationCheckout(pending, 280);
+      }
     };
   }, []);
 
@@ -46,7 +65,9 @@ export default function Overlayform({ onClose }: OverlayformProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] overflow-hidden overscroll-none bg-black/60 backdrop-blur-sm"
+      className={`fixed inset-0 z-[100] overflow-hidden overscroll-none bg-black/60 backdrop-blur-sm transition-opacity duration-500 ease-out ${
+        exiting ? "opacity-0" : "opacity-100"
+      }`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="overlayform-title"
@@ -57,19 +78,21 @@ export default function Overlayform({ onClose }: OverlayformProps) {
         2xl (1536+): Figma tall panel replica
       */}
       <div
-        className="
+        className={`
           relative flex h-dvh w-full flex-col overflow-hidden bg-white shadow-2xl
+          transition-all duration-500 ease-out
           lg:absolute lg:left-1/2 lg:top-1/2 lg:h-auto lg:max-h-[calc(100dvh-2rem)]
           lg:w-[min(860px,calc(100vw-5rem))] lg:-translate-x-1/2 lg:-translate-y-1/2 lg:flex-row
           xl:w-[min(980px,calc(100vw-6rem))] xl:max-h-[calc(100dvh-2.5rem)]
           2xl:h-[min(880px,calc(100dvh-6rem))] 2xl:max-h-[calc(100dvh-6rem)]
           2xl:w-[min(1600px,calc(100vw-6rem))]
-        "
+          ${exiting ? "opacity-0 lg:scale-[0.98]" : "opacity-100 lg:scale-100"}
+        `}
       >
         <button
           type="button"
           aria-label="Close"
-          onClick={onClose}
+          onClick={() => beginClose()}
           className="absolute right-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-md bg-[#FFD638] text-black transition-transform hover:scale-105 active:scale-95 sm:h-9 sm:w-9 2xl:right-4 2xl:top-4"
         >
           <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth={2.5}>
@@ -222,6 +245,15 @@ export default function Overlayform({ onClose }: OverlayformProps) {
           <div className="mt-2 flex flex-col items-center gap-2 sm:mt-3 lg:mt-0 lg:gap-2 2xl:gap-3">
             <button
               type="button"
+              onClick={() => {
+                const amount = showCustom
+                  ? customAmount
+                    ? `₹${customAmount}`
+                    : ""
+                  : selectedAmount;
+                if (!amount) return;
+                beginClose(amount);
+              }}
               className={`mx-auto flex w-[250px] items-center justify-center gap-2 rounded-md bg-[#FDC61D] px-4 py-2.5 font-bold font-manrope text-[#1C1C1C] transition-transform hover:scale-[1.01] active:scale-[0.99] sm:w-[300px] lg:w-full lg:py-3 xl:py-3.5 2xl:py-4 ${figmaTypeScale[18]}`}
             >
               Donate Now
