@@ -117,7 +117,7 @@ export default function RuralDevelopmentSection() {
   const [item1, item2, item3, item4, item5] = GRID_ITEMS;
 
   return (
-    <section id="home-top" className="bg-[#FAF9F5] pt-8 lg:px-6 lg:py-20">
+    <section id="home-top" className="bg-[#FAF9F5] pt-8 lg:px-6 lg:pt-20 lg:pb-0">
       {/* Same px-6 gutter as other sections below lg */}
       <div className="w-full px-6">
         <div className="mx-auto max-w-6xl text-left lg:text-center">
