@@ -10,7 +10,7 @@ export default function MissionSection() {
 
   return (
     <section className="w-full bg-white">
-      <div className="w-full px-6 pt-6 lg:py-6 lg:pb-26 lg:px-10 2xl:px-40">
+      <div className="w-full px-6 pt-6 lg:pt-0 lg:pb-26 lg:px-10 2xl:px-40">
         {/* Top row: eyebrow + heading on the left, description on the right */}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div>

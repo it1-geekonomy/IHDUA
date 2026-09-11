@@ -67,7 +67,7 @@ function StatItem({
 
   return (
     <motion.div
-      className={`flex min-w-0 items-start gap-2.5 sm:gap-4 sm:px-4 ${className ?? ""}`}
+      className={`flex w-full min-w-0 items-start gap-2.5 sm:gap-4 lg:px-0 ${className ?? ""}`}
       initial={{ opacity: 0, y: 14 }}
       animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
       transition={{
@@ -112,8 +112,8 @@ export default function StatSection() {
   const inView = useInView(ref, { once: true, amount: 0.35 });
 
   return (
-    <section className="w-full px-6 pb-6 pt-6 lg:pt-0 lg:pb-24 lg:px-10 2xl:px-40 bg-[#FAF9F5]">
-      <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
+    <section className="w-full px-6 py-14 lg:py-24 2xl:py-10 lg:px-10 2xl:px-40 bg-[#FAF9F5]">
+      <div className="flex max-w-3xl flex-col items-start text-left">
         <div className="mb-4 flex items-center gap-3">
           <span className="h-px w-8 bg-[#9739A8]" />
           <Typography variant="caption" className="font-bold font-figtree tracking-wide text-[#9739A8]">
@@ -129,7 +129,7 @@ export default function StatSection() {
 
       <div
         ref={ref}
-        className="mt-8 mx-auto grid w-full grid-cols-2 justify-items-stretch gap-x-4 gap-y-6 sm:mx-0 sm:mt-10 sm:w-auto sm:justify-items-start sm:gap-x-4 sm:gap-y-8 lg:mt-16 lg:flex lg:w-full lg:items-start lg:justify-between lg:gap-y-0"
+        className="mt-8 grid w-full grid-cols-2 justify-items-stretch gap-x-5 gap-y-6 sm:mt-10 sm:gap-x-6 sm:gap-y-8 lg:mt-16 lg:flex lg:items-start lg:justify-between lg:gap-y-0"
       >
         {STATS.flatMap((stat, index) => {
           const orderMap = ["order-1", "order-2", "order-4", "order-3"];
