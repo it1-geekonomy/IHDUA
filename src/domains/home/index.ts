@@ -12,3 +12,8 @@ export { default as CTAsection } from "./components/CTAsection";
 export { default as ThreePathsSection } from "./components/ThreePathsSection";
 export { default as StoriesFromField } from "./components/StoriesFromField";
 export { default as LastingChangeSection } from "./components/LastingChangeSection";
+export { DonationFormCard } from "./components/donation";
+export {
+  openDonationCheckout,
+  scrollToDonateSection,
+} from "./lib/donation";

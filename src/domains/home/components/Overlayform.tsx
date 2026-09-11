@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { DONATION_AMOUNTS, IMPACT_ITEMS } from "@/domains/home/constants/overlayform";
-import { openDonationCheckout } from "@/domains/home/lib/donationCheckout";
+import { openDonationCheckout } from "@/domains/home/lib/donation";
 import Typography, { figmaTypeScale } from "@/lib/Typography";
 
 interface OverlayformProps {
