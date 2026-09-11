@@ -1,6 +1,7 @@
 /** Digit-only INR helpers — never use Number() (float precision corrupts large gifts). */
 
-const ONE_CRORE = 10_000_000n;
+/** "10000000" — ₹1 crore as digits (string compare; no Number/BigInt). */
+const ONE_CRORE_DIGITS = "10000000";
 
 export function toAmountDigits(raw: string) {
   return raw.replace(/\D/g, "");
@@ -28,11 +29,10 @@ export function formatINR(digits: string) {
 export function isCroreOrAbove(digits: string) {
   const d = normalizeAmountDigits(toAmountDigits(digits));
   if (!d) return false;
-  try {
-    return BigInt(d) >= ONE_CRORE;
-  } catch {
-    return false;
+  if (d.length !== ONE_CRORE_DIGITS.length) {
+    return d.length > ONE_CRORE_DIGITS.length;
   }
+  return d >= ONE_CRORE_DIGITS;
 }
 
 export function ensureRupeePrefix(amount: string) {
