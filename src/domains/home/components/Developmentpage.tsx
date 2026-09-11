@@ -6,7 +6,8 @@ import {
   GRID_ITEMS,
   ROW_OFFSET,
 } from "@/domains/home/constants/development";
-import { scrollToDonateSection, smoothScrollToId } from "@/domains/home/lib/donationCheckout";
+import { scrollToDonateSection } from "@/domains/home/lib/donation";
+import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 import Typography from "@/lib/Typography";
 
 type GridItem = (typeof GRID_ITEMS)[number];
