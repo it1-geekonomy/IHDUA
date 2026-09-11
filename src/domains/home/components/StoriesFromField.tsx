@@ -76,26 +76,34 @@ export default function StoriesFromField() {
           <div className="order-1 contents lg:col-span-12 lg:row-start-1 lg:flex lg:items-stretch lg:gap-5 xl:contents">
             {/* Featured image */}
             <div className="lg:w-[58%] lg:shrink-0 xl:w-auto xl:col-span-8 xl:row-start-1">
-              <div className="relative aspect-2/1 w-full overflow-hidden lg:aspect-auto lg:aspect-video xl:aspect-2/1 lg:h-full xl:h-auto">
-                <AnimatePresence mode="wait">
+              <div className="relative aspect-2/1 w-full overflow-hidden bg-[#E8E6E0] lg:aspect-auto lg:aspect-video xl:aspect-2/1 lg:h-full xl:h-auto">
+                {/*
+                  Keep every story image mounted and crossfade opacity.
+                  mode="wait" emptied the frame between exit/enter → white flash.
+                */}
+                {FIELD_STORIES.map((story) => (
                   <motion.div
-                    key={featured.id}
+                    key={story.id}
                     className="absolute inset-0"
-                    initial={{ opacity: 0, scale: 1.04 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
+                    initial={false}
+                    animate={{
+                      opacity: story.id === featuredId ? 1 : 0,
+                      zIndex: story.id === featuredId ? 1 : 0,
+                    }}
                     transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ pointerEvents: story.id === featuredId ? "auto" : "none" }}
+                    aria-hidden={story.id !== featuredId}
                   >
                     <Image
-                      src={featured.image}
-                      alt={featured.title}
+                      src={story.image}
+                      alt={story.id === featuredId ? story.title : ""}
                       fill
                       className="object-cover"
                       sizes="(max-width: 1024px) 100vw, 66vw"
-                      priority
+                      priority={story.id === FIELD_STORIES[0].id}
                     />
                   </motion.div>
-                </AnimatePresence>
+                ))}
               </div>
             </div>
 
@@ -141,8 +149,8 @@ export default function StoriesFromField() {
           </div>
 
           {/* Featured copy */}
-          <div className="order-2 lg:col-span-7 xl:col-span-8 lg:row-start-2">
-            <AnimatePresence mode="wait">
+          <div className="relative order-2 lg:col-span-7 xl:col-span-8 lg:row-start-2">
+            <AnimatePresence initial={false} mode="popLayout">
               <motion.div key={featured.id} {...fadeSlide}>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                   <Typography
