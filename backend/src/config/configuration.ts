@@ -13,4 +13,13 @@ export default () => ({
     keyId: process.env.RAZORPAY_KEY_ID ?? '',
     keySecret: process.env.RAZORPAY_KEY_SECRET ?? '',
   },
+  jwt: {
+    secret: process.env.JWT_SECRET ?? 'ihdua-dev-jwt-secret-change-me',
+    expiresIn: process.env.JWT_EXPIRES_IN ?? '7d',
+  },
+  admin: {
+    email: process.env.ADMIN_EMAIL ?? 'admin@ihdua.org',
+    password: process.env.ADMIN_PASSWORD ?? 'Admin@123',
+    fullName: process.env.ADMIN_FULL_NAME ?? 'IHDUA Admin',
+  },
 });
