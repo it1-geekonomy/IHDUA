@@ -139,4 +139,16 @@ export class DonorsService {
       currency: donor.currency,
     };
   }
+
+  findAll() {
+    return this.donorsRepository.find({
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async findOne(id: string) {
+    const donor = await this.donorsRepository.findOne({ where: { id } });
+    if (!donor) throw new NotFoundException('Donation not found');
+    return donor;
+  }
 }

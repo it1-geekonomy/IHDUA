@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import configuration from './config/configuration';
 import { DatabaseModule } from './database/database.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { DonorsModule } from './modules/donors/donors.module';
 
@@ -15,6 +16,7 @@ import { DonorsModule } from './modules/donors/donors.module';
       load: [configuration],
     }),
     DatabaseModule,
+    AuthModule,
     UsersModule,
     DonorsModule,
   ],
