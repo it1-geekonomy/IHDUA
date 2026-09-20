@@ -1,8 +1,9 @@
 import type { HTMLAttributes } from "react";
+import { DONATION_COPY } from "@/domains/home/constants/donation";
 import { cn } from "@/lib/utils";
 
 const FIELD =
-  "w-full rounded-sm border border-[#D9D3C9] bg-[#FAF8F4] px-4 py-3.5 font-figtree text-[15px] text-[#00191B] outline-none placeholder:text-[#8A847A] focus:border-[#9739A8]";
+  "w-full rounded-sm border border-[#D9D3C9] bg-[#FAF8F4] px-4 py-3.5 font-figtree text-[15px] text-[#00191B] outline-none placeholder:text-[#8A847A] focus:border-[#9739A8] disabled:cursor-not-allowed disabled:opacity-60";
 
 type DonationTextFieldProps = {
   type?: "text" | "tel" | "email";
@@ -12,6 +13,7 @@ type DonationTextFieldProps = {
   autoComplete?: string;
   inputMode?: HTMLAttributes<HTMLInputElement>["inputMode"];
   className?: string;
+  disabled?: boolean;
 };
 
 export function DonationTextField({
@@ -22,6 +24,7 @@ export function DonationTextField({
   autoComplete,
   inputMode,
   className,
+  disabled,
 }: DonationTextFieldProps) {
   return (
     <input
@@ -32,6 +35,7 @@ export function DonationTextField({
       className={cn(FIELD, className)}
       autoComplete={autoComplete}
       inputMode={inputMode}
+      disabled={disabled}
     />
   );
 }
@@ -39,7 +43,7 @@ export function DonationTextField({
 export function DonationTrustNote() {
   return (
     <p className="text-center font-figtree text-[12px] text-[#8A847A]">
-      🔒 Secure Payment • Trusted by Thousands
+      {DONATION_COPY.trustLine}
     </p>
   );
 }
