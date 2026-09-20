@@ -43,13 +43,19 @@ export function DonationFormCard() {
           fullName={form.fullName}
           mobile={form.mobile}
           email={form.email}
+          taxId={form.taxId}
+          isPaying={form.isPaying}
+          statusMessage={form.statusMessage}
+          statusTone={form.statusTone}
           setFullName={form.setFullName}
           setMobile={form.setMobile}
           setEmail={form.setEmail}
+          setTaxId={form.setTaxId}
           setCustomFromInput={form.setCustomFromInput}
           startEditAmount={form.startEditAmount}
           commitAmountEdit={form.commitAmountEdit}
           cancelAmountEdit={form.cancelAmountEdit}
+          paySecurely={form.paySecurely}
         />
       )}
     </div>
