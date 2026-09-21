@@ -12,11 +12,13 @@ export type CreateDonationOrderPayload = {
   phone?: string;
   email?: string;
   amount: string;
+  currency?: string;
+  countryCode?: string;
+  countryName?: string;
   pan?: string;
 };
 
 export type CreateDonationOrderResponse = {
-  donorId: string;
   orderId: string;
   amount: number;
   currency: string;
@@ -24,7 +26,6 @@ export type CreateDonationOrderResponse = {
 };
 
 export type VerifyDonationPaymentPayload = {
-  donorId: string;
   razorpayOrderId: string;
   razorpayPaymentId: string;
   razorpaySignature: string;
