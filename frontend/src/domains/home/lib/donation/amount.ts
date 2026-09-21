@@ -1,6 +1,5 @@
-/** Digit-only INR helpers — never use Number() (float precision corrupts large gifts). */
+/** Digit-only money helpers — avoid Number() for large gifts. */
 
-/** "10000000" — ₹1 crore as digits (string compare; no Number/BigInt). */
 const ONE_CRORE_DIGITS = "10000000";
 
 export function toAmountDigits(raw: string) {
@@ -11,7 +10,7 @@ export function normalizeAmountDigits(digits: string) {
   return digits.replace(/^0+/, "");
 }
 
-/** Indian grouping (e.g. ₹12,34,567) via string ops — safe for any length. */
+/** Indian grouping (e.g. ₹12,34,567). */
 export function formatINR(digits: string) {
   const d = normalizeAmountDigits(toAmountDigits(digits));
   if (!d) return "";
@@ -24,6 +23,24 @@ export function formatINR(digits: string) {
     rest = rest.slice(0, -2);
   }
   return `₹${out}`;
+}
+
+/** Western grouping (e.g. $1,250). */
+export function formatWestern(digits: string, symbol: string) {
+  const d = normalizeAmountDigits(toAmountDigits(digits));
+  if (!d) return "";
+
+  const withCommas = d.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return `${symbol}${withCommas}`;
+}
+
+export function formatDonationAmount(
+  digits: string,
+  currency: string,
+  symbol: string,
+) {
+  if (currency === "INR") return formatINR(digits);
+  return formatWestern(digits, symbol);
 }
 
 export function isCroreOrAbove(digits: string) {

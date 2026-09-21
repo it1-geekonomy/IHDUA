@@ -40,6 +40,40 @@ export function DonationTextField({
   );
 }
 
+type DonationSelectFieldProps = {
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  ariaLabel: string;
+  className?: string;
+  disabled?: boolean;
+};
+
+export function DonationSelectField({
+  value,
+  onChange,
+  options,
+  ariaLabel,
+  className,
+  disabled,
+}: DonationSelectFieldProps) {
+  return (
+    <select
+      aria-label={ariaLabel}
+      value={value}
+      disabled={disabled}
+      onChange={(e) => onChange(e.target.value)}
+      className={cn(FIELD, "appearance-none pr-8", className)}
+    >
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
 export function DonationTrustNote() {
   return (
     <p className="text-center font-figtree text-[12px] text-[#8A847A]">
