@@ -52,7 +52,7 @@ docker-compose up -d
 Alternatively, you can run it manually without docker-compose:
 
 ```bash
-docker run -d --name ihdua_postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=ihdua_db -p 5433:5432 -v ihdua_pgdata:/var/lib/postgresql/data pgvector/pgvector:pg16
+docker run -d --name ihdua_postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=ihdua_db -p 5435:5432 -v ihdua_pgdata:/var/lib/postgresql/data pgvector/pgvector:pg16
 ```
 
 ### 4. Migrations
