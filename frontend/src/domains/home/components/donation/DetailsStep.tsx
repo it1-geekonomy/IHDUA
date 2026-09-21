@@ -3,9 +3,10 @@
 import { useEffect, useRef } from "react";
 import { Pencil } from "lucide-react";
 import { DONATION_COPY } from "@/domains/home/constants/donation";
-import { isCroreOrAbove } from "@/domains/home/lib/donation";
+import { DONATION_COUNTRIES } from "@/domains/home/constants/donationCountries";
 import {
   AmountConfirmHint,
+  DonationSelectField,
   DonationTextField,
   DonationTrustNote,
 } from "./DonationFormPrimitives";
@@ -17,6 +18,10 @@ type DetailsStepProps = Pick<
   | "customDigits"
   | "usingCustom"
   | "editingAmount"
+  | "currencySymbol"
+  | "countryCode"
+  | "countryDial"
+  | "isIndia"
   | "fullName"
   | "mobile"
   | "email"
@@ -24,6 +29,8 @@ type DetailsStepProps = Pick<
   | "isPaying"
   | "statusMessage"
   | "statusTone"
+  | "showLargeAmountHint"
+  | "setCountryCode"
   | "setFullName"
   | "setMobile"
   | "setEmail"
@@ -40,6 +47,10 @@ export function DetailsStep({
   customDigits,
   usingCustom,
   editingAmount,
+  currencySymbol,
+  countryCode,
+  countryDial,
+  isIndia,
   fullName,
   mobile,
   email,
@@ -47,6 +58,8 @@ export function DetailsStep({
   isPaying,
   statusMessage,
   statusTone,
+  showLargeAmountHint,
+  setCountryCode,
   setFullName,
   setMobile,
   setEmail,
@@ -73,7 +86,7 @@ export function DetailsStep({
           <span className="flex min-w-0 flex-1 flex-col items-end gap-1.5 font-figtree text-[15px] font-bold text-[#00191B]">
             {editingAmount ? (
               <span className="flex w-full max-w-[12rem] items-center justify-end border-b border-[#9739A8]">
-                <span>₹</span>
+                <span>{currencySymbol}</span>
                 <input
                   ref={amountEditRef}
                   type="text"
@@ -112,9 +125,9 @@ export function DetailsStep({
           </span>
         </div>
 
-        {usingCustom && isCroreOrAbove(customDigits) && (
+        {usingCustom && showLargeAmountHint ? (
           <AmountConfirmHint message={DONATION_COPY.confirmBeforePay} />
-        )}
+        ) : null}
       </div>
 
       <DonationTextField
@@ -124,15 +137,34 @@ export function DetailsStep({
         autoComplete="name"
         disabled={isPaying}
       />
-      <DonationTextField
-        type="tel"
-        inputMode="tel"
-        placeholder={DONATION_COPY.mobile}
-        value={mobile}
-        onChange={(value) => setMobile(value.replace(/[^\d+\s-]/g, ""))}
-        autoComplete="tel"
+
+      <DonationSelectField
+        value={countryCode}
+        onChange={setCountryCode}
         disabled={isPaying}
+        ariaLabel={DONATION_COPY.country}
+        options={DONATION_COUNTRIES.map((item) => ({
+          value: item.code,
+          label: `${item.name} (${item.dial})`,
+        }))}
       />
+
+      <div className="flex gap-2">
+        <div className="flex w-[5.5rem] shrink-0 items-center justify-center rounded-sm border border-[#D9D3C9] bg-[#FAF8F4] px-2 font-figtree text-[15px] font-semibold text-[#00191B]">
+          {countryDial}
+        </div>
+        <DonationTextField
+          type="tel"
+          inputMode="tel"
+          placeholder={DONATION_COPY.mobile}
+          value={mobile}
+          onChange={(value) => setMobile(value.replace(/\D/g, ""))}
+          autoComplete="tel-national"
+          disabled={isPaying}
+          className="min-w-0 flex-1"
+        />
+      </div>
+
       <DonationTextField
         type="email"
         placeholder={DONATION_COPY.email}
@@ -142,20 +174,26 @@ export function DetailsStep({
         disabled={isPaying}
       />
 
-      <div className="flex flex-col gap-1.5">
-        <DonationTextField
-          placeholder={DONATION_COPY.taxId}
-          value={taxId}
-          onChange={(value) =>
-            setTaxId(value.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase())
-          }
-          autoComplete="off"
-          disabled={isPaying}
-        />
+      {isIndia ? (
+        <div className="flex flex-col gap-1.5">
+          <DonationTextField
+            placeholder={DONATION_COPY.taxId}
+            value={taxId}
+            onChange={(value) =>
+              setTaxId(value.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase())
+            }
+            autoComplete="off"
+            disabled={isPaying}
+          />
+          <p className="px-0.5 font-figtree text-[11px] leading-snug text-[#8A847A]">
+            {DONATION_COPY.taxIdHint}
+          </p>
+        </div>
+      ) : (
         <p className="px-0.5 font-figtree text-[11px] leading-snug text-[#8A847A]">
-          {DONATION_COPY.taxIdHint}
+          {DONATION_COPY.internationalNote}
         </p>
-      </div>
+      )}
 
       <button
         type="button"

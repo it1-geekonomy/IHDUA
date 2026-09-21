@@ -11,8 +11,22 @@ import Razorpay from 'razorpay';
 import { Repository } from 'typeorm';
 import { DonationStatus } from './donation-status.enum';
 import { Donor } from './donor.entity';
-import { CreateDonationOrderDto } from './dto/create-donation-order.dto';
+import {
+  CreateDonationOrderDto,
+  DonationCurrencyCode,
+} from './dto/create-donation-order.dto';
 import { VerifyDonationPaymentDto } from './dto/verify-donation-payment.dto';
+
+type OrderNotes = {
+  fullName?: string;
+  phone?: string;
+  email?: string;
+  pan?: string;
+  amount?: string;
+  currency?: string;
+  countryCode?: string;
+  countryName?: string;
+};
 
 @Injectable()
 export class DonorsService {
@@ -44,71 +58,7 @@ export class DonorsService {
     return this.razorpayClient;
   }
 
-  async createOrder(dto: CreateDonationOrderDto) {
-    const amountPaise = Number(dto.amount) * 100;
-    if (!Number.isSafeInteger(amountPaise) || amountPaise < 100) {
-      throw new BadRequestException('Minimum donation amount is ₹1');
-    }
-
-    const donor = this.donorsRepository.create({
-      fullName: dto.fullName.trim(),
-      phone: dto.phone?.trim() || null,
-      email: dto.email?.trim().toLowerCase() || null,
-      pan: dto.pan?.trim().toUpperCase() || null,
-      amount: dto.amount,
-      currency: 'INR',
-      status: DonationStatus.PENDING,
-    });
-
-    const saved = await this.donorsRepository.save(donor);
-
-    try {
-      const order = await this.getRazorpay().orders.create({
-        amount: amountPaise,
-        currency: 'INR',
-        receipt: `donor_${saved.id.slice(0, 8)}`,
-        notes: {
-          donorId: saved.id,
-          fullName: saved.fullName,
-        },
-      });
-
-      saved.razorpayOrderId = order.id;
-      await this.donorsRepository.save(saved);
-
-      return {
-        donorId: saved.id,
-        orderId: order.id,
-        amount: order.amount,
-        currency: order.currency,
-        keyId: this.config.get<string>('razorpay.keyId'),
-      };
-    } catch (error) {
-      saved.status = DonationStatus.FAILED;
-      await this.donorsRepository.save(saved);
-
-      if (error instanceof InternalServerErrorException) throw error;
-
-      throw new InternalServerErrorException('Failed to create Razorpay order');
-    }
-  }
-
-  async verifyPayment(dto: VerifyDonationPaymentDto) {
-    const donor = await this.donorsRepository.findOne({
-      where: { id: dto.donorId },
-    });
-
-    if (!donor) {
-      throw new NotFoundException('Donation record not found');
-    }
-
-    if (
-      donor.razorpayOrderId &&
-      donor.razorpayOrderId !== dto.razorpayOrderId
-    ) {
-      throw new BadRequestException('Order ID mismatch');
-    }
-
+  private assertPaymentSignature(dto: VerifyDonationPaymentDto) {
     const keySecret = this.config.get<string>('razorpay.keySecret', '');
     const payload = `${dto.razorpayOrderId}|${dto.razorpayPaymentId}`;
     const expected = crypto
@@ -117,26 +67,136 @@ export class DonorsService {
       .digest('hex');
 
     if (expected !== dto.razorpaySignature) {
-      donor.status = DonationStatus.FAILED;
-      await this.donorsRepository.save(donor);
       throw new BadRequestException('Invalid payment signature');
     }
+  }
 
-    donor.razorpayOrderId = dto.razorpayOrderId;
-    donor.razorpayPaymentId = dto.razorpayPaymentId;
-    donor.status = DonationStatus.SUCCESS;
-    if (!donor.receiptNumber) {
-      donor.receiptNumber = `IHDUA-${Date.now()}`;
+  private toMinorUnits(amount: string, currency: DonationCurrencyCode) {
+    const major = Number(amount);
+    // Razorpay uses the smallest currency unit (paise/cents). All supported
+    // currencies here are 2-decimal.
+    const minor = major * 100;
+    if (!Number.isSafeInteger(minor) || minor < 100) {
+      throw new BadRequestException(
+        `Minimum donation amount is 1 ${currency}`,
+      );
+    }
+    return minor;
+  }
+
+  /** Creates a Razorpay order only — no donors row until payment succeeds. */
+  async createOrder(dto: CreateDonationOrderDto) {
+    const currency = (dto.currency ?? 'INR') as DonationCurrencyCode;
+    const amountMinor = this.toMinorUnits(dto.amount, currency);
+
+    const fullName = dto.fullName.trim();
+    const phone = dto.phone?.trim() || '';
+    const email = dto.email?.trim().toLowerCase() || '';
+    const pan = dto.pan?.trim().toUpperCase() || '';
+    const countryCode = dto.countryCode?.trim().toUpperCase() || '';
+    const countryName = dto.countryName?.trim() || '';
+
+    try {
+      const order = await this.getRazorpay().orders.create({
+        amount: amountMinor,
+        currency,
+        receipt: `ihdua_${Date.now()}`,
+        notes: {
+          fullName,
+          phone,
+          email,
+          pan,
+          amount: dto.amount,
+          currency,
+          countryCode,
+          countryName,
+        },
+      });
+
+      return {
+        orderId: order.id,
+        amount: order.amount,
+        currency: order.currency,
+        keyId: this.config.get<string>('razorpay.keyId'),
+      };
+    } catch (error) {
+      if (error instanceof InternalServerErrorException) throw error;
+      const message =
+        error &&
+        typeof error === 'object' &&
+        'error' in error &&
+        error.error &&
+        typeof error.error === 'object' &&
+        'description' in error.error
+          ? String((error.error as { description?: string }).description)
+          : 'Failed to create Razorpay order';
+      throw new InternalServerErrorException(message);
+    }
+  }
+
+  /** Verifies Razorpay payment, then inserts the donors row (success only). */
+  async verifyPayment(dto: VerifyDonationPaymentDto) {
+    this.assertPaymentSignature(dto);
+
+    const existing = await this.donorsRepository.findOne({
+      where: { razorpayPaymentId: dto.razorpayPaymentId },
+    });
+    if (existing) {
+      return {
+        donorId: existing.id,
+        status: existing.status,
+        receiptNumber: existing.receiptNumber,
+        amount: existing.amount,
+        currency: existing.currency,
+      };
     }
 
-    await this.donorsRepository.save(donor);
+    let notes: OrderNotes = {};
+    let amountMajor = '';
+    let currency = 'INR';
+
+    try {
+      const order = await this.getRazorpay().orders.fetch(dto.razorpayOrderId);
+      if (order.id !== dto.razorpayOrderId) {
+        throw new BadRequestException('Order ID mismatch');
+      }
+      notes = (order.notes ?? {}) as OrderNotes;
+      currency = order.currency || notes.currency || 'INR';
+      amountMajor =
+        notes.amount || String(Math.round(Number(order.amount) / 100));
+    } catch (error) {
+      if (error instanceof BadRequestException) throw error;
+      throw new InternalServerErrorException(
+        'Unable to fetch Razorpay order details',
+      );
+    }
+
+    if (!notes.fullName) {
+      throw new BadRequestException('Donation details missing on order');
+    }
+
+    const donor = this.donorsRepository.create({
+      fullName: notes.fullName,
+      phone: notes.phone || null,
+      email: notes.email || null,
+      pan: notes.pan || null,
+      city: notes.countryName || notes.countryCode || null,
+      amount: amountMajor,
+      currency,
+      razorpayOrderId: dto.razorpayOrderId,
+      razorpayPaymentId: dto.razorpayPaymentId,
+      status: DonationStatus.SUCCESS,
+      receiptNumber: `IHDUA-${Date.now()}`,
+    });
+
+    const saved = await this.donorsRepository.save(donor);
 
     return {
-      donorId: donor.id,
-      status: donor.status,
-      receiptNumber: donor.receiptNumber,
-      amount: donor.amount,
-      currency: donor.currency,
+      donorId: saved.id,
+      status: saved.status,
+      receiptNumber: saved.receiptNumber,
+      amount: saved.amount,
+      currency: saved.currency,
     };
   }
 

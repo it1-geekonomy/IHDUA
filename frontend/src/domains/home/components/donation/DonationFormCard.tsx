@@ -26,9 +26,15 @@ export function DonationFormCard() {
 
       {form.step === 1 ? (
         <AmountStep
-          selectedAmount={form.selectedAmount}
+          currency={form.currency}
+          currencies={form.currencies}
+          currencySymbol={form.currencySymbol}
+          presets={form.presets}
+          selectedDigits={form.selectedDigits}
           customDigits={form.customDigits}
           usingCustom={form.usingCustom}
+          showLargeAmountHint={form.showLargeAmountHint}
+          setCurrency={form.setCurrency}
           pickPreset={form.pickPreset}
           setCustomFromInput={form.setCustomFromInput}
           setUsingCustom={form.setUsingCustom}
@@ -40,6 +46,10 @@ export function DonationFormCard() {
           customDigits={form.customDigits}
           usingCustom={form.usingCustom}
           editingAmount={form.editingAmount}
+          currencySymbol={form.currencySymbol}
+          countryCode={form.countryCode}
+          countryDial={form.countryDial}
+          isIndia={form.isIndia}
           fullName={form.fullName}
           mobile={form.mobile}
           email={form.email}
@@ -47,6 +57,8 @@ export function DonationFormCard() {
           isPaying={form.isPaying}
           statusMessage={form.statusMessage}
           statusTone={form.statusTone}
+          showLargeAmountHint={form.showLargeAmountHint}
+          setCountryCode={form.setCountryCode}
           setFullName={form.setFullName}
           setMobile={form.setMobile}
           setEmail={form.setEmail}

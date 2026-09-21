@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsIn,
   IsNotEmpty,
   IsNumberString,
   IsOptional,
@@ -11,6 +12,20 @@ import {
   ValidateIf,
 } from 'class-validator';
 
+export const SUPPORTED_DONATION_CURRENCIES = [
+  'INR',
+  'USD',
+  'EUR',
+  'GBP',
+  'AED',
+  'SGD',
+  'AUD',
+  'CAD',
+] as const;
+
+export type DonationCurrencyCode =
+  (typeof SUPPORTED_DONATION_CURRENCIES)[number];
+
 export class CreateDonationOrderDto {
   @ApiProperty({ example: 'Priya Sharma' })
   @IsString()
@@ -18,7 +33,7 @@ export class CreateDonationOrderDto {
   @MaxLength(255)
   fullName: string;
 
-  @ApiPropertyOptional({ example: '9876543210' })
+  @ApiPropertyOptional({ example: '+919876543210' })
   @IsOptional()
   @IsString()
   @MaxLength(20)
@@ -30,8 +45,20 @@ export class CreateDonationOrderDto {
   @MaxLength(255)
   email?: string;
 
+  @ApiPropertyOptional({ example: 'IN' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(10)
+  countryCode?: string;
+
+  @ApiPropertyOptional({ example: 'India' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  countryName?: string;
+
   @ApiProperty({
-    description: 'Donation amount in INR (rupees as digits, e.g. 1500)',
+    description: 'Donation amount in major units (e.g. 1500 INR or 25 USD)',
     example: '1500',
   })
   @IsNumberString()
@@ -39,7 +66,17 @@ export class CreateDonationOrderDto {
   amount: string;
 
   @ApiPropertyOptional({
-    description: 'PAN or Aadhaar for 80G certificate',
+    description: 'ISO currency code',
+    example: 'INR',
+    default: 'INR',
+    enum: SUPPORTED_DONATION_CURRENCIES,
+  })
+  @IsOptional()
+  @IsIn(SUPPORTED_DONATION_CURRENCIES)
+  currency?: DonationCurrencyCode;
+
+  @ApiPropertyOptional({
+    description: 'PAN or Aadhaar for 80G certificate (India)',
     example: 'ABCDE1234F',
   })
   @IsOptional()
