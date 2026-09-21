@@ -1,17 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { DONATION_COPY } from "@/domains/home/constants/donation";
 import {
-  CTA_PRESET_AMOUNTS,
-  DONATION_COPY,
-  isCtaPresetAmount,
-} from "@/domains/home/constants/donation";
+  DEFAULT_COUNTRY,
+  DEFAULT_CURRENCY,
+  DONATION_CURRENCIES,
+  formatPresetLabel,
+  getCountryByCode,
+  getCurrencyMeta,
+  type DonationCurrency,
+} from "@/domains/home/constants/donationCountries";
 import {
   amountDigitsFromDisplay,
   createDonationOrder,
   DONATE_CHECKOUT_EVENT,
   type DonateCheckoutDetail,
-  formatINR,
+  formatDonationAmount,
+  isCroreOrAbove,
   loadRazorpayScript,
   normalizeAmountDigits,
   openRazorpayCheckout,
@@ -29,12 +35,23 @@ function isValidTaxId(value: string) {
   return pan.test(trimmed) || aadhaar.test(trimmed.replace(/\s/g, ""));
 }
 
-export function useDonationForm(defaultPreset: string = CTA_PRESET_AMOUNTS[2]) {
+function isValidPhone(localNumber: string, countryCode: string) {
+  const digits = localNumber.replace(/\D/g, "");
+  if (countryCode === "IN") return digits.length === 10;
+  if (countryCode === "OTHER") return digits.length >= 6 && digits.length <= 15;
+  return digits.length >= 7 && digits.length <= 15;
+}
+
+export function useDonationForm() {
   const [step, setStep] = useState<DonationStep>(1);
-  const [selectedAmount, setSelectedAmount] = useState(defaultPreset);
+  const [currency, setCurrencyState] = useState<DonationCurrency>(DEFAULT_CURRENCY);
+  const [selectedDigits, setSelectedDigits] = useState(
+    () => getCurrencyMeta(DEFAULT_CURRENCY).presets[2],
+  );
   const [customDigits, setCustomDigits] = useState("");
   const [usingCustom, setUsingCustom] = useState(false);
   const [editingAmount, setEditingAmount] = useState(false);
+  const [countryCode, setCountryCodeState] = useState(DEFAULT_COUNTRY.code);
   const [fullName, setFullName] = useState("");
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
@@ -43,26 +60,59 @@ export function useDonationForm(defaultPreset: string = CTA_PRESET_AMOUNTS[2]) {
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusTone, setStatusTone] = useState<"ok" | "error" | null>(null);
 
+  const currencyMeta = useMemo(() => getCurrencyMeta(currency), [currency]);
+  const country = useMemo(() => getCountryByCode(countryCode), [countryCode]);
+  const isIndia = countryCode === "IN";
+
+  const presets = useMemo(
+    () =>
+      currencyMeta.presets.map((digits) => ({
+        digits,
+        label: formatPresetLabel(digits, currency),
+      })),
+    [currency, currencyMeta.presets],
+  );
+
   const chosenAmount = useMemo(() => {
-    if (usingCustom) return formatINR(customDigits) || selectedAmount;
-    return selectedAmount;
-  }, [usingCustom, customDigits, selectedAmount]);
+    const digits = usingCustom ? customDigits : selectedDigits;
+    return (
+      formatDonationAmount(digits, currency, currencyMeta.symbol) ||
+      formatPresetLabel(selectedDigits, currency)
+    );
+  }, [usingCustom, customDigits, selectedDigits, currency, currencyMeta.symbol]);
+
+  const setCurrency = useCallback((next: DonationCurrency) => {
+    const meta = getCurrencyMeta(next);
+    setCurrencyState(next);
+    setSelectedDigits(meta.presets[2] ?? meta.presets[0]);
+    setUsingCustom(false);
+    setCustomDigits("");
+    setEditingAmount(false);
+  }, []);
+
+  const setCountryCode = useCallback((code: string) => {
+    const next = getCountryByCode(code);
+    setCountryCodeState(next.code);
+    setCurrency(next.currency);
+    if (next.code !== "IN") setTaxId("");
+  }, [setCurrency]);
 
   const applyExternalAmount = useCallback((amount: string) => {
-    const trimmed = amount.trim();
-    const digits = toAmountDigits(trimmed);
+    // External CTAs on the site are INR-based today.
+    setCurrencyState("INR");
+    setCountryCodeState("IN");
+    const digits = normalizeAmountDigits(toAmountDigits(amount));
+    if (!digits) return;
 
-    if (isCtaPresetAmount(trimmed)) {
-      setSelectedAmount(trimmed);
+    const inrPresets = getCurrencyMeta("INR").presets;
+    if (inrPresets.includes(digits)) {
+      setSelectedDigits(digits);
       setUsingCustom(false);
       setCustomDigits("");
-    } else if (digits) {
-      setUsingCustom(true);
-      setCustomDigits(normalizeAmountDigits(digits));
     } else {
-      return;
+      setUsingCustom(true);
+      setCustomDigits(digits);
     }
-
     setEditingAmount(false);
     setStep(2);
   }, []);
@@ -78,8 +128,8 @@ export function useDonationForm(defaultPreset: string = CTA_PRESET_AMOUNTS[2]) {
     return () => window.removeEventListener(DONATE_CHECKOUT_EVENT, onCheckout);
   }, [applyExternalAmount]);
 
-  const pickPreset = (amount: string) => {
-    setSelectedAmount(amount);
+  const pickPreset = (digits: string) => {
+    setSelectedDigits(digits);
     setUsingCustom(false);
     setCustomDigits("");
   };
@@ -101,7 +151,9 @@ export function useDonationForm(defaultPreset: string = CTA_PRESET_AMOUNTS[2]) {
 
   const startEditAmount = () => {
     setUsingCustom(true);
-    setCustomDigits(toAmountDigits(chosenAmount));
+    setCustomDigits(
+      normalizeAmountDigits(toAmountDigits(usingCustom ? customDigits : selectedDigits)),
+    );
     setEditingAmount(true);
   };
 
@@ -124,18 +176,28 @@ export function useDonationForm(defaultPreset: string = CTA_PRESET_AMOUNTS[2]) {
     setStatusTone(null);
 
     const name = fullName.trim();
-    const phone = mobile.trim();
+    const localPhone = mobile.trim();
     const mail = email.trim();
-    const panOrAadhaar = taxId.trim().replace(/\s/g, "").toUpperCase();
+    const panOrAadhaar = isIndia
+      ? taxId.trim().replace(/\s/g, "").toUpperCase()
+      : "";
     const amount = amountDigitsFromDisplay(chosenAmount);
+    const dial = country.dial === "+" ? "+" : country.dial;
+    const fullPhone = `${dial}${localPhone.replace(/\D/g, "")}`.slice(0, 20);
 
-    if (!name || !phone || !mail || !amount) {
+    if (!name || !localPhone || !mail || !amount) {
       setStatusTone("error");
       setStatusMessage(DONATION_COPY.fillRequired);
       return;
     }
 
-    if (!isValidTaxId(panOrAadhaar)) {
+    if (!isValidPhone(localPhone, countryCode)) {
+      setStatusTone("error");
+      setStatusMessage(DONATION_COPY.invalidPhone);
+      return;
+    }
+
+    if (isIndia && !isValidTaxId(panOrAadhaar)) {
       setStatusTone("error");
       setStatusMessage(DONATION_COPY.invalidTaxId);
       return;
@@ -150,9 +212,12 @@ export function useDonationForm(defaultPreset: string = CTA_PRESET_AMOUNTS[2]) {
 
       const order = await createDonationOrder({
         fullName: name,
-        phone,
+        phone: fullPhone,
         email: mail,
         amount,
+        currency,
+        countryCode,
+        countryName: country.name,
         ...(panOrAadhaar ? { pan: panOrAadhaar } : {}),
       });
 
@@ -166,14 +231,13 @@ export function useDonationForm(defaultPreset: string = CTA_PRESET_AMOUNTS[2]) {
         prefill: {
           name,
           email: mail,
-          contact: phone,
+          contact: fullPhone,
         },
         theme: { color: "#9739A8" },
         handler: async (response) => {
           setStatusMessage(DONATION_COPY.verifying);
           try {
             await verifyDonationPayment({
-              donorId: order.donorId,
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
@@ -214,11 +278,18 @@ export function useDonationForm(defaultPreset: string = CTA_PRESET_AMOUNTS[2]) {
 
   return {
     step,
+    currency,
+    currencies: DONATION_CURRENCIES,
+    currencySymbol: currencyMeta.symbol,
+    presets,
     chosenAmount,
-    selectedAmount,
+    selectedDigits,
     customDigits,
     usingCustom,
     editingAmount,
+    countryCode,
+    countryDial: country.dial,
+    isIndia,
     fullName,
     mobile,
     email,
@@ -226,6 +297,9 @@ export function useDonationForm(defaultPreset: string = CTA_PRESET_AMOUNTS[2]) {
     isPaying,
     statusMessage,
     statusTone,
+    showLargeAmountHint: currency === "INR" && usingCustom && isCroreOrAbove(customDigits),
+    setCurrency,
+    setCountryCode,
     setFullName,
     setMobile,
     setEmail,

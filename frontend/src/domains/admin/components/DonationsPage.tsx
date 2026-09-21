@@ -89,6 +89,7 @@ export function DonationsPage() {
               <thead className="bg-[#F4F6F7] text-[#5F6C6D]">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Donor</th>
+                  <th className="px-4 py-3 font-semibold">Country</th>
                   <th className="px-4 py-3 font-semibold">Contact</th>
                   <th className="px-4 py-3 font-semibold">Amount</th>
                   <th className="px-4 py-3 font-semibold">Status</th>
@@ -102,6 +103,9 @@ export function DonationsPage() {
                   <tr key={row.id} className="border-t border-[#E7EEEE]">
                     <td className="px-4 py-3 font-medium text-[#0F1C1D]">
                       {row.fullName}
+                    </td>
+                    <td className="px-4 py-3 text-[#5F6C6D]">
+                      {row.city ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-[#5F6C6D]">
                       <div>{row.email ?? "—"}</div>

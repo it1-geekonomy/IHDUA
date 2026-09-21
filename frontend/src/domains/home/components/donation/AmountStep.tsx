@@ -1,22 +1,25 @@
 "use client";
 
 import Typography from "@/lib/Typography";
-import {
-  CTA_PRESET_AMOUNTS,
-  DONATION_COPY,
-} from "@/domains/home/constants/donation";
-import { isCroreOrAbove } from "@/domains/home/lib/donation";
+import { DONATION_COPY } from "@/domains/home/constants/donation";
 import {
   AmountConfirmHint,
+  DonationSelectField,
   DonationTrustNote,
 } from "./DonationFormPrimitives";
 import type { DonationFormState } from "./useDonationForm";
 
 type AmountStepProps = Pick<
   DonationFormState,
-  | "selectedAmount"
+  | "currency"
+  | "currencies"
+  | "currencySymbol"
+  | "presets"
+  | "selectedDigits"
   | "customDigits"
   | "usingCustom"
+  | "showLargeAmountHint"
+  | "setCurrency"
   | "pickPreset"
   | "setCustomFromInput"
   | "setUsingCustom"
@@ -24,9 +27,15 @@ type AmountStepProps = Pick<
 >;
 
 export function AmountStep({
-  selectedAmount,
+  currency,
+  currencies,
+  currencySymbol,
+  presets,
+  selectedDigits,
   customDigits,
   usingCustom,
+  showLargeAmountHint,
+  setCurrency,
   pickPreset,
   setCustomFromInput,
   setUsingCustom,
@@ -34,6 +43,30 @@ export function AmountStep({
 }: AmountStepProps) {
   return (
     <div className="mt-6 flex flex-col gap-4">
+      <div>
+        <Typography
+          variant="caption"
+          className="font-bold font-figtree tracking-normal text-[#6B6660] !normal-case"
+        >
+          {DONATION_COPY.chooseCurrency}
+        </Typography>
+        <DonationSelectField
+          className="mt-2"
+          value={currency}
+          onChange={(value) =>
+            setCurrency(value as DonationFormState["currency"])
+          }
+          ariaLabel={DONATION_COPY.chooseCurrency}
+          options={currencies.map((item) => ({
+            value: item.code,
+            label: item.label,
+          }))}
+        />
+        <p className="mt-1.5 font-figtree text-[11px] text-[#8A847A]">
+          {DONATION_COPY.internationalNote}
+        </p>
+      </div>
+
       <Typography
         variant="caption"
         className="font-bold font-figtree tracking-normal text-[#6B6660] !normal-case"
@@ -42,20 +75,20 @@ export function AmountStep({
       </Typography>
 
       <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-        {CTA_PRESET_AMOUNTS.map((amount) => {
-          const active = !usingCustom && selectedAmount === amount;
+        {presets.map((preset) => {
+          const active = !usingCustom && selectedDigits === preset.digits;
           return (
             <button
-              key={amount}
+              key={preset.digits}
               type="button"
-              onClick={() => pickPreset(amount)}
+              onClick={() => pickPreset(preset.digits)}
               className={`rounded-sm border px-2 py-2.5 font-figtree text-[14px] font-semibold transition-colors ${
                 active
                   ? "border-[#9739A8] bg-[#9739A8] text-white"
                   : "border-[#D4CEC5] bg-white text-[#00191B] hover:border-[#9739A8]/50"
               }`}
             >
-              {amount}
+              {preset.label}
             </button>
           );
         })}
@@ -66,7 +99,9 @@ export function AmountStep({
           usingCustom ? "border-[#9739A8]" : "border-[#D9D3C9]"
         }`}
       >
-        <span className="font-figtree text-[15px] text-[#8A847A]">₹</span>
+        <span className="shrink-0 font-figtree text-[15px] text-[#8A847A]">
+          {currencySymbol}
+        </span>
         <input
           type="text"
           inputMode="numeric"
@@ -78,11 +113,11 @@ export function AmountStep({
         />
       </div>
 
-      {usingCustom && isCroreOrAbove(customDigits) && (
+      {showLargeAmountHint ? (
         <div className="-mt-2">
           <AmountConfirmHint message={DONATION_COPY.confirmBeforeContinue} />
         </div>
-      )}
+      ) : null}
 
       <button
         type="button"
