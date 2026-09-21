@@ -20,13 +20,19 @@ type DetailsStepProps = Pick<
   | "fullName"
   | "mobile"
   | "email"
+  | "taxId"
+  | "isPaying"
+  | "statusMessage"
+  | "statusTone"
   | "setFullName"
   | "setMobile"
   | "setEmail"
+  | "setTaxId"
   | "setCustomFromInput"
   | "startEditAmount"
   | "commitAmountEdit"
   | "cancelAmountEdit"
+  | "paySecurely"
 >;
 
 export function DetailsStep({
@@ -37,13 +43,19 @@ export function DetailsStep({
   fullName,
   mobile,
   email,
+  taxId,
+  isPaying,
+  statusMessage,
+  statusTone,
   setFullName,
   setMobile,
   setEmail,
+  setTaxId,
   setCustomFromInput,
   startEditAmount,
   commitAmountEdit,
   cancelAmountEdit,
+  paySecurely,
 }: DetailsStepProps) {
   const amountEditRef = useRef<HTMLInputElement>(null);
 
@@ -91,7 +103,8 @@ export function DetailsStep({
             <button
               type="button"
               onClick={startEditAmount}
-              className="inline-flex shrink-0 items-center gap-1 font-semibold text-[#9739A8] hover:opacity-80"
+              disabled={isPaying}
+              className="inline-flex shrink-0 items-center gap-1 font-semibold text-[#9739A8] hover:opacity-80 disabled:opacity-50"
             >
               {DONATION_COPY.edit}
               <Pencil className="h-3.5 w-3.5" strokeWidth={2.5} />
@@ -109,6 +122,7 @@ export function DetailsStep({
         value={fullName}
         onChange={setFullName}
         autoComplete="name"
+        disabled={isPaying}
       />
       <DonationTextField
         type="tel"
@@ -117,6 +131,7 @@ export function DetailsStep({
         value={mobile}
         onChange={(value) => setMobile(value.replace(/[^\d+\s-]/g, ""))}
         autoComplete="tel"
+        disabled={isPaying}
       />
       <DonationTextField
         type="email"
@@ -124,17 +139,48 @@ export function DetailsStep({
         value={email}
         onChange={setEmail}
         autoComplete="email"
+        disabled={isPaying}
       />
+
+      <div className="flex flex-col gap-1.5">
+        <DonationTextField
+          placeholder={DONATION_COPY.taxId}
+          value={taxId}
+          onChange={(value) =>
+            setTaxId(value.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase())
+          }
+          autoComplete="off"
+          disabled={isPaying}
+        />
+        <p className="px-0.5 font-figtree text-[11px] leading-snug text-[#8A847A]">
+          {DONATION_COPY.taxIdHint}
+        </p>
+      </div>
 
       <button
         type="button"
-        className="mt-1 flex w-full flex-col items-center justify-center gap-0.5 rounded-sm bg-[#FFD638] px-4 py-3.5 font-figtree font-bold text-[#1C1C1C] transition-opacity hover:opacity-90"
+        onClick={() => void paySecurely()}
+        disabled={isPaying}
+        className="mt-1 flex w-full flex-col items-center justify-center gap-0.5 rounded-sm bg-[#FFD638] px-4 py-3.5 font-figtree font-bold text-[#1C1C1C] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
       >
-        <span className="text-[16px]">{DONATION_COPY.paySecurely}</span>
+        <span className="text-[16px]">
+          {isPaying ? DONATION_COPY.paying : DONATION_COPY.paySecurely}
+        </span>
         <span className="max-w-full break-all text-center text-[14px] leading-snug">
           {chosenAmount}
         </span>
       </button>
+
+      {statusMessage ? (
+        <p
+          className={`text-center font-figtree text-[13px] leading-snug ${
+            statusTone === "ok" ? "text-[#2F6B4F]" : "text-[#A33B3B]"
+          }`}
+          role="status"
+        >
+          {statusMessage}
+        </p>
+      ) : null}
 
       <DonationTrustNote />
     </div>
