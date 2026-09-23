@@ -14,7 +14,7 @@ export const DONATION_COPY = {
   cardBody:
     "Your support helps create opportunities through education, healthcare, sustainable livelihoods and stronger communities.",
   chooseAmount: "Choose an amount",
-  chooseCurrency: "Currency",
+  chooseCountry: "Choose your country",
   otherAmountPlaceholder: "Other amount",
   donateNow: "Donate Now",
   chosenAmount: "Chosen Amount",

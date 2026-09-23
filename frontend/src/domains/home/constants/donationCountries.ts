@@ -1,3 +1,6 @@
+import countries from "world-countries";
+import { getCountryCallingCode, CountryCode } from "libphonenumber-js";
+
 export type DonationCurrency =
   | "INR"
   | "USD"
@@ -15,26 +18,6 @@ export type DonationCountry = {
   currency: DonationCurrency;
 };
 
-/** Curated list for dial code + default currency. */
-export const DONATION_COUNTRIES: DonationCountry[] = [
-  { code: "IN", name: "India", dial: "+91", currency: "INR" },
-  { code: "US", name: "United States", dial: "+1", currency: "USD" },
-  { code: "GB", name: "United Kingdom", dial: "+44", currency: "GBP" },
-  { code: "AE", name: "United Arab Emirates", dial: "+971", currency: "AED" },
-  { code: "SG", name: "Singapore", dial: "+65", currency: "SGD" },
-  { code: "AU", name: "Australia", dial: "+61", currency: "AUD" },
-  { code: "CA", name: "Canada", dial: "+1", currency: "CAD" },
-  { code: "DE", name: "Germany", dial: "+49", currency: "EUR" },
-  { code: "FR", name: "France", dial: "+33", currency: "EUR" },
-  { code: "NL", name: "Netherlands", dial: "+31", currency: "EUR" },
-  { code: "IE", name: "Ireland", dial: "+353", currency: "EUR" },
-  { code: "NZ", name: "New Zealand", dial: "+64", currency: "AUD" },
-  { code: "MY", name: "Malaysia", dial: "+60", currency: "SGD" },
-  { code: "QA", name: "Qatar", dial: "+974", currency: "AED" },
-  { code: "SA", name: "Saudi Arabia", dial: "+966", currency: "AED" },
-  { code: "OTHER", name: "Other / International", dial: "+", currency: "USD" },
-];
-
 export const DONATION_CURRENCIES: {
   code: DonationCurrency;
   label: string;
@@ -51,7 +34,48 @@ export const DONATION_CURRENCIES: {
   { code: "CAD", label: "CAD (C$)", symbol: "C$", presets: ["15", "30", "50", "100"] },
 ];
 
-export const DEFAULT_COUNTRY = DONATION_COUNTRIES[0];
+const CURRENCY_CODES = DONATION_CURRENCIES.map((c) => c.code);
+
+const PINNED_COUNTRIES = ["IN", "US", "GB", "AE", "SG", "AU", "CA", "DE", "FR"];
+
+function buildCountryList(): DonationCountry[] {
+  const mapped = countries.map((c) => {
+    let dial = "";
+    try {
+      dial = `+${getCountryCallingCode(c.cca2 as CountryCode)}`;
+    } catch {
+      dial = c.idd.root ? `${c.idd.root}${c.idd.suffixes?.[0] || ""}` : "+";
+    }
+
+    let currency: DonationCurrency = "USD";
+    const countryCurrencies = Object.keys(c.currencies || {});
+    if (countryCurrencies.length > 0) {
+      const first = countryCurrencies[0] as DonationCurrency;
+      if (CURRENCY_CODES.includes(first)) {
+        currency = first;
+      }
+    }
+
+    return {
+      code: c.cca2,
+      name: c.name.common,
+      dial,
+      currency,
+    };
+  });
+
+  const pinned = PINNED_COUNTRIES.map((code) => mapped.find((c) => c.code === code)).filter(Boolean) as DonationCountry[];
+  
+  const rest = mapped
+    .filter((c) => !PINNED_COUNTRIES.includes(c.code))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  return [...pinned, ...rest];
+}
+
+export const DONATION_COUNTRIES = buildCountryList();
+
+export const DEFAULT_COUNTRY = DONATION_COUNTRIES.find(c => c.code === "IN") || DONATION_COUNTRIES[0];
 export const DEFAULT_CURRENCY: DonationCurrency = "INR";
 
 export function getCurrencyMeta(code: DonationCurrency) {
