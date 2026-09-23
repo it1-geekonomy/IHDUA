@@ -65,6 +65,7 @@ export function DonationFormCard() {
           setEmail={form.setEmail}
           setTaxId={form.setTaxId}
           setCustomFromInput={form.setCustomFromInput}
+          goBackToAmount={form.goBackToAmount}
           startEditAmount={form.startEditAmount}
           commitAmountEdit={form.commitAmountEdit}
           cancelAmountEdit={form.cancelAmountEdit}

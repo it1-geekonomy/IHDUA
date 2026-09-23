@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { DONATION_AMOUNTS, IMPACT_ITEMS } from "@/domains/home/constants/overlayform";
+import { IMPACT_ITEMS } from "@/domains/home/constants/overlayform";
 import { openDonationCheckout } from "@/domains/home/lib/donation";
+import { CountrySelect } from "@/domains/home/components/donation/CountrySelect";
+import { getCountryByCode, getCurrencyMeta, DEFAULT_COUNTRY, formatPresetLabel } from "@/domains/home/constants/donationCountries";
 import Typography, { figmaTypeScale } from "@/lib/Typography";
 
 interface OverlayformProps {
@@ -11,12 +13,31 @@ interface OverlayformProps {
 }
 
 export default function Overlayform({ onClose }: OverlayformProps) {
-  const [selectedAmount, setSelectedAmount] = useState("₹999");
+  const [countryCode, setCountryCode] = useState(DEFAULT_COUNTRY.code);
+  const [selectedAmount, setSelectedAmount] = useState("");
   const [showCustom, setShowCustom] = useState(false);
   const [customAmount, setCustomAmount] = useState("");
   const [exiting, setExiting] = useState(false);
-  const pendingDonateRef = useRef<string | null>(null);
+  const pendingDonateRef = useRef<{amount: string; countryCode: string} | null>(null);
   const lockedScrollY = useRef(0);
+
+  const country = getCountryByCode(countryCode);
+  const meta = getCurrencyMeta(country.currency);
+
+  useEffect(() => {
+    if (country.currency === "INR") {
+      setSelectedAmount(formatPresetLabel("999", "INR"));
+    } else {
+      setSelectedAmount(formatPresetLabel(meta.presets[0], country.currency));
+    }
+    setShowCustom(false);
+    setCustomAmount("");
+  }, [country.currency, meta.presets]);
+
+  const amounts = country.currency === "INR" 
+    ? ["999", "5000", "10000", "18000", "25000"]
+    : meta.presets;
+  const currentPresets = amounts.map(amt => formatPresetLabel(amt, country.currency));
 
   const handlePickAmount = (amount: string) => {
     setSelectedAmount(amount);
@@ -25,7 +46,7 @@ export default function Overlayform({ onClose }: OverlayformProps) {
 
   const beginClose = (donateAmount?: string) => {
     if (exiting) return;
-    if (donateAmount) pendingDonateRef.current = donateAmount;
+    if (donateAmount) pendingDonateRef.current = { amount: donateAmount, countryCode };
     setExiting(true);
     window.setTimeout(() => onClose(), 450);
   };
@@ -54,7 +75,7 @@ export default function Overlayform({ onClose }: OverlayformProps) {
       if (pending) {
         pendingDonateRef.current = null;
         // Short beat after unlock so the fade-out finishes, then glide down
-        openDonationCheckout(pending, 280);
+        openDonationCheckout(pending.amount, pending.countryCode, 280);
       }
     };
   }, []);
@@ -185,11 +206,21 @@ export default function Overlayform({ onClose }: OverlayformProps) {
               variant="caption"
               className="font-bold font-manrope tracking-normal text-[#6B6660] !text-[10px] lg:!text-[13px] xl:!text-[14px]"
             >
+              Choose your country
+            </Typography>
+            <div className="mb-1 w-full lg:mb-2">
+              <CountrySelect value={countryCode} onChange={setCountryCode} />
+            </div>
+
+            <Typography
+              variant="caption"
+              className="font-bold font-manrope tracking-normal text-[#6B6660] !text-[10px] lg:!text-[13px] xl:!text-[14px]"
+            >
               Choose an amount
             </Typography>
 
             <div className="flex flex-wrap justify-start gap-2 lg:gap-2 xl:gap-2.5 2xl:gap-3">
-              {DONATION_AMOUNTS.map((amount) => {
+              {currentPresets.map((amount) => {
                 const isSelected = !showCustom && selectedAmount === amount;
                 return (
                   <button
@@ -210,7 +241,7 @@ export default function Overlayform({ onClose }: OverlayformProps) {
 
               {showCustom ? (
                 <span className={`${pillBase} ${pillSelected} flex items-center font-extrabold`}>
-                  ₹
+                  {meta.symbol}
                   <input
                     type="text"
                     inputMode="numeric"
@@ -248,7 +279,7 @@ export default function Overlayform({ onClose }: OverlayformProps) {
               onClick={() => {
                 const amount = showCustom
                   ? customAmount
-                    ? `₹${customAmount}`
+                    ? `${meta.symbol}${customAmount}`
                     : ""
                   : selectedAmount;
                 if (!amount) return;
