@@ -2,8 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { DONATION_AMOUNTS, IMPACT_ITEMS } from "@/domains/home/constants/overlayform";
-import { openDonationCheckout } from "@/domains/home/lib/donation";
+import { IMPACT_ITEMS } from "@/domains/home/constants/overlayform";
+import { CountrySelect } from "@/domains/home/components/donation/CountrySelect";
+import { formatPresetLabel } from "@/domains/home/constants/donationCountries";
+import { useDonationForm } from "@/domains/home/components/donation/useDonationForm";
+import { DetailsStep } from "@/domains/home/components/donation/DetailsStep";
 import Typography, { figmaTypeScale } from "@/lib/Typography";
 
 interface OverlayformProps {
@@ -11,24 +14,34 @@ interface OverlayformProps {
 }
 
 export default function Overlayform({ onClose }: OverlayformProps) {
-  const [selectedAmount, setSelectedAmount] = useState("₹999");
-  const [showCustom, setShowCustom] = useState(false);
-  const [customAmount, setCustomAmount] = useState("");
+  const form = useDonationForm();
   const [exiting, setExiting] = useState(false);
-  const pendingDonateRef = useRef<string | null>(null);
   const lockedScrollY = useRef(0);
 
-  const handlePickAmount = (amount: string) => {
-    setSelectedAmount(amount);
-    setShowCustom(false);
-  };
-
-  const beginClose = (donateAmount?: string) => {
+  const beginClose = () => {
     if (exiting) return;
-    if (donateAmount) pendingDonateRef.current = donateAmount;
     setExiting(true);
     window.setTimeout(() => onClose(), 450);
   };
+
+  useEffect(() => {
+    // If it's a new overlay open, we want selectedDigits to match the first preset of the default country,
+    // but useDonationForm initializes it by default to the 3rd preset for India.
+    // If we want it to be 999 for India:
+    if (form.currency === "INR" && form.selectedDigits !== "999" && !form.usingCustom) {
+      form.pickPreset("999");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const amounts = form.currency === "INR" 
+    ? ["999", "5000", "10000", "18000", "25000"]
+    : form.presets.map(p => p.digits);
+    
+  const currentPresets = amounts.map(digits => ({
+    digits,
+    formatted: formatPresetLabel(digits, form.currency)
+  }));
 
   useEffect(() => {
     const scrollY = window.scrollY;
@@ -49,13 +62,6 @@ export default function Overlayform({ onClose }: OverlayformProps) {
     return () => {
       Object.assign(body.style, original);
       window.scrollTo(0, lockedScrollY.current);
-
-      const pending = pendingDonateRef.current;
-      if (pending) {
-        pendingDonateRef.current = null;
-        // Short beat after unlock so the fade-out finishes, then glide down
-        openDonationCheckout(pending, 280);
-      }
     };
   }, []);
 
@@ -134,8 +140,10 @@ export default function Overlayform({ onClose }: OverlayformProps) {
             [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
           "
         >
-          <div className="flex flex-col gap-2 lg:gap-3 xl:gap-3 2xl:gap-4">
-            <Typography
+          {form.step === 1 ? (
+            <>
+              <div className="flex flex-col gap-2 lg:gap-3 xl:gap-3 2xl:gap-4">
+                <Typography
               id="overlayform-title"
               variant="h2"
               className="font-regular font-lora leading-[1.2] text-[#00191B] !text-[1.125rem] sm:!text-[1.5rem] lg:!text-[30px] xl:!text-[34px] 2xl:!text-[45px]"
@@ -185,39 +193,49 @@ export default function Overlayform({ onClose }: OverlayformProps) {
               variant="caption"
               className="font-bold font-manrope tracking-normal text-[#6B6660] !text-[10px] lg:!text-[13px] xl:!text-[14px]"
             >
+              Choose your country
+            </Typography>
+            <div className="mb-1 w-full lg:mb-2">
+              <CountrySelect value={form.countryCode} onChange={form.setCountryCode} />
+            </div>
+
+            <Typography
+              variant="caption"
+              className="font-bold font-manrope tracking-normal text-[#6B6660] !text-[10px] lg:!text-[13px] xl:!text-[14px]"
+            >
               Choose an amount
             </Typography>
 
             <div className="flex flex-wrap justify-start gap-2 lg:gap-2 xl:gap-2.5 2xl:gap-3">
-              {DONATION_AMOUNTS.map((amount) => {
-                const isSelected = !showCustom && selectedAmount === amount;
+              {currentPresets.map(({ digits, formatted }) => {
+                const isSelected = !form.usingCustom && form.selectedDigits === digits;
                 return (
                   <button
-                    key={amount}
+                    key={digits}
                     type="button"
-                    onClick={() => handlePickAmount(amount)}
+                    onClick={() => form.pickPreset(digits)}
                     className={`${pillBase} ${isSelected ? pillSelected : pillUnselected}`}
                   >
                     <Typography
                       variant="caption"
                       className={isSelected ? "font-extrabold" : "font-bold"}
                     >
-                      {amount}
+                      {formatted}
                     </Typography>
                   </button>
                 );
               })}
 
-              {showCustom ? (
+              {form.usingCustom ? (
                 <span className={`${pillBase} ${pillSelected} flex items-center font-extrabold`}>
-                  ₹
+                  {form.currencySymbol}
                   <input
                     type="text"
                     inputMode="numeric"
                     pattern="[0-9]*"
                     autoFocus
-                    value={customAmount}
-                    onChange={(e) => setCustomAmount(e.target.value.replace(/[^0-9]/g, ""))}
+                    value={form.customDigits}
+                    onChange={(e) => form.setCustomFromInput(e.target.value.replace(/[^0-9]/g, ""))}
                     placeholder="0"
                     className={`ml-1 w-14 bg-transparent outline-none placeholder:text-white/70 sm:w-16 ${figmaTypeScale[16]} font-extrabold text-white`}
                   />
@@ -225,10 +243,7 @@ export default function Overlayform({ onClose }: OverlayformProps) {
               ) : (
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowCustom(true);
-                    setSelectedAmount("");
-                  }}
+                  onClick={() => form.setUsingCustom(true)}
                   className={`${pillBase} ${pillUnselected}`}
                 >
                   <Typography
@@ -245,15 +260,7 @@ export default function Overlayform({ onClose }: OverlayformProps) {
           <div className="mt-2 flex flex-col items-center gap-2 sm:mt-3 lg:mt-0 lg:gap-2 2xl:gap-3">
             <button
               type="button"
-              onClick={() => {
-                const amount = showCustom
-                  ? customAmount
-                    ? `₹${customAmount}`
-                    : ""
-                  : selectedAmount;
-                if (!amount) return;
-                beginClose(amount);
-              }}
+              onClick={() => form.goToDetails()}
               className={`mx-auto flex w-[250px] items-center justify-center gap-2 rounded-md bg-[#FDC61D] px-4 py-2.5 font-bold font-manrope text-[#1C1C1C] transition-transform hover:scale-[1.01] active:scale-[0.99] sm:w-[300px] lg:w-full lg:py-3 xl:py-3.5 2xl:py-4 ${figmaTypeScale[18]}`}
             >
               Donate Now
@@ -269,6 +276,41 @@ export default function Overlayform({ onClose }: OverlayformProps) {
               🔒 Secure Payment | Powered by Razorpay
             </Typography>
           </div>
+          </>
+          ) : (
+            <div className="w-full flex-1 overflow-y-auto pt-2 lg:pt-0">
+              <DetailsStep
+                chosenAmount={form.chosenAmount}
+                customDigits={form.customDigits}
+                usingCustom={form.usingCustom}
+                editingAmount={form.editingAmount}
+                currencySymbol={form.currencySymbol}
+                countryCode={form.countryCode}
+                phoneCountryCode={form.phoneCountryCode}
+                phoneCountryDial={form.phoneCountryDial}
+                isIndia={form.isIndia}
+                fullName={form.fullName}
+                mobile={form.mobile}
+                email={form.email}
+                taxId={form.taxId}
+                isPaying={form.isPaying}
+                statusMessage={form.statusMessage}
+                statusTone={form.statusTone}
+                showLargeAmountHint={form.showLargeAmountHint}
+                setPhoneCountryCode={form.setPhoneCountryCode}
+                setFullName={form.setFullName}
+                setMobile={form.setMobile}
+                setEmail={form.setEmail}
+                setTaxId={form.setTaxId}
+                setCustomFromInput={form.setCustomFromInput}
+                goBackToAmount={form.goBackToAmount}
+                startEditAmount={form.startEditAmount}
+                commitAmountEdit={form.commitAmountEdit}
+                cancelAmountEdit={form.cancelAmountEdit}
+                paySecurely={form.paySecurely}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
