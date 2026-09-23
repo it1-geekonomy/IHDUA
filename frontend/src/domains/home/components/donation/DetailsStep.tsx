@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Pencil } from "lucide-react";
+import { Pencil, ArrowLeft } from "lucide-react";
 import { DONATION_COPY } from "@/domains/home/constants/donation";
 import {
   AmountConfirmHint,
@@ -37,6 +37,7 @@ type DetailsStepProps = Pick<
   | "setEmail"
   | "setTaxId"
   | "setCustomFromInput"
+  | "goBackToAmount"
   | "startEditAmount"
   | "commitAmountEdit"
   | "cancelAmountEdit"
@@ -67,6 +68,7 @@ export function DetailsStep({
   setEmail,
   setTaxId,
   setCustomFromInput,
+  goBackToAmount,
   startEditAmount,
   commitAmountEdit,
   cancelAmountEdit,
@@ -80,6 +82,16 @@ export function DetailsStep({
 
   return (
     <div className="mt-6 flex flex-col gap-3">
+      <button
+        type="button"
+        onClick={goBackToAmount}
+        disabled={isPaying}
+        className="mb-1 flex w-max items-center gap-1 font-figtree text-[13px] font-semibold text-[#8A847A] transition-colors hover:text-[#00191B] disabled:opacity-50"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Back
+      </button>
+
       <div className="flex flex-col gap-2 rounded-sm border border-[#D9D3C9] bg-[#FAF8F4] px-4 py-3.5">
         <div className="flex items-start justify-between gap-3">
           <span className="shrink-0 pt-0.5 font-figtree text-[15px] text-[#5F6C6D]">

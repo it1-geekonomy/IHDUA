@@ -103,15 +103,18 @@ export function useDonationForm() {
     if (code !== "IN") setTaxId("");
   }, []);
 
-  const applyExternalAmount = useCallback((amount: string) => {
-    // External CTAs on the site are INR-based today.
-    setCurrencyState("INR");
-    setCountryCodeState("IN");
+  const applyExternalAmount = useCallback((amount: string, extCountryCode?: string) => {
+    // External CTAs can optionally specify country, else fallback to India
+    const nextCode = extCountryCode || "IN";
+    const nextCountry = getCountryByCode(nextCode);
+    setCountryCodeState(nextCountry.code);
+    setCurrencyState(nextCountry.currency);
+
     const digits = normalizeAmountDigits(toAmountDigits(amount));
     if (!digits) return;
 
-    const inrPresets = getCurrencyMeta("INR").presets;
-    if (inrPresets.includes(digits)) {
+    const presets = getCurrencyMeta(nextCountry.currency).presets;
+    if (presets.includes(digits) || (nextCountry.currency === "INR" && ["999", "5000", "10000", "18000", "25000"].includes(digits))) {
       setSelectedDigits(digits);
       setUsingCustom(false);
       setCustomDigits("");
@@ -127,7 +130,7 @@ export function useDonationForm() {
     const onCheckout = (event: Event) => {
       const detail = (event as CustomEvent<DonateCheckoutDetail>).detail;
       if (!detail?.amount) return;
-      applyExternalAmount(detail.amount);
+      applyExternalAmount(detail.amount, detail.countryCode);
     };
 
     window.addEventListener(DONATE_CHECKOUT_EVENT, onCheckout);
@@ -161,6 +164,11 @@ export function useDonationForm() {
       normalizeAmountDigits(toAmountDigits(usingCustom ? customDigits : selectedDigits)),
     );
     setEditingAmount(true);
+  };
+
+  const goBackToAmount = () => {
+    setStep(1);
+    setEditingAmount(false);
   };
 
   const commitAmountEdit = () => {
@@ -316,6 +324,7 @@ export function useDonationForm() {
     pickPreset,
     setCustomFromInput,
     goToDetails,
+    goBackToAmount,
     startEditAmount,
     commitAmountEdit,
     cancelAmountEdit,
