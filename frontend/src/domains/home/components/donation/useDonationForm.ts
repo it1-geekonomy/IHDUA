@@ -52,6 +52,7 @@ export function useDonationForm() {
   const [usingCustom, setUsingCustom] = useState(false);
   const [editingAmount, setEditingAmount] = useState(false);
   const [countryCode, setCountryCodeState] = useState(DEFAULT_COUNTRY.code);
+  const [phoneCountryCode, setPhoneCountryCode] = useState(DEFAULT_COUNTRY.code);
   const [fullName, setFullName] = useState("");
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
@@ -62,7 +63,8 @@ export function useDonationForm() {
 
   const currencyMeta = useMemo(() => getCurrencyMeta(currency), [currency]);
   const country = useMemo(() => getCountryByCode(countryCode), [countryCode]);
-  const isIndia = countryCode === "IN";
+  const phoneCountry = useMemo(() => getCountryByCode(phoneCountryCode), [phoneCountryCode]);
+  const isIndia = phoneCountryCode === "IN";
 
   const presets = useMemo(
     () =>
@@ -94,8 +96,12 @@ export function useDonationForm() {
     const next = getCountryByCode(code);
     setCountryCodeState(next.code);
     setCurrency(next.currency);
-    if (next.code !== "IN") setTaxId("");
   }, [setCurrency]);
+
+  const setPhoneCountryCodeCallback = useCallback((code: string) => {
+    setPhoneCountryCode(code);
+    if (code !== "IN") setTaxId("");
+  }, []);
 
   const applyExternalAmount = useCallback((amount: string) => {
     // External CTAs on the site are INR-based today.
@@ -182,7 +188,7 @@ export function useDonationForm() {
       ? taxId.trim().replace(/\s/g, "").toUpperCase()
       : "";
     const amount = amountDigitsFromDisplay(chosenAmount);
-    const dial = country.dial === "+" ? "+" : country.dial;
+    const dial = phoneCountry.dial === "+" ? "+" : phoneCountry.dial;
     const fullPhone = `${dial}${localPhone.replace(/\D/g, "")}`.slice(0, 20);
 
     if (!name || !localPhone || !mail || !amount) {
@@ -191,7 +197,7 @@ export function useDonationForm() {
       return;
     }
 
-    if (!isValidPhone(localPhone, countryCode)) {
+    if (!isValidPhone(localPhone, phoneCountryCode)) {
       setStatusTone("error");
       setStatusMessage(DONATION_COPY.invalidPhone);
       return;
@@ -288,7 +294,8 @@ export function useDonationForm() {
     usingCustom,
     editingAmount,
     countryCode,
-    countryDial: country.dial,
+    phoneCountryCode,
+    phoneCountryDial: phoneCountry.dial,
     isIndia,
     fullName,
     mobile,
@@ -300,6 +307,7 @@ export function useDonationForm() {
     showLargeAmountHint: currency === "INR" && usingCustom && isCroreOrAbove(customDigits),
     setCurrency,
     setCountryCode,
+    setPhoneCountryCode: setPhoneCountryCodeCallback,
     setFullName,
     setMobile,
     setEmail,

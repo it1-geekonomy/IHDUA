@@ -3,13 +3,13 @@
 import { useEffect, useRef } from "react";
 import { Pencil } from "lucide-react";
 import { DONATION_COPY } from "@/domains/home/constants/donation";
-import { DONATION_COUNTRIES } from "@/domains/home/constants/donationCountries";
 import {
   AmountConfirmHint,
   DonationSelectField,
   DonationTextField,
   DonationTrustNote,
 } from "./DonationFormPrimitives";
+import { CountrySelect } from "./CountrySelect";
 import type { DonationFormState } from "./useDonationForm";
 
 type DetailsStepProps = Pick<
@@ -20,7 +20,8 @@ type DetailsStepProps = Pick<
   | "editingAmount"
   | "currencySymbol"
   | "countryCode"
-  | "countryDial"
+  | "phoneCountryCode"
+  | "phoneCountryDial"
   | "isIndia"
   | "fullName"
   | "mobile"
@@ -30,7 +31,7 @@ type DetailsStepProps = Pick<
   | "statusMessage"
   | "statusTone"
   | "showLargeAmountHint"
-  | "setCountryCode"
+  | "setPhoneCountryCode"
   | "setFullName"
   | "setMobile"
   | "setEmail"
@@ -49,7 +50,8 @@ export function DetailsStep({
   editingAmount,
   currencySymbol,
   countryCode,
-  countryDial,
+  phoneCountryCode,
+  phoneCountryDial,
   isIndia,
   fullName,
   mobile,
@@ -59,7 +61,7 @@ export function DetailsStep({
   statusMessage,
   statusTone,
   showLargeAmountHint,
-  setCountryCode,
+  setPhoneCountryCode,
   setFullName,
   setMobile,
   setEmail,
@@ -138,20 +140,14 @@ export function DetailsStep({
         disabled={isPaying}
       />
 
-      <DonationSelectField
-        value={countryCode}
-        onChange={setCountryCode}
-        disabled={isPaying}
-        ariaLabel={DONATION_COPY.country}
-        options={DONATION_COUNTRIES.map((item) => ({
-          value: item.code,
-          label: `${item.name} (${item.dial})`,
-        }))}
-      />
-
       <div className="flex gap-2">
-        <div className="flex w-[5.5rem] shrink-0 items-center justify-center rounded-sm border border-[#D9D3C9] bg-[#FAF8F4] px-2 font-figtree text-[15px] font-semibold text-[#00191B]">
-          {countryDial}
+        <div className="w-[6rem] shrink-0">
+          <CountrySelect
+            value={phoneCountryCode}
+            onChange={setPhoneCountryCode}
+            disabled={isPaying}
+            compact
+          />
         </div>
         <DonationTextField
           type="tel"
