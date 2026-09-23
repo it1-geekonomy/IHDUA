@@ -4,22 +4,22 @@ import Typography from "@/lib/Typography";
 import { DONATION_COPY } from "@/domains/home/constants/donation";
 import {
   AmountConfirmHint,
-  DonationSelectField,
   DonationTrustNote,
 } from "./DonationFormPrimitives";
+import { CountrySelect } from "./CountrySelect";
 import type { DonationFormState } from "./useDonationForm";
 
 type AmountStepProps = Pick<
   DonationFormState,
+  | "countryCode"
+  | "setCountryCode"
   | "currency"
-  | "currencies"
   | "currencySymbol"
   | "presets"
   | "selectedDigits"
   | "customDigits"
   | "usingCustom"
   | "showLargeAmountHint"
-  | "setCurrency"
   | "pickPreset"
   | "setCustomFromInput"
   | "setUsingCustom"
@@ -27,15 +27,15 @@ type AmountStepProps = Pick<
 >;
 
 export function AmountStep({
+  countryCode,
+  setCountryCode,
   currency,
-  currencies,
   currencySymbol,
   presets,
   selectedDigits,
   customDigits,
   usingCustom,
   showLargeAmountHint,
-  setCurrency,
   pickPreset,
   setCustomFromInput,
   setUsingCustom,
@@ -48,20 +48,11 @@ export function AmountStep({
           variant="caption"
           className="font-bold font-figtree tracking-normal text-[#6B6660] !normal-case"
         >
-          {DONATION_COPY.chooseCurrency}
+          {DONATION_COPY.country}
         </Typography>
-        <DonationSelectField
-          className="mt-2"
-          value={currency}
-          onChange={(value) =>
-            setCurrency(value as DonationFormState["currency"])
-          }
-          ariaLabel={DONATION_COPY.chooseCurrency}
-          options={currencies.map((item) => ({
-            value: item.code,
-            label: item.label,
-          }))}
-        />
+        <div className="mt-2">
+          <CountrySelect value={countryCode} onChange={setCountryCode} />
+        </div>
         <p className="mt-1.5 font-figtree text-[11px] text-[#8A847A]">
           {DONATION_COPY.internationalNote}
         </p>

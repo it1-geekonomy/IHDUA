@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { FormEvent, useEffect, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ADMIN_COPY } from "@/domains/admin/constants";
 import { useAdminAuth } from "@/domains/admin/components/AdminAuthProvider";
@@ -14,6 +15,7 @@ export function AdminLoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (ready && token) {
@@ -86,14 +88,24 @@ export function AdminLoginForm() {
 
           <label className="mt-4 block font-figtree text-sm font-medium text-[#00191B]">
             {ADMIN_COPY.password}
-            <input
-              type="password"
-              required
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1.5 w-full rounded-sm border border-[#D9D3C9] bg-[#FAF8F4] px-3.5 py-3 outline-none transition-colors placeholder:text-[#8A847A] focus:border-[#9739A8]"
-            />
+            <div className="relative mt-1.5">
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-sm border border-[#D9D3C9] bg-[#FAF8F4] px-3.5 py-3 pr-10 outline-none transition-colors placeholder:text-[#8A847A] focus:border-[#9739A8]"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-[#8A847A] hover:text-[#9739A8] outline-none"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </label>
 
           {error ? (
