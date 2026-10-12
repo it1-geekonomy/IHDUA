@@ -24,7 +24,8 @@ export default function CTASection() {
         <div className="absolute inset-0 bg-black/55" />
 
         <div className="relative z-10 mx-auto flex w-full max-w-[1600px] flex-col gap-10 px-6 py-12 sm:px-10 lg:flex-row lg:items-center lg:justify-between lg:gap-12 lg:px-10 lg:py-16 2xl:px-40">
-          <div className="flex w-full max-w-xl flex-col text-left lg:max-w-lg xl:max-w-xl">
+          {/* Heading, description and button: centered below lg, left-aligned at lg+ */}
+          <div className="mx-auto flex w-full max-w-xl flex-col items-center text-center lg:mx-0 lg:max-w-lg lg:items-start lg:text-left xl:max-w-xl">
             <Typography
               variant="h1"
               className="font-lora font-normal leading-tight text-white lg:!text-[48px] xl:!text-[52px]"
@@ -34,7 +35,7 @@ export default function CTASection() {
 
             <Typography
               variant="body-lg"
-              className="mt-4 max-w-md leading-relaxed text-white/90 font-figtree font-normal sm:mt-5"
+              className="mx-auto mt-4 max-w-md leading-relaxed text-white/90 font-figtree font-normal sm:mt-5 lg:mx-0"
             >
               {DONATION_COPY.sectionBody}
             </Typography>

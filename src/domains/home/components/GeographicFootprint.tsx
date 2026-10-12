@@ -49,7 +49,8 @@ export default function GeographicFootprint() {
 
           {/* Right: Content */}
           <div className="order-1 flex flex-col lg:order-2">
-            <div className="flex items-center gap-3">
+            {/* Label: centered below lg, left-aligned at lg+ */}
+            <div className="flex items-center justify-center gap-3 lg:justify-start">
               <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
               <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
                 GEOGRAPHIC FOOTPRINT
@@ -57,14 +58,19 @@ export default function GeographicFootprint() {
               <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
             </div>
 
+            {/* Heading: centered below lg, left-aligned at lg+ */}
             <Typography
               variant="h1"
-              className="mt-5 max-w-3xl lg:max-w-4xl leading-tight font-normal font-lora"
+              className="mx-auto mt-5 max-w-3xl text-center leading-tight font-normal font-lora lg:mx-0 lg:max-w-4xl lg:text-left"
             >
               Rooted in communities. Creating change where it matters.
             </Typography>
 
-            <Typography variant="body-lg" className="mt-5 leading-relaxed text-[#5F6C6D] font-normal font-figtree max-w-2xl">
+            {/* Description: centered below lg, left-aligned at lg+ */}
+            <Typography
+              variant="body-lg"
+              className="mx-auto mt-5 max-w-2xl text-center leading-relaxed text-[#5F6C6D] font-normal font-figtree lg:mx-0 lg:text-left"
+            >
               Our physical headquarters are established directly in rural Mysore,
               allowing our coordinators to live as neighbors beside the families
               we serve.
