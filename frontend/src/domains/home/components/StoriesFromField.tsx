@@ -38,14 +38,16 @@ export default function StoriesFromField() {
       <div className="w-full px-6 py-10 lg:px-10 lg:py-16 2xl:px-40">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
-          <div>
-            <div className="flex items-center gap-3">
+          {/* Label + heading: centered below sm (640px), left-aligned from sm up */}
+          <div className="text-center sm:text-left">
+            <div className="flex items-center justify-center gap-3 sm:justify-start">
               <span className="h-px w-8 bg-[#9739A8]" />
               <Typography
                 className={`font-figtree font-bold text-[#9739A8] ${figmaTypeScale[15]}`}
               >
                 Field Updates
               </Typography>
+              <span className="h-px w-8 bg-[#9739A8]" />
             </div>
             <Typography
               variant="h2"

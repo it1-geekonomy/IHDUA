@@ -113,8 +113,8 @@ export default function StatSection() {
 
   return (
     <section className="w-full bg-[#FAF9F5] px-6 py-14 lg:px-10 lg:py-24 2xl:px-40 lg:pt-36 2xl:pt-28">
-      <div className="flex max-w-3xl flex-col items-start text-left lg:mx-auto lg:items-center lg:text-center">
-        <div className="mb-4 flex items-center gap-3">
+      <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
+        <div className="mb-4 flex items-center gap-3 self-center">
           <span className="h-px w-8 bg-[#9739A8]" />
           <Typography variant="caption" className="font-bold font-figtree tracking-wide text-[#9739A8]">
             Our Impact

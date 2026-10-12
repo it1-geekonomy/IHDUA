@@ -66,7 +66,8 @@ export default function OurConviction() {
 
           {/* Content: order-1 (first) when stacked, order-2 (right) at lg+ */}
           <div ref={contentRef} className="order-1 lg:order-2">
-            <div className="flex items-center gap-3">
+            {/* Label: centered below lg, left-aligned at lg+ */}
+            <div className="flex items-center justify-center gap-3 lg:justify-start">
               <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
               <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
                 OUR CONVICTION
@@ -74,14 +75,19 @@ export default function OurConviction() {
               <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
             </div>
 
+            {/* Heading: centered below lg, left-aligned at lg+ */}
             <Typography
               variant="display-xl"
-              className="mt-5 max-w-xl leading-tight text-[#00191B] font-normal font-lora"
+              className="mt-5 w-full text-center leading-tight text-[#00191B] font-normal font-lora lg:mx-0 lg:max-w-xl lg:text-left"
             >
               Development begins with opportunity.
             </Typography>
 
-            <Typography variant="body-lg" className="mt-5 leading-relaxed text-[#5F6C6D] font-normal font-figtree">
+            {/* Description: centered below lg, left-aligned at lg+ */}
+            <Typography
+              variant="body-lg"
+              className="mx-auto mt-5 max-w-2xl text-center leading-relaxed text-[#5F6C6D] font-normal font-figtree lg:mx-0 lg:max-w-none lg:text-left"
+            >
               True change isn&apos;t handed down; it&apos;s grown from the
               roots. We partner with rural families in Karnataka to provide
               the tools, training, and community structure needed to foster
