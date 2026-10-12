@@ -13,12 +13,14 @@ export default function MissionSection() {
       <div className="w-full px-6 pt-6 lg:pt-0 lg:pb-26 lg:px-10 2xl:px-40">
         {/* Top row: eyebrow + heading on the left, description on the right */}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
-          <div>
-            <div className="flex items-center gap-3">
+          {/* Label + heading: centered below lg, left-aligned at lg+ */}
+          <div className="text-center lg:text-left">
+            <div className="flex items-center justify-center gap-3 lg:justify-start">
               <span className="h-px w-8 bg-[#9739A8]" />
               <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
                 Mission
               </Typography>
+              <span className="h-px w-8 bg-[#9739A8]" />
             </div>
 
             <Typography variant="display-xl" className="mt-4 font-lora font-normal text-[#00191B]">
@@ -26,9 +28,10 @@ export default function MissionSection() {
             </Typography>
           </div>
 
+          {/* Description: centered below lg (same max width as a centered block), left-aligned at lg+ */}
           <Typography
             variant="body-lg"
-            className="w-full lg:max-w-md xl:max-w-3xl leading-relaxed text-[#5F6C6D] lg:text-left font-normal font-figtree"
+            className="mx-auto w-full max-w-2xl text-center leading-relaxed text-[#5F6C6D] font-normal font-figtree lg:mx-0 lg:max-w-md lg:text-left xl:max-w-3xl"
           >
             Building stronger communities through sustainable development.
             IHDUA works with rural communities to create better access to

@@ -12,8 +12,9 @@ export default function FocusAreaSection() {
   return (
     <section id="focus-areas" className="w-full bg-[#FAF9F5]">
       <div className="w-full px-6 pt-6 lg:py-24 lg:px-10 2xl:px-40">
-        <div className="flex flex-col items-start text-left">
-          <div className="mb-4 flex items-center gap-3">
+        <div className="flex flex-col items-center text-center">
+          {/* Label, heading and description: centered at all screen sizes */}
+          <div className="mb-4 flex items-center justify-center gap-3">
             <span className="h-px w-8 bg-[#9739A8]" />
             <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
               OUR FOCUS AREAS
@@ -28,7 +29,7 @@ export default function FocusAreaSection() {
           </Typography>
           <Typography
             variant="body-lg"
-            className="mt-3 leading-relaxed text-[#5F6C6D] w-full lg:max-w-2xl font-normal font-figtree"
+            className="mt-3 leading-relaxed text-[#5F6C6D] w-full max-w-2xl font-normal font-figtree"
           >
             Creating opportunities through education, healthcare, sustainable
             livelihoods, and community-led development.

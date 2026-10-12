@@ -120,9 +120,10 @@ export default function RuralDevelopmentSection() {
     <section id="home-top" className="bg-[#FAF9F5] pt-8 lg:px-6 lg:pt-20 lg:pb-0">
       {/* Same px-6 gutter as other sections below lg */}
       <div className="w-full px-6">
-        <div className="mx-auto max-w-6xl text-left lg:text-center">
+        {/* Centered at every screen size */}
+        <div className="mx-auto max-w-6xl text-center">
           {/* Kicker */}
-          <div className="mb-4 flex items-center justify-start gap-3 font-semibold uppercase tracking-wider text-[#9739A8] lg:justify-center">
+          <div className="mb-4 flex items-center justify-center gap-3 font-semibold uppercase tracking-wider text-[#9739A8]">
             <span className="h-px w-6 bg-[#9739A8]" />
             <Typography variant="caption" className="font-bold font-figtree tracking-normal">
               Rural Development · Karnataka
@@ -133,7 +134,7 @@ export default function RuralDevelopmentSection() {
           {/* Heading — h1 scale below lg (same as other long section titles); large from lg */}
           <Typography
             variant="h1"
-            className="max-w-5xl font-normal font-lora leading-tight text-[#00191B] lg:mx-auto lg:text-[56px]"
+            className="mx-auto max-w-5xl font-normal font-lora leading-tight text-[#00191B] lg:text-[56px]"
           >
             Building Stronger Communities, Creating Lasting Change
           </Typography>
@@ -141,13 +142,13 @@ export default function RuralDevelopmentSection() {
           {/* Subtext */}
           <Typography
             variant="body-lg"
-            className="mt-4 w-full max-w-2xl text-[#5F6C6D] font-regular font-figtree leading-relaxed lg:mx-auto lg:mt-8"
+            className="mx-auto mt-4 w-full max-w-2xl text-[#5F6C6D] font-regular font-figtree leading-relaxed lg:mt-8"
           >
             Empowering rural communities through education, sustainable livelihoods, healthcare, and opportunities for a better future.
           </Typography>
 
           {/* Buttons */}
-          <div className="mt-8 flex flex-row gap-3 sm:flex-row sm:items-center lg:items-center lg:justify-center">
+          <div className="mt-8 flex flex-row items-center justify-center gap-3">
             <button
               type="button"
               onClick={() => scrollToDonateSection()}

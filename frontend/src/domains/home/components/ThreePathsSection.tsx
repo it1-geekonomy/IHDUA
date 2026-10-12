@@ -5,14 +5,20 @@ export default function ThreePathsSection() {
   return (
     <section className="w-full bg-[#FFD638]">
       <div className="w-full px-6 py-14 sm:px-10 sm:py-20 lg:px-10 lg:py-16 2xl:px-40">
-        <div className="flex items-center gap-3">
+        {/* Label: centered below sm (640px), left-aligned from sm up */}
+        <div className="flex items-center justify-center gap-3 sm:justify-start">
           <span className="h-px w-8 bg-[#9739A8]" />
           <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
             Get Involved
           </Typography>
+          <span className="h-px w-8 bg-[#9739A8]" />
         </div>
 
-        <Typography variant="h2" className="mt-4 font-lora font-normal text-[#00191B]">
+        {/* Heading: centered below sm (640px), left-aligned from sm up */}
+        <Typography
+          variant="h2"
+          className="mt-4 text-center font-lora font-normal text-[#00191B] sm:text-left"
+        >
           Three Paths to Shared Progress
         </Typography>
 
