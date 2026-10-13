@@ -39,7 +39,7 @@ export const DONATION_COPY = {
   fillRequired: "Please enter your name, mobile number, and email to continue.",
   invalidTaxId: "Enter a valid PAN (10 characters) or Aadhaar (12 digits).",
   invalidPhone: "Enter a valid mobile number for the selected country.",
-  bgImage: "/CTAsection/ctabgimg.jpg",
+  bgImage: "/CTAsection/ctabg-img.png",
 } as const;
 
 export function isCtaPresetAmount(amount: string): amount is CtaPresetAmount {

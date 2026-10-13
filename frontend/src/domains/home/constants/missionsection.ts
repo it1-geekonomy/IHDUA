@@ -1,30 +1,30 @@
 export const PILLARS = [
   {
     number: "01",
-    title: "Education & Learning",
+    title: "Understand Local Needs",
     description:
-      "Creating better access to quality education and learning opportunities for rural communities.",
-    image: "/missionsection/missionimg.png",
+      "Identify community needs and development priorities.",
+    image: "/missionsection/learning.png",
   },
   {
     number: "02",
-    title: "Healthcare & Well-being",
+    title: "Build Skills & Knowledge",
     description:
-      "Improving access to essential healthcare and supporting healthier communities.",
-    image: "/missionsection/missionimg2.png",
+      "Support learning, training and awareness.",
+    image: "/missionsection/knowledge.png",
   },
   {
     number: "03",
-    title: "Sustainable Livelihoods",
+    title: "Strengthen Livelihoods",
     description:
-      "Creating opportunities for sustainable income, skills, and economic independence.",
-    image: "/missionsection/missionimg3.png",
+      "Support opportunities for income generation and self-reliance.",
+    image: "/missionsection/strength.png",
   },
   {
     number: "04",
-    title: "Community Development",
+    title: "Support Community Development",
     description:
-      "Strengthening local communities through inclusive, community-led initiatives.",
-    image: "/missionsection/missionimg4.png",
+      "Work towards healthier, more resilient rural communities.",
+    image: "/missionsection/support.png",
   },
 ];

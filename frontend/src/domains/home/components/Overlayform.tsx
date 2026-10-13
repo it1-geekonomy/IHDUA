@@ -117,7 +117,7 @@ export default function Overlayform({ onClose }: OverlayformProps) {
             sizes="100vw"
           />
           <Image
-            src="/overlayform/overlayformimg.png"
+            src="/overlayform/formimg.png"
             alt="Family supported by IHDUA"
             fill
             className="hidden object-cover object-center lg:block"
