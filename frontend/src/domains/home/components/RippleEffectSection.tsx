@@ -26,7 +26,7 @@ export default function RippleEffectSection() {
         <div className="mt-8 grid grid-cols-1 items-stretch gap-8 sm:mt-10 lg:grid-cols-2 lg:gap-16">
           <div className="relative h-64 overflow-hidden sm:h-80 md:h-[26rem] lg:h-auto rounded-md">
             <img
-              src="/rippleeffect/shanthamma.png"
+              src="/rippleeffect/shanthamma1.png"
               alt="Shanthamma standing in her farm field"
               className="h-full w-full object-cover lg:absolute lg:inset-0"
             />

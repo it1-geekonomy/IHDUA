@@ -4,7 +4,7 @@ import Typography from "@/lib/Typography";
 export default function ThreePathsSection() {
   return (
     <section className="w-full bg-[#FFD638]">
-      <div className="w-full px-6 py-14 sm:px-10 sm:py-20 lg:px-10 lg:py-16 2xl:px-40">
+      <div className="w-full px-6 py-6 pb-6 sm:px-10 sm:py-20 lg:px-10 lg:py-16 2xl:px-40">
         {/* Label: centered below sm (640px), left-aligned from sm up */}
         <div className="flex items-center justify-center gap-3 sm:justify-start">
           <span className="h-px w-8 bg-[#9739A8]" />
