@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { DONATION_COPY } from "@/domains/home/constants/donation";
+import { DONATION_COPY } from "@/shared/constants/donation";
 import {
   DEFAULT_COUNTRY,
   DEFAULT_CURRENCY,

@@ -1,8 +1,8 @@
-export default function WhyUsPage() {
+export default function SelfHelpGroupFedartionPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-100">
       <h1 className="text-5xl font-bold text-black">
-        Why IDHUA
+        SELF HELP GROUP & FEDARTION
       </h1>
     </main>
   );

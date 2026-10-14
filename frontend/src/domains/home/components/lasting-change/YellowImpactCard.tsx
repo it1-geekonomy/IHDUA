@@ -24,7 +24,7 @@ const CIRCLE_R = 67; // circle radius (px)
 const GAP = 9;
 
 // Ring text size, in svg units (scales with the seal).
-const RING_FONT_SIZE = 12;
+const RING_FONT_SIZE = 16;
 
 // Minimum clear space (px) between the ring and the description text.
 const TEXT_CLEARANCE = 12;

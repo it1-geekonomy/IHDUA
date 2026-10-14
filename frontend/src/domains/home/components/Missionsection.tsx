@@ -1,15 +1,26 @@
 "use client";
 
-import { useState } from "react";
 import { PILLARS } from "@/domains/home/constants/missionsection";
 import Typography from "@/lib/Typography";
+import {
+  MissionAnimations,
+  MissionImageStage,
+  PillarEffects,
+  pillarNumberClass,
+  pillarTitleNudge,
+  useMissionAnimation,
+} from "./Missionanimation";
 
 export default function MissionSection() {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const { activeIndex, prevIndex, direction, animKey, ripple, handleSelect } = useMissionAnimation();
+
   const activePillar = PILLARS[activeIndex];
+  const prevPillar = prevIndex !== null ? PILLARS[prevIndex] : null;
 
   return (
     <section className="w-full bg-white">
+      <MissionAnimations />
+
       <div className="w-full px-6 pt-6 lg:pt-0 lg:pb-26 lg:px-10 2xl:px-40">
         {/* Top row: eyebrow + heading on the left, description on the right */}
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
@@ -28,7 +39,7 @@ export default function MissionSection() {
             </Typography>
           </div>
 
-          {/* Description: centered below lg (same max width as a centered block), left-aligned at lg+ */}
+          {/* Description: centered below lg, left-aligned at lg+ */}
           <Typography
             variant="body-lg"
             className="mx-auto w-full max-w-2xl text-center leading-relaxed text-[#5F6C6D] font-normal font-figtree lg:mx-0 lg:max-w-md lg:text-left xl:max-w-3xl"
@@ -45,28 +56,28 @@ export default function MissionSection() {
           <div className="flex flex-col gap-3 sm:gap-4">
             {PILLARS.map((pillar, index) => {
               const isActive = index === activeIndex;
+              const nudge = pillarTitleNudge(isActive, animKey);
 
               return (
                 <button
                   key={pillar.number}
                   type="button"
-                  onClick={() => setActiveIndex(index)}
+                  onClick={(e) => handleSelect(index, e)}
                   aria-pressed={isActive}
-                  className={`flex flex-1 items-center gap-4 border-l-4 border-[#9739A8] px-4 py-4 text-left transition-colors duration-200 sm:gap-6 sm:px-6 sm:py-5 ${
-                    isActive ? "bg-[#FFD638]" : "bg-[#FAF9F5] hover:bg-[#FFD638]"
-                  }`}
+                  className="group relative flex flex-1 items-center gap-4 overflow-hidden border-l-4 border-[#9739A8] bg-[#FAF9F5] px-4 py-4 text-left sm:gap-6 sm:px-6 sm:py-5"
                 >
-                  <Typography
-                    variant="display-2xl"
-                    className="font-lora font-normal leading-none text-[#6D3F76]/[0.37]"
-                  >
+                  <PillarEffects index={index} isActive={isActive} ripple={ripple} />
+
+                  <Typography variant="display-2xl" className={pillarNumberClass(isActive)}>
                     {pillar.number}
                   </Typography>
 
-                  <div>
-                    <Typography variant="body-xl" className="font-lora font-normal text-[#383217]">
-                      {pillar.title}
-                    </Typography>
+                  <div className="relative min-w-0 flex-1">
+                    <div key={nudge.key} className={nudge.className}>
+                      <Typography variant="body-xl" className="font-lora font-normal text-[#383217]">
+                        {pillar.title}
+                      </Typography>
+                    </div>
                     <Typography
                       variant="body-sm"
                       className="mt-1.5 leading-relaxed text-[#716B52]/[0.58] font-figtree font-normal"
@@ -79,13 +90,12 @@ export default function MissionSection() {
             })}
           </div>
 
-          <div className="h-64 sm:h-80 md:h-[26rem] lg:h-auto">
-            <img
-              src={activePillar.image}
-              alt={activePillar.title}
-              className="h-full w-full object-cover transition-opacity duration-300"
-            />
-          </div>
+          <MissionImageStage
+            active={activePillar}
+            prev={prevPillar}
+            direction={direction}
+            animKey={animKey}
+          />
         </div>
       </div>
     </section>

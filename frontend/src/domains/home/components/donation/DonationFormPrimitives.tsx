@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from "react";
-import { DONATION_COPY } from "@/domains/home/constants/donation";
+import { DONATION_COPY } from "@/shared/constants/donation";
 import { cn } from "@/lib/utils";
 
 const FIELD =
