@@ -12,7 +12,7 @@ export type FieldStory = {
 export const FIELD_STORIES: FieldStory[] = [
   {
     id: "grama-sabha",
-    image: "/home/featured-story-image.png",
+    image: "/home/story1.png",
     category: "Community Leadership",
     date: "March 2, 2026",
     title: "The Grama Sabha Revival: Village Assemblies Take Charge of Education",

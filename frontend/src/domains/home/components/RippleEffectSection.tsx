@@ -5,15 +5,20 @@ export default function RippleEffectSection() {
   return (
     <section className="w-full bg-[#FAF9F5]">
       <div className="w-full px-6 pt-6 pb-6 lg:py-20 lg:px-10 2xl:px-40">
-        {/* Eyebrow + heading */}
-        <div className="flex items-center gap-3">
+        {/* Eyebrow + heading: centered below lg, left-aligned at lg+ */}
+        <div className="flex items-center justify-center gap-3 lg:justify-start">
           <span className="h-px w-8 bg-[#9739A8]" />
           <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
             Real People, Real Change
           </Typography>
+          {/* Right-side line only below lg, so the centered label is balanced */}
+          <span className="h-px w-8 bg-[#9739A8] lg:hidden" />
         </div>
 
-        <Typography variant="display-xl" className="mt-4 font-lora font-normal text-[#00191B]">
+        <Typography
+          variant="display-xl"
+          className="mt-4 text-center font-lora font-normal text-[#00191B] lg:text-left"
+        >
           The Ripple Effect of a Single Opportunity
         </Typography>
 
@@ -21,7 +26,7 @@ export default function RippleEffectSection() {
         <div className="mt-8 grid grid-cols-1 items-stretch gap-8 sm:mt-10 lg:grid-cols-2 lg:gap-16">
           <div className="relative h-64 overflow-hidden sm:h-80 md:h-[26rem] lg:h-auto rounded-md">
             <img
-              src="/rippleeffect/shanthamma.png"
+              src="/rippleeffect/shanthamma1.png"
               alt="Shanthamma standing in her farm field"
               className="h-full w-full object-cover lg:absolute lg:inset-0"
             />
