@@ -45,6 +45,11 @@ function useBodyScrollLock() {
 const INR_DEFAULT = "3000";
 const INR_AMOUNTS = [INR_DEFAULT, "5000", "10000", "18000", "25000"];
 
+// Pills: below lg they fill a 3-column row (₹3,000 | ₹5,000 | More); lg+ they sit in a 6-column row.
+const PILL_BASE = `w-full shrink-0 whitespace-nowrap rounded-md border px-2 py-2 text-center transition-colors lg:min-w-0 lg:px-1 2xl:px-2 2xl:py-2.5 ${figmaTypeScale[15]}`;
+const PILL_UNSELECTED = "border-[#D4CEC5] bg-[#FFFAF2] text-[#9739A8] hover:bg-[#F3E7F6]";
+const PILL_SELECTED = "border-[#9739A8] bg-[#9739A8] text-white";
+
 interface AmountStepProps {
   form: ReturnType<typeof useDonationForm>;
   rise: string;
@@ -60,11 +65,6 @@ function AmountStep({ form, rise, delay }: AmountStepProps) {
     formatted: formatPresetLabel(digits, form.currency),
   }));
 
-  // <lg: pills fill their grid cell. lg+: auto width, compact.
-  const pillBase = `rounded-md border transition-colors ${figmaTypeScale[15]} shrink-0 w-full whitespace-nowrap px-3 py-2.5 text-center [@media(max-height:760px)]:py-2 lg:min-w-0 lg:px-1 lg:py-2 2xl:px-2 2xl:py-2.5`;
-  const pillUnselected = "bg-[#FFFAF2] border-[#D4CEC5] text-[#9739A8] hover:bg-[#F3E7F6]";
-  const pillSelected = "bg-[#9739A8] border-[#9739A8] text-white";
-
   return (
     <>
       <div
@@ -73,21 +73,21 @@ function AmountStep({ form, rise, delay }: AmountStepProps) {
       >
         <Typography
           id="overlayform-title"
-          variant="h2"
-          className="font-regular font-lora leading-[1.2] text-[#00191B] !text-[1.25rem] sm:!text-[1.375rem] lg:!text-[24px] xl:!text-[26px] 2xl:!text-[30px] [@media(max-height:760px)]:!text-[1.125rem] lg:[@media(max-height:760px)]:!text-[20px]"
+          variant="h4"
+          className="font-regular font-lora leading-[1.2] text-[#00191B]"
         >
           Strengthening Rural Lives, Building Better Futures
         </Typography>
 
         <Typography
-          variant="body-lg"
-          className="font-regular font-figtree leading-snug text-[#5F6C6D] !text-[0.75rem] sm:!text-[0.8125rem] lg:!text-[13px] xl:!text-[14px] 2xl:!text-[15px] lg:max-w-md [@media(max-height:620px)]:hidden"
+          variant="body-sm"
+          className="font-regular font-figtree leading-snug text-[#5F6C6D]"
         >
           Your support helps us create sustainable opportunities and empower rural communities to thrive.
         </Typography>
       </div>
 
-      <div className="grid shrink-0 grid-cols-2 gap-x-3 gap-y-3 lg:grid-cols-4 lg:gap-x-3 xl:gap-x-4">
+      <div className="grid shrink-0 grid-cols-2 gap-x-3 gap-y-2.5 lg:grid-cols-4 lg:gap-y-3 xl:gap-x-4">
         {IMPACT_ITEMS.map((item, idx) => (
           <div
             key={item.title}
@@ -97,18 +97,18 @@ function AmountStep({ form, rise, delay }: AmountStepProps) {
             <img
               src={item.icon}
               alt=""
-              className="h-8 w-8 object-contain lg:h-8 lg:w-8 xl:h-9 xl:w-9 2xl:h-10 2xl:w-10 [@media(max-height:620px)]:h-6 [@media(max-height:620px)]:w-6"
+              className="h-6 w-6 object-contain lg:h-8 lg:w-8 xl:h-9 xl:w-9 2xl:h-10 2xl:w-10"
             />
             <div className="min-w-0">
               <Typography
                 variant="overline"
-                className="block font-bold font-manrope leading-snug text-[#00191B] normal-case tracking-normal !text-[11px] lg:!text-[11px] 2xl:!text-[12px]"
+                className="block font-bold font-manrope leading-snug text-[#00191B] normal-case tracking-normal"
               >
                 {item.title}
               </Typography>
               <Typography
                 variant="overline"
-                className="mt-0.5 block font-normal font-manrope leading-snug text-[#5F6C6D] normal-case tracking-normal !text-[10px] lg:!text-[10px] 2xl:!text-[11px] [@media(max-height:760px)]:hidden"
+                className="mt-0.5 block font-normal font-manrope leading-snug text-[#5F6C6D] normal-case tracking-normal"
               >
                 {item.description}
               </Typography>
@@ -118,10 +118,10 @@ function AmountStep({ form, rise, delay }: AmountStepProps) {
       </div>
 
       <div style={delay(1100)} className={`${rise} flex shrink-0 flex-col gap-2`}>
-        {/* Country select hidden below lg (not in the mobile mockup) */}
+        {/* Country select is lg+ only (not part of the mobile design) */}
         <Typography
-          variant="caption"
-          className="hidden font-bold font-manrope tracking-normal text-[#6B6660] lg:block lg:!text-[12px] xl:!text-[13px]"
+          variant="body-sm"
+          className="hidden font-bold font-manrope tracking-normal text-[#6B6660] lg:block"
         >
           Choose your country
         </Typography>
@@ -131,13 +131,12 @@ function AmountStep({ form, rise, delay }: AmountStepProps) {
 
         <Typography
           variant="caption"
-          className="mt-0.5 text-center font-bold font-manrope tracking-normal text-[#6B6660] !text-[11px] lg:mt-1 lg:text-left lg:!text-[12px] xl:!text-[13px]"
+          className="text-center font-bold font-manrope tracking-normal text-[#6B6660] lg:text-left"
         >
           Choose an amount
         </Typography>
 
-        {/* <lg: 2 presets + full-width "More". lg+: wrapping row, all presets */}
-        <div className="grid grid-cols-2 gap-2 lg:grid-cols-6">
+        <div className="grid grid-cols-3 gap-2 lg:grid-cols-6">
           {currentPresets.map(({ digits, formatted }, i) => {
             const isSelected = !form.usingCustom && form.selectedDigits === digits;
             return (
@@ -145,7 +144,7 @@ function AmountStep({ form, rise, delay }: AmountStepProps) {
                 key={digits}
                 type="button"
                 onClick={() => form.pickPreset(digits)}
-                className={`${pillBase} ${isSelected ? pillSelected : pillUnselected} ${
+                className={`${PILL_BASE} ${isSelected ? PILL_SELECTED : PILL_UNSELECTED} ${
                   i >= 2 ? "hidden lg:block" : ""
                 }`}
               >
@@ -158,7 +157,7 @@ function AmountStep({ form, rise, delay }: AmountStepProps) {
 
           {form.usingCustom ? (
             <span
-              className={`${pillBase} ${pillSelected} col-span-2 flex items-center justify-center font-extrabold lg:col-span-1 lg:justify-start`}
+              className={`${PILL_BASE} ${PILL_SELECTED} flex items-center justify-center font-extrabold lg:justify-start`}
             >
               {form.currencySymbol}
               <input
@@ -169,14 +168,14 @@ function AmountStep({ form, rise, delay }: AmountStepProps) {
                 value={form.customDigits}
                 onChange={(e) => form.setCustomFromInput(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
-                className={`ml-1 w-14 bg-transparent outline-none placeholder:text-white/70 sm:w-16 lg:w-full lg:min-w-0 ${figmaTypeScale[16]} font-extrabold text-white`}
+                className={`ml-1 w-full min-w-0 bg-transparent font-extrabold text-white outline-none placeholder:text-white/70 ${figmaTypeScale[16]}`}
               />
             </span>
           ) : (
             <button
               type="button"
               onClick={() => form.setUsingCustom(true)}
-              className={`${pillBase} ${pillUnselected} col-span-2 lg:col-span-1`}
+              className={`${PILL_BASE} ${PILL_UNSELECTED}`}
             >
               <Typography variant="caption" className="font-bold font-manrope normal-case tracking-normal">
                 More
@@ -186,11 +185,11 @@ function AmountStep({ form, rise, delay }: AmountStepProps) {
         </div>
       </div>
 
-      <div style={delay(1250)} className={`${rise} mt-1 flex shrink-0 flex-col items-center gap-1.5 lg:mt-2`}>
+      <div style={delay(1250)} className={`${rise} flex shrink-0 flex-col items-center gap-1.5 lg:mt-2`}>
         <button
           type="button"
           onClick={() => form.goToDetails()}
-          className={`flex w-full items-center justify-center gap-2 rounded-md bg-[#FDC61D] px-4 py-2.5 font-bold font-manrope text-[#1C1C1C] lg:py-2.5 2xl:py-3 cursor-pointer ${figmaTypeScale[18]}`}
+          className={`flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-[#FDC61D] px-4 py-2.5 font-bold font-manrope text-[#1C1C1C] 2xl:py-3 ${figmaTypeScale[18]}`}
         >
           Donate Now
           <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth={2.2}>
@@ -198,12 +197,12 @@ function AmountStep({ form, rise, delay }: AmountStepProps) {
           </svg>
         </button>
 
-        <Typography
-          variant="overline"
-          className="font-regular font-manrope text-[#B0A99F] normal-case tracking-normal !text-[10px]"
-        >
-          🔒 Secure Payment | Powered by Razorpay
-        </Typography>
+       <Typography
+  variant="overline"
+  className={`${figmaTypeScale[12]} font-regular font-manrope text-[#B0A99F] normal-case tracking-normal`}
+>
+  🔒 Secure Payment | Powered by Razorpay
+</Typography>
       </div>
     </>
   );
@@ -237,18 +236,22 @@ export default function Overlayform({ onClose }: OverlayformProps) {
     >
       <OverlayformAnimations />
 
+      {/*
+        Below lg the card is a column capped at the viewport height:
+        the image is the only block allowed to shrink (h-40 down to min-h-28),
+        the form keeps its natural height, so the form is always fully visible.
+        lg+ switches to a side-by-side layout.
+      */}
       <div
         className={`
           overlayform-card-in
-          relative shrink-0
-          flex w-[min(380px,calc(100vw-2rem))] max-h-[calc(100dvh-1.5rem)] flex-col
+          relative flex w-[min(380px,calc(100vw-2rem))] max-h-[calc(100dvh-1.5rem)] shrink-0 flex-col
           rounded-xl bg-white shadow-2xl
           ${form.step === 1 ? "overflow-hidden" : "overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"}
           transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none
-          lg:h-auto lg:max-h-[calc(100dvh-2rem)] lg:flex-row lg:overflow-hidden lg:rounded-none
-          lg:w-[min(860px,calc(100vw-4rem))]
+          lg:h-auto lg:max-h-[calc(100dvh-2rem)] lg:w-[min(860px,calc(100vw-4rem))] lg:flex-row lg:overflow-hidden lg:rounded-none
           xl:w-[min(940px,calc(100vw-5rem))]
-          2xl:w-[min(1080px,calc(100vw-6rem))] 2xl:max-h-[calc(100dvh-3rem)]
+          2xl:max-h-[calc(100dvh-3rem)] 2xl:w-[min(1080px,calc(100vw-6rem))]
         `}
         style={exiting ? { opacity: 0, transform: "scale(0.98)" } : undefined}
       >
@@ -265,14 +268,14 @@ export default function Overlayform({ onClose }: OverlayformProps) {
 
         {intro && <IntroCurtains />}
 
-        {/* Image: flexible height below lg (shrinks first), stretches beside the form on lg+ */}
-        <div className="relative h-[180px] min-h-[72px] w-full shrink overflow-hidden sm:h-[200px] lg:h-auto lg:min-h-[360px] lg:w-[38%] lg:shrink-0 lg:self-stretch xl:w-[40%] 2xl:w-[42%]">
+        {/* Image */}
+        <div className="relative h-40 min-h-28 w-full shrink overflow-hidden lg:h-auto lg:min-h-[360px] lg:w-[38%] lg:shrink-0 lg:self-stretch xl:w-[40%] 2xl:w-[42%]">
           <div className="overlayform-img-in absolute inset-0">
             <Image
               src="/overlayform/mobileimg1.png"
               alt="Family supported by IHDUA"
               fill
-              className="object-cover object-top lg:hidden"
+              className="object-cover object-center lg:hidden"
               priority
               sizes="380px"
             />
@@ -287,14 +290,14 @@ export default function Overlayform({ onClose }: OverlayformProps) {
           </div>
         </div>
 
-        {/* Form: every child is shrink-0 so nothing overlaps */}
+        {/* Form */}
         <div
           className="
-            flex w-full shrink-0 flex-col gap-3 bg-[#F6F2EC] px-5 py-4
-            lg:w-[62%] lg:gap-4 lg:overflow-y-auto lg:px-6 lg:py-5
-            xl:w-[60%] xl:gap-4 xl:px-7 xl:py-6
-            2xl:w-[58%] 2xl:gap-5 2xl:px-9 2xl:py-7
+            flex w-full shrink-0 flex-col gap-2.5 bg-[#F6F2EC] px-5 py-3
             [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
+            lg:w-[62%] lg:gap-4 lg:overflow-y-auto lg:px-6 lg:py-5
+            xl:w-[60%] xl:px-7 xl:py-6
+            2xl:w-[58%] 2xl:gap-5 2xl:px-9 2xl:py-7
           "
         >
           {form.step === 1 ? (
