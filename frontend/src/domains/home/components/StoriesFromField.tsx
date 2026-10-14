@@ -35,17 +35,19 @@ export default function StoriesFromField() {
 
   return (
     <section className="w-full bg-[#FAF9F5]">
-      <div className="w-full px-6 py-10 lg:px-10 lg:py-16 2xl:px-40">
+      <div className="w-full px-6 pt-6 pb-6 lg:px-10 lg:py-16 2xl:px-40">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
-          <div>
-            <div className="flex items-center gap-3">
+          {/* Label + heading: centered below sm (640px), left-aligned from sm up */}
+          <div className="text-center sm:text-left">
+            <div className="flex items-center justify-center gap-3 sm:justify-start">
               <span className="h-px w-8 bg-[#9739A8]" />
               <Typography
-                className={`font-figtree font-bold text-[#9739A8] ${figmaTypeScale[15]}`}
+                className={`font-figtree font-bold text-[#43AEB5] ${figmaTypeScale[15]}`}
               >
                 Field Updates
               </Typography>
+              <span className="h-px w-8 bg-[#43AEB5]" />
             </div>
             <Typography
               variant="h2"
@@ -128,7 +130,7 @@ export default function StoriesFromField() {
 
                   <div className="min-w-0 flex-1">
                     <p
-                      className={`block font-figtree font-bold uppercase tracking-wider text-[#9739A8] ${figmaTypeScale[14]}`}
+                      className={`block font-figtree font-bold uppercase tracking-wider text-[#43AEB5] ${figmaTypeScale[14]}`}
                     >
                       {story.category}
                     </p>
@@ -155,7 +157,7 @@ export default function StoriesFromField() {
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                   <Typography
                     variant="caption"
-                    className="font-figtree font-bold text-[#9739A8]"
+                    className="font-figtree font-bold text-[#43AEB5]"
                   >
                     {featured.category}
                   </Typography>

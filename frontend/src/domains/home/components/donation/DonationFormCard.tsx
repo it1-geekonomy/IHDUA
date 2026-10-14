@@ -10,7 +10,7 @@ export function DonationFormCard() {
   const form = useDonationForm();
 
   return (
-    <div className="w-full max-w-md shrink-0 self-center rounded-sm bg-[#F7F4EE] p-6 shadow-xl sm:p-7 lg:self-auto xl:max-w-[420px]">
+    <div className="w-full max-w-md shrink-0 self-center rounded-sm bg-[#F7F4EE] p-6 shadow-xl sm:p-7 lg:max-w-[550px]">
       <Typography
         variant="h3"
         className="text-center font-lora font-normal leading-snug text-[#00191B]"

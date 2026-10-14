@@ -1,27 +1,147 @@
 "use client";
 
+import { useMemo } from "react";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { HELP_ITEMS } from "@/domains/home/constants/howcanwehelp";
 import Typography from "@/lib/Typography";
 
-/** Slower, readable unroll — not a snap */
-const easeRoll = [0.45, 0.05, 0.25, 1] as const;
+type HelpItem = (typeof HELP_ITEMS)[number];
+
+/**
+ * Fluid sizes. Each clamp(min, preferred, max) matches the old breakpoint
+ * values at its endpoints, so the layout is unchanged at the extremes and
+ * scales smoothly in between.
+ */
+const SIZE = {
+  // Grid top margin: 40px (375px) -> 64px (1024px)
+  gridMargin: "mt-[clamp(2.5rem,1.63rem+3.7vw,4rem)]",
+  // Grid gap at lg+: 16px (1024px) -> 32px (1280px)
+  gridGap: "lg:gap-[clamp(1rem,6.25vw_-_3rem,2rem)]",
+  // Card padding: 20/24px (375px) -> 24/32px (640px)
+  cardPadding:
+    "px-[clamp(1.25rem,0.9rem+1.5vw,1.5rem)] py-[clamp(1.5rem,0.8rem+3vw,2rem)]",
+  // Icon box: 56px -> 64px
+  iconBox: "h-[clamp(3.5rem,2.8rem+3vw,4rem)] w-[clamp(3.5rem,2.8rem+3vw,4rem)]",
+  // Icon: 28px -> 32px
+  icon: "h-[clamp(1.75rem,1.4rem+1.5vw,2rem)] w-[clamp(1.75rem,1.4rem+1.5vw,2rem)]",
+} as const;
+
+/** Slower, readable unroll, not a snap */
+const EASE_ROLL: [number, number, number, number] = [0.45, 0.05, 0.25, 1];
 const ROLL_DURATION = 1.55;
+const STAGGER_DELAY = 0.22;
+const INITIAL_DELAY = 0.12;
+
+/** Plays once when the grid enters the viewport */
+const VIEWPORT = { once: true, amount: 0.35, margin: "0px 0px -8% 0px" } as const;
+
+function createVariants(reduceMotion: boolean) {
+  return {
+    container: {
+      hidden: {},
+      visible: {
+        transition: {
+          staggerChildren: reduceMotion ? 0 : STAGGER_DELAY,
+          delayChildren: reduceMotion ? 0 : INITIAL_DELAY,
+        },
+      },
+    },
+    // Wrapper only coordinates timing; with reduced motion it fades in briefly
+    item: {
+      hidden: { opacity: reduceMotion ? 0 : 1 },
+      visible: {
+        opacity: 1,
+        transition: { duration: reduceMotion ? 0.2 : 0 },
+      },
+    },
+    // Paper / curtain unrolls top -> bottom
+    paper: {
+      hidden: reduceMotion ? { opacity: 0 } : { clipPath: "inset(0 0 100% 0)" },
+      visible: reduceMotion
+        ? { opacity: 1, transition: { duration: 0.25 } }
+        : {
+            clipPath: "inset(0 0 0% 0)",
+            transition: { duration: ROLL_DURATION, ease: EASE_ROLL },
+          },
+    },
+    // Soft shadow under the rod that fades as the paper unrolls
+    shadow: {
+      hidden: { opacity: 0.55 },
+      visible: {
+        opacity: 0,
+        transition: { duration: ROLL_DURATION, ease: EASE_ROLL, delay: 0.15 },
+      },
+    },
+  } satisfies Record<string, Variants>;
+}
+
+type HelpVariants = ReturnType<typeof createVariants>;
+
+interface HelpCardProps {
+  item: HelpItem;
+  variants: HelpVariants;
+  reduceMotion: boolean;
+}
+
+function HelpCard({ item, variants, reduceMotion }: HelpCardProps) {
+  return (
+    <motion.div className="flex w-[280px] flex-col sm:w-full" variants={variants.item}>
+      {/* Rod the paper hangs from */}
+      <span className="h-[3px] w-full shrink-0 bg-[#9739A8]" aria-hidden="true" />
+
+      <motion.div
+        className={`relative flex h-full flex-col overflow-hidden bg-[#FAF9F5] ${SIZE.cardPadding}`}
+        variants={variants.paper}
+        style={{ willChange: reduceMotion ? undefined : "clip-path" }}
+      >
+        {!reduceMotion && (
+          <motion.span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 z-10 h-14 origin-top bg-linear-to-b from-black/12 to-transparent"
+            variants={variants.shadow}
+          />
+        )}
+
+        <div className={`flex items-center justify-center bg-[#FFD638] ${SIZE.iconBox}`}>
+          {/* Decorative: the heading below already names the item */}
+          <Image
+            src={item.icon}
+            alt=""
+            width={32}
+            height={32}
+            className={`object-contain ${SIZE.icon}`}
+          />
+        </div>
+
+        <Typography variant="h4" className="mt-6 font-lora font-normal text-[#00191B]">
+          {item.title}
+        </Typography>
+        <Typography
+          variant="body-sm"
+          className="mt-2 font-normal font-figtree leading-relaxed text-[#5F6C6D]"
+        >
+          {item.description}
+        </Typography>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 export default function HowCanYouHelpSection() {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotion() ?? false;
+  const variants = useMemo(() => createVariants(reduceMotion), [reduceMotion]);
 
   return (
     <section className="w-full bg-white">
-      <div className="w-full px-6 pt-6 lg:py-30 lg:px-10 2xl:px-40">
+      <div className="w-full px-6 pt-6 lg:px-10 lg:py-30 2xl:px-40">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <Typography variant="display-xl" className="font-lora font-normal text-[#00191B]">
             How can you help?
           </Typography>
           <Typography
             variant="body-lg"
-            className="w-full lg:max-w-xl xl:max-w-3xl leading-relaxed text-[#5F6C6D] md:text-left font-normal font-figtree"
+            className="w-full font-normal font-figtree leading-relaxed text-[#5F6C6D] md:text-left lg:max-w-xl xl:max-w-3xl"
           >
             Together, we can create stronger communities and lasting
             opportunities. Your support helps IHDUA strengthen rural
@@ -30,89 +150,20 @@ export default function HowCanYouHelpSection() {
           </Typography>
         </div>
 
-        {/* Plays once when this block enters the viewport */}
         <motion.div
-          className="mt-10 grid grid-cols-1 justify-items-center gap-6 sm:justify-items-stretch sm:grid-cols-2 lg:mt-16 lg:grid-cols-4 lg:gap-4 xl:gap-8"
+          className={`grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 sm:justify-items-stretch lg:grid-cols-4 ${SIZE.gridMargin} ${SIZE.gridGap}`}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.35, margin: "0px 0px -8% 0px" }}
-          variants={{
-            hidden: {},
-            visible: {
-              transition: {
-                staggerChildren: reduceMotion ? 0 : 0.22,
-                delayChildren: reduceMotion ? 0 : 0.12,
-              },
-            },
-          }}
+          viewport={VIEWPORT}
+          variants={variants.container}
         >
           {HELP_ITEMS.map((item) => (
-            <motion.div
+            <HelpCard
               key={item.title}
-              className="flex w-[280px] flex-col sm:w-full"
-              variants={{
-                hidden: { opacity: reduceMotion ? 0 : 1 },
-                visible: {
-                  opacity: 1,
-                  transition: { duration: reduceMotion ? 0.2 : 0 },
-                },
-              }}
-            >
-              {/* Rod the paper hangs from */}
-              <span className="h-[3px] w-full shrink-0 bg-[#9739A8]" />
-
-              {/* Paper / curtain unrolls top → bottom */}
-              <motion.div
-                className="relative flex h-full flex-col overflow-hidden bg-[#FAF9F5] px-5 py-6 sm:px-6 sm:py-8"
-                variants={{
-                  hidden: reduceMotion
-                    ? { opacity: 0 }
-                    : { clipPath: "inset(0 0 100% 0)" },
-                  visible: reduceMotion
-                    ? { opacity: 1, transition: { duration: 0.25 } }
-                    : {
-                        clipPath: "inset(0 0 0% 0)",
-                        transition: { duration: ROLL_DURATION, ease: easeRoll },
-                      },
-                }}
-                style={{ willChange: reduceMotion ? undefined : "clip-path" }}
-              >
-                {!reduceMotion && (
-                  <motion.span
-                    aria-hidden
-                    className="pointer-events-none absolute inset-x-0 top-0 z-10 h-14 origin-top bg-linear-to-b from-black/12 to-transparent"
-                    variants={{
-                      hidden: { opacity: 0.55 },
-                      visible: {
-                        opacity: 0,
-                        transition: {
-                          duration: ROLL_DURATION,
-                          ease: easeRoll,
-                          delay: 0.15,
-                        },
-                      },
-                    }}
-                  />
-                )}
-
-                <div className="flex h-14 w-14 items-center justify-center bg-[#FFD638] sm:h-16 sm:w-16">
-                  <Image
-                    src={item.icon}
-                    alt={item.title}
-                    width={28}
-                    height={28}
-                    className="h-7 w-7 object-contain sm:h-8 sm:w-8"
-                  />
-                </div>
-
-                <Typography variant="h4" className="mt-6 font-lora font-normal text-[#00191B]">
-                  {item.title}
-                </Typography>
-                <Typography variant="body-sm" className="mt-2 leading-relaxed text-[#5F6C6D] font-normal font-figtree">
-                  {item.description}
-                </Typography>
-              </motion.div>
-            </motion.div>
+              item={item}
+              variants={variants}
+              reduceMotion={reduceMotion}
+            />
           ))}
         </motion.div>
       </div>
