@@ -71,7 +71,7 @@ function ImageTile({
   className = "",
 }: {
   src: string;
-  /** When provided, cross-fades to this image on hover. */
+  /** When provided, smoothly fades in over the base image on hover. */
   hoverSrc?: string;
   aspectClass: string;
   sizes: string;
@@ -80,22 +80,22 @@ function ImageTile({
 }) {
   return (
     <div className={`group relative w-full overflow-hidden ${aspectClass} ${className}`}>
+      {/* Base image stays fully visible underneath (no dip while swapping) */}
       <Image
         src={src}
         alt=""
         fill
         sizes={sizes}
-        className={`object-cover ${objectPositionClass} ${
-          hoverSrc ? "transition-opacity duration-600 group-hover:opacity-0" : ""
-        }`}
+        className={`object-cover ${objectPositionClass}`}
       />
+      {/* Hover image fades in on top, fades out on mouse-leave */}
       {hoverSrc && (
         <Image
           src={hoverSrc}
           alt=""
           fill
           sizes={sizes}
-          className={`absolute inset-0 object-cover ${objectPositionClass} opacity-0 transition-opacity duration-600 group-hover:opacity-100`}
+          className={`absolute inset-0 object-cover ${objectPositionClass} opacity-0 transition-opacity duration-[800ms] ease-in-out will-change-[opacity] group-hover:opacity-100`}
         />
       )}
     </div>

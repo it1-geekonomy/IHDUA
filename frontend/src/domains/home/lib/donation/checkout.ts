@@ -1,4 +1,4 @@
-import { DONATION_SECTION_ID } from "@/domains/home/constants/donation";
+import { DONATION_SECTION_ID } from "@/shared/constants/donation";
 import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 
 export const DONATE_CHECKOUT_EVENT = "ihdua:donate-checkout";

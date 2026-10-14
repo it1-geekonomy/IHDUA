@@ -22,11 +22,12 @@ export function MobileNavItem({ link, pathname, onNavigate }: MobileNavItemProps
   const hasChildren = Boolean(link.children?.length);
 
   if (!hasChildren) {
+    if (!link.href) return null;
     return (
       <li className="border-b border-white/10">
         <Link
           href={link.href}
-          onClick={(e) => onNavigate(e, link.href)}
+          onClick={(e) => onNavigate(e, link.href!)}
           className={cn(
             "flex min-h-12 items-center px-1 py-3.5 font-manrope text-[17px] font-medium tracking-wide transition-colors",
             active ? NAV_ACTIVE : NAV_IDLE,
@@ -69,11 +70,12 @@ export function MobileNavItem({ link, pathname, onNavigate }: MobileNavItemProps
               const hasNested = Boolean(child.children?.length);
 
               if (!hasNested) {
+                if (!child.href) return null;
                 return (
-                  <li key={child.href}>
+                  <li key={`${child.label}-${child.href}`}>
                     <Link
                       href={child.href}
-                      onClick={(e) => onNavigate(e, child.href)}
+                      onClick={(e) => onNavigate(e, child.href!)}
                       className={cn(
                         "flex min-h-11 items-center rounded-sm px-3 py-2.5 font-manrope text-[15px] transition-colors",
                         MENU_HOVER,
@@ -89,7 +91,7 @@ export function MobileNavItem({ link, pathname, onNavigate }: MobileNavItemProps
               const nestedOpen = nestedExpanded === child.label;
 
               return (
-                <li key={child.href}>
+                <li key={`${child.label}-${child.href}`}>
                   <button
                     type="button"
                     aria-expanded={nestedOpen}
@@ -118,12 +120,13 @@ export function MobileNavItem({ link, pathname, onNavigate }: MobileNavItemProps
                     <div className="overflow-hidden">
                       <ul className="mb-1 ml-2 space-y-0.5 border-l border-white/15 pl-2">
                         {child.children?.map((nested) => {
+                          if (!nested.href) return null;
                           const nestedActive = isNavLinkActive(pathname, nested);
                           return (
-                            <li key={nested.href}>
+                            <li key={`${nested.label}-${nested.href}`}>
                               <Link
                                 href={nested.href}
-                                onClick={(e) => onNavigate(e, nested.href)}
+                                onClick={(e) => onNavigate(e, nested.href!)}
                                 className={cn(
                                   "flex min-h-10 items-center rounded-sm px-3 py-2 font-manrope text-[14px] transition-colors",
                                   MENU_HOVER,

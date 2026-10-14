@@ -1,23 +1,31 @@
 "use client";
 
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import Typography from "@/lib/Typography";
 import { cn } from "@/lib/utils";
+import Typography from "@/lib/Typography";
 import { isHomePath } from "@/shared/lib/path";
 import { smoothScrollToTop } from "@/shared/lib/smoothScroll";
-import { DesktopNav } from "./DesktopNav";
-import { MenuToggle } from "./MenuToggle";
-import { MobileNav } from "./MobileNav";
-import { useNavbarScrollHide } from "./useNavbarScrollHide";
+import {
+  CONTACT_HREF,
+  MenuToggle,
+  MobileBackdrop,
+  MobileMenu,
+  NavStyles,
+  useNavbarScroll,
+} from "./navbar";
+import { DesktopNav } from "./NavbarDesktop";
+
+const EASE = "ease-[cubic-bezier(.22,1,.36,1)]";
 
 export default function NavbarShell() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { hidden, setHidden } = useNavbarScrollHide(isOpen);
+  const barRef = useRef<HTMLSpanElement>(null);
+  const { hidden, setHidden } = useNavbarScroll(isOpen, barRef);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -31,24 +39,24 @@ export default function NavbarShell() {
     setHidden(false);
   }, [pathname, setHidden]);
 
-  const handleMobileLinkClick = (
-    e: MouseEvent<HTMLAnchorElement>,
-    href: string,
-  ) => {
+  // close the mobile menu if the screen grows to 1024px+ (desktop nav takes over)
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => mq.matches && setIsOpen(false);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  const handleMobileLinkClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault();
     setIsOpen(false);
 
     if (href === "/" && isHomePath(pathname)) {
       setHidden(false);
-      window.setTimeout(() => {
-        void smoothScrollToTop();
-      }, 280);
+      window.setTimeout(() => void smoothScrollToTop(), 320);
       return;
     }
-
-    setTimeout(() => {
-      router.push(href);
-    }, 280);
+    setTimeout(() => router.push(href), 320);
   };
 
   const handleHomeClick = (e: MouseEvent<HTMLAnchorElement>) => {
@@ -61,59 +69,83 @@ export default function NavbarShell() {
 
   return (
     <>
-      <div
-        className="h-[72px] shrink-0 sm:h-[76px] md:h-[80px] lg:h-[88px]"
-        aria-hidden
-      />
+      <NavStyles />
 
-      <div
-        className={cn(
-          "fixed inset-0 z-40 bg-black/45 transition-opacity duration-300 xl:hidden",
-          isOpen ? "opacity-100" : "pointer-events-none opacity-0",
-        )}
-        onClick={() => setIsOpen(false)}
-        aria-hidden
-      />
+      {/* spacer = nav height */}
+      <div className="h-[68px] shrink-0 lg:h-[80px]" aria-hidden />
+
+      {/* backdrop must live outside <header> (header's transform would trap `fixed`) */}
+      <MobileBackdrop open={isOpen} onClose={() => setIsOpen(false)} />
 
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-50 w-full bg-[#9739A8] will-change-transform transition-transform duration-300 ease-out",
+          "fixed inset-x-0 top-0 z-50 will-change-transform transition-transform duration-500",
+          EASE,
           hidden && !isOpen ? "-translate-y-full" : "translate-y-0",
         )}
       >
-        <nav className="relative z-50 flex items-center justify-between px-5 py-4 sm:px-6 2xl:px-40">
-          <Link href="/" onClick={handleHomeClick} className="flex items-center gap-3">
-            <Image
-              src="/idhualogo1.png"
-              alt="IHDUA logo"
-              width={140}
-              height={140}
-              priority
-              className="h-10 w-auto object-contain sm:h-11 md:h-12 lg:h-14"
+        {/* always a full-width bar */}
+        <div className="relative w-full bg-[#9739A8]">
+          {/* scroll progress (clipped to the shell's radius) */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
+            <span
+              ref={barRef}
+              className="absolute inset-x-0 bottom-0 h-[3px] origin-left scale-x-0 bg-[#FFD638]"
             />
-          </Link>
+          </div>
 
-          <DesktopNav pathname={pathname} onHomeClick={handleHomeClick} />
-
-          <div className="flex items-center gap-3 sm:gap-4">
+          <nav className="relative z-10 flex h-[68px] items-center justify-between px-5 sm:px-6 lg:h-[80px] lg:px-6 xl:px-10 2xl:px-24">
             <Link
-              href="/Contact"
-              className="hidden items-center justify-center bg-white px-6 py-2.5 text-[#9739A8] transition-transform duration-200 hover:scale-[1.03] active:scale-[0.98] sm:inline-flex"
+              href="/"
+              onClick={handleHomeClick}
+              className="flex shrink-0 items-center gap-3"
             >
-              <Typography variant="body-lg" className="font-semibold font-manrope">
-                Contact Us
-              </Typography>
+              <Image
+                src="/idhualogo1.png"
+                alt="IHDUA logo"
+                width={140}
+                height={140}
+                priority
+                className="h-10 w-auto object-contain sm:h-11 md:h-12 xl:h-14"
+              />
             </Link>
 
-            <MenuToggle open={isOpen} onToggle={() => setIsOpen((prev) => !prev)} />
-          </div>
-        </nav>
+            <DesktopNav pathname={pathname} onHomeClick={handleHomeClick} />
 
-        <MobileNav
-          open={isOpen}
-          pathname={pathname}
-          onNavigate={handleMobileLinkClick}
-        />
+            <div className="flex shrink-0 items-center gap-1 sm:gap-3">
+              <Link
+                href={CONTACT_HREF}
+                className="relative hidden items-center gap-2 overflow-hidden rounded-full bg-white px-6 py-2.5 text-[#9739A8] shadow-lg shadow-black/10 sm:inline-flex lg:px-4 lg:py-2 xl:px-6 xl:py-2.5"
+              >
+                <Typography
+                  variant="body-lg"
+                  className="relative z-10 font-manrope font-semibold text-[#9739A8]"
+                >
+                  Contact Us
+                </Typography>
+                <svg
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  aria-hidden
+                  className="relative z-10 h-4 w-4"
+                >
+                  <path
+                    d="M4 10h11m0 0-4.5-4.5M15 10l-4.5 4.5"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Link>
+
+              <MenuToggle open={isOpen} onToggle={() => setIsOpen((p) => !p)} />
+            </div>
+          </nav>
+        </div>
+
+        {/* mobile dropdown card hangs under the bar (inside header so it moves with it) */}
+        <MobileMenu open={isOpen} pathname={pathname} onNavigate={handleMobileLinkClick} />
       </header>
     </>
   );

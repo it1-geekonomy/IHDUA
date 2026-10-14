@@ -1,33 +1,54 @@
 export type NavLink = {
   label: string;
-  href: string;
+  href?: string;
   children?: NavLink[];
 };
 
 export const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "/" },
-  { label: "About us", href: "/Whyidhua" },
+  { label: "About us", href: "/About" },
   {
     label: "Our Impact",
-    href: "/Impact",
     children: [
-      { label: "Health", href: "/Impact#health" },
       {
         label: "Education",
-        href: "/Impact#education",
         children: [
-          { label: "Education & Learning", href: "/Impact#education-learning" },
-          { label: "Community Schools", href: "/Impact#community-schools" },
+          { label: "VinayakAgnana Vidyashale Mysore", href: "/VinayakAgnana-Vidyashale-Mysore" },
+          { label: "Adarsha Academy KRS", href: "/Adarsha-Academy-KRS" },
         ],
       },
       {
-        label: "Sustainability & Livelihood",
-        href: "/Impact#livelihood",
+        label: "Women Empowernment",
+        children: [
+          { label: "Self Help Group & Fedartion", href: "/Self-Help-Group-Fedartion" },
+          { label: "Micro-credit Initiatives", href: "/Micro-credit-Initiatives" },
+        ],
       },
-      { label: "Skills & Employment", href: "/Impact#skills" },
+      {
+        label: "Skills & Employment",
+        children: [
+          { label: "Women", href: "/Women" },
+          { label: "Youth", href: "/Youth" },
+          { label: "Farmers", href: "/Farmers" },
+          { label: "Stitching Unit", href: "/Stitching-Unit" },
+        ],
+      },
+      {
+        label: "Model Village",
+        children: [
+          { label: "Rejuvenation of villages", href: "/Rejuvenation-of-villages" },
+          { label: "Increase the green cover", href: "/Increase-the-green-cover" },
+        ],
+      },
+      {
+        label: "Health",
+        children: [
+          { label: "Health Awareness", href: "/Health-Awareness" },
+          { label: "Health Camps", href: "/Health-Camps" },
+        ],
+      },
     ],
   },
-  { label: "Farms & Diary", href: "/OurWork" },
-  { label: "Blog", href: "/Stories" },
-  { label: "Get Involved", href: "/GetInvolved" },
+  { label: "Farms & Dairy", href: "/Farms-And-Dairy" },
+  { label: "Blogs", href: "/Blogs" },
 ];

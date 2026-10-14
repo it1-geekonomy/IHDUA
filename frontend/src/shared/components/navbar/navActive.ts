@@ -1,6 +1,10 @@
 import type { NavLink } from "@/shared/constants/navbar";
 
 export function isNavLinkActive(pathname: string, link: NavLink): boolean {
+  if (!link.href) {
+    return link.children?.some((child) => isNavLinkActive(pathname, child)) ?? false;
+  }
+
   const [path, hash] = link.href.split("#");
 
   if (hash) {
