@@ -1,0 +1,99 @@
+import React from "react";
+import Link from "next/link";
+import Typography from "@/lib/Typography";
+
+const IMAGE_SRC = "/ourconviction/ourconviction.png";
+
+interface FeatureProps {
+  title: string;
+  description: string;
+}
+
+function Feature({ title, description }: FeatureProps) {
+  return (
+    <div>
+      <Typography variant="body-xl" className="font-bold text-[#00191B] font-figtree">
+        {title}
+      </Typography>
+      <Typography variant="body-lg" className="mt-2 leading-relaxed text-[#5F6C6D] font-figtree font-normal">
+        {description}
+      </Typography>
+    </div>
+  );
+}
+
+export default function OurConviction() {
+  return (
+    <section className="w-full bg-white">
+      <div className="w-full px-6 pt-6 pb-6 lg:py-24 lg:px-10 2xl:px-40">
+        {/* Stacked below lg; at lg+ both columns stretch to the same row height */}
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-16">
+          {/*
+            Below lg: image keeps its natural ratio, only centered (no crop).
+            lg+: wrapper is the positioning context and the image fills it,
+            so its height always matches the content column.
+          */}
+          <div className="order-2 flex justify-center lg:relative lg:order-1 lg:block">
+            <img
+              src={IMAGE_SRC}
+              alt="Artisan shaping clay on a pottery wheel"
+              className="h-auto w-full max-w-xs sm:max-w-xl lg:absolute lg:inset-0 lg:h-full lg:max-w-none lg:object-cover lg:object-top"
+            />
+          </div>
+
+          {/* Content: first when stacked, right column at lg+ */}
+          <div className="order-1 lg:order-2">
+            {/* Label: centered below lg, left-aligned at lg+ */}
+            <div className="flex items-center justify-center gap-3 lg:justify-start">
+              <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
+              <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
+                OUR CONVICTION
+              </Typography>
+              <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
+            </div>
+
+            {/* Heading */}
+            <Typography
+              variant="display-xl"
+              className="mt-5 w-full text-center leading-tight text-[#00191B] font-normal font-lora lg:mx-0 lg:max-w-xl lg:text-left"
+            >
+              Development begins with opportunity.
+            </Typography>
+
+            {/* Description */}
+            <Typography
+              variant="body-lg"
+              className="mx-auto mt-5 max-w-2xl text-center leading-relaxed text-[#5F6C6D] font-normal font-figtree lg:mx-0 lg:max-w-none lg:text-left"
+            >
+              True change isn&apos;t handed down; it&apos;s grown from the
+              roots. We partner with rural families in Karnataka to provide
+              the tools, training, and community structure needed to foster
+              permanent independence.
+            </Typography>
+
+            <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:mt-16">
+              <Feature
+                title="Community-Led"
+                description="Decisions are made by self-help groups and rural village assemblies, ensuring native ownership."
+              />
+              <Feature
+                title="Sustainable Growth"
+                description="From organic farming techniques to female entrepreneurship, we focus on self-renewing lifecycles."
+              />
+            </div>
+
+            <Link
+              href="/"
+              className="mx-auto mt-9 flex w-fit items-center gap-2 rounded bg-[#FFD638] px-6 py-3 transition-opacity lg:mx-0 lg:mt-14"
+            >
+              <Typography variant="body-lg" className="font-semibold font-figtree tracking-wide text-[#1E1E1E]">
+                READ OUR FOUNDING STORY
+              </Typography>
+              <span aria-hidden="true">→</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
