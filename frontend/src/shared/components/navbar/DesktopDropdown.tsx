@@ -111,8 +111,9 @@ export function DesktopDropdown({ link, pathname }: DesktopDropdownProps) {
             const showNested = nestedOpen === child.label;
 
             if (!hasNested) {
+              if (!child.href) return null;
               return (
-                <li key={child.href} role="none">
+                <li key={`${child.label}-${child.href}`} role="none">
                   <Link
                     role="menuitem"
                     href={child.href}
@@ -133,7 +134,7 @@ export function DesktopDropdown({ link, pathname }: DesktopDropdownProps) {
             }
 
             return (
-              <li key={child.href} role="none">
+              <li key={`${child.label}-${child.href ?? ""}`} role="none">
                 <button
                   type="button"
                   role="menuitem"
@@ -161,9 +162,10 @@ export function DesktopDropdown({ link, pathname }: DesktopDropdownProps) {
                   <div className="overflow-hidden">
                     <ul className={cn(MENU_ACCENT, "border-t border-white/5 py-1")}>
                       {child.children?.map((nested) => {
+                        if (!nested.href) return null;
                         const nestedActive = isNavLinkActive(pathname, nested);
                         return (
-                          <li key={nested.href} role="none">
+                          <li key={`${nested.label}-${nested.href}`} role="none">
                             <Link
                               role="menuitem"
                               href={nested.href}

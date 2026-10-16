@@ -5,7 +5,7 @@ import Typography from "@/lib/Typography";
 import {
   DONATION_COPY,
   DONATION_SECTION_ID,
-} from "@/domains/home/constants/donation";
+} from "@/shared/constants/donation";
 import { DonationFormCard } from "@/domains/home/components/donation";
 import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 

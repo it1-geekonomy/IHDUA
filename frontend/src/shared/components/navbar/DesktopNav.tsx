@@ -19,9 +19,10 @@ export function DesktopNav({ pathname, onHomeClick }: DesktopNavProps) {
     <ul className="hidden items-center gap-8 xl:flex xl:gap-10">
       {NAV_LINKS.map((link) => {
         if (link.children?.length) {
-          return <DesktopDropdown key={link.href} link={link} pathname={pathname} />;
+          return <DesktopDropdown key={link.label} link={link} pathname={pathname} />;
         }
 
+        if (!link.href) return null;
         const isActive = isNavLinkActive(pathname, link);
         return (
           <li key={link.href}>
