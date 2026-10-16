@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import { DONATION_COUNTRIES } from "@/domains/home/constants/donationCountries";
 import { CountryFlag } from "./CountryFlag";
-import { DONATION_COPY } from "@/domains/home/constants/donation";
+import { DONATION_COPY } from "@/shared/constants/donation";
 
 interface CountrySelectProps {
   value: string;

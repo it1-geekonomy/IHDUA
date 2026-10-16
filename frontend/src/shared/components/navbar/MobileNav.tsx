@@ -26,7 +26,7 @@ export function MobileNav({ open, pathname, onNavigate }: MobileNavProps) {
           <ul className="flex flex-col">
             {NAV_LINKS.map((link) => (
               <MobileNavItem
-                key={link.href}
+                key={`${link.label}-${link.href ?? ""}`}
                 link={link}
                 pathname={pathname}
                 onNavigate={onNavigate}

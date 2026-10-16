@@ -10,7 +10,7 @@ import GeographicFootprint from "@/domains/home/components/GeographicFootprint";
 import ThreePathsSection from "@/domains/home/components/ThreePathsSection";
 import StoriesFromField from "@/domains/home/components/StoriesFromField";
 import LastingChangeSection from "@/domains/home/components/LastingChangeSection";
-import CTAsection from "@/domains/home/components/CTAsection";
+import CTAsection from "@/shared/components/CTAsection";
 
 export default function ClientHomePage() {
 	return (

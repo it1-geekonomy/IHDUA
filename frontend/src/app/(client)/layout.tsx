@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import Navbar from "@/shared/components/navbar";
+import Navbar from "@/shared/components/navbar/NavbarShell";
 import Footer from "@/shared/components/footer";
 
 interface ClientLayoutProps {

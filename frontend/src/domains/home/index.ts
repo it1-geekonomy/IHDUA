@@ -8,7 +8,7 @@ export { default as HowCanYouHelpSection } from "./components/HowCanYouHelpSecti
 export { default as Missionsection } from "./components/Missionsection";
 export { default as RippleEffectSection } from "./components/RippleEffectSection";
 export { default as GeographicFootprint } from "./components/GeographicFootprint";
-export { default as CTAsection } from "./components/CTAsection";
+export { default as CTAsection } from "../../shared/components/CTAsection";
 export { default as ThreePathsSection } from "./components/ThreePathsSection";
 export { default as StoriesFromField } from "./components/StoriesFromField";
 export { default as LastingChangeSection } from "./components/LastingChangeSection";

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { Pencil, ArrowLeft } from "lucide-react";
-import { DONATION_COPY } from "@/domains/home/constants/donation";
+import { DONATION_COPY } from "@/shared/constants/donation";
 import {
   AmountConfirmHint,
   DonationSelectField,

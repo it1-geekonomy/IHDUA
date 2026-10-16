@@ -1,7 +1,7 @@
 "use client";
 
 import Typography from "@/lib/Typography";
-import { DONATION_COPY } from "@/domains/home/constants/donation";
+import { DONATION_COPY } from "@/shared/constants/donation";
 import { AmountStep } from "./AmountStep";
 import { DetailsStep } from "./DetailsStep";
 import { useDonationForm } from "./useDonationForm";
