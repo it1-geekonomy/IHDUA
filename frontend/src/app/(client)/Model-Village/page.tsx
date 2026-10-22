@@ -1,10 +1,16 @@
-export default function HealthPage() {
+import BannerSection from "@/domains/modelvillage/components/bannersection";
+import Villagedevelopment from "@/domains/modelvillage/components/villagedevelopment";
+import SupportVillage from "@/domains/modelvillage/components/supportvillage";
+import Modelvillagestat from "@/domains/modelvillage/components/modelvillagestat";
+
+export default function OurTeamPage() {
   return (
-    <main className="mx-auto max-w-5xl px-5 py-16">
-      <h1 className="font-manrope text-4xl font-bold">model village</h1>
-      <p className="mt-4 text-lg">
-        Our health initiatives, for model villages.
-      </p>
-    </main>
+    <>
+    <BannerSection />
+    <Villagedevelopment />
+    <SupportVillage />
+    <Modelvillagestat />
+      
+    </>
   );
 }
