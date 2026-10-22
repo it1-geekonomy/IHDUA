@@ -1,9 +1,20 @@
-export default function HealthCampsPage() {
+import BannerSection from "@/domains/healthcamps/components/bannersection";
+import Healthiercommunities from "@/domains/healthandawareness/components/healthiercommunities";
+import Supportingcommunities from"@/domains/healthcamps/components/supportingcommunities";
+import AwarenessGallery from "@/domains/healthandawareness/components/AwarenessGallerySection";
+import Impactstats from "@/domains/healthcamps/components/ImpactStatsSection";
+import NewsletterSection from "@/shared/components/Newsletter";
+
+export default function OurTeamPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100">
-      <h1 className="text-5xl font-bold text-black">
-        HEALTH CAMPS
-      </h1>
-    </main>
+    <>
+    <BannerSection />
+    <Healthiercommunities />
+    <Supportingcommunities />
+    <AwarenessGallery />
+    <Impactstats />
+    <NewsletterSection />
+      
+    </>
   );
 }

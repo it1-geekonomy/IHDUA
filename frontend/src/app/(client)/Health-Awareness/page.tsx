@@ -1,9 +1,20 @@
-export default function HealthAwarenessPage() {
+import BannerSection from "@/domains/healthandawareness/components/bannersection";
+import Healthiercommunities from "@/domains/healthandawareness/components/healthiercommunities";
+import Whyhealthawareness from "@/domains/healthandawareness/components/whyhealthawareness";
+import AwarenessGallery from "@/domains/healthandawareness/components/AwarenessGallerySection";
+import Impactstats from "@/domains/healthandawareness/components/ImpactStatsSection";
+import NewsletterSection from "@/shared/components/Newsletter";
+
+export default function OurTeamPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100">
-      <h1 className="text-5xl font-bold text-black">
-        HEALTH AWARENESS
-      </h1>
-    </main>
+    <>
+    <BannerSection />
+    <Healthiercommunities />
+    <Whyhealthawareness />
+    <AwarenessGallery />
+    <Impactstats />
+    <NewsletterSection />
+      
+    </>
   );
 }
