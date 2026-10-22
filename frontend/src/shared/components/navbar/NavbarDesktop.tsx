@@ -212,6 +212,40 @@ function DesktopDropdown({
                   const on = focused?.label === child.label;
                   const a = slideIn(i);
                   const lit = on || isNavLinkActive(pathname, child);
+
+                  const rowCls = cn(
+                    "group flex w-full items-center gap-3 whitespace-nowrap rounded-2xl px-4 py-3.5 text-left transition-colors duration-300",
+                    on ? "bg-white/10" : "hover:bg-white/5",
+                    lit ? YELLOW : "text-white hover:text-[#FFD638]",
+                  );
+
+                  const rowInner = (
+                    <>
+                      <span className="text-xs font-bold tabular-nums text-[#FFD638]/70">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <Typography
+                        variant="body-lg"
+                        className={cn(
+                          "flex-1 font-manrope font-semibold transition-colors duration-300",
+                          lit ? YELLOW : "text-white group-hover:text-[#FFD638]",
+                        )}
+                      >
+                        {child.label}
+                      </Typography>
+                      <Arrow
+                        className={cn(
+                          "transition-all duration-300",
+                          on ? "opacity-100" : "opacity-0",
+                        )}
+                      />
+                    </>
+                  );
+
+                  const preview = () => {
+                    if (child.children?.length) setFocus(child.label);
+                  };
+
                   return (
                     <li
                       key={`${child.label}-${child.href ?? ""}`}
@@ -219,38 +253,42 @@ function DesktopDropdown({
                       style={a.style}
                       className={a.className}
                     >
-                      <button
-                        type="button"
-                        role="menuitem"
-                        aria-expanded={on}
-                        onClick={() => setFocus(child.label)}
-                        onMouseEnter={() => child.children?.length && setFocus(child.label)}
-                        onFocus={() => child.children?.length && setFocus(child.label)}
-                        className={cn(
-                          "group flex w-full items-center gap-3 whitespace-nowrap rounded-2xl px-4 py-3.5 text-left transition-colors duration-300",
-                          on ? "bg-white/10" : "hover:bg-white/5",
-                          lit ? YELLOW : "text-white hover:text-[#FFD638]",
-                        )}
-                      >
-                        <span className="text-xs font-bold tabular-nums text-[#FFD638]/70">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <Typography
-                          variant="body-lg"
-                          className={cn(
-                            "flex-1 font-manrope font-semibold transition-colors duration-300",
-                            lit ? YELLOW : "text-white group-hover:text-[#FFD638]",
-                          )}
+                      {child.href ? (
+                        <Link
+                          role="menuitem"
+                          href={child.href}
+                          onMouseEnter={preview}
+                          onFocus={preview}
+                          onClick={(e) => {
+                            // touch: first tap previews the right pane, second tap navigates
+                            if (
+                              touchRef.current &&
+                              child.children?.length &&
+                              focused?.label !== child.label
+                            ) {
+                              e.preventDefault();
+                              setFocus(child.label);
+                              return;
+                            }
+                            close();
+                          }}
+                          className={rowCls}
                         >
-                          {child.label}
-                        </Typography>
-                        <Arrow
-                          className={cn(
-                            "transition-all duration-300",
-                            on ? "opacity-100" : "opacity-0",
-                          )}
-                        />
-                      </button>
+                          {rowInner}
+                        </Link>
+                      ) : (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          aria-expanded={on}
+                          onClick={() => setFocus(child.label)}
+                          onMouseEnter={preview}
+                          onFocus={preview}
+                          className={rowCls}
+                        >
+                          {rowInner}
+                        </button>
+                      )}
                     </li>
                   );
                 })}
@@ -267,9 +305,20 @@ function DesktopDropdown({
                       <p className="font-manrope text-xs font-semibold uppercase tracking-[.2em] text-[#FFD638]">
                         Explore
                       </p>
-                      <h3 className="font-manrope text-2xl font-bold text-white">
-                        {focused.label}
-                      </h3>
+                      {focused.href ? (
+                        <Link
+                          href={focused.href}
+                          onClick={close}
+                          className="group inline-flex items-center gap-2 font-manrope text-2xl font-bold text-white transition-colors hover:text-[#FFD638]"
+                        >
+                          {focused.label}
+                          <Arrow className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                        </Link>
+                      ) : (
+                        <h3 className="font-manrope text-2xl font-bold text-white">
+                          {focused.label}
+                        </h3>
+                      )}
                     </div>
                     <ul className="grid grid-cols-2 gap-2.5">
                       {focused.children?.map((n, i) => {
