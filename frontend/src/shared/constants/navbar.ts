@@ -26,6 +26,7 @@ export const NAV_LINKS: NavLink[] = [
       },
       {
         label: "Skills & Employment",
+         href: "/Skills-and-Employment",
         children: [
           { label: "Women", href: "/Women" },
           { label: "Youth", href: "/Youth" },
