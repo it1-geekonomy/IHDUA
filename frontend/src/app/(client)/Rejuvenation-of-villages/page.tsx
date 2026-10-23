@@ -1,9 +1,20 @@
-export default function RejuvenationOfVillagesPage() {
+import BannerSection from "@/domains/RejuvenationOfVillages/components/bannersection";
+import Buildingcommunities from "@/domains/RejuvenationOfVillages/components/buildingcommunities";
+import VillageDevelopment from "@/domains/RejuvenationOfVillages/components/villagedevelopmentmatters";
+import SustainableGallery from "@/domains/RejuvenationOfVillages/components/sustainablegallery";
+import Impactstats from "@/domains/RejuvenationOfVillages/components/impactstats";
+import NewsletterSection from "@/shared/components/Newsletter";
+
+export default function OurTeamPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100">
-      <h1 className="text-5xl font-bold text-black">
-        REJUVENATION OF VILLAGES
-      </h1>
-    </main>
+    <>
+    <BannerSection />
+    <Buildingcommunities />
+    <VillageDevelopment />
+    <SustainableGallery />
+    <Impactstats />
+    <NewsletterSection />
+      
+    </>
   );
 }
