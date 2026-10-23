@@ -10,7 +10,7 @@ export interface ImpactStatItem {
 
 export interface ImpactStatsProps {
   heading: string;
-  description: string;
+  description: string | readonly string[];
   bannerHeading: string; // gradient heading inside the box
   stats: ImpactStatItem[];
 }
@@ -27,6 +27,8 @@ const ImpactStats = ({
   const splitAt = Math.ceil(words.length / 2);
   const lineOne = words.slice(0, splitAt).join(" ");
   const lineTwo = words.slice(splitAt).join(" ");
+  const paragraphs =
+    typeof description === "string" ? [description] : description;
 
   return (
     <section className="w-full">
@@ -36,16 +38,20 @@ const ImpactStats = ({
           <div className="flex w-full flex-col gap-3 lg:gap-4">
             <Typography
               variant="body-xl"
+              as="h2"
               className="w-full text-center font-lora font-normal text-[#00191B] sm:text-left"
             >
               {heading}
             </Typography>
-            <Typography
-              variant="body-lg"
-              className="w-full font-figtree font-normal text-[#5F6C6D]"
-            >
-              {description}
-            </Typography>
+            {paragraphs.map((paragraph, index) => (
+              <Typography
+                key={index}
+                variant="body-lg"
+                className="w-full font-figtree font-normal text-[#5F6C6D]"
+              >
+                {paragraph}
+              </Typography>
+            ))}
           </div>
 
           {/* Stats box */}
@@ -55,6 +61,7 @@ const ImpactStats = ({
                 lg and up -> exactly 2 lines */}
             <Typography
               variant="h4"
+              as="h3"
               className="w-fit shrink-0 whitespace-nowrap text-center font-figtree font-medium bg-gradient-to-r from-[#9739A8] to-[#E6AC20] bg-clip-text text-transparent lg:text-left"
             >
               <span className="lg:block">{lineOne}</span>{" "}
@@ -62,15 +69,15 @@ const ImpactStats = ({
             </Typography>
 
             {/* Stats:
-                below 640px  -> 2x2 grid, no dividers
-                640px and up -> 4 equal columns with dividers */}
+                below sm    -> 2x2 grid, no dividers
+                sm and up   -> 4 equal columns with dividers */}
             <div className="grid w-full grid-cols-2 gap-x-4 gap-y-6 sm:flex sm:flex-1 sm:items-stretch sm:gap-0 lg:min-w-0">
               {stats.map((item, index) => (
                 <div
                   key={`${item.value}-${index}`}
                   className="flex min-w-0 items-stretch sm:flex-1"
                 >
-                  {/* Divider: hidden below 640px */}
+                  {/* Divider: hidden below sm */}
                   {index > 0 && (
                     <span
                       className="hidden w-px self-stretch bg-[#FCE1A0] sm:block"

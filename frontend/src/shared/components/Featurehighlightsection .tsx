@@ -155,8 +155,9 @@ const FeatureHighlightSection = ({
                 <IconBadge icon={icon} alt={iconAlt} />
                 <div className="flex min-w-0 flex-col gap-1">
                   <Typography
-                    variant="h3"
-                    className="m-0 font-figtree text-[18px] font-medium sm:text-[21px] md:text-[25px] lg:text-[28px]"
+                    variant="h4"
+                    as="h3"
+                    className="m-0 font-figtree font-medium"
                     style={{ color: COLORS.primary }}
                   >
                     {itemHeading}
