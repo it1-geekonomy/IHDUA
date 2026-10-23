@@ -5,8 +5,8 @@ export default function BannerSection() {
     <HeroBanner
       heading="Model Village"
       description="Supporting holistic village development through sustainable agriculture, eco-friendly activities and community initiatives."
-      image="/aboutus/aboutbanner1.png"
-      imageMobile="/aboutmobileimg.png"
+      image="/modelvillage/modelvillagebanner.png"
+      imageMobile="/modelvillage/modelvillagemobilebg.png"
       imageAlt="Smiling children from a rural community"
     />
   );
