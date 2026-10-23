@@ -35,8 +35,8 @@ export function MobileNav({ open, pathname, onNavigate }: MobileNavProps) {
           </ul>
 
           <Link
-            href="/Contact"
-            onClick={(e) => onNavigate(e, "/Contact")}
+            href="/contact"
+            onClick={(e) => onNavigate(e, "/contact")}
             className="mt-5 flex w-full items-center justify-center bg-white px-6 py-3.5 font-manrope text-[16px] font-semibold text-[#9739A8] transition-opacity hover:opacity-95 sm:hidden"
           >
             Contact Us

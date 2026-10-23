@@ -3,7 +3,7 @@ import FeatureHighlightSection from "@/shared/components/Featurehighlightsection
 import GallerySection from "@/shared/components/Gallerysection";
 import NewsletterSection from "@/shared/components/Newsletter";
 import {
-  VINAYAKA_HERO,
+  VINAYAKA_GALLERY_HERO,
   VINAYAKA_HEADER,
   VINAYAKA_GALLERY,
 } from "@/domains/impact/education/constants/vinayakaSchool";
@@ -17,11 +17,11 @@ export default function MullurSchoolGalleryPage() {
   return (
     <main className="w-full">
       <HeroBanner
-        heading={VINAYAKA_HERO.heading}
-        description={VINAYAKA_HERO.description}
-        image={VINAYAKA_HERO.image}
-        imageMobile={VINAYAKA_HERO.imageMobile}
-        imageAlt={VINAYAKA_HERO.imageAlt}
+        heading={VINAYAKA_GALLERY_HERO.heading}
+        description={VINAYAKA_GALLERY_HERO.description}
+        image={VINAYAKA_GALLERY_HERO.image}
+        imageMobile={VINAYAKA_GALLERY_HERO.imageMobile}
+        imageAlt={VINAYAKA_GALLERY_HERO.imageAlt}
       />
 
       <FeatureHighlightSection
