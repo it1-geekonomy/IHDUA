@@ -48,10 +48,10 @@ export default function HeroBanner({
       </picture>
 
       {/* Readability overlay */}
-      <div
+      {/* <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.25)_50%,rgba(0,0,0,0)_100%)]"
-      />
+      /> */}
 
       {/* Text: vertically centered, left aligned */}
       <div

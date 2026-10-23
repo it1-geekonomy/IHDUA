@@ -4,8 +4,12 @@ import { SimpleLanguageProvider } from "@/context/SimpleLanguageContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "IHDUA",
+  title: "International Human Development and Uplifting Academy",
   description: "IHDUA",
+  icons: {
+    icon: [{ url: "/IHDUAFavicon.png", type: "image/png", sizes: "192x192" }],
+    apple: "/IHDUAFavicon.png",
+  },
 };
 
 // app/layout.tsx

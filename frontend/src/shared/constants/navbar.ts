@@ -35,6 +35,7 @@ export const NAV_LINKS: NavLink[] = [
       },
       {
         label: "Model Village",
+        href: "/Model-Village",
         children: [
           { label: "Rejuvenation of villages", href: "/Rejuvenation-of-villages" },
           { label: "Increase the green cover", href: "/Increase-the-green-cover" },
@@ -42,6 +43,7 @@ export const NAV_LINKS: NavLink[] = [
       },
       {
         label: "Health",
+        href: "/Health",
         children: [
           { label: "Health Awareness", href: "/Health-Awareness" },
           { label: "Health Camps", href: "/Health-Camps" },

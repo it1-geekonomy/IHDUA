@@ -1,9 +1,20 @@
-export default function IncreaseTheGreenCoverPage() {
+import BannerSection from "@/domains/IncreaseTheGreenCover/components/bannersection";
+import Greenvillage from "@/domains/IncreaseTheGreenCover/components/greenvillage";
+import Whygreencovermatters from"@/domains/IncreaseTheGreenCover/components/whygreencovermatters";
+import SustainablePractices from "@/domains/IncreaseTheGreenCover/components/sustainable practices";
+import Impactstats from "@/domains/IncreaseTheGreenCover/components/impactstats";
+import NewsletterSection from "@/shared/components/Newsletter";
+
+export default function OurTeamPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100">
-      <h1 className="text-5xl font-bold text-black">
-        INCREASE THE GREEN COVER
-      </h1>
-    </main>
+    <>
+    <BannerSection />
+    <Greenvillage />
+    <Whygreencovermatters />
+    <SustainablePractices/>
+    <Impactstats />
+    <NewsletterSection />
+      
+    </>
   );
 }
