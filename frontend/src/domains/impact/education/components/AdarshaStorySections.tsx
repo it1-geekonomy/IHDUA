@@ -13,7 +13,7 @@ export default function AdarshaStorySections() {
         <div className="w-full px-[clamp(1rem,-1.0769rem_+_9.2308vw,10rem)]">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left Image: Landscape Campus Overlooking KRS Reservoir */}
-            <div className="order-2 lg:order-1 lg:col-span-6 relative w-full max-w-lg sm:max-w-xl lg:max-w-none mx-auto aspect-[16/10] sm:aspect-[16/10] lg:aspect-[16/11] max-h-[370px] lg:max-h-[390px] overflow-hidden rounded-md shadow-sm">
+            <div className="order-2 lg:order-1 lg:col-span-6 relative w-full max-w-lg sm:max-w-xl lg:max-w-none mx-auto aspect-[16/10] max-h-96 overflow-hidden rounded-md shadow-sm">
               <Image
                 src={story2.image}
                 alt={story2.imageAlt}
