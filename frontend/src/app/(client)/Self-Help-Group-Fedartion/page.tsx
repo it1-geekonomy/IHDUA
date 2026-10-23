@@ -116,7 +116,7 @@ export default function SelfHelpGroupFedartionPage() {
       {/* 6. Impact Stats: The Impact We Make */}
       <InitiativeImpact
         heading="The Impact We Make"
-        paragraphs={[
+        description={[
           "IHDUA’s Women Leadership Project has supported the formation of Self-Help Groups, bringing women together to build savings, financial awareness and shared responsibility across community members.",
           "Through regular group meetings, savings routines and training programs, members strengthen their financial confidence and support community-led initiatives that contribute to long-term social and economic progress in their villages.",
         ]}

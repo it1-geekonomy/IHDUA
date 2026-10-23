@@ -5,9 +5,9 @@ import ImageCardsSection, {
 const WOMEN_ITEMS: ImageCardItem[] = [
   {
     image: "/womenempowerment/self-help.png",
-    imageAlt: "Self Help Group & Fedartion",
-    title: "Self Help Group & Fedartion",
-    href: "/Self-Help-Group-Fedartion",
+    imageAlt: "Self Help Group & Federation",
+    title: "Self Help Group & Federation",
+    href: "/Self-Help-Group-Federation",
     theme: "amber",
   },
   {

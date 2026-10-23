@@ -12,8 +12,7 @@ export default function WomenEmpowermentPage() {
         image="/womenempowerment/banner-desktop.png"
         mobileImage="/womenempowerment/banner-mobile.png"
         imageAlt="Women Empowerment - IHDUA"
-        contentClassName="max-w-[75%] sm:max-w-[50%] lg:max-w-[45%]"
-        titleClassName="text-[24px] sm:text-[35px] md:text-[40px] lg:text-[46px]"
+        contentClassName="max-w-[75%] sm:max-w-[50%] lg:max-w-[50%]"
       />
       <SupportingWomen />
       <HowWeSupportWomen />

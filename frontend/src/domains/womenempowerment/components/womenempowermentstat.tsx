@@ -29,7 +29,7 @@ export default function WomenEmpowermentStat() {
             {/* Heading: Centered single-line on mobile (matches Health), 2-line stacked on sm+ */}
             <Typography
               variant="h4"
-              className="w-fit shrink-0 whitespace-nowrap text-center font-figtree font-medium bg-gradient-to-r from-[#9739A8] to-[#E6AC20] bg-clip-text text-transparent sm:text-left text-[20px] sm:text-[16px] md:text-[18px] lg:text-[26px] xl:text-[28px]"
+              className="w-fit shrink-0 whitespace-nowrap text-center font-figtree font-medium bg-gradient-to-r from-[#9739A8] to-[#E6AC20] bg-clip-text text-transparent sm:text-left"
             >
               <span className="sm:block">Women</span>
               <span className="sm:hidden">&nbsp;</span>
@@ -65,8 +65,8 @@ export default function WomenEmpowermentStat() {
                     </div>
 
                     <Typography
-                      variant="body-lg"
-                      className="font-figtree font-medium text-[#501959] text-[13px] sm:text-[10px] md:text-[11px] lg:text-[15px] xl:text-[16px] leading-tight"
+                      variant="body-sm"
+                      className="font-figtree font-medium leading-tight text-[#501959]"
                     >
                       {item.title.split(" ").map((word, i, arr) => (
                         <span key={`${word}-${i}`}>
@@ -82,13 +82,13 @@ export default function WomenEmpowermentStat() {
           </div>
 
           {/* Right Illustration: Aligned to bottom-right (w-3/5 on mobile matching Health) */}
-          <div className="w-3/5 shrink-0 self-end sm:w-[18%] sm:max-w-[130px] md:w-[20%] md:max-w-[160px] lg:w-[26%] lg:max-w-[280px] xl:w-[28%] xl:max-w-[340px] flex items-end justify-end">
+          <div className="w-3/5 shrink-0 self-end sm:w-[18%] sm:max-w-[8rem] md:w-[20%] md:max-w-[10rem] lg:w-[26%] lg:max-w-[18rem] xl:w-[28%] xl:max-w-[22rem] flex items-end justify-end">
             <Image
               src="/womenempowerment/empowerment-banner.png"
               alt="Women empowerment initiatives and collaborative learning"
               width={541}
               height={248}
-              sizes="(min-width: 1536px) 28vw, (min-width: 1280px) 28vw, (min-width: 1024px) 26vw, (min-width: 768px) 20vw, (min-width: 640px) 18vw, 60vw"
+              sizes="(min-width: 80rem) 22rem, (min-width: 64rem) min(26vw, 18rem), (min-width: 48rem) min(20vw, 10rem), (min-width: 40rem) min(18vw, 8rem), 60vw"
               className="block h-auto w-full object-contain object-bottom"
               priority
             />

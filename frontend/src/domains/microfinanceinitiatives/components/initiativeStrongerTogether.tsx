@@ -55,10 +55,10 @@ export default function InitiativeStrongerTogether({
 }: InitiativeStrongerTogetherProps) {
   return (
     <section className="w-full bg-[#FAF5FB] py-10 lg:py-14">
-      <div className="w-full px-[clamp(1rem,-1.0769rem_+_9.2308vw,10rem)]">
+      <div className="w-full px-4 sm:px-10 lg:px-20 2xl:px-40">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between lg:gap-16">
           {/* Left Column: Heading & Text */}
-          <div className="flex flex-col gap-4 lg:max-w-[45%]">
+          <div className="flex flex-col gap-4 lg:max-w-[50%]">
             <div className="flex items-center gap-3">
               <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
               <Typography
