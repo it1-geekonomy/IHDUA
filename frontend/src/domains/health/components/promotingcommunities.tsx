@@ -12,7 +12,7 @@ const HealthAwarenessSection = () => {
         <div className="flex w-full flex-col gap-4 lg:gap-6">
           {/* Label + Heading */}
           <div className="flex w-full flex-col items-center gap-3 text-center sm:items-start sm:text-left">
-            {/* Label with decorative lines */}
+            {/* Label with decorative lines on both sides */}
             <div className="flex items-center gap-3">
               <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
               <Typography
@@ -21,7 +21,7 @@ const HealthAwarenessSection = () => {
               >
                 {HEALTH_LABEL}
               </Typography>
-              <span className="h-px w-6 bg-[#9739A8] sm:hidden" aria-hidden="true" />
+              <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
             </div>
 
             <Typography

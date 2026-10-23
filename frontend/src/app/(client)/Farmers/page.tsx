@@ -1,9 +1,21 @@
-export default function FarmersPage() {
+import Bannersection from "@/domains/farmers/components/bannersection";
+import Sustainablefarming from "@/domains/farmers/components/sustainablefarming";
+import WhySustainablefarming from "@/domains/farmers/components/whysustainablefarming";
+import SupportingFarmers from "@/domains/farmers/components/supportingfarmers";
+import SustainableAgriculture from "@/domains/farmers/components/sustainableagriculture";
+import Impactwemake from "@/domains/farmers/components/impactwemake";
+import NewsletterSection from "@/shared/components/Newsletter";
+
+export default function OurTeamPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100">
-      <h1 className="text-5xl font-bold text-black">
-        FARMERS
-      </h1>
-    </main>
+    <>
+      <Bannersection />
+      <Sustainablefarming />
+      <WhySustainablefarming />
+      <SupportingFarmers />
+      <SustainableAgriculture />
+      <Impactwemake />
+      <NewsletterSection />
+    </>
   );
 }
