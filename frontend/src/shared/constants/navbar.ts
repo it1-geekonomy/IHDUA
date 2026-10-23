@@ -6,15 +6,16 @@ export type NavLink = {
 
 export const NAV_LINKS: NavLink[] = [
   { label: "Home", href: "/" },
-  { label: "About us", href: "/About" },
+  { label: "About us", href: "/about" },
   {
     label: "Our Impact",
     children: [
       {
         label: "Education",
+        href: "/education",
         children: [
-          { label: "VinayakAgnana Vidyashale Mysore", href: "/VinayakAgnana-Vidyashale-Mysore" },
-          { label: "Adarsha Academy KRS", href: "/Adarsha-Academy-KRS" },
+          { label: "VinayakAgnana Vidyashale Mysore", href: "/vinayakagnana-vidyashale-mysore" },
+          { label: "Adarsha Academy KRS", href: "/adarsha-academy-krs" },
         ],
       },
       {
@@ -27,31 +28,32 @@ export const NAV_LINKS: NavLink[] = [
       },
       {
         label: "Skills & Employment",
+         href: "/Skills-and-Employment",
         children: [
-          { label: "Women", href: "/Women" },
-          { label: "Youth", href: "/Youth" },
-          { label: "Farmers", href: "/Farmers" },
+          { label: "Women", href: "/women" },
+          { label: "Youth", href: "/youth" },
+          { label: "Farmers", href: "/farmers" },
           { label: "Stitching Unit", href: "/Stitching-Unit" },
         ],
       },
       {
         label: "Model Village",
-        href: "/Model-Village",
+        href: "/model-village",
         children: [
-          { label: "Rejuvenation of villages", href: "/Rejuvenation-of-villages" },
-          { label: "Increase the green cover", href: "/Increase-the-green-cover" },
+          { label: "Rejuvenation of villages", href: "/rejuvenation-of-villages" },
+          { label: "Increase the green cover", href: "/increase-the-green-cover" },
         ],
       },
       {
         label: "Health",
-        href: "/Health",
+        href: "/health",
         children: [
-          { label: "Health Awareness", href: "/Health-Awareness" },
-          { label: "Health Camps", href: "/Health-Camps" },
+          { label: "Health Awareness", href: "/health-awareness" },
+          { label: "Health Camps", href: "/health-camps" },
         ],
       },
     ],
   },
-  { label: "Farms & Dairy", href: "/Farms-And-Dairy" },
-  { label: "Blogs", href: "/Blogs" },
+  { label: "Farms & Dairy", href: "/farms-and-dairy" },
+  { label: "Blogs", href: "/blogs" },
 ];
