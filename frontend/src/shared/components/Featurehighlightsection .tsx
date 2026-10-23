@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
 import Typography from "@/lib/Typography";
 import { cn } from "@/lib/utils";
 import { COLORS,CARD_GRADIENT,} from "@/shared/constants/featuredhighlight";
@@ -51,7 +52,13 @@ const IconBadge = ({ icon, alt = "" }: IconBadgeProps) => (
   >
     <span className="flex h-[clamp(2.5rem,1.4rem+3.4vw,3.75rem)] w-[clamp(2.5rem,1.4rem+3.4vw,3.75rem)] items-center justify-center overflow-hidden rounded-full lg:h-[clamp(3rem,2rem+2.5vw,3.75rem)] lg:w-[clamp(3rem,2rem+2.5vw,3.75rem)]">
       {typeof icon === "string" ? (
-        <img src={icon} alt={alt} className="h-full w-full object-contain" />
+        <Image
+          src={icon}
+          alt={alt}
+          width={60}
+          height={60}
+          className="h-full w-full object-contain"
+        />
       ) : (
         icon
       )}
@@ -149,6 +156,7 @@ const FeatureHighlightSection = ({
                 <div className="flex min-w-0 flex-col gap-1">
                   <Typography
                     variant="h4"
+                    as="h3"
                     className="m-0 font-figtree font-medium"
                     style={{ color: COLORS.primary }}
                   >
