@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
@@ -104,21 +103,15 @@ export default function ImageCardsSection({
           <SectionLabel>{label}</SectionLabel>
 
           <Typography
-            variant="h4"
-            className="font-lora leading-[1.2] text-[#00191B] xl:hidden"
-          >
-            {headingLines.join(" ")}
-          </Typography>
-
-          <Typography
             variant="h2"
-            className="hidden font-lora leading-[1.2] text-[#00191B] xl:block"
+            className="font-lora leading-[1.2] text-[18px] text-[#00191B] sm:text-[21px] md:text-[25px] lg:text-[28px] xl:text-[41px]"
           >
             {headingLines.map((line, i) => (
-              <Fragment key={`${line}-${i}`}>
-                {i > 0 && <br />}
+              <span key={`${line}-${i}`}>
+                {i > 0 && <br className="hidden xl:block" />}
+                {i > 0 && <span className="xl:hidden"> </span>}
                 {line}
-              </Fragment>
+              </span>
             ))}
           </Typography>
         </div>

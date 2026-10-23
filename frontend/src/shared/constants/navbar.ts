@@ -18,10 +18,11 @@ export const NAV_LINKS: NavLink[] = [
         ],
       },
       {
-        label: "Women Empowernment",
+        label: "Women Empowerment",
+        href: "/Women-Empowerment",
         children: [
           { label: "Self Help Group & Fedartion", href: "/Self-Help-Group-Fedartion" },
-          { label: "Micro-credit Initiatives", href: "/Micro-credit-Initiatives" },
+          { label: "Micro-Finance Initiatives", href: "/Micro-Finance-Initiatives" },
         ],
       },
       {
