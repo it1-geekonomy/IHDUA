@@ -22,8 +22,17 @@ export const VINAYAKA_HERO = {
   heading: "Education",
   description:
     "Creating opportunities to learn, grow and build brighter futures for rural children and communities.",
-  image: "/aboutbanner.png",
-  imageMobile: "/aboutmobileimg.png",
+  image: "/Rural Education/Frame 648 (4).png",
+  imageMobile: "/Rural Education/mobile Frame 751.png",
+  imageAlt: "Children in rural classroom",
+} as const;
+
+export const VINAYAKA_GALLERY_HERO = {
+  heading: "Education",
+  description:
+    "Creating opportunities to learn, grow and build brighter futures for rural children and communities.",
+  image: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Frame 752.png",
+  imageMobile: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/mobile Frame 754.png",
   imageAlt: "Children in rural classroom",
 } as const;
 
@@ -60,7 +69,7 @@ export const VINAYAKA_STORIES = [
       "The Vinayaka Jnana Vidya Shale, commonly known in English as the Mullur School, is a rural private school serving students from kindergarten through 10th grade. The school was established to respond to an educational need identified within the local community.",
       "The school was established in 1994 following a request from the local community during an IHDUA cancer screening programme in Mullur. Today, the school continues to provide educational instruction to more than 400 children each year, serving students from the surrounding rural community.",
     ],
-    image: "/missionsection/learning.png",
+    image: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Rectangle 51 (1).png",
     imageAlt: "Students attending class at Vinayaka Jnana Vidyashale",
     imagePosition: "right" as const,
   },
@@ -72,7 +81,7 @@ export const VINAYAKA_STORIES = [
       "The community made a different request: instead of using those resources for a clinic, could they be used to create a school for local children?",
       "At the time, children from Mullur and nearby villages had to travel long distances to attend government schools. The community identified access to quality education as an important local need.",
     ],
-    image: "/missionsection/knowledge.png",
+    image: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Rectangle 52 (1).png",
     imageAlt: "Digital classroom session at Mullur School",
     imagePosition: "left" as const,
     ctaText: "View All Photos",
@@ -103,20 +112,20 @@ export const VINAYAKA_STATS: readonly SchoolStatItem[] = [
 ] as const;
 
 export const VINAYAKA_GALLERY: readonly GalleryPhoto[] = [
-  { id: "1", src: "/missionsection/learning.png", alt: "School building view" },
-  { id: "2", src: "/missionsection/knowledge.png", alt: "Children doing craftwork" },
-  { id: "3", src: "/missionsection/support.png", alt: "Student painting in art class" },
-  { id: "4", src: "/missionsection/strength.png", alt: "Smart classroom instruction" },
-  { id: "5", src: "/missionsection/missionimg.png", alt: "Students in school library" },
-  { id: "6", src: "/missionsection/missionimg2.png", alt: "Student writing assignment" },
-  { id: "7", src: "/missionsection/missionimg3.png", alt: "Computer and projector class" },
-  { id: "8", src: "/missionsection/missionimg4.png", alt: "Outdoor clay modeling activity" },
-  { id: "9", src: "/development/rural1.png", alt: "Craft activity in playground" },
-  { id: "10", src: "/development/rural2.png", alt: "Student study session" },
-  { id: "11", src: "/development/rural4.png", alt: "Community inauguration event" },
-  { id: "12", src: "/development/rural5.png", alt: "Guest presentation at school" },
-  { id: "13", src: "/home/lasting1.png", alt: "Teachers meeting assembly" },
-  { id: "14", src: "/home/lasting2.png", alt: "Student prefects on stage" },
-  { id: "15", src: "/home/lasting3.png", alt: "School council discussion" },
-  { id: "16", src: "/home/story1.png", alt: "Students gathering in hallway" },
+  { id: "1", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 68.png", alt: "Vinayaka Jnana Vidyashale students activity 1" },
+  { id: "2", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 68 (1).png", alt: "Vinayaka Jnana Vidyashale students activity 2" },
+  { id: "3", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 68 (2).png", alt: "Vinayaka Jnana Vidyashale students activity 3" },
+  { id: "4", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 68 (3).png", alt: "Vinayaka Jnana Vidyashale students activity 4" },
+  { id: "5", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 69.png", alt: "Vinayaka Jnana Vidyashale classroom session 1" },
+  { id: "6", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 69 (1).png", alt: "Vinayaka Jnana Vidyashale classroom session 2" },
+  { id: "7", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 69 (2).png", alt: "Vinayaka Jnana Vidyashale classroom session 3" },
+  { id: "8", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 69 (3).png", alt: "Vinayaka Jnana Vidyashale classroom session 4" },
+  { id: "9", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 70.png", alt: "Vinayaka Jnana Vidyashale school grounds 1" },
+  { id: "10", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 70 (1).png", alt: "Vinayaka Jnana Vidyashale school grounds 2" },
+  { id: "11", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 70 (2).png", alt: "Vinayaka Jnana Vidyashale school grounds 3" },
+  { id: "12", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 70 (3).png", alt: "Vinayaka Jnana Vidyashale school grounds 4" },
+  { id: "13", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 71.png", alt: "Vinayaka Jnana Vidyashale learning activity 1" },
+  { id: "14", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 71 (1).png", alt: "Vinayaka Jnana Vidyashale learning activity 2" },
+  { id: "15", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 71 (2).png", alt: "Vinayaka Jnana Vidyashale learning activity 3" },
+  { id: "16", src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 71 (3).png", alt: "Vinayaka Jnana Vidyashale learning activity 4" },
 ] as const;
