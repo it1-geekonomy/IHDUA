@@ -24,3 +24,27 @@ export const EDUCATION_SCHOOL_ITEMS: ImageCardItem[] = [
     theme: "amber",
   },
 ];
+
+export const EDUCATION_TRANSFORMS_BANNER = {
+  heading: "Education Transforms Communities",
+  mainImage: "/Rural Education/image 50.png",
+  mainImageAlt: "Rural School Illustration",
+  items: [
+    {
+      icon: "/Rural Education/fi_864685.png",
+      iconBg: "#F1E7F4",
+      title: "Learn Today",
+    },
+    {
+      icon: "/Rural Education/fi_16924039.png",
+      iconBg: "#FEF3DD",
+      title: "Grow Together",
+    },
+    {
+      icon: "/Rural Education/fi_1490749.png",
+      iconBg: "#F1E7F4",
+      title: "Brighter Tomorrow",
+    },
+  ],
+} as const;
+
