@@ -40,26 +40,34 @@ const OpportunitiesSection = ({
   return (
     <section className="w-full bg-white">
       <div className="w-full px-6 pt-6 lg:px-10 lg:pt-8 xl:pt-14 2xl:px-40">
-       
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_40%] lg:gap-x-8 lg:gap-y-5 xl:grid-cols-[minmax(0,1fr)_36%] xl:gap-x-12">
-         
+        {/* Below lg: heading, image, text stacked.
+            lg: heading spans full width, then text left and image right.
+            xl and up: heading above the text, image on the right spanning both rows. */}
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_40%] lg:gap-x-8 lg:gap-y-5 xl:grid-cols-[minmax(0,1fr)_32%] xl:gap-x-12 2xl:grid-cols-[minmax(0,1fr)_28%]">
+          {/* Heading: full width below xl (including lg).
+              Yellow line is hidden below 640px. */}
           <div className="flex w-full justify-center lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:justify-start xl:col-span-1 xl:self-end">
-            <div className="w-full border-l-0 border-[#FFD638] pl-0 sm:border-l-4 sm:pl-4 sm:w-auto lg:w-full xl:w-auto">
+            <div className="w-full border-l-0 border-[#FFD638] pl-0 sm:w-auto sm:border-l-4 sm:pl-4 lg:w-full xl:w-auto">
               <Typography
                 variant="h4"
-                className="w-full font-lora font-normal text-center text-[#00191B] lg:text-left"
+                className="w-full font-lora text-center font-normal text-[#00191B] lg:text-left"
               >
                 {heading}
               </Typography>
             </div>
           </div>
-          <div className="flex w-full items-center justify-center lg:col-start-2 lg:row-start-2 lg:justify-end lg:self-stretch xl:row-span-2 xl:row-start-1">
+
+          {/* Image: never cropped.
+              Below lg: centered and smaller.
+              lg: right of the text.
+              xl and up: slightly larger column, centered vertically in its cell. */}
+          <div className="flex w-full items-center justify-center lg:col-start-2 lg:row-start-2 lg:justify-end lg:self-stretch xl:row-span-2 xl:row-start-1 xl:justify-end xl:self-center">
             <Image
               src={image}
               alt={imageAlt}
               width={0}
               height={0}
-              sizes="(min-width: 1280px) 36vw, (min-width: 1024px) 40vw, (min-width: 768px) 50vw, (min-width: 640px) 60vw, 55vw"
+              sizes="(min-width: 1536px) 28vw, (min-width: 1280px) 32vw, (min-width: 1024px) 40vw, (min-width: 768px) 50vw, (min-width: 640px) 60vw, 55vw"
               className="block h-auto w-[55%] sm:w-3/5 md:w-1/2 lg:w-full"
             />
           </div>
@@ -100,4 +108,5 @@ const OpportunitiesSection = ({
     </section>
   );
 };
+
 export default OpportunitiesSection;
