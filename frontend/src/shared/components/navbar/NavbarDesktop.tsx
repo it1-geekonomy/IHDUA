@@ -252,7 +252,6 @@ function DesktopDropdown({
                       role="none"
                       style={a.style}
                       className={a.className}
-                      onMouseEnter={() => child.children?.length && setFocus(child.label)}
                     >
                       {child.href ? (
                         <Link
