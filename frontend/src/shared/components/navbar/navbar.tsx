@@ -11,7 +11,7 @@ import Typography from "@/lib/Typography";
 
 export const YELLOW = "text-[#FFD638]";
 export const EASE = "[transition-timing-function:cubic-bezier(.22,1,.36,1)]";
-export const CONTACT_HREF = "/Contact";
+export const CONTACT_HREF = "/contact";
 
 export function isNavLinkActive(pathname: string, link: NavLink): boolean {
   if (!link.href) {
