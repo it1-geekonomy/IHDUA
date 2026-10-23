@@ -395,7 +395,6 @@ function MobileItem({
                       <Chevron open={isOpen} className="h-4 w-4 opacity-70" />
                     </button>
                   </div>
-
                   <div
                     className={cn(
                       "grid transition-[grid-template-rows,opacity] duration-500",
