@@ -1,5 +1,5 @@
 import HeroBanner from "@/shared/components/Herobanner";
-import FeatureHighlightSection from "@/shared/components/Featurehighlightsection";
+import FeatureHighlightSection from "@/shared/components/Featurehighlightsection ";
 import SchoolStorySections from "@/domains/impact/education/components/SchoolStorySections";
 import SchoolStatsSection from "@/domains/impact/education/components/SchoolStatsSection";
 import NewsletterSection from "@/shared/components/Newsletter";

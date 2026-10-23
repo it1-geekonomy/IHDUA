@@ -1,5 +1,5 @@
 import HeroBanner from "@/shared/components/Herobanner";
-import FeatureHighlightSection from "@/shared/components/Featurehighlightsection";
+import FeatureHighlightSection from "@/shared/components/Featurehighlightsection ";
 import GallerySection from "@/shared/components/Gallerysection";
 import NewsletterSection from "@/shared/components/Newsletter";
 import {
