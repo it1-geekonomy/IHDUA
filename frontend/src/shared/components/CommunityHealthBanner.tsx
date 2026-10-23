@@ -3,16 +3,33 @@ import Typography from "@/lib/Typography";
 
 export interface HealthIconItem {
   icon: string; 
-  iconBg: string;
+  iconBg: string; 
   title: string;
 }
 
 export interface CommunityHealthBannerProps {
   heading: string;
   items: HealthIconItem[];
-  mainImage: string; 
+  mainImage: string; // right side image
   mainImageAlt?: string;
 }
+
+const splitHeading = (heading: string): string[] => {
+  const tokens = heading.trim().split(/\s+/);
+  const words: string[] = [];
+
+  tokens.forEach((token) => {
+    if (/^[&+/|-]$/.test(token) && words.length > 0) {
+      words[words.length - 1] = `${words[words.length - 1]} ${token}`;
+    } else {
+      words.push(token);
+    }
+  });
+
+  if (words.length <= 1) return words;
+  const splitAt = Math.ceil(words.length / 2);
+  return [words.slice(0, splitAt).join(" "), words.slice(splitAt).join(" ")];
+};
 
 const CommunityHealthBanner = ({
   heading,
@@ -20,6 +37,8 @@ const CommunityHealthBanner = ({
   mainImage,
   mainImageAlt = "",
 }: CommunityHealthBannerProps) => {
+  const headingLines = splitHeading(heading);
+
   return (
     <section className="w-full">
       <div className="w-full px-6 pt-6 pb-6 lg:px-10 lg:pt-8 lg:pb-8 xl:pt-16 xl:pb-16 2xl:px-40">
@@ -29,17 +48,16 @@ const CommunityHealthBanner = ({
               variant="h4"
               className="w-fit shrink-0 whitespace-nowrap text-center font-figtree font-medium bg-gradient-to-r from-[#9739A8] to-[#E6AC20] bg-clip-text text-transparent sm:text-left"
             >
-              {heading.split(" ").map((word, i, arr) => (
-                <span key={`${word}-${i}`} className="sm:block">
-                  {word}
-                  {i < arr.length - 1 && (
+              {headingLines.map((line, i) => (
+                <span key={`${line}-${i}`} className="sm:block">
+                  {line}
+                  {i < headingLines.length - 1 && (
                     <span className="sm:hidden">&nbsp;</span>
                   )}
                 </span>
               ))}
             </Typography>
 
-            
             <div className="flex w-full items-stretch justify-between sm:min-w-0 sm:flex-1 sm:justify-evenly lg:justify-center">
               {items.map((item, index) => (
                 <div
@@ -52,7 +70,7 @@ const CommunityHealthBanner = ({
                       aria-hidden="true"
                     />
                   )}
-                 
+
                   <div className="flex w-full flex-col items-center gap-2 px-1 text-center sm:gap-2 sm:px-2 md:gap-3 md:px-4 lg:px-8 xl:px-10">
                     <div
                       className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full sm:h-10 sm:w-10 md:h-14 md:w-14"
@@ -99,5 +117,4 @@ const CommunityHealthBanner = ({
     </section>
   );
 };
-
 export default CommunityHealthBanner;
