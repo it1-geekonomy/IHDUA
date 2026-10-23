@@ -10,7 +10,7 @@ export default function SchoolStorySections() {
 
   return (
     <section className="w-full bg-[#FFFFFF] pb-12 lg:pb-20 pt-2 lg:pt-4">
-      <div className="w-full max-w-[90rem] 2xl:max-w-[97.5rem] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-16 lg:gap-24">
+      <div className="w-full px-[clamp(1rem,-1.0769rem_+_9.2308vw,10rem)] flex flex-col gap-16 lg:gap-24">
         {/* Story 1: Text on Left, Image on Right */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
           {/* Left Text */}
