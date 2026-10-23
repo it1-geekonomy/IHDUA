@@ -2,8 +2,8 @@ export const ADARSHA_HERO = {
   heading: "Education",
   description:
     "Creating opportunities to learn, grow and build brighter futures for rural children and communities.",
-  image: "/aboutbanner.png",
-  imageMobile: "/aboutmobileimg.png",
+  image: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Frame 752.png",
+  imageMobile: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/mobile Frame 754.png",
   imageAlt: "Children in rural classroom",
 } as const;
 
@@ -30,7 +30,7 @@ export const ADARSHA_STORIES = {
       "The Adarsha Academy is a kindergarten through 8th grade rural private school providing full-time education to children from seven villages in the vicinity of the Krishnarajasagara (KRS) Dam.",
       "The school is situated in a rural setting overlooking the KRS reservoir, surrounded by an agricultural landscape. This setting forms an important part of the school environment and provides a peaceful space for learning. Students follow a state-approved Kannada-medium curriculum, while students in grades 6 through 8 also receive instruction in English.",
     ],
-    image: "/development/rural1.png",
+    image: "/Rural Education/Rectangle 51 (2).png",
     imageAlt: "Students at Adarsha Academy KRS",
     ctaText: "View All Photos",
     galleryHref: "/adarsha-academy-krs/gallery",
@@ -40,9 +40,10 @@ export const ADARSHA_STORIES = {
     paragraphs: [
       "The school grounds are situated on an outcrop overlooking the KRS reservoir, which is a vast and important fixture of the region's agricultural infrastructure. More than that, however, it serves as a tranquil backdrop for learning and contemplative reflection.",
     ],
-    image: "/development/rural4.png",
+    image: "/Rural Education/Rectangle 55.png",
     imageAlt: "Adarsha Academy school grounds overlooking KRS reservoir",
     featureCard: {
+      icon: "/Rural Education/raphael_books (1).png",
       title: "A Rural Learning Environment",
       description:
         "Students follow a state-approved Kannada-medium curriculum, while those in grades 6 through 8 also receive instruction in English.",
