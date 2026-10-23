@@ -1,11 +1,11 @@
 import HeroBanner from "@/shared/components/Herobanner";
 import ImageCardsSection from "@/shared/components/Imagecardsection";
-import EducationTransformsBanner from "@/domains/impact/education/components/EducationTransformsBanner";
-import CTAsection from "@/shared/components/CTAsection";
+import CommunityHealthBanner from "@/shared/components/CommunityHealthBanner";
 import MovementMarquee from "@/domains/home/components/Movementmarquee";
 import {
   EDUCATION_HUB_HERO,
   EDUCATION_SCHOOL_ITEMS,
+  EDUCATION_TRANSFORMS_BANNER,
 } from "@/domains/impact/education/constants/educationHub";
 
 export default function ImpactPage() {
@@ -26,9 +26,12 @@ export default function ImpactPage() {
         items={EDUCATION_SCHOOL_ITEMS}
       />
 
-      <EducationTransformsBanner />
-
-      <CTAsection />
+      <CommunityHealthBanner
+        heading={EDUCATION_TRANSFORMS_BANNER.heading}
+        mainImage={EDUCATION_TRANSFORMS_BANNER.mainImage}
+        mainImageAlt={EDUCATION_TRANSFORMS_BANNER.mainImageAlt}
+        items={[...EDUCATION_TRANSFORMS_BANNER.items]}
+      />
 
       <MovementMarquee />
     </main>
