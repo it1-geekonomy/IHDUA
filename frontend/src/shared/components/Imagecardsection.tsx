@@ -21,6 +21,7 @@ interface ImageCardsSectionProps {
   items: ImageCardItem[];
   className?: string;
 }
+
 function SectionLabel({ children }: { children: string }) {
   return (
     <div className="flex items-center justify-center gap-3 lg:justify-start">
@@ -46,7 +47,7 @@ function ImageCard({ item, index }: { item: ImageCardItem; index: number }) {
           src={item.image}
           alt={item.imageAlt}
           fill
-          sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 28vw, (min-width: 640px) 45vw, 100vw"
+          sizes="(min-width: 1024px) 22vw, (min-width: 768px) 30vw, (min-width: 640px) 45vw, 100vw"
           className="object-cover object-center"
         />
       </div>
@@ -71,7 +72,9 @@ function ImageCard({ item, index }: { item: ImageCardItem; index: number }) {
     </>
   );
 
-  const cardClass = `group block border p-2 ${theme.card}`;
+  // Same card styling as the original. self-start keeps every card at its
+  // natural height (no stretching to the row height).
+  const cardClass = `group block min-w-0 self-start border p-2 ${theme.card}`;
 
   return item.href ? (
     <Link href={item.href} className={cardClass}>
@@ -93,47 +96,57 @@ export default function ImageCardsSection({
 
   return (
     <section
-      className={`flex w-full flex-col lg:flex-row lg:items-start xl:items-center ${SECTION_GAP} ${SECTION_PADDING_X} ${SECTION_PADDING_Y} ${className}`}
+      className={`w-full ${SECTION_PADDING_X} ${SECTION_PADDING_Y} ${className}`}
     >
+      {/* Below lg: text on top, then the cards in their own grid.
+          lg and up: 4 equal columns. Text spans columns 1-2, the first 2 cards
+          sit in columns 3-4, extra cards continue 4 per row, all the same size. */}
       <div
-        className={`flex min-w-0 flex-col lg:w-[40%] lg:shrink-0 ${TEXT_COLUMN_GAP}`}
+        className={`grid w-full grid-cols-1 lg:grid-cols-4 lg:items-start xl:items-center ${GRID_GAP}`}
       >
         <div
-          className={`flex flex-col items-center text-center lg:items-start lg:text-left ${HEADING_GROUP_GAP}`}
+          className={`flex min-w-0 flex-col pb-4 lg:col-span-2 lg:pb-0 lg:pr-6 ${TEXT_COLUMN_GAP}`}
         >
-          <SectionLabel>{label}</SectionLabel>
-
-          <Typography
-            variant="h4"
-            className="font-lora leading-[1.2] text-[#00191B] xl:hidden"
+          <div
+            className={`flex flex-col items-center text-center lg:items-start lg:text-left ${HEADING_GROUP_GAP}`}
           >
-            {headingLines.join(" ")}
-          </Typography>
+            <SectionLabel>{label}</SectionLabel>
 
-          <Typography
-            variant="h2"
-            className="hidden font-lora leading-[1.2] text-[#00191B] xl:block"
-          >
-            {headingLines.map((line, i) => (
-              <Fragment key={`${line}-${i}`}>
-                {i > 0 && <br />}
-                {line}
-              </Fragment>
-            ))}
+            <Typography
+              variant="h4"
+              className="font-lora leading-[1.2] text-[#00191B] xl:hidden"
+            >
+              {headingLines.join(" ")}
+            </Typography>
+
+            <Typography
+              variant="h2"
+              className="hidden font-lora leading-[1.2] text-[#00191B] xl:block"
+            >
+              {headingLines.map((line, i) => (
+                <Fragment key={`${line}-${i}`}>
+                  {i > 0 && <br />}
+                  {line}
+                </Fragment>
+              ))}
+            </Typography>
+          </div>
+
+          <Typography variant="body-lg" className="font-figtree text-[#5F6C6D]">
+            {description}
           </Typography>
         </div>
 
-        <Typography variant="body-lg" className="font-figtree text-[#5F6C6D]">
-          {description}
-        </Typography>
-      </div>
-
-      <div
-        className={`mx-auto grid w-full min-w-0 max-w-[22rem] grid-cols-1 sm:max-w-xl sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:flex-1 ${GRID_GAP}`}
-      >
-        {items.map((item, i) => (
-          <ImageCard key={`${item.title}-${i}`} item={item} index={i} />
-        ))}
+        {/* Below lg: own grid, 1 column (under 640px), 2 columns (640px+),
+            3 columns (768px+), full width at 768px+.
+            From lg: "contents", so each card is a cell of the 4-column grid. */}
+        <div
+          className={`mx-auto grid w-full min-w-0 max-w-[22rem] grid-cols-1 sm:max-w-xl sm:grid-cols-2 md:max-w-none md:grid-cols-3 lg:contents ${GRID_GAP}`}
+        >
+          {items.map((item, i) => (
+            <ImageCard key={`${item.title}-${i}`} item={item} index={i} />
+          ))}
+        </div>
       </div>
     </section>
   );
