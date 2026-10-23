@@ -92,36 +92,24 @@ export function MobileNavItem({ link, pathname, onNavigate }: MobileNavItemProps
 
               return (
                 <li key={`${child.label}-${child.href}`}>
-                  <div
+                  <button
+                    type="button"
+                    aria-expanded={nestedOpen}
+                    onClick={() =>
+                      setNestedExpanded((prev) =>
+                        prev === child.label ? null : child.label,
+                      )
+                    }
                     className={cn(
-                      "flex min-h-11 w-full items-center justify-between rounded-sm font-manrope text-[15px] transition-colors",
+                      "flex min-h-11 w-full items-center justify-between gap-2 rounded-sm px-3 py-2.5 text-left font-manrope text-[15px] transition-colors",
                       MENU_HOVER,
                       nestedOpen && MENU_ACCENT,
                       childActive ? NAV_ACTIVE : "text-white/90",
                     )}
                   >
-                    <Link
-                      href={child.href ?? "/education"}
-                      onClick={(e) => onNavigate(e, child.href ?? "/education")}
-                      className="flex-1 px-3 py-2.5 hover:text-[#FFD638] transition-colors"
-                    >
-                      {child.label}
-                    </Link>
-                    <button
-                      type="button"
-                      aria-expanded={nestedOpen}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setNestedExpanded((prev) =>
-                          prev === child.label ? null : child.label,
-                        );
-                      }}
-                      className="px-3 py-2.5 hover:opacity-80"
-                      aria-label={`Toggle ${child.label} submenu`}
-                    >
-                      <NavChevron open={nestedOpen} className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
+                    <span>{child.label}</span>
+                    <NavChevron open={nestedOpen} className="h-3.5 w-3.5" />
+                  </button>
 
                   <div
                     className={cn(

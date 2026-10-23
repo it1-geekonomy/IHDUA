@@ -2,7 +2,6 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import type { NavLink } from "@/shared/constants/navbar";
 import Typography from "@/lib/Typography";
 import { cn } from "@/lib/utils";
@@ -16,7 +15,6 @@ type DesktopDropdownProps = {
 };
 
 export function DesktopDropdown({ link, pathname }: DesktopDropdownProps) {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [nestedOpen, setNestedOpen] = useState<string | null>(null);
   const rootRef = useRef<HTMLLIElement>(null);
@@ -45,11 +43,6 @@ export function DesktopDropdown({ link, pathname }: DesktopDropdownProps) {
   };
 
   useEffect(() => () => clearCloseTimer(), []);
-
-  useEffect(() => {
-    setOpen(false);
-    setNestedOpen(null);
-  }, [pathname]);
 
   useEffect(() => {
     if (!open) return;
@@ -124,6 +117,10 @@ export function DesktopDropdown({ link, pathname }: DesktopDropdownProps) {
                   <Link
                     role="menuitem"
                     href={child.href}
+                    onClick={() => {
+                      setOpen(false);
+                      setNestedOpen(null);
+                    }}
                     className={cn(
                       "block px-4 py-2.5 font-manrope text-[15px] text-white transition-colors",
                       MENU_HOVER,
@@ -137,40 +134,24 @@ export function DesktopDropdown({ link, pathname }: DesktopDropdownProps) {
             }
 
             return (
-              <li
-                key={`${child.label}-${child.href ?? ""}`}
-                role="none"
-                onMouseEnter={() => setNestedOpen(child.label)}
-              >
-                <div
+              <li key={`${child.label}-${child.href ?? ""}`} role="none">
+                <button
+                  type="button"
+                  role="menuitem"
+                  aria-expanded={showNested}
+                  onClick={() =>
+                    setNestedOpen((prev) => (prev === child.label ? null : child.label))
+                  }
                   className={cn(
-                    "flex w-full items-center justify-between font-manrope text-[15px] text-white transition-colors",
+                    "flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left font-manrope text-[15px] text-white transition-colors",
                     MENU_HOVER,
                     (showNested || childActive) && MENU_ACCENT,
                     childActive && NAV_ACTIVE,
                   )}
                 >
-                  <Link
-                    role="menuitem"
-                    href={child.href ?? "/Education"}
-                    className="flex-1 px-4 py-2.5 hover:text-[#FFD638] transition-colors"
-                  >
-                    {child.label}
-                  </Link>
-                  <button
-                    type="button"
-                    aria-expanded={showNested}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setNestedOpen((prev) => (prev === child.label ? null : child.label));
-                    }}
-                    className="px-3 py-2.5 hover:text-[#FFD638] transition-colors"
-                    aria-label={`Toggle ${child.label} submenu`}
-                  >
-                    <NavChevron open={showNested} />
-                  </button>
-                </div>
+                  <span>{child.label}</span>
+                  <NavChevron open={showNested} />
+                </button>
 
                 <div
                   className={cn(
@@ -188,6 +169,10 @@ export function DesktopDropdown({ link, pathname }: DesktopDropdownProps) {
                             <Link
                               role="menuitem"
                               href={nested.href}
+                              onClick={() => {
+                                setOpen(false);
+                                setNestedOpen(null);
+                              }}
                               className={cn(
                                 "block px-6 py-2 font-manrope text-[14px] text-white/90 transition-colors",
                                 MENU_HOVER,
