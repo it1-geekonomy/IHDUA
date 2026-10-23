@@ -1,10 +1,11 @@
 import type { ImageCardItem } from "@/shared/components/Imagecardsection";
 
 export const EDUCATION_HUB_HERO = {
-  heading: "",
-  description: "",
-  image: "/Rural Education/Frame 648.png",
-  imageMobile: "/Rural Education/Frame 648.png",
+  heading: "Education",
+  description:
+    "Creating opportunities to learn, grow and build brighter futures for rural children and communities.",
+  image: "/Rural Education/Frame 648 (4).png",
+  imageMobile: "/Rural Education/mobile Frame 751.png",
   imageAlt: "Children studying in a rural classroom - Education",
 } as const;
 

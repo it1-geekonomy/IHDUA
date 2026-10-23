@@ -1,9 +1,13 @@
 import HeroBanner from "@/shared/components/Herobanner";
 import FeatureHighlightSection from "@/shared/components/Featurehighlightsection ";
 import SchoolStorySections from "@/domains/impact/education/components/SchoolStorySections";
-import SchoolStatsSection from "@/domains/impact/education/components/SchoolStatsSection";
+import StatsStrip from "@/shared/components/StatsStrip";
 import NewsletterSection from "@/shared/components/Newsletter";
-import { VINAYAKA_HERO, VINAYAKA_HEADER } from "@/domains/impact/education/constants/vinayakaSchool";
+import {
+  VINAYAKA_HERO,
+  VINAYAKA_HEADER,
+  VINAYAKA_STATS,
+} from "@/domains/impact/education/constants/vinayakaSchool";
 
 export default function VinayakAgnanaVidyashalePage() {
   return (
@@ -25,7 +29,7 @@ export default function VinayakAgnanaVidyashalePage() {
       />
 
       <SchoolStorySections />
-      <SchoolStatsSection />
+      <StatsStrip items={[...VINAYAKA_STATS]} />
       <NewsletterSection />
     </main>
   );
