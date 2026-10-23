@@ -7,11 +7,13 @@ const EDUCATION_ITEMS: ImageCardItem[] = [
     image: "/Health/support1.png",
     imageAlt: "Health Awareness",
     title: "Health Awareness",
+    href: "/health-awareness",
   },
   {
     image: "/Health/support1.png",
     imageAlt: "Health Camps",
     title: "Health Camps",
+    href: "/health-camps",
   },
 ];
 

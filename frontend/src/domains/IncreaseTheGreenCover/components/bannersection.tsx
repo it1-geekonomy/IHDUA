@@ -5,8 +5,8 @@ export default function BannerSection() {
     <HeroBanner
       heading="Increase the green cover"
       description="Encouraging greener rural communities through fruit sapling distribution, sustainable agriculture and eco-friendly village initiatives."
-      image="/aboutus/aboutbanner1.png"
-      imageMobile="/aboutmobileimg.png"
+      image="/modelvillage/greencoverbanner.png"
+      imageMobile="/modelvillage/greencovermobile.png"
       imageAlt="Smiling children from a rural community"
     />
   );

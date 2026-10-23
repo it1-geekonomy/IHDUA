@@ -7,11 +7,13 @@ const EDUCATION_ITEMS: ImageCardItem[] = [
     image: "/modelvillage/villageD1.png",
     imageAlt: "Rejuvenation of villages",
     title: "Rejuvenation of villages",
+    href: "/rejuvenation-of-villages",
   },
   {
     image: "/modelvillage/villageD2.png",
     imageAlt: "Increase the green cover",
     title: "Increase the green cover",
+    href: "/increase-the-green-cover"
   },
 ];
 
