@@ -4,23 +4,9 @@ import GallerySection from "@/shared/components/Gallerysection";
 import NewsletterSection from "@/shared/components/Newsletter";
 import {
   VINAYAKA_HERO,
+  VINAYAKA_HEADER,
   VINAYAKA_GALLERY,
 } from "@/domains/impact/education/constants/vinayakaSchool";
-
-const HIGHLIGHT_ITEMS = [
-  {
-    icon: "/icons/mission.png",
-    iconAlt: "School Mission",
-    heading: "Mission",
-    description: "Provide excellent primary school instruction for rural students.",
-  },
-  {
-    icon: "/icons/benifit.png",
-    iconAlt: "School Alumni",
-    heading: "3,000+",
-    description: "Students have completed 10th grade since the school was founded in 1994.",
-  },
-];
 
 export default function MullurSchoolGalleryPage() {
   const galleryImages = VINAYAKA_GALLERY.map((photo) => ({
@@ -39,15 +25,15 @@ export default function MullurSchoolGalleryPage() {
       />
 
       <FeatureHighlightSection
-        label="EDUCATION"
-        heading="Vinayaka Jnana Vidyashale, Mysuru"
-        description="Creating opportunities for rural children through accessible, quality education."
+        label={VINAYAKA_HEADER.eyebrow}
+        heading={VINAYAKA_HEADER.title}
+        description={VINAYAKA_HEADER.description}
         button={{
-          label: "Visit School Website",
-          href: "https://ihdua.org",
+          label: VINAYAKA_HEADER.buttonText,
+          href: VINAYAKA_HEADER.websiteUrl,
           external: true,
         }}
-        items={HIGHLIGHT_ITEMS}
+        items={[...VINAYAKA_HEADER.highlights]}
       />
 
       <GallerySection
