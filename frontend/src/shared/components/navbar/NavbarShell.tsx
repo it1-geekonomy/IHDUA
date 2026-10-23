@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Typography from "@/lib/Typography";
 import { isHomePath } from "@/shared/lib/path";
@@ -23,7 +23,6 @@ const EASE = "ease-[cubic-bezier(.22,1,.36,1)]";
 export default function NavbarShell() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
   const barRef = useRef<HTMLSpanElement>(null);
   const { hidden, setHidden } = useNavbarScroll(isOpen, barRef);
 
@@ -48,15 +47,13 @@ export default function NavbarShell() {
   }, []);
 
   const handleMobileLinkClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
     setIsOpen(false);
 
     if (href === "/" && isHomePath(pathname)) {
+      e.preventDefault();
       setHidden(false);
-      window.setTimeout(() => void smoothScrollToTop(), 320);
-      return;
+      void smoothScrollToTop();
     }
-    setTimeout(() => router.push(href), 320);
   };
 
   const handleHomeClick = (e: MouseEvent<HTMLAnchorElement>) => {
