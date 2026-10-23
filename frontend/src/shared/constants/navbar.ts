@@ -12,9 +12,10 @@ export const NAV_LINKS: NavLink[] = [
     children: [
       {
         label: "Education",
+        href: "/education",
         children: [
-          { label: "VinayakAgnana Vidyashale Mysore", href: "/VinayakAgnana-Vidyashale-Mysore" },
-          { label: "Adarsha Academy KRS", href: "/Adarsha-Academy-KRS" },
+          { label: "VinayakAgnana Vidyashale Mysore", href: "/vinayakagnana-vidyashale-mysore" },
+          { label: "Adarsha Academy KRS", href: "/adarsha-academy-krs" },
         ],
       },
       {
@@ -26,6 +27,7 @@ export const NAV_LINKS: NavLink[] = [
       },
       {
         label: "Skills & Employment",
+         href: "/Skills-and-Employment",
         children: [
           { label: "Women", href: "/Women" },
           { label: "Youth", href: "/Youth" },

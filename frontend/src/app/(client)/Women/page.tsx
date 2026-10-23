@@ -1,9 +1,19 @@
-export default function WomenPage() {
+import Bannersection from "@/domains/women/components/bannersection";
+import Supportingwomen from "@/domains/women/components/supportingwomen";
+import Creatingoppurtunity from "@/domains/women/components/creatingoppurtunity";
+import Statstrip from "@/domains/women/components/StatsStripSection";
+import WomenOpportunities from "@/domains/women/components/WomenOpportunitiesSection";
+import NewsletterSection from "@/shared/components/Newsletter";
+
+export default function OurTeamPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100">
-      <h1 className="text-5xl font-bold text-black">
-        WOMEN
-      </h1>
-    </main>
+    <>
+      <Bannersection />
+      <Supportingwomen />
+      <Creatingoppurtunity />
+      <WomenOpportunities />
+      <Statstrip />
+      <NewsletterSection />
+    </>
   );
 }
