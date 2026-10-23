@@ -64,7 +64,7 @@ export default function AdarshaStorySections() {
             </div>
 
             {/* Right Column: Image */}
-            <div className="lg:col-span-5 relative w-full aspect-[4/3] overflow-hidden rounded-md shadow-sm">
+            <div className="lg:col-span-5 relative w-full max-w-lg sm:max-w-xl lg:max-w-none mx-auto aspect-[16/10] sm:aspect-[16/9] lg:aspect-[4/3] overflow-hidden rounded-md shadow-sm">
               <Image
                 src={story1.image}
                 alt={story1.imageAlt}
@@ -82,7 +82,7 @@ export default function AdarshaStorySections() {
         <div className="w-full max-w-[90rem] 2xl:max-w-[97.5rem] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
             {/* Left Image: Landscape Campus Overlooking KRS Reservoir */}
-            <div className="order-2 lg:order-1 lg:col-span-6 relative w-full aspect-[4/3] overflow-hidden rounded-md shadow-sm">
+            <div className="order-2 lg:order-1 lg:col-span-6 relative w-full max-w-lg sm:max-w-xl lg:max-w-none mx-auto aspect-[16/10] sm:aspect-[16/9] lg:aspect-[4/3] overflow-hidden rounded-md shadow-sm">
               <Image
                 src={story2.image}
                 alt={story2.imageAlt}
