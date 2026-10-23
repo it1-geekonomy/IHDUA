@@ -13,8 +13,7 @@ export default function OurTeamPage() {
     <VillageDevelopment />
     <SustainableGallery />
     <Impactstats />
-    <NewsletterSection />
-      
+    <NewsletterSection /> 
     </>
   );
 }

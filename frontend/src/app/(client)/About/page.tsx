@@ -7,7 +7,7 @@ import OurDocuments from "@/domains/about/components/OurDocuments";
 
 export default function OurTeamPage() {
   return (
-    <>
+    <> 
       <Bannersection />
       <WhoWeAre />
       <MissionVisionValues />
