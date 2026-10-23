@@ -7,7 +7,7 @@ import NewsletterSection from "@/shared/components/Newsletter";
 
 export default function OurTeamPage() {
   return (
-    <>
+    <> 
     <BannerSection />
     <Greenvillage />
     <Whygreencovermatters />
