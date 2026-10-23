@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Navbar from "@/shared/components/navbar/NavbarShell";
 import Footer from "@/shared/components/footer";
+import CTAsection from "@/shared/components/CTAsection";
 
 interface ClientLayoutProps {
   children: ReactNode;
@@ -11,6 +12,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     <div className="flex min-h-screen flex-col">
       <Navbar />
       <main className="flex-1">{children}</main>
+      <CTAsection />
       <Footer />
     </div>
   );

@@ -213,6 +213,11 @@ function MobileItem({
   const row =
     "group flex min-h-[52px] w-full items-center gap-3 py-3.5 text-left";
 
+  const toggleTop = () => {
+    setExpanded((p) => !p);
+    if (expanded) setNested(null);
+  };
+
   if (!hasKids) {
     if (!link.href) return null;
     return (
@@ -236,28 +241,57 @@ function MobileItem({
     );
   }
 
+  const topColor = active || expanded ? YELLOW : "text-white";
+
   return (
     <li className={wrap} style={delay}>
-      <button
-        type="button"
-        aria-expanded={expanded}
-        onClick={() => {
-          setExpanded((p) => !p);
-          if (expanded) setNested(null);
-        }}
-        className={cn(row, "justify-between", active || expanded ? YELLOW : "text-white")}
-      >
-        <Typography
-          variant="body-lg"
-          className={cn(
-            "font-manrope font-medium transition-colors duration-300",
-            active || expanded ? YELLOW : "text-white",
-          )}
+      {link.href ? (
+        // top-level parent WITH its own page: label navigates, chevron toggles
+        <div className={cn("flex min-h-[52px] w-full items-center justify-between", topColor)}>
+          <Link
+            href={link.href}
+            onClick={(e) => onNavigate(e, link.href!)}
+            className="flex min-h-[52px] flex-1 items-center py-3.5"
+          >
+            <Typography
+              variant="body-lg"
+              className={cn(
+                "font-manrope font-medium transition-colors duration-300",
+                topColor,
+              )}
+            >
+              {link.label}
+            </Typography>
+          </Link>
+          <button
+            type="button"
+            aria-label={`Toggle ${link.label}`}
+            aria-expanded={expanded}
+            onClick={toggleTop}
+            className="flex h-11 w-11 items-center justify-center"
+          >
+            <Chevron open={expanded} className="h-[18px] w-[18px] text-current opacity-70" />
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          aria-expanded={expanded}
+          onClick={toggleTop}
+          className={cn(row, "justify-between", topColor)}
         >
-          {link.label}
-        </Typography>
-        <Chevron open={expanded} className="h-[18px] w-[18px] text-current opacity-70" />
-      </button>
+          <Typography
+            variant="body-lg"
+            className={cn(
+              "font-manrope font-medium transition-colors duration-300",
+              topColor,
+            )}
+          >
+            {link.label}
+          </Typography>
+          <Chevron open={expanded} className="h-[18px] w-[18px] text-current opacity-70" />
+        </button>
+      )}
 
       <div
         className={cn(
@@ -304,28 +338,64 @@ function MobileItem({
                 );
               }
 
+              const toggleNested = () =>
+                setNested((p) => (p === child.label ? null : child.label));
+              const childColor = childActive || isOpen ? YELLOW : "text-white/75";
+
               return (
                 <li key={`${child.label}-${child.href ?? ""}`} style={sub} className={subCls}>
-                  <button
-                    type="button"
-                    aria-expanded={isOpen}
-                    onClick={() => setNested((p) => (p === child.label ? null : child.label))}
+                  {/* split row: label (link if it has href) + chevron toggle */}
+                  <div
                     className={cn(
-                      "flex min-h-11 w-full items-center justify-between text-left transition-colors duration-300",
-                      childActive || isOpen ? YELLOW : "text-white/75",
+                      "flex min-h-11 w-full items-center justify-between transition-colors duration-300",
+                      childColor,
                     )}
                   >
-                    <Typography
-                      variant="body-lg"
-                      className={cn(
-                        "font-manrope font-normal transition-colors duration-300",
-                        childActive || isOpen ? YELLOW : "text-white/75",
-                      )}
+                    {child.href ? (
+                      <Link
+                        href={child.href}
+                        onClick={(e) => onNavigate(e, child.href!)}
+                        className="flex min-h-11 flex-1 items-center"
+                      >
+                        <Typography
+                          variant="body-lg"
+                          className={cn(
+                            "font-manrope font-normal transition-colors duration-300",
+                            childColor,
+                          )}
+                        >
+                          {child.label}
+                        </Typography>
+                      </Link>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={toggleNested}
+                        className="flex min-h-11 flex-1 items-center text-left"
+                      >
+                        <Typography
+                          variant="body-lg"
+                          className={cn(
+                            "font-manrope font-normal transition-colors duration-300",
+                            childColor,
+                          )}
+                        >
+                          {child.label}
+                        </Typography>
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      aria-label={`Toggle ${child.label}`}
+                      aria-expanded={isOpen}
+                      onClick={toggleNested}
+                      className="flex h-11 w-11 items-center justify-center"
                     >
-                      {child.label}
-                    </Typography>
-                    <Chevron open={isOpen} className="h-4 w-4 opacity-70" />
-                  </button>
+                      <Chevron open={isOpen} className="h-4 w-4 opacity-70" />
+                    </button>
+                  </div>
+
                   <div
                     className={cn(
                       "grid transition-[grid-template-rows,opacity] duration-500",

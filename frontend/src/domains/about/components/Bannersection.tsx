@@ -5,7 +5,7 @@ export default function BannerSection() {
     <HeroBanner
       heading="About Us"
       description="Working alongside rural communities to create opportunities, strengthen livelihoods, and build brighter futures."
-      image="/aboutbanner.png"
+      image="/aboutus/aboutbanner1.png"
       imageMobile="/aboutmobileimg.png"
       imageAlt="Smiling children from a rural community"
     />
