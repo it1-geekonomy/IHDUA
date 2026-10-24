@@ -32,6 +32,16 @@ export const ADARSHA_STORIES = {
     ],
     image: "/Rural Education/Rectangle 51 (2).png",
     imageAlt: "Students at Adarsha Academy KRS",
+  },
+  ruralChildrenStory: {
+    title: "Education for Rural Children",
+    paragraphs: [
+      "In 1994, while IHDUA was conducting a cancer screening programme in Mullur, its field team was preparing to establish a clinic to address local healthcare needs.",
+      "The community made a different request: could those resources instead help establish a school for local children?",
+      "At the time, children from Mullur and nearby villages had to travel long distances to attend government schools. Recognising the need for accessible education, IHDUA responded by establishing a kindergarten programme and developing a school for the community.",
+    ],
+    image: "/Rural Education/Rectangle 52 (2).png",
+    imageAlt: "Education for Rural Children at Adarsha Academy",
     ctaText: "View All Photos",
     galleryHref: "/adarsha-academy-krs/gallery",
   },
@@ -40,7 +50,7 @@ export const ADARSHA_STORIES = {
     paragraphs: [
       "The school grounds are situated on an outcrop overlooking the KRS reservoir, which is a vast and important fixture of the region's agricultural infrastructure. More than that, however, it serves as a tranquil backdrop for learning and contemplative reflection.",
     ],
-    image: "/Rural Education/Rectangle 55.png",
+    image: "/Rural Education/Rectangle 55 (1).png",
     imageAlt: "Adarsha Academy school grounds overlooking KRS reservoir",
     featureCard: {
       icon: "/Rural Education/raphael_books (1).png",
@@ -52,16 +62,20 @@ export const ADARSHA_STORIES = {
 } as const;
 
 export const ADARSHA_GALLERY = [
-  { src: "/development/rural1.png", alt: "Adarsha Academy students in classroom" },
-  { src: "/development/rural2.png", alt: "Students gathering outside" },
-  { src: "/development/rural4.png", alt: "Adarsha Academy campus view" },
-  { src: "/development/rural5.png", alt: "School grounds and classrooms" },
-  { src: "/development/dev33.png", alt: "Students engaged in school project" },
-  { src: "/missionsection/learning.png", alt: "Assembly meeting" },
-  { src: "/missionsection/knowledge.png", alt: "Teachers and students" },
-  { src: "/missionsection/support.png", alt: "Library reading session" },
-  { src: "/home/lasting1.png", alt: "Outdoor sports and activities" },
-  { src: "/home/lasting2.png", alt: "Campus greenery" },
-  { src: "/home/lasting3.png", alt: "Classroom learning" },
-  { src: "/home/story1.png", alt: "Community celebration" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 68.png", alt: "Students activity 1" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 68 (1).png", alt: "Students activity 2" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 68 (2).png", alt: "Students activity 3" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 68 (3).png", alt: "Students activity 4" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 69.png", alt: "Classroom session 1" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 69 (1).png", alt: "Classroom session 2" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 69 (2).png", alt: "Classroom session 3" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 69 (3).png", alt: "Classroom session 4" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 70.png", alt: "School grounds 1" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 70 (1).png", alt: "School grounds 2" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 70 (2).png", alt: "School grounds 3" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 70 (3).png", alt: "School grounds 4" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 71.png", alt: "Learning activity 1" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 71 (1).png", alt: "Learning activity 2" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 71 (2).png", alt: "Learning activity 3" },
+  { src: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Gallery/Rectangle 71 (3).png", alt: "Learning activity 4" },
 ] as const;
