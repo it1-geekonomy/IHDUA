@@ -22,8 +22,8 @@ export const NAV_LINKS: NavLink[] = [
         label: "Women Empowerment",
         href: "/women-empowerment",
         children: [
-          { label: "Self Help Group & Federation", href: "/self-help-group-federation" },
-          { label: "Micro-Finance Initiatives", href: "/micro-finance-initiatives" },
+          { label: "Self-Help Group & Federation", href: "/self-help-group-federation" },
+          { label: "Microfinance Initiatives", href: "/micro-finance-initiatives" },
         ],
       },
       {
