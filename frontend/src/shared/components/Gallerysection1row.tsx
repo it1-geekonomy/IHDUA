@@ -16,21 +16,41 @@ export default function GallerySection1Row({
   images,
   className = "",
 }: GallerySectionProps) {
-  const gridRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  
   const [columns, setColumns] = useState(1);
   const [offset, setOffset] = useState(0);
+  const [slideDistance, setSlideDistance] = useState(0);
+  
+  const touchStartRef = useRef<number | null>(null);
   const isEmpty = images.length === 0;
 
+  // Measure container and item widths to handle smooth sliding & responsive columns
   useEffect(() => {
-    const grid = gridRef.current;
-    if (!grid) return;
+    const container = containerRef.current;
+    const track = trackRef.current;
+    if (!container || !track) return;
 
-    const update = () =>
-      setColumns(getComputedStyle(grid).gridTemplateColumns.split(" ").length);
+    const updateDimensions = () => {
+      const containerWidth = container.offsetWidth;
+      let cols = 1;
+      if (containerWidth >= 1024) cols = 4;
+      else if (containerWidth >= 640) cols = 2;
+      
+      setColumns(cols);
 
-    update();
-    const observer = new ResizeObserver(update);
-    observer.observe(grid);
+      const firstChild = track.firstElementChild as HTMLElement;
+      if (firstChild) {
+        const style = window.getComputedStyle(track);
+        const gap = parseFloat(style.gap || style.columnGap || "0");
+        setSlideDistance(firstChild.offsetWidth + gap);
+      }
+    };
+
+    updateDimensions();
+    const observer = new ResizeObserver(updateDimensions);
+    observer.observe(container);
     return () => observer.disconnect();
   }, [isEmpty]);
 
@@ -38,7 +58,30 @@ export default function GallerySection1Row({
 
   const maxOffset = Math.max(0, images.length - columns);
   const current = Math.min(offset, maxOffset);
-  const visible = images.slice(current, current + columns);
+
+  // Touch handlers for mobile swipe (only active below 'sm' screen / < 640px)
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (window.innerWidth >= 640) return;
+    touchStartRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (window.innerWidth >= 640 || touchStartRef.current === null) return;
+    
+    const touchEnd = e.changedTouches[0].clientX;
+    const diff = touchStartRef.current - touchEnd;
+    const threshold = 40; // minimum swipe distance in pixels
+
+    if (diff > threshold) {
+      // Swiped left -> Next
+      setOffset((prev) => Math.min(maxOffset, prev + 1));
+    } else if (diff < -threshold) {
+      // Swiped right -> Prev
+      setOffset((prev) => Math.max(0, prev - 1));
+    }
+
+    touchStartRef.current = null;
+  };
 
   return (
     <section
@@ -49,18 +92,33 @@ export default function GallerySection1Row({
         {heading}
       </Typography>
 
+      {/* Viewport container with overflow hidden and touch event listeners */}
       <div
-        ref={gridRef}
-        className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4"
+        ref={containerRef}
+        className="w-full overflow-hidden"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
-        {visible.map((image, i) => (
-          <GalleryTile
-            key={current + i}
-            image={image}
-            aspectClass="aspect-video"
-            sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 100vw"
-          />
-        ))}
+        <div
+          ref={trackRef}
+          className="flex gap-2 sm:gap-4 transition-transform duration-300 ease-in-out"
+          style={{
+            transform: `translateX(-${current * slideDistance}px)`,
+          }}
+        >
+          {images.map((image, i) => (
+            <div
+              key={i}
+              className="w-full sm:w-[calc(50%-0.25rem)] lg:w-[calc(25%-0.75rem)] flex-shrink-0"
+            >
+              <GalleryTile
+                image={image}
+                aspectClass="aspect-video"
+                sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 100vw"
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
       <GalleryNav
