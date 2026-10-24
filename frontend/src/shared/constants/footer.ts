@@ -1,15 +1,20 @@
-export const FOOTER_WHAT_WE_DO = [
-  "Home",
-  "About us",
-  "Our Impact",
-  "Blogs & Stories",
-  "Contact Us",
+export type FooterLink = {
+  label: string;
+  href: string;
+};
+
+export const FOOTER_WHAT_WE_DO: FooterLink[] = [
+  { label: "Home", href: "/" },
+  { label: "About us", href: "/about" },
+  { label: "Our Impact", href: "/impact" },
+  { label: "Blogs & Stories", href: "/blogs" },
+  { label: "Contact Us", href: "/contact" },
 ];
 
-export const FOOTER_GET_INVOLVED = [
-  "Donate",
-  "Volunteer",
-  "Partner",
+export const FOOTER_GET_INVOLVED: FooterLink[] = [
+  { label: "Donate", href: "/" },
+  { label: "Volunteer", href: "/" },
+  { label: "Partner", href: "/" },
 ];
 
 export const FOOTER_HEADQUARTERS = {
@@ -21,7 +26,7 @@ export const FOOTER_HEADQUARTERS = {
 };
 
 export const FOOTER_SOCIAL_LINKS = [
-  { name: "Instagram", href: "/", icon: "/footer/instagramicon.png" },
-  { name: "Twitter", href: "/", icon: "/footer/twittericon.png" },
-  { name: "LinkedIn", href: "/", icon: "/footer/linkedinicon.png" },
+  { name: "Instagram", href: "https://www.instagram.com/", icon: "/footer/instagramicon.png" },
+  { name: "Twitter", href: "https://twitter.com/", icon: "/footer/twittericon.png" },
+  { name: "LinkedIn", href: "https://www.linkedin.com/", icon: "/footer/linkedinicon.png" },
 ];

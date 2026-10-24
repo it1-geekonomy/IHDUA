@@ -8,7 +8,7 @@ import Overlayform from "@/domains/home/components/Overlayform";
 
 export default function HomePage() {
   const [ready, setReady] = useState(true);
-  const [showOverlay, setShowOverlay] = useState(true);
+  const [showOverlay, setShowOverlay] = useState(false);
 
   return (
     <>
