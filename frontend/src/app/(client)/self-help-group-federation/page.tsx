@@ -127,7 +127,7 @@ export default function SelfHelpGroupFederationPage() {
             alt: "IHDUA community meeting with Self-Help Group members",
           },
         ]}
-        bottomDescription="Regular savings and group lending help members meet health, education and livelihood needs, while strengthening their voice in household and community decisions."
+        bottomDescription="IHDUA’s Microfinance Initiative makes it possible for rural women to become informed financial decision-makers who have access to loans at competitive rates, which they may use for their family’s health, education and livelihood needs.Microfinance also supports women through Self-Help Groups, where members can build savings, access loans, participate in income-generating activities and strengthen their role in household and community decision-making."
       />
 
       <SkillsTogether
