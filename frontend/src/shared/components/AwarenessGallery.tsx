@@ -24,7 +24,7 @@ const AwarenessGallery = ({
           {/* Heading + description */}
           <div className="flex w-full flex-col gap-3 lg:gap-4">
             <Typography
-              variant="h4"
+              variant="h3"
               className="w-full text-center font-lora font-medium text-[#00191B] sm:text-left"
             >
               {heading}
