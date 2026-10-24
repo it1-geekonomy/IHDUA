@@ -38,16 +38,16 @@ const variantStyles = {
 
   // 49.75 → 50
   "display-xl":
-    "text-[33px] sm:text-[38px] md:text-[44px] lg:text-[50px] font-medium",
+    "text-[28px] sm:text-[34px] md:text-[40px] lg:text-[46px] font-medium",
 
   // 45.62 → 46
-  h1: "text-[26px] sm:text-[35px] md:text-[40px] lg:text-[46px] font-medium",
+  h1: "text-[26px] sm:text-[33px] md:text-[38px] lg:text-[40px] font-medium",
 
   // 41.17 → 41
-  h2: "text-[27px] sm:text-[31px] md:text-[36px] lg:text-[41px] font-medium",
+  h2: "text-[25px] sm:text-[28px] md:text-[34px] lg:text-[38px] font-medium",
 
   // 38
-  h3: "text-[25px] sm:text-[29px] md:text-[33px] lg:text-[38px] font-medium",
+  h3: "text-[23px] sm:text-[26px] md:text-[30px] lg:text-[34px] font-medium",
 
   // 28
   h4: "text-[18px] sm:text-[21px] md:text-[25px] lg:text-[28px] font-medium",
@@ -58,7 +58,7 @@ const variantStyles = {
 
   // 18
   "body-lg":
-    "text-[12px] sm:text-[14px] md:text-[16px] lg:text-[20px] font-normal",
+    "text-[12px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal",
  "body-md":
     "text-[12px] sm:text-[14px] md:text-[14px] lg:text-[18px] font-normal",
   // 16

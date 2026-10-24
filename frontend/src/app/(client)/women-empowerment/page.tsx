@@ -60,7 +60,7 @@ export default function WomenEmpowermentPage() {
               <span aria-hidden="true" className="h-px w-6 bg-current" />
             </div>
             <Typography
-              variant="h2"
+              variant="h3"
               className="font-lora leading-[1.2] text-[#00191B]"
             >
               Creating Pathways to Greater Independence

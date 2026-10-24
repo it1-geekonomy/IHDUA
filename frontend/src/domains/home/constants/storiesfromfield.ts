@@ -12,7 +12,7 @@ export type FieldStory = {
 export const FIELD_STORIES: FieldStory[] = [
   {
     id: "grama-sabha",
-    image: "/home/story1.png",
+    image: "/home/Fstory1.png",
     category: "Community Leadership",
     date: "March 2, 2026",
     title: "The Grama Sabha Revival: Village Assemblies Take Charge of Education",
@@ -23,9 +23,9 @@ export const FIELD_STORIES: FieldStory[] = [
   {
     id: "tank-desiltation",
     image: "/home/story-thumb.png",
-    category: "Agricultural Update",
+    category: "Building Stronger Villages",
     date: "February 12, 2026",
-    title: "How Traditional Tank Desiltation Revived 30 Smallholdings in Hanur",
+    title: "Village meetings bring communities together to address local challenges.",
     description:
       "Community-led desiltation restored irrigation capacity across Hanur, bringing thirty smallholdings back into productive cultivation this season.",
     href: "/Stories",
@@ -33,9 +33,9 @@ export const FIELD_STORIES: FieldStory[] = [
   {
     id: "handloom-export",
     image: "/home/story-thumb-2.png",
-    category: "Self-Help Success",
+    category: "Skills for Tomorrow",
     date: "January 28, 2026",
-    title: "Mysore Women's Guild Exports First Hand-Loom Batch to Bangalore Partner",
+    title: "Training helps rural youth develop skills and explore opportunities.",
     description:
       "A women-led self-help guild completed its first wholesale hand-loom shipment, opening a steady market link with a Bangalore retail partner.",
     href: "/Stories",

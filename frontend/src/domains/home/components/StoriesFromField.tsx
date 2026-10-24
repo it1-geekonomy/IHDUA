@@ -81,11 +81,11 @@ export default function StoriesFromField() {
             <div className="flex items-center justify-center gap-3 sm:justify-start">
               <span className="h-px w-8 bg-[#9739A8]" />
               <Typography
-                className={`font-figtree font-bold text-[#43AEB5] ${figmaTypeScale[15]}`}
+                className={`font-figtree font-bold text-[#9739A8] ${figmaTypeScale[15]}`}
               >
                 Field Updates
               </Typography>
-              <span className="h-px w-8 bg-[#43AEB5]" />
+              <span className="h-px w-8 bg-[#9739A8]" />
             </div>
             <Typography
               variant="h2"
@@ -191,13 +191,13 @@ export default function StoriesFromField() {
                   <div className="min-w-0 flex-1">
                     <motion.p
                       variants={sideLine}
-                      className={`block font-figtree font-bold uppercase tracking-wider text-[#43AEB5] ${figmaTypeScale[14]}`}
+                      className={`block font-figtree font-bold uppercase tracking-wider text-[#9739A8] ${figmaTypeScale[14]}`}
                     >
                       {story.category}
                     </motion.p>
                     <motion.p
                       variants={sideLine}
-                      className={`mt-1.5 block font-lora font-normal leading-snug text-[#00191B] transition-colors group-hover:text-[#9739A8] lg:text-[15px] xl:text-[20px] ${figmaTypeScale[20]}`}
+                      className={`mt-1.5 block font-lora font-normal leading-snug text-[#00191B] transition-colors lg:text-[15px] xl:text-[20px] ${figmaTypeScale[20]}`}
                     >
                       {story.title}
                     </motion.p>
@@ -229,7 +229,7 @@ export default function StoriesFromField() {
                 >
                   <Typography
                     variant="caption"
-                    className="font-figtree font-bold text-[#43AEB5]"
+                    className="font-figtree font-bold text-[#9739A8]"
                   >
                     {featured.category}
                   </Typography>
