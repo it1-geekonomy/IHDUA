@@ -16,6 +16,7 @@ export interface TypographyProps {
     | "body-sm"
     | "caption"
     | "overline";
+  as?: "h1" | "h2" | "h3" | "h4" | "p" | "span";
   className?: string;
   style?: React.CSSProperties;
   id?: string;
@@ -119,6 +120,7 @@ export const figmaTypeScale = {
 const Typography: React.FC<TypographyProps> = ({
   children,
   variant = "body-lg",
+  as,
   className,
   style,
   id,
@@ -126,6 +128,10 @@ const Typography: React.FC<TypographyProps> = ({
   const baseStyles = "";
 
   const getTag = () => {
+    if (as) {
+      return as;
+    }
+
     switch (variant) {
       case "display-3xl":
       case "display-2xl":

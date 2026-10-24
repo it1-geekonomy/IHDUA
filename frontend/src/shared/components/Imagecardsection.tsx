@@ -1,9 +1,8 @@
-import { Fragment } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Typography from "@/lib/Typography";
-import { ARROW_BOX,ARROW_ICON,CAPTION_MARGIN_TOP,GRID_GAP,HEADING_GROUP_GAP,SECTION_GAP,SECTION_PADDING_X,SECTION_PADDING_Y,TEXT_COLUMN_GAP,THEMES,THEME_ORDER,
+import { ARROW_BOX,ARROW_ICON,CAPTION_MARGIN_TOP,GRID_GAP,HEADING_GROUP_GAP,SECTION_PADDING_X,SECTION_PADDING_Y,TEXT_COLUMN_GAP,THEMES,THEME_ORDER,
   type CardTheme,
 } from "@/shared/constants/imagecard";
 
@@ -47,7 +46,7 @@ function ImageCard({ item, index }: { item: ImageCardItem; index: number }) {
           src={item.image}
           alt={item.imageAlt}
           fill
-          sizes="(min-width: 1024px) 22vw, (min-width: 768px) 30vw, (min-width: 640px) 45vw, 100vw"
+          sizes="(min-width: 64rem) 22vw, (min-width: 48rem) 30vw, (min-width: 40rem) 18rem, 100vw"
           className="object-cover object-center"
         />
       </div>
@@ -113,21 +112,15 @@ export default function ImageCardsSection({
             <SectionLabel>{label}</SectionLabel>
 
             <Typography
-              variant="h4"
-              className="font-lora leading-[1.2] text-[#00191B] xl:hidden"
-            >
-              {headingLines.join(" ")}
-            </Typography>
-
-            <Typography
               variant="h2"
-              className="hidden font-lora leading-[1.2] text-[#00191B] xl:block"
+              className="font-lora leading-[1.2] text-[#00191B]"
             >
               {headingLines.map((line, i) => (
-                <Fragment key={`${line}-${i}`}>
-                  {i > 0 && <br />}
+                <span key={`${line}-${i}`}>
+                  {i > 0 && <br className="hidden xl:block" />}
+                  {i > 0 && <span className="xl:hidden"> </span>}
                   {line}
-                </Fragment>
+                </span>
               ))}
             </Typography>
           </div>
@@ -137,8 +130,8 @@ export default function ImageCardsSection({
           </Typography>
         </div>
 
-        {/* Below lg: own grid, 1 column (under 640px), 2 columns (640px+),
-            3 columns (768px+), full width at 768px+.
+        {/* Below lg: own grid, 1 column (under sm), 2 columns (sm+),
+            3 columns (md+), full width at md+.
             From lg: "contents", so each card is a cell of the 4-column grid. */}
         <div
           className={`mx-auto grid w-full min-w-0 max-w-[22rem] grid-cols-1 sm:max-w-xl sm:grid-cols-2 md:max-w-none md:grid-cols-3 lg:contents ${GRID_GAP}`}
