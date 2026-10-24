@@ -7,14 +7,14 @@ const WOMEN_ITEMS: ImageCardItem[] = [
     image: "/womenempowerment/self-help.png",
     imageAlt: "Self Help Group & Federation",
     title: "Self Help Group & Federation",
-    href: "/Self-Help-Group-Federation",
+    href: "/self-help-group-federation",
     theme: "amber",
   },
   {
     image: "/womenempowerment/microfinance.png",
     imageAlt: "Micro-Finance Initiative",
     title: "Micro-Finance Initiative",
-    href: "/Micro-Finance-Initiatives",
+    href: "/micro-finance-initiatives",
     theme: "purple",
   },
 ];
