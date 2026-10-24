@@ -46,7 +46,7 @@ export default function MissionVisionValues() {
                   <Typography
                     key={line}
                     variant="body-lg"
-                    className="font-figtree text-[length:clamp(13px,1.4vw,18px)] leading-[1.6] text-[#5F6C6D]"
+                    className="font-figtree text-[length:clamp(13px,1.4vw,18px)] leading-[1.6] text-[#5F6C6D] font-normal"
                   >
                     {line}
                   </Typography>

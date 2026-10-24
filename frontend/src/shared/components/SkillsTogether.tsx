@@ -70,7 +70,7 @@ const SkillsTogether = ({
                 </div>
 
                 <Typography
-                  variant="h4"
+                  variant="h3"
                   className="w-full font-lora font-normal text-[#00191B]"
                 >
                   {heading}
@@ -81,7 +81,7 @@ const SkillsTogether = ({
                 {descriptions.map((para, index) => (
                   <Typography
                     key={index}
-                    variant="body-sm"
+                    variant="body-lg"
                     className="w-full font-figtree font-normal text-[#5F6C6D] text-center lg:text-left"
                   >
                     {para}
@@ -132,7 +132,7 @@ const SkillsTogether = ({
                       {item.title}
                     </Typography>
                     <Typography
-                      variant="caption"
+                      variant="body-sm"
                       className="font-figtree font-normal text-[#5F6C6D] normal-case"
                     >
                       {item.description}

@@ -175,7 +175,7 @@ export default function OurDocuments({ groups = DOCUMENT_GROUPS }: OurDocumentsP
         {/* Full width below 640px, wider cap from sm up */}
         <Typography
           variant="body-lg"
-          className="mt-[clamp(12px,1.5vw,20px)] w-full font-figtree text-[length:clamp(14px,1.4vw,18px)] leading-[1.6] text-[#5F6C6D] sm:max-w-[clamp(520px,75vw,860px)]"
+          className="mt-[clamp(12px,1.5vw,20px)] w-full font-figtree text-[length:clamp(14px,1.4vw,18px)] leading-[1.6] text-[#5F6C6D] sm:max-w-[clamp(520px,75vw,860px)] font-normal"
         >
           {DOCUMENTS_DESCRIPTION}
         </Typography>

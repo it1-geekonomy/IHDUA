@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { FOCUS_AREAS } from "@/domains/home/constants/focusarea";
@@ -47,17 +48,16 @@ interface AccordionItemProps {
   onSelect: () => void;
 }
 
-/** Below lg: one expandable card at a time. */
+/** Below lg: one expandable card at a time.
+ *  Closed item -> tap to open it. Open card -> tap to go to its page. */
 function AccordionItem({ area, isOpen, isFirst, onSelect }: AccordionItemProps) {
   if (isOpen) {
     return (
       // --card-offset keeps the top padding and the image's negative margin in sync
       <div className="relative mb-[clamp(1.5rem,1.1rem+2vw,2rem)] pt-[var(--card-offset)] [--card-offset:clamp(2rem,1.3rem+3vw,2.5rem)]">
-        <button
-          type="button"
-          aria-expanded="true"
-          onClick={onSelect}
-          className="w-full bg-[#FFD638] px-[clamp(0.75rem,0.5rem+1vw,1rem)] pb-[clamp(1.25rem,1rem+1vw,1.5rem)] text-left"
+        <Link
+          href={area.href}
+          className="block w-full bg-[#FFD638] px-[clamp(0.75rem,0.5rem+1vw,1rem)] pb-[clamp(1.25rem,1rem+1vw,1.5rem)] text-left"
         >
           <div
             className={`relative mb-[clamp(1rem,0.8rem+0.8vw,1.25rem)] -mt-[var(--card-offset)] w-full overflow-hidden ${SIZE.cardImage}`}
@@ -87,7 +87,7 @@ function AccordionItem({ area, isOpen, isFirst, onSelect }: AccordionItemProps) 
               aria-hidden="true"
             />
           </div>
-        </button>
+        </Link>
       </div>
     );
   }
@@ -118,10 +118,13 @@ function AccordionItem({ area, isOpen, isFirst, onSelect }: AccordionItemProps) 
   );
 }
 
-/** lg+: row that highlights and reveals a preview image on hover. */
+/** lg+: row that highlights and reveals a preview image on hover. Click goes to the page. */
 function HoverRow({ area }: { area: FocusArea }) {
   return (
-    <div className="group relative border-b border-[#0000003D] transition-colors duration-300 hover:border-transparent hover:bg-[#FFD638]">
+    <Link
+      href={area.href}
+      className="group relative block border-b border-[#0000003D] transition-colors duration-300 hover:border-transparent hover:bg-[#FFD638]"
+    >
       <div className="relative z-10 flex items-center justify-between gap-6 py-[clamp(1.5rem,1rem+1vw,2rem)]">
         <div className="w-full">
           <Typography variant="h3" className="font-lora font-normal text-[#00191B]">
@@ -153,7 +156,7 @@ function HoverRow({ area }: { area: FocusArea }) {
           sizes="(min-width: 1280px) 18rem, 16rem"
         />
       </div>
-    </div>
+    </Link>
   );
 }
 
