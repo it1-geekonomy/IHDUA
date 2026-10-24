@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Typography from "@/lib/Typography";
+import CountUp from "@/shared/components/CountUp";
 
 export interface ImpactStatItem {
   icon: string; // image path, e.g. "/Healthawareness/160.png"
@@ -103,7 +104,7 @@ const ImpactStats = ({
                         variant="body-xl"
                         className="font-figtree font-medium text-[#501959]"
                       >
-                        {item.value}
+                        <CountUp value={item.value} />
                       </Typography>
                       {/* Label width:
                           below lg -> narrow so it wraps into short lines
