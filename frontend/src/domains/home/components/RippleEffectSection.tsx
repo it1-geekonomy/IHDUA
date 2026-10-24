@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { IMPACT_STEPS } from "@/domains/home/constants/RippleEffectSection";
 import Typography from "@/lib/Typography";
 
@@ -24,22 +25,30 @@ export default function RippleEffectSection() {
 
         {/* Two parts: image on the left, story on the right, matched heights */}
         <div className="mt-8 grid grid-cols-1 items-stretch gap-8 sm:mt-10 lg:grid-cols-2 lg:gap-16">
-          <div className="relative h-64 overflow-hidden sm:h-80 md:h-[26rem] lg:h-auto rounded-md">
+          <Link
+            href="/blogs/the-ripple-effect-of-a-single-opportunity"
+            className="group relative h-64 overflow-hidden sm:h-80 md:h-[26rem] lg:h-auto rounded-md block cursor-pointer"
+          >
             <img
               src="/rippleeffect/shanthamma1.png"
               alt="Shanthamma standing in her farm field"
-              className="h-full w-full object-cover lg:absolute lg:inset-0"
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 lg:absolute lg:inset-0"
             />
-          </div>
+          </Link>
 
           <div className="flex flex-col">
-            <Typography
-              variant="h3"
-              className="leading-snug font-lora font-normal text-[#00191B] w-full lg:max-w-xl"
+            <Link
+              href="/blogs/the-ripple-effect-of-a-single-opportunity"
+              className="group block"
             >
-              How <span className="text-[#C09A00] font-lora font-medium">Shanthamma</span> Secured
-              Her Family's Future
-            </Typography>
+              <Typography
+                variant="h3"
+                className="leading-snug font-lora font-normal text-[#00191B] transition-colors group-hover:text-[#9739A8] w-full lg:max-w-xl"
+              >
+                How <span className="text-[#C09A00] font-lora font-medium">Shanthamma</span> Secured
+                Her Family's Future
+              </Typography>
+            </Link>
 
             <div className="mt-6 flex flex-col sm:mt-8">
               {IMPACT_STEPS.map((step, index) => (
@@ -62,11 +71,14 @@ export default function RippleEffectSection() {
               ))}
             </div>
 
-            <button className="mx-auto flex mt-6 w-fit bg-[#FFD638] px-6 py-3 cursor-pointer sm:mt-16 lg:mx-0">
+            <Link
+              href="/blogs/the-ripple-effect-of-a-single-opportunity"
+              className="mx-auto flex mt-6 w-fit bg-[#FFD638] px-6 py-3 cursor-pointer transition-opacity hover:opacity-90 sm:mt-16 lg:mx-0"
+            >
               <Typography variant="body-sm" className="font-semibold font-figtree uppercase tracking-wide text-[#1E1E1E]">
                 Read More Inspiring Field Stories →
               </Typography>
-            </button>
+            </Link>
           </div>
         </div>
       </div>
