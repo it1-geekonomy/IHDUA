@@ -4,7 +4,7 @@ const SkillSection = () => {
   return (
     <CommunityHealthBanner
       heading="Skills & Employment"
-      mainImage="/Skillsandemployment/Skills.png"
+      mainImage="/Skillsandemployment/skill2.png"
       mainImageAlt="Working in the Stitching Unit"
       items={[
         {
