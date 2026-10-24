@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Typography from "@/lib/Typography";
+import CountUp from "@/shared/components/CountUp";
 
 export interface StatItem {
   icon: string;
@@ -44,7 +45,7 @@ const StatsStrip = ({ items }: StatsStripProps) => {
                       variant="h4"
                       className="font-lora font-semibold text-[#9739A8]"
                     >
-                      {item.value}
+                      <CountUp value={item.value} />
                     </Typography>
                     <Typography
                       variant="body-sm"
