@@ -18,7 +18,7 @@ export const FIELD_STORIES: FieldStory[] = [
     title: "The Grama Sabha Revival: Village Assemblies Take Charge of Education",
     description:
       "Through democratic consensus building, three regional councils have successfully assumed independent fiscal and curriculum oversight of municipal schools.",
-    href: "/Stories",
+    href: "/blogs/the-grama-sabha-revival-village-assemblies-take-charge-of-education",
   },
   {
     id: "tank-desiltation",
@@ -28,7 +28,7 @@ export const FIELD_STORIES: FieldStory[] = [
     title: "Village meetings bring communities together to address local challenges.",
     description:
       "Community-led desiltation restored irrigation capacity across Hanur, bringing thirty smallholdings back into productive cultivation this season.",
-    href: "/Stories",
+    href: "/blogs/how-traditional-tank-desiltation-revived-30-smallholdings-in-hanur",
   },
   {
     id: "handloom-export",
@@ -38,6 +38,6 @@ export const FIELD_STORIES: FieldStory[] = [
     title: "Training helps rural youth develop skills and explore opportunities.",
     description:
       "A women-led self-help guild completed its first wholesale hand-loom shipment, opening a steady market link with a Bangalore retail partner.",
-    href: "/Stories",
+    href: "/blogs/mysore-womens-guild-exports-first-hand-loom-batch-to-bangalore-partner",
   },
 ];

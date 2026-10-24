@@ -14,7 +14,7 @@ export const NAV_LINKS: NavLink[] = [
         label: "Education",
         href: "/education",
         children: [
-          { label: "VinayakAgnana Vidyashale Mysore", href: "/vinayakagnana-vidyashale-mysore" },
+          { label: "Vinayaka Jnana Vidyashale", href: "/vinayakagnana-vidyashale-mysore" },
           { label: "Adarsha Academy KRS", href: "/adarsha-academy-krs" },
         ],
       },
@@ -28,7 +28,7 @@ export const NAV_LINKS: NavLink[] = [
       },
       {
         label: "Skills & Employment",
-         href: "/skills-and-employment",
+        href: "/skills-and-employment",
         children: [
           { label: "Women", href: "/women" },
           { label: "Youth", href: "/youth" },
@@ -54,6 +54,6 @@ export const NAV_LINKS: NavLink[] = [
       },
     ],
   },
-  
-  { label: "Blogs", href: "/blogs" },
+
+  { label: "Blogs & Stories", href: "/blogs" },
 ];
