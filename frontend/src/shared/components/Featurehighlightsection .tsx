@@ -78,7 +78,7 @@ const FeatureHighlightSection = ({
     <section
       className={cn(
         "w-full bg-[#FFFFFF]",
-        "px-[clamp(1rem,-1.0769rem_+_9.2308vw,10rem)] py-8 sm:py-10 lg:py-14",
+        "px-[clamp(1rem,-1.0769rem_+_9.2308vw,10rem)] pt-6 lg:pt-8",
         "flex flex-col gap-[clamp(1.5rem,4vw,4rem)] lg:flex-row lg:items-center",
         className,
       )}
@@ -106,8 +106,8 @@ const FeatureHighlightSection = ({
           </div>
         )}
         <Typography
-          variant="h2"
-          className="font-lora"
+          variant="h3"
+          className="font-lora  leading-[1.2]"
           style={{ color: COLORS.heading }}
         >
           {heading}

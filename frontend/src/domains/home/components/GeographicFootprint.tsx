@@ -163,7 +163,7 @@ export default function GeographicFootprint() {
               </div>
 
               <Typography
-                variant="h1"
+                variant="display-xl"
                 className="mx-auto mt-5 max-w-3xl text-center leading-tight font-normal font-lora lg:max-w-none lg:w-full xl:mx-0 xl:w-auto xl:max-w-4xl xl:text-left"
               >
                 Rooted in communities. Creating change where it matters.

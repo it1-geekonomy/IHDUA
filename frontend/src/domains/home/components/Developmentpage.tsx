@@ -173,8 +173,8 @@ export default function RuralDevelopmentSection() {
 
           {/* Heading: h1 scale below lg (same as other long section titles); large from lg */}
           <Typography
-            variant="h1"
-            className="mx-auto max-w-5xl font-lora font-normal leading-tight text-[#00191B] lg:text-[56px]"
+            variant="display-xl"
+            className="mx-auto max-w-5xl font-lora font-normal leading-tight text-[#00191B]"
           >
             Building Stronger Communities, Creating Lasting Change
           </Typography>
