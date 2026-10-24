@@ -13,6 +13,7 @@ export interface TypographyProps {
     | "h4"
     | "body-xl"
     | "body-lg"
+    |"body-md"
     | "body-sm"
     | "caption"
     | "overline";
@@ -58,7 +59,8 @@ const variantStyles = {
   // 18
   "body-lg":
     "text-[12px] sm:text-[14px] md:text-[16px] lg:text-[20px] font-normal",
-
+ "body-md":
+    "text-[12px] sm:text-[14px] md:text-[14px] lg:text-[18px] font-normal",
   // 16
   "body-sm":
     "text-[12px] sm:text-[12px] md:text-[14px] lg:text-[16px] font-normal",
