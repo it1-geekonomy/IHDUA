@@ -3,7 +3,7 @@ export const LASTING_CHANGE = {
   body: "IHDUA provided direct drip-irrigation infrastructure combined with intensive organic multi-cropping and bio-nutrient training, helping rural farmers improve productivity, adopt sustainable agricultural practices, strengthen household livelihoods, and create lasting opportunities within their communities.",
   ctaText:
     "IHDUA works with rural communities to create opportunities, strengthen livelihoods, and build a sustainable future.",
-  ctaHref: "/GetInvolved",
+  ctaHref: "/",
   yellowCard: {
     title: "Create Lasting Impact",
     description:

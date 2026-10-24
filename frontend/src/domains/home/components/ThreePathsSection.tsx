@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PATHS } from "@/domains/home/constants/ThreePathsSection";
 import Typography from "@/lib/Typography";
 import { scrollToDonateSection } from "@/domains/home/lib/donation";
+import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 import VolunteerModal from "./VolunteerModal";
 import PartnershipModal from "./PartnershipModal";
 
@@ -11,8 +12,41 @@ export default function ThreePathsSection() {
   const [isVolunteerModalOpen, setIsVolunteerModalOpen] = useState(false);
   const [isPartnershipModalOpen, setIsPartnershipModalOpen] = useState(false);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const checkAndScroll = () => {
+      const fromFooter = sessionStorage.getItem("scroll_to_get_involved");
+      const hasHash = window.location.hash.includes("get-involved");
+
+      if (fromFooter || hasHash) {
+        if (fromFooter) {
+          sessionStorage.removeItem("scroll_to_get_involved");
+        }
+        if (hasHash) {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+
+        setTimeout(() => {
+          void smoothScrollToId("get-involved", 80);
+        }, 150);
+        setTimeout(() => {
+          const el = document.getElementById("get-involved");
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            if (Math.abs(rect.top - 80) > 60) {
+              void smoothScrollToId("get-involved", 80, { minMs: 300, maxMs: 600 });
+            }
+          }
+        }, 450);
+      }
+    };
+
+    checkAndScroll();
+  }, []);
+
   return (
-    <section className="w-full bg-[#FFD638]">
+    <section id="get-involved" className="w-full bg-[#FFD638] scroll-mt-20">
       <div className="w-full px-6 py-6 pb-6 sm:px-10 sm:py-20 lg:px-10 lg:py-16 2xl:px-40">
         {/* Label: centered below sm (640px), left-aligned from sm up */}
         <div className="flex items-center justify-center gap-3 sm:justify-start">
@@ -35,6 +69,7 @@ export default function ThreePathsSection() {
           {PATHS.map((path, index) => (
             <div
               key={path.title}
+              id={`get-involved-${path.title.toLowerCase()}`}
               className={`w-72 bg-white px-6 py-6 sm:w-full sm:px-7 sm:py-7 lg:mx-auto lg:w-full lg:max-w-lg lg:px-8 lg:py-6 xl:px-14 xl:py-10 ${
                 index === 2
                   ? "sm:col-span-2 sm:mx-auto sm:w-full sm:max-w-[calc(50%-theme(spacing.5))] lg:col-span-1 lg:max-w-lg"
