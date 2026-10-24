@@ -1,7 +1,6 @@
 import HeroBanner from "@/shared/components/Herobanner";
 import ImageCardsSection from "@/shared/components/Imagecardsection";
 import CommunityHealthBanner from "@/shared/components/CommunityHealthBanner";
-import MovementMarquee from "@/domains/home/components/Movementmarquee";
 import {
   EDUCATION_HUB_HERO,
   EDUCATION_SCHOOL_ITEMS,
@@ -32,8 +31,6 @@ export default function ImpactPage() {
         mainImageAlt={EDUCATION_TRANSFORMS_BANNER.mainImageAlt}
         items={[...EDUCATION_TRANSFORMS_BANNER.items]}
       />
-
-      <MovementMarquee />
     </main>
   );
 }
