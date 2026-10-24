@@ -7,11 +7,11 @@ const WomenOpportunitiesSection = () => {
       topDescription="IHDUA’s Model Village project supports farmers through soil health training, composting, crop cultivation awareness and agricultural exposure visits. These activities encourage improved farming practices, promote sustainable agriculture and strengthen farmers’ knowledge."
       images={[
         {
-          src: "/youth/buildingskills1.png",
+          src: "/farmers/supportfarmers1.png",
           alt: "Women receiving a certificate at a community programme",
         },
         {
-          src: "/youth/buildingskills2.png",
+          src: "/farmers/supportfarmers2.png",
           alt: "Women attending a training session in a hall",
         },
       ]}
