@@ -20,11 +20,11 @@ const HealthAwarenessSection = () => {
               >
                 {HEALTH_LABEL}
               </Typography>
-              <span className="h-px w-6 bg-[#9739A8] sm:hidden" aria-hidden="true" />
+              <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
             </div>
 
             <Typography
-              variant="h2"
+              variant="h3"
               className="w-full font-lora text-[#00191B]"
             >
               {HEALTH_HEADING}

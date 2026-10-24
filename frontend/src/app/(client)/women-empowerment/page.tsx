@@ -60,8 +60,8 @@ export default function WomenEmpowermentPage() {
             </div>
 
             <Typography
-              variant="h2"
-              className="w-full font-lora font-normal text-[#00191B] text-center sm:text-left"
+              variant="h3"
+              className="font-lora leading-[1.2] text-[#00191B]"
             >
               Creating Pathways to Greater Independence
             </Typography>
