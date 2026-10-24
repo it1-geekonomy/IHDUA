@@ -1,10 +1,15 @@
-export default function AboutPage() {
-  return (
-    <section className="min-h-screen flex flex-col items-center justify-center px-6">
-      <h1 className="text-4xl md:text-5xl font-semibold text-center">
-        Contact us
-      </h1>
+import BannerSection from "@/domains/contact/components/Bannersection";
+import ContactSection from "@/domains/contact/components/ContactSection";
+import VisitOfficeSection from "@/domains/contact/components/VisitOfficeSection";
+import NewsletterSection from "@/shared/components/Newsletter";
 
-    </section>
+export default function ContactPage() {
+  return (
+    <>
+      <BannerSection />
+      <ContactSection />
+      <VisitOfficeSection />
+      <NewsletterSection />
+    </>
   );
 }
