@@ -27,18 +27,16 @@ export default function AdarshaAcademyPage() {
         items={[...ADARSHA_HIGHLIGHTS]}
       />
 
-      <div className="pb-12 lg:pb-16 bg-white">
-        <OpportunitiesSection
-          heading={ADARSHA_STORIES.story1.title}
-          descriptions={[...ADARSHA_STORIES.story1.paragraphs]}
-          image={ADARSHA_STORIES.story1.image}
-          imageAlt={ADARSHA_STORIES.story1.imageAlt}
-          button={{
-            label: ADARSHA_STORIES.story1.ctaText,
-            href: ADARSHA_STORIES.story1.galleryHref,
-          }}
-        />
-      </div>
+      <OpportunitiesSection
+        heading={ADARSHA_STORIES.story1.title}
+        descriptions={[...ADARSHA_STORIES.story1.paragraphs]}
+        image={ADARSHA_STORIES.story1.image}
+        imageAlt={ADARSHA_STORIES.story1.imageAlt}
+        button={{
+          label: ADARSHA_STORIES.story1.ctaText,
+          href: ADARSHA_STORIES.story1.galleryHref,
+        }}
+      />
 
       <AdarshaStorySections />
 
