@@ -57,6 +57,11 @@ export function useDonationForm() {
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
   const [taxId, setTaxId] = useState("");
+  const [address, setAddress] = useState("");
+  const [stateName, setStateName] = useState("");
+  const [city, setCity] = useState("");
+  const [pincode, setPincode] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusTone, setStatusTone] = useState<"ok" | "error" | null>(null);
@@ -205,13 +210,37 @@ export function useDonationForm() {
       return;
     }
 
+    if (!stateName.trim()) {
+      setStatusTone("error");
+      setStatusMessage("Please select your state.");
+      return;
+    }
+
+    if (!city.trim()) {
+      setStatusTone("error");
+      setStatusMessage("Please enter your city.");
+      return;
+    }
+
+    if (!pincode.trim()) {
+      setStatusTone("error");
+      setStatusMessage("Please enter your PIN code.");
+      return;
+    }
+
+    if (!termsAccepted) {
+      setStatusTone("error");
+      setStatusMessage("Please agree to the Terms & Conditions to continue.");
+      return;
+    }
+
     if (!isValidPhone(localPhone, phoneCountryCode)) {
       setStatusTone("error");
       setStatusMessage(DONATION_COPY.invalidPhone);
       return;
     }
 
-    if (isIndia && !isValidTaxId(panOrAadhaar)) {
+    if (isIndia && panOrAadhaar && !isValidTaxId(panOrAadhaar)) {
       setStatusTone("error");
       setStatusMessage(DONATION_COPY.invalidTaxId);
       return;
@@ -233,6 +262,10 @@ export function useDonationForm() {
         countryCode,
         countryName: country.name,
         ...(panOrAadhaar ? { pan: panOrAadhaar } : {}),
+        ...(address.trim() ? { address: address.trim() } : {}),
+        state: stateName.trim(),
+        city: city.trim(),
+        pincode: pincode.trim(),
       });
 
       openRazorpayCheckout({
@@ -262,6 +295,11 @@ export function useDonationForm() {
             setMobile("");
             setEmail("");
             setTaxId("");
+            setAddress("");
+            setStateName("");
+            setCity("");
+            setPincode("");
+            setTermsAccepted(false);
           } catch (error) {
             setStatusTone("error");
             setStatusMessage(
@@ -309,6 +347,11 @@ export function useDonationForm() {
     mobile,
     email,
     taxId,
+    address,
+    stateName,
+    city,
+    pincode,
+    termsAccepted,
     isPaying,
     statusMessage,
     statusTone,
@@ -320,6 +363,11 @@ export function useDonationForm() {
     setMobile,
     setEmail,
     setTaxId,
+    setAddress,
+    setStateName,
+    setCity,
+    setPincode,
+    setTermsAccepted,
     setUsingCustom,
     pickPreset,
     setCustomFromInput,
