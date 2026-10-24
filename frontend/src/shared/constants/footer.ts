@@ -2,15 +2,14 @@ export const FOOTER_WHAT_WE_DO = [
   "Home",
   "About us",
   "Our Impact",
-  "Farms & Diary",
   "Blogs",
+  "Contact Us",
 ];
 
 export const FOOTER_GET_INVOLVED = [
   "Donate",
   "Volunteer",
-  "Academic Partnership",
-  "CSR Projects",
+  "Partner",
 ];
 
 export const FOOTER_HEADQUARTERS = {
