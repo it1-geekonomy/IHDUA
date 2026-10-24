@@ -88,6 +88,21 @@ export const VINAYAKA_STORIES = [
   },
 ] as const;
 
+export const VINAYAKA_COMMUNITY_STORY = {
+  title: "Building Foundations for the Future",
+  paragraphs: [
+    "Education creates opportunities for children to develop knowledge, discover their abilities, and prepare for the future. Vinayaka Jnana Vidyashale supports rural students through school-based learning.",
+  ],
+  image: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Rectangle 55 (2).png",
+  imageAlt: "Vinayaka Jnana Vidyashale community learning",
+  featureCard: {
+    icon: "/Rural Education/raphael_books (1).png",
+    title: "Learning for Every Child",
+    description:
+      "A school environment that encourages curiosity, builds essential knowledge, and helps children progress in their education.",
+  },
+} as const;
+
 export const VINAYAKA_STATS: readonly SchoolStatItem[] = [
   {
     icon: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/fi_14600942.png",

@@ -68,8 +68,8 @@ export default function NavbarShell() {
     <>
       <NavStyles />
 
-      {/* spacer = nav height */}
-      <div className="h-[68px] shrink-0 lg:h-[80px]" aria-hidden />
+      {/* spacer = nav height with matching navbar purple bg */}
+      <div className="h-[68px] shrink-0 bg-[#9739A8] lg:h-[80px]" aria-hidden />
 
       {/* backdrop must live outside <header> (header's transform would trap `fixed`) */}
       <MobileBackdrop open={isOpen} onClose={() => setIsOpen(false)} />

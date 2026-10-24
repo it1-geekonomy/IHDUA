@@ -38,7 +38,7 @@ export default function HeroBanner({
     
     <section
       className={cn(
-        "relative grid w-full aspect-[780/400] sm:aspect-[1920/490] sm:min-h-[15rem] md:min-h-[19rem] lg:min-h-0",
+        "relative grid w-full aspect-[780/400] sm:aspect-[1920/490] sm:min-h-[15rem] md:min-h-[19rem] lg:min-h-0 bg-[#9739A8]",
         className,
       )}
     >
