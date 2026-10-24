@@ -47,7 +47,7 @@ const ImpactStats = ({
               <Typography
                 key={index}
                 variant="body-lg"
-                className="w-full font-figtree font-normal text-[#5F6C6D]"
+                className="w-full font-figtree font-normal text-[#5F6C6D] text-center sm:text-left"
               >
                 {paragraph}
               </Typography>

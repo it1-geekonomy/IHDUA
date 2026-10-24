@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import InitiativeBanner from "@/shared/components/InitiativeBanner";
+import HeroBanner from "@/shared/components/Herobanner";
 import FeatureHighlightSection from "@/shared/components/Featurehighlightsection ";
 import InitiativeContent from "@/shared/components/InitiativeContent";
 import ImpactStats, {
@@ -80,11 +80,11 @@ const IMPACT_STATS: ImpactStatItem[] = [
 export default function SelfHelpGroupFederationPage() {
   return (
     <>
-      <InitiativeBanner
-        title="Self Help Group & Federation"
+      <HeroBanner
+        heading="Self Help Group & Federation"
         description="Village Self-Help Groups and federations where women save together, share decisions and grow as community leaders."
         image="/selfhelpgroup/banner-desktop.png"
-        mobileImage="/selfhelpgroup/banner-mobile.png"
+        imageMobile="/selfhelpgroup/banner-mobile.png"
         imageAlt="Self-Help Group members at an IHDUA community meeting"
       />
 
@@ -126,8 +126,8 @@ export default function SelfHelpGroupFederationPage() {
       <section className="w-full bg-white">
         <div className="w-full px-6 pt-2 pb-10 sm:px-10 sm:pb-14 lg:px-10 lg:pb-16 2xl:px-40">
           <div className="flex w-full flex-col gap-6">
-            <div className="flex w-full flex-col items-start gap-3 text-left">
-              <div className="flex items-center gap-3">
+            <div className="flex w-full flex-col items-center text-center sm:items-start sm:text-left gap-3">
+              <div className="flex items-center justify-center sm:justify-start gap-3">
                 <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
                 <Typography
                   variant="caption"
@@ -148,7 +148,7 @@ export default function SelfHelpGroupFederationPage() {
 
               <Typography
                 variant="body-lg"
-                className="w-full font-figtree font-normal text-[#5F6C6D]"
+                className="w-full font-figtree font-normal text-[#5F6C6D] text-center sm:text-left"
               >
                 IHDUA facilitates the formation of SHGs and provides guidance on group rules, meeting processes and recordkeeping. Two selected members receive additional training to maintain group records and coordinate with bank officials.
               </Typography>
