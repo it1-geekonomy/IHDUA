@@ -1,9 +1,22 @@
+import BannerSection from "@/domains/StitchingUnit/components/bannersection";
+import WomenEmpowerment from "@/domains/StitchingUnit/components/womenempowerment";
+import NewsletterSection from "@/shared/components/Newsletter";
+import PracticalSkills from "@/domains/StitchingUnit/components/practicalskills"
+import ForgingSection from "@/domains/StitchingUnit/components/forgingpaths"
+import ImpactWeMake from "@/domains/StitchingUnit/components/impactwemake";
+import GallerySingleRow from "@/domains/StitchingUnit/components/gallerysinglerow";
+
 export default function StitchingUnitPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100">
-      <h1 className="text-5xl font-bold text-black">
-        STITCHING UNIT
-      </h1>
-    </main>
+    <>
+    <BannerSection />
+    <WomenEmpowerment />
+    <PracticalSkills />
+    <ForgingSection />
+    <ImpactWeMake />
+    <GallerySingleRow />
+    <NewsletterSection />
+      
+    </>
   );
 }
