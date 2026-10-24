@@ -77,7 +77,7 @@ export default function WomenEmpowermentPage() {
       </section>
       <CommunityHealthBanner
         heading="Women Empowerment"
-        mainImage="/womenempowerment/empowerment-banner.png"
+        mainImage="/womenempowerment/women-empowerment-study.png"
         mainImageAlt="Women empowerment initiatives and collaborative learning"
         items={[
           {

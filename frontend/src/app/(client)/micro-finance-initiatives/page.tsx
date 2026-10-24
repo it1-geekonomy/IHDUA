@@ -131,7 +131,7 @@ export default function MicroFinanceInitiativesPage() {
       />
 
       <WomenOpportunities
-        heading="Ramping Up Access to Capital"
+        heading="Creating Financial Independence for Rural Women"
         topDescription="IHDUA’s Microfinance Initiative supports rural women through Self-Help Groups (SHGs), helping members build shared savings, develop financial management skills and access group loans. Members contribute regularly and participate in collective financial decisions."
         images={[
           {
