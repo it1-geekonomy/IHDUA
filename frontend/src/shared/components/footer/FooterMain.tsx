@@ -11,7 +11,10 @@ const CONTAINER = "max-w-[1200px] 2xl:max-w-[1600px] mx-auto px-6";
 
 function FooterHeading({ children }: { children: React.ReactNode }) {
   return (
-    <Typography variant="body-lg" className="font-figtree font-bold text-[#FFD638]">
+    <Typography
+      variant="body-md"
+      className="font-figtree font-bold text-[#FFD638] whitespace-nowrap"
+    >
       {children}
     </Typography>
   );
@@ -19,9 +22,9 @@ function FooterHeading({ children }: { children: React.ReactNode }) {
 
 export function FooterMain() {
   return (
-    <div className={`${CONTAINER} lg:py-8`}>
-      <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3 md:gap-x-8 lg:grid-cols-[minmax(320px,1fr)_auto] lg:items-start lg:gap-x-12 lg:gap-y-0">
-        <div className="col-span-2 space-y-2 md:col-span-3 lg:col-span-1 lg:max-w-md lg:shrink-0">
+    <div className={`${CONTAINER} pb-2 lg:py-8`}>
+      <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 sm:gap-x-8 lg:grid-cols-[minmax(320px,1fr)_auto] lg:items-start lg:gap-x-12 lg:gap-y-0">
+        <div className="col-span-2 space-y-2 sm:col-span-3 lg:col-span-1 lg:max-w-md lg:shrink-0">
           <div className="flex justify-center lg:justify-start">
             <img
               src="/idhualogo1.png"
@@ -30,7 +33,7 @@ export function FooterMain() {
             />
           </div>
           <Typography
-            variant="body-lg"
+            variant="body-md"
             className="mx-auto text-center text-white font-manrope font-regular lg:mx-0 lg:text-left"
           >
             IHDUA (International Human Development and Upliftment Academy) is a
@@ -55,14 +58,22 @@ export function FooterMain() {
           </div>
         </div>
 
-        <div className="col-span-2 grid grid-cols-2 gap-x-6 gap-y-10 md:col-span-3 md:grid-cols-3 md:gap-x-8 lg:col-span-1 lg:flex lg:flex-row lg:items-start lg:gap-x-16 xl:gap-x-20 2xl:gap-x-24">
+        {/* Below 640px: 2 columns that hug their content and sit centered.
+            640px and up: 3 columns. lg and up: a row. */}
+        <div className="col-span-2 grid grid-cols-[auto_auto] justify-center gap-x-12 gap-y-10 sm:col-span-3 sm:grid-cols-3 sm:justify-normal sm:gap-x-8 lg:col-span-1 lg:flex lg:flex-row lg:items-start lg:gap-x-8 xl:gap-x-16 2xl:gap-x-24">
           <div className="col-span-1">
             <FooterHeading>WHAT WE DO</FooterHeading>
-            <ul className="mt-8 space-y-3 text-nowrap">
+            <ul className="mt-3 space-y-3 text-nowrap lg:mt-8">
               {FOOTER_WHAT_WE_DO.map((label) => (
                 <li key={label}>
-                  <Link href="/" className="text-white transition-colors hover:text-[#FFD638]">
-                    <Typography variant="body-lg" className="font-regular font-manrope">
+                  <Link
+                    href="/"
+                    className="text-white transition-colors hover:text-[#FFD638]"
+                  >
+                    <Typography
+                      variant="body-md"
+                      className="font-regular font-manrope"
+                    >
                       {label}
                     </Typography>
                   </Link>
@@ -73,11 +84,17 @@ export function FooterMain() {
 
           <div className="col-span-1">
             <FooterHeading>GET INVOLVED</FooterHeading>
-            <ul className="mt-8 space-y-3">
+            <ul className="mt-3 space-y-3 lg:mt-8">
               {FOOTER_GET_INVOLVED.map((label) => (
                 <li key={label}>
-                  <Link href="/" className="text-white transition-colors hover:text-[#FFD638]">
-                    <Typography variant="body-lg" className="font-regular font-manrope">
+                  <Link
+                    href="/"
+                    className="text-white transition-colors hover:text-[#FFD638]"
+                  >
+                    <Typography
+                      variant="body-md"
+                      className="font-regular font-manrope"
+                    >
                       {label}
                     </Typography>
                   </Link>
@@ -86,12 +103,12 @@ export function FooterMain() {
             </ul>
           </div>
 
-          <div className="col-span-2 md:col-span-1">
+          <div className="col-span-2 sm:col-span-1">
             <FooterHeading>HEADQUARTERS</FooterHeading>
-            <div className="mt-8 space-y-3">
+            <div className="mt-3 space-y-3 lg:mt-8">
               <Typography
-                variant="body-lg"
-                className="max-w-[260px] text-white font-regular font-manrope"
+                variant="body-md"
+                className="max-w-[220px] xl:max-w-[260px] text-white font-regular font-manrope"
               >
                 {FOOTER_HEADQUARTERS.address}
               </Typography>
@@ -100,7 +117,10 @@ export function FooterMain() {
                 translate="no"
                 className="notranslate block text-white transition-colors hover:text-[#FFD638]"
               >
-                <Typography variant="body-lg" className="font-regular font-manrope">
+                <Typography
+                  variant="body-md"
+                  className="font-regular font-manrope"
+                >
                   {FOOTER_HEADQUARTERS.email}
                 </Typography>
               </a>
@@ -108,7 +128,10 @@ export function FooterMain() {
                 href={FOOTER_HEADQUARTERS.phoneLink}
                 className="block text-white transition-colors hover:text-[#FFD638]"
               >
-                <Typography variant="body-lg" className="font-regular font-manrope">
+                <Typography
+                  variant="body-md"
+                  className="font-regular font-manrope"
+                >
                   {FOOTER_HEADQUARTERS.phone}
                 </Typography>
               </a>
