@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import InitiativeBanner from "@/shared/components/InitiativeBanner";
+import HeroBanner from "@/shared/components/Herobanner";
 import FeatureHighlightSection from "@/shared/components/Featurehighlightsection ";
 import InitiativeContent from "@/shared/components/InitiativeContent";
 import ImpactStats, {
@@ -80,11 +80,11 @@ const IMPACT_STATS: ImpactStatItem[] = [
 export default function MicroFinanceInitiativesPage() {
   return (
     <>
-      <InitiativeBanner
-        title="Micro-finance Initiative"
+      <HeroBanner
+        heading="Micro-finance Initiative"
         description="Community-based savings and fair credit that help rural women invest in health, education and livelihoods."
         image="/microfinanceinitiatives/banner-desktop.png"
-        mobileImage="/microfinanceinitiatives/banner-mobile.png"
+        imageMobile="/microfinanceinitiatives/banner-mobile.png"
         imageAlt="Women at an IHDUA microfinance meeting"
       />
 
@@ -126,8 +126,8 @@ export default function MicroFinanceInitiativesPage() {
       <section className="w-full bg-white">
         <div className="w-full px-6 pt-2 pb-10 sm:px-10 sm:pb-14 lg:px-10 lg:pb-16 2xl:px-40">
           <div className="flex w-full flex-col gap-6">
-            <div className="flex w-full flex-col items-start gap-3 text-left">
-              <div className="flex items-center gap-3">
+            <div className="flex w-full flex-col items-center text-center sm:items-start sm:text-left gap-3">
+              <div className="flex items-center justify-center sm:justify-start gap-3">
                 <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
                 <Typography
                   variant="caption"
@@ -148,7 +148,7 @@ export default function MicroFinanceInitiativesPage() {
 
               <Typography
                 variant="body-lg"
-                className="w-full font-figtree font-normal text-[#5F6C6D]"
+                className="w-full font-figtree font-normal text-[#5F6C6D] text-center sm:text-left"
               >
                 IHDUA supports Self-Help Groups through shared savings, group rules, meeting processes and financial recordkeeping. Two selected members receive additional training to maintain records and coordinate with bank officials.
               </Typography>

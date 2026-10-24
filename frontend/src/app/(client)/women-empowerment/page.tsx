@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import InitiativeBanner from "@/shared/components/InitiativeBanner";
+import HeroBanner from "@/shared/components/Herobanner";
 import ImageCardsSection, {
   type ImageCardItem,
 } from "@/shared/components/Imagecardsection";
@@ -32,13 +32,12 @@ const WOMEN_ITEMS: ImageCardItem[] = [
 export default function WomenEmpowermentPage() {
   return (
     <>
-      <InitiativeBanner
-        title="Women Empowerment"
+      <HeroBanner
+        heading="Women Empowerment"
         description="Self-Help Groups, microfinance and vocational training that help rural women build skills, confidence and economic independence."
         image="/womenempowerment/banner-desktop.png"
-        mobileImage="/womenempowerment/banner-mobile.png"
+        imageMobile="/womenempowerment/banner-mobile.png"
         imageAlt="Women from rural communities supported by IHDUA"
-        contentClassName="max-w-[75%] sm:max-w-[50%] lg:max-w-[50%]"
       />
       <ImageCardsSection
         label="WOMEN EMPOWERMENT"
@@ -49,8 +48,8 @@ export default function WomenEmpowermentPage() {
       />
       <section className="w-full bg-white">
         <div className="w-full px-6 pt-8 pb-2 sm:pt-10 sm:pb-3 lg:px-10 lg:pt-14 lg:pb-4 2xl:px-40">
-          <div className="flex w-full flex-col gap-2.5 sm:gap-3.5">
-            <div className="flex items-center gap-2 text-[#9739A8]">
+          <div className="flex w-full flex-col items-center text-center lg:items-start lg:text-left gap-2.5 sm:gap-3.5">
+            <div className="flex items-center justify-center lg:justify-start gap-2 text-[#9739A8]">
               <span aria-hidden="true" className="h-px w-6 bg-current" />
               <Typography
                 variant="caption"
@@ -69,7 +68,7 @@ export default function WomenEmpowermentPage() {
             </Typography>
             <Typography
               variant="body-lg"
-              className="max-w-4xl font-figtree font-normal leading-relaxed text-[#5F6C6D]"
+              className="max-w-4xl font-figtree font-normal leading-relaxed text-[#5F6C6D] text-center lg:text-left"
             >
               IHDUA’s women’s empowerment work combines Self-Help Groups,
               microfinance initiatives and vocational training to create
