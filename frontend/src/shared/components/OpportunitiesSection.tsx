@@ -49,7 +49,7 @@ const OpportunitiesSection = ({
           <div className="flex w-full justify-center lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:justify-start xl:col-span-1 xl:self-end">
             <div className="w-full border-l-0 border-[#FFD638] pl-0 sm:w-auto sm:border-l-4 sm:pl-4 lg:w-full xl:w-auto">
               <Typography
-                variant="h4"
+                variant="h3"
                 className="w-full font-lora text-center font-normal text-[#00191B] lg:text-left"
               >
                 {heading}
