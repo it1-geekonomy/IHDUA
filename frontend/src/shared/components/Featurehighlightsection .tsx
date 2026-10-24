@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import Typography from "@/lib/Typography";
+import CountUp from "@/shared/components/CountUp";
 import { cn } from "@/lib/utils";
 import { COLORS,CARD_GRADIENT,} from "@/shared/constants/featuredhighlight";
 export interface FeatureItem {
@@ -160,7 +161,11 @@ const FeatureHighlightSection = ({
                     className="m-0 font-figtree font-medium"
                     style={{ color: COLORS.primary }}
                   >
-                    {itemHeading}
+                    {typeof itemHeading === "string" ? (
+                      <CountUp value={itemHeading} />
+                    ) : (
+                      itemHeading
+                    )}
                   </Typography>
                   {itemDesc && (
                     <Typography

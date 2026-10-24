@@ -59,18 +59,30 @@ interface GalleryTileProps {
   image: GalleryImage;
   sizes: string;
   aspectClass: string;
+  onClick?: () => void;
 }
 
-export function GalleryTile({ image, sizes, aspectClass }: GalleryTileProps) {
+export function GalleryTile({ image, sizes, aspectClass, onClick }: GalleryTileProps) {
   return (
-    <div className={`group relative w-full overflow-hidden cursor-pointer rounded-[2px] ${aspectClass}`}>
+    <div
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      className={`relative w-full overflow-hidden cursor-pointer rounded-[2px] ${aspectClass}`}
+    >
       <Image
         src={image.src}
         alt={image.alt}
         fill
         sizes={sizes}
         draggable={false}
-        className="select-none object-cover object-center transition-transform duration-500 ease-out group-hover:scale-110 will-change-transform"
+        className="select-none object-cover object-center"
       />
     </div>
   );
@@ -79,7 +91,13 @@ export function GalleryTile({ image, sizes, aspectClass }: GalleryTileProps) {
 const stepTransform = (dragX: number) =>
   `translate3d(calc(var(--index) * (100% + var(--gap)) / var(--per-view) * -1 + ${dragX}px), 0, 0)`;
 
-export function GalleryCarousel({ images }: { images: GalleryImage[] }) {
+export function GalleryCarousel({
+  images,
+  onImageClick,
+}: {
+  images: GalleryImage[];
+  onImageClick?: (index: number) => void;
+}) {
   const perView = useSlidesPerView();
 
   const [index, setIndex] = useState(0);
@@ -170,6 +188,7 @@ export function GalleryCarousel({ images }: { images: GalleryImage[] }) {
                 image={image}
                 aspectClass="aspect-[4/3]"
                 sizes="(min-width: 640px) 50vw, 100vw"
+                onClick={() => onImageClick?.(i)}
               />
             </div>
           ))}
