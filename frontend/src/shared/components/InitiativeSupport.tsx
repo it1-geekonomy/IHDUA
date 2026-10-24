@@ -91,7 +91,7 @@ export default function InitiativeSupport({
                     <Typography
                       variant="body-lg"
                       as="h3"
-                      className="font-lora font-normal text-[#00191B] leading-snug"
+                      className="font-lora font-normal text-[#00191B]"
                     >
                       {step.title}
                     </Typography>
