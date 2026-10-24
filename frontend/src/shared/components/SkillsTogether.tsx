@@ -124,7 +124,7 @@ const SkillsTogether = ({
                       alt=""
                       width={24}
                       height={24}
-                      className="h-5 w-5 object-contain xl:h-6 xl:w-6"
+                      className="h-5 w-5 object-contain brightness-0 invert xl:h-6 xl:w-6"
                     />
                   </div>
 

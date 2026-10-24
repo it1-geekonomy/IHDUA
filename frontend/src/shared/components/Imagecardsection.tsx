@@ -46,17 +46,17 @@ function ImageCard({ item, index }: { item: ImageCardItem; index: number }) {
           src={item.image}
           alt={item.imageAlt}
           fill
-          sizes="(min-width: 64rem) 22vw, (min-width: 48rem) 30vw, (min-width: 40rem) 18rem, 100vw"
+          sizes="(min-width: 80rem) 22vw, (min-width: 64rem) 25vw, (min-width: 48rem) 40vw, 100vw"
           className="object-cover object-center"
         />
       </div>
 
       <div
-        className={`${CAPTION_MARGIN_TOP} flex flex-1 items-center justify-between pl-6`}
+        className={`${CAPTION_MARGIN_TOP} flex min-h-[44px] items-center justify-between gap-2 pl-3 pr-1 sm:pl-4 sm:pr-1.5`}
       >
         <Typography
           variant="body-sm"
-          className="min-w-0 font-figtree font-medium text-[#00191B]"
+          className="min-w-0 flex-1 font-figtree font-medium leading-snug text-[#00191B]"
         >
           {item.title}
         </Typography>
@@ -73,9 +73,7 @@ function ImageCard({ item, index }: { item: ImageCardItem; index: number }) {
     </>
   );
 
-  // Equal height: self-stretch and h-full ensure all cards in the row match
-  // the tallest card even when titles have different line counts.
-  const cardClass = `group flex flex-col justify-between h-full self-stretch min-w-0 border p-2 ${theme.card}`;
+  const cardClass = `group flex flex-col justify-between min-w-0 border p-2 ${theme.card}`;
 
   return item.href ? (
     <Link href={item.href} className={cardClass}>
@@ -99,11 +97,6 @@ export default function ImageCardsSection({
     <section
       className={`w-full ${SECTION_PADDING_X} ${SECTION_PADDING_Y} ${className}`}
     >
-      {/* Below lg: text on top, then the cards in their own grid.
-          lg and up: 4 equal columns. Text spans columns 1-2, the first 2 cards
-          sit in columns 3-4, extra cards continue 4 per row, all the same size.
-          lg and up: larger vertical gap between the rows only (important, so it
-          wins over GRID_GAP); the horizontal gap is unchanged. */}
       <div
         className={`grid w-full grid-cols-1 lg:grid-cols-4 lg:items-start lg:!gap-y-8 xl:items-center xl:!gap-y-10 ${GRID_GAP}`}
       >
@@ -137,20 +130,22 @@ export default function ImageCardsSection({
           </Typography>
         </div>
 
-        {/* Below lg: own grid, 1 column (under sm), 2 columns (sm+),
-            3 columns (md+), full width at md+.
-            From lg: "contents", so each card is a cell of the 4-column grid. */}
-        <div
-          className={`mx-auto grid w-full min-w-0 max-w-[22rem] grid-cols-1 sm:max-w-xl sm:grid-cols-2 ${
-            items.length >= 3
-              ? "md:max-w-none md:grid-cols-3 lg:contents"
-              : "md:max-w-none md:grid-cols-2 lg:col-span-2 lg:grid-cols-2 lg:max-w-none"
-          } ${GRID_GAP}`}
-        >
-          {items.map((item, i) => (
-            <ImageCard key={`${item.title}-${i}`} item={item} index={i} />
-          ))}
-        </div>
+        {/* Cards */}
+        {items.length <= 2 ? (
+          <div className={`grid w-full grid-cols-1 sm:grid-cols-2 lg:col-span-2 ${GRID_GAP}`}>
+            {items.map((item, i) => (
+              <ImageCard key={`${item.title}-${i}`} item={item} index={i} />
+            ))}
+          </div>
+        ) : (
+          <div
+            className={`mx-auto grid w-full min-w-0 max-w-[22rem] grid-cols-1 sm:max-w-xl sm:grid-cols-2 md:max-w-none md:grid-cols-3 lg:contents ${GRID_GAP}`}
+          >
+            {items.map((item, i) => (
+              <ImageCard key={`${item.title}-${i}`} item={item} index={i} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
