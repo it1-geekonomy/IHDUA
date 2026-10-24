@@ -96,7 +96,7 @@ export default function StoriesFromField() {
           </div>
 
           <Link
-            href="/Stories"
+            href="/blogs"
             className={`mx-auto inline-flex w-fit shrink-0 items-center justify-center border border-[#00191B] bg-transparent px-5 py-2.5 ${figmaTypeScale[18]} font-figtree font-semibold transition-opacity hover:opacity-80 sm:mx-0`}
           >
             Browse All Stories
@@ -116,7 +116,10 @@ export default function StoriesFromField() {
           <div className="order-1 contents lg:col-span-12 lg:row-start-1 lg:flex lg:items-stretch lg:gap-5 xl:contents">
             {/* Featured image */}
             <div className="lg:w-[58%] lg:shrink-0 xl:w-auto xl:col-span-8 xl:row-start-1">
-              <div className="relative aspect-2/1 w-full overflow-hidden bg-[#E8E6E0] lg:aspect-auto lg:aspect-video xl:aspect-2/1 lg:h-full xl:h-auto">
+              <Link
+                href={featured.href}
+                className="group relative block aspect-2/1 w-full overflow-hidden bg-[#E8E6E0] lg:aspect-auto lg:aspect-video xl:aspect-2/1 lg:h-full xl:h-auto cursor-pointer"
+              >
                 {/*
                   Keep every story image mounted and crossfade opacity.
                   mode="wait" emptied the frame between exit/enter → white flash.
@@ -152,14 +155,14 @@ export default function StoriesFromField() {
                         src={story.image}
                         alt={active ? story.title : ""}
                         fill
-                        className="object-cover"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
                         sizes="(max-width: 1024px) 100vw, 66vw"
                         priority={story.id === FIELD_STORIES[0].id}
                       />
                     </motion.div>
                   );
                 })}
-              </div>
+              </Link>
             </div>
 
             {/* Side stories */}
@@ -242,12 +245,14 @@ export default function StoriesFromField() {
                 </motion.div>
 
                 <motion.div variants={copyReveal}>
-                  <Typography
-                    variant="h3"
-                    className="mt-2 max-w-2xl font-lora font-normal leading-snug text-[#00191B]"
-                  >
-                    {featured.title}
-                  </Typography>
+                  <Link href={featured.href} className="group inline-block">
+                    <Typography
+                      variant="h3"
+                      className="mt-2 max-w-2xl font-lora font-normal leading-snug text-[#00191B] transition-colors group-hover:text-[#9739A8]"
+                    >
+                      {featured.title}
+                    </Typography>
+                  </Link>
                 </motion.div>
 
                 <motion.div variants={copyReveal}>

@@ -2,7 +2,7 @@ export const FOOTER_WHAT_WE_DO = [
   "Home",
   "About us",
   "Our Impact",
-  "Blogs",
+  "Blogs & Stories",
   "Contact Us",
 ];
 
