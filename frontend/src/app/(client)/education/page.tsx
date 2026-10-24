@@ -1,1 +1,1 @@
-export { default } from "@/app/(client)/Impact/page";
+export { default } from "@/app/(client)/impact/page";
