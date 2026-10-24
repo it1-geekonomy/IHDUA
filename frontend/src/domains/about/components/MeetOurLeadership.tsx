@@ -55,8 +55,8 @@ export default function MeetOurLeadership() {
                 {leader.name}
               </Typography>
               <Typography
-                variant="body-sm"
-                className="font-figtree font-light text-[length:clamp(11px,1.1vw,14px)] leading-[1.5] text-[#88698E]/[0.79]"
+                variant="body-lg"
+                className="font-figtree font-normal text-[length:clamp(11px,1.1vw,14px)] leading-[1.5] text-[#88698E]/[0.79]"
               >
                 {leader.designation}
               </Typography>
@@ -75,9 +75,10 @@ export default function MeetOurLeadership() {
           &ldquo;
         </span>
 
+        {/* pt creates the space between the quote mark and the first line of text */}
         <Typography
-          variant="body-sm"
-          className="text-center font-figtree font-light text-[length:clamp(12px,1.2vw,15px)] leading-[1.7] text-[#5F6C6D]"
+          variant="body-lg"
+          className="pt-[clamp(8px,1.2vw,16px)] text-center font-figtree font-normal text-[length:clamp(12px,1.2vw,15px)] leading-[1.7] text-[#5F6C6D]"
         >
           {LEADERSHIP_QUOTE}
         </Typography>

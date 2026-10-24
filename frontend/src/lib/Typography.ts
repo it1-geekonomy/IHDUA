@@ -57,7 +57,7 @@ const variantStyles = {
 
   // 18
   "body-lg":
-    "text-[12px] sm:text-[14px] md:text-[16px] lg:text-[18px] font-normal",
+    "text-[12px] sm:text-[14px] md:text-[16px] lg:text-[20px] font-normal",
 
   // 16
   "body-sm":
