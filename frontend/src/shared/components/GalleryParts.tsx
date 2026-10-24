@@ -63,14 +63,14 @@ interface GalleryTileProps {
 
 export function GalleryTile({ image, sizes, aspectClass }: GalleryTileProps) {
   return (
-    <div className={`relative w-full overflow-hidden ${aspectClass}`}>
+    <div className={`group relative w-full overflow-hidden cursor-pointer rounded-[2px] ${aspectClass}`}>
       <Image
         src={image.src}
         alt={image.alt}
         fill
         sizes={sizes}
         draggable={false}
-        className="select-none object-cover object-center"
+        className="select-none object-cover object-center transition-transform duration-500 ease-out group-hover:scale-110 will-change-transform"
       />
     </div>
   );
