@@ -139,9 +139,8 @@ export default function MicroFinanceInitiativesPage() {
               </div>
 
               <Typography
-                variant="h3"
-                as="h2"
-                className="w-full font-lora font-normal text-[#00191B]"
+                variant="h2"
+                className="w-full font-lora leading-[1.2] text-[#00191B]"
               >
                 Small Steps. Shared Progress.
               </Typography>

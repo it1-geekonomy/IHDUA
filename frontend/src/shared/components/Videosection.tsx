@@ -33,7 +33,7 @@ const Videosection = ({
           {/* Heading + top description */}
           <div className="flex w-full flex-col gap-2 sm:gap-3 lg:gap-4">
             <Typography
-              variant="h4"
+              variant="h3"
               as="h2"
               className="w-full font-lora font-normal text-center sm:text-left text-[#00191B]"
             >

@@ -101,9 +101,11 @@ export default function ImageCardsSection({
     >
       {/* Below lg: text on top, then the cards in their own grid.
           lg and up: 4 equal columns. Text spans columns 1-2, the first 2 cards
-          sit in columns 3-4, extra cards continue 4 per row, all the same size. */}
+          sit in columns 3-4, extra cards continue 4 per row, all the same size.
+          lg and up: larger vertical gap between the rows only (important, so it
+          wins over GRID_GAP); the horizontal gap is unchanged. */}
       <div
-        className={`grid w-full grid-cols-1 lg:grid-cols-4 lg:items-start xl:items-center ${GRID_GAP}`}
+        className={`grid w-full grid-cols-1 lg:grid-cols-4 lg:items-start lg:!gap-y-8 xl:items-center xl:!gap-y-10 ${GRID_GAP}`}
       >
         <div
           className={`flex min-w-0 flex-col pb-4 lg:col-span-2 lg:pb-0 lg:pr-6 ${TEXT_COLUMN_GAP}`}
