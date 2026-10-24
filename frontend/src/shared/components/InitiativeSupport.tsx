@@ -91,13 +91,13 @@ export default function InitiativeSupport({
                     <Typography
                       variant="body-lg"
                       as="h3"
-                      className="font-figtree font-semibold text-[#00191B] text-[16px] sm:text-[17px] lg:text-[18px] leading-snug"
+                      className="font-lora font-normal text-[#00191B] leading-snug"
                     >
                       {step.title}
                     </Typography>
                     <Typography
                       variant="body-sm"
-                      className="font-figtree font-normal text-[#5F6C6D] text-[13px] sm:text-[14px] leading-relaxed"
+                      className="font-figtree font-normal text-[#5F6C6D] leading-relaxed"
                     >
                       {step.description}
                     </Typography>
