@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import Typography, { figmaTypeScale } from "@/lib/Typography";
 import { cn } from "@/lib/utils";
 import { LASTING_CHANGE } from "@/domains/home/constants/lastingchange";
+import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 
 type HeadlineBlockProps = {
   variant?: "stack" | "lg" | "xl";
@@ -83,11 +86,17 @@ type CtaBlockProps = {
 };
 
 function GetInvolvedButton({ className }: { className?: string }) {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    void smoothScrollToId("get-involved", 80);
+  };
+
   return (
     <Link
       href={LASTING_CHANGE.ctaHref}
+      onClick={handleClick}
       className={cn(
-        "inline-flex items-center gap-2 bg-[#FFD638] px-5 py-3 font-figtree font-semibold transition-opacity hover:opacity-90",
+        "inline-flex items-center gap-2 bg-[#FFD638] px-5 py-3 font-figtree font-semibold transition-opacity hover:opacity-90 cursor-pointer",
         figmaTypeScale[18],
         className
       )}

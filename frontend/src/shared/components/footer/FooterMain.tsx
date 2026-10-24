@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   FOOTER_GET_INVOLVED,
   FOOTER_HEADQUARTERS,
@@ -6,6 +9,9 @@ import {
   FOOTER_WHAT_WE_DO,
 } from "@/shared/constants/footer";
 import Typography from "@/lib/Typography";
+import { isHomePath } from "@/shared/lib/path";
+import { smoothScrollToId, smoothScrollToTop } from "@/shared/lib/smoothScroll";
+import { scrollToDonateSection } from "@/domains/home/lib/donation";
 
 const CONTAINER = "max-w-[1200px] 2xl:max-w-[1600px] mx-auto px-6";
 
@@ -21,16 +27,47 @@ function FooterHeading({ children }: { children: React.ReactNode }) {
 }
 
 export function FooterMain() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (isHomePath(pathname)) {
+      e.preventDefault();
+      void smoothScrollToTop();
+    }
+  };
+
+  const handleDonateClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    void scrollToDonateSection();
+  };
+
+  const handleGetInvolvedClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (isHomePath(pathname)) {
+      void smoothScrollToId("get-involved", 80);
+    } else {
+      sessionStorage.setItem("scroll_to_get_involved", "true");
+      router.push("/");
+    }
+  };
+
   return (
     <div className={`${CONTAINER} pb-2 lg:py-8`}>
       <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 sm:gap-x-8 lg:grid-cols-[minmax(320px,1fr)_auto] lg:items-start lg:gap-x-12 lg:gap-y-0">
         <div className="col-span-2 space-y-2 sm:col-span-3 lg:col-span-1 lg:max-w-md lg:shrink-0">
           <div className="flex justify-center lg:justify-start">
-            <img
-              src="/idhualogo1.png"
-              alt="IHDUA logo"
-              className="h-20 w-40 object-contain"
-            />
+            <Link
+              href="/"
+              onClick={handleHomeClick}
+              aria-label="IHDUA Home"
+            >
+              <img
+                src="/idhualogo1.png"
+                alt="IHDUA logo"
+                className="h-20 w-40 object-contain transition-opacity hover:opacity-90"
+              />
+            </Link>
           </div>
           <Typography
             variant="body-md"
@@ -45,6 +82,8 @@ export function FooterMain() {
               <a
                 key={social.name}
                 href={social.href}
+                target={social.href.startsWith("http") ? "_blank" : undefined}
+                rel={social.href.startsWith("http") ? "noopener noreferrer" : undefined}
                 aria-label={social.name}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-white transition-opacity hover:opacity-90"
               >
@@ -64,17 +103,23 @@ export function FooterMain() {
           <div className="col-span-1">
             <FooterHeading>WHAT WE DO</FooterHeading>
             <ul className="mt-3 space-y-3 text-nowrap lg:mt-8">
-              {FOOTER_WHAT_WE_DO.map((label) => (
-                <li key={label}>
+              {FOOTER_WHAT_WE_DO.map((item) => (
+                <li key={item.label}>
                   <Link
-                    href="/"
+                    href={item.href}
+                    onClick={(e) => {
+                      if (item.href === "/" && isHomePath(pathname)) {
+                        e.preventDefault();
+                        void smoothScrollToTop();
+                      }
+                    }}
                     className="text-white transition-colors hover:text-[#FFD638]"
                   >
                     <Typography
                       variant="body-md"
                       className="font-regular font-manrope"
                     >
-                      {label}
+                      {item.label}
                     </Typography>
                   </Link>
                 </li>
@@ -85,17 +130,18 @@ export function FooterMain() {
           <div className="col-span-1">
             <FooterHeading>GET INVOLVED</FooterHeading>
             <ul className="mt-3 space-y-3 lg:mt-8">
-              {FOOTER_GET_INVOLVED.map((label) => (
-                <li key={label}>
+              {FOOTER_GET_INVOLVED.map((item) => (
+                <li key={item.label}>
                   <Link
                     href="/"
+                    onClick={item.label === "Donate" ? handleDonateClick : handleGetInvolvedClick}
                     className="text-white transition-colors hover:text-[#FFD638]"
                   >
                     <Typography
                       variant="body-md"
                       className="font-regular font-manrope"
                     >
-                      {label}
+                      {item.label}
                     </Typography>
                   </Link>
                 </li>

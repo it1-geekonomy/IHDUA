@@ -80,8 +80,7 @@ function PhoneField() {
           name="mobile"
           type="tel"
           required
-          placeholder={`${country.dial} 1234567890`}
-          className="min-w-0 flex-1 bg-transparent pl-3 text-sm text-[#00191B] placeholder:text-[#8A9596] focus:outline-none"
+          className="min-w-0 flex-1 bg-transparent pl-3 text-sm text-[#00191B] focus:outline-none"
         />
         <input type="hidden" name="countryCode" value={country.code} />
         <input type="hidden" name="dialCode" value={country.dial} />
@@ -92,8 +91,7 @@ function PhoneField() {
               <Search className="size-3.5 text-[#8A847A]" />
               <input
                 type="text"
-                className="w-full bg-transparent p-1 font-figtree text-xs text-[#00191B] outline-none placeholder:text-[#8A847A]"
-                placeholder="Search country..."
+                className="w-full bg-transparent p-1 font-figtree text-xs text-[#00191B] outline-none"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 autoFocus
@@ -263,7 +261,7 @@ export default function ContactSection() {
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <Field id="name" label="Full Name*">
-              <input id="name" name="name" required placeholder="Your name" className={FIELD_CLASS} />
+              <input id="name" name="name" required className={FIELD_CLASS} />
             </Field>
             <Field id="email" label="Email Address*">
               <input
@@ -271,7 +269,6 @@ export default function ContactSection() {
                 name="email"
                 type="email"
                 required
-                placeholder="yourmailaddress@gmail.com"
                 className={FIELD_CLASS}
               />
             </Field>
@@ -284,7 +281,6 @@ export default function ContactSection() {
               id="message"
               name="message"
               required
-              placeholder="How can we help you?"
               className={`${FIELD_CLASS} min-h-35 flex-1 resize-none`}
             />
           </Field>
