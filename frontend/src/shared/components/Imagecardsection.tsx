@@ -41,7 +41,7 @@ function ImageCard({ item, index }: { item: ImageCardItem; index: number }) {
 
   const content = (
     <>
-      <div className="relative aspect-[16/10] w-full overflow-hidden sm:aspect-[4/3]">
+      <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden sm:aspect-[4/3]">
         <Image
           src={item.image}
           alt={item.imageAlt}
@@ -51,7 +51,9 @@ function ImageCard({ item, index }: { item: ImageCardItem; index: number }) {
         />
       </div>
 
-      <div className={`${CAPTION_MARGIN_TOP} flex items-center justify-between pl-6`}>
+      <div
+        className={`${CAPTION_MARGIN_TOP} flex flex-1 items-center justify-between pl-6`}
+      >
         <Typography
           variant="body-sm"
           className="min-w-0 font-figtree font-medium text-[#00191B]"
@@ -71,9 +73,9 @@ function ImageCard({ item, index }: { item: ImageCardItem; index: number }) {
     </>
   );
 
-  // Same card styling as the original. self-start keeps every card at its
-  // natural height (no stretching to the row height).
-  const cardClass = `group block min-w-0 self-start border p-2 ${theme.card}`;
+  // Equal height: self-stretch and h-full ensure all cards in the row match
+  // the tallest card even when titles have different line counts.
+  const cardClass = `group flex flex-col justify-between h-full self-stretch min-w-0 border p-2 ${theme.card}`;
 
   return item.href ? (
     <Link href={item.href} className={cardClass}>
@@ -99,9 +101,11 @@ export default function ImageCardsSection({
     >
       {/* Below lg: text on top, then the cards in their own grid.
           lg and up: 4 equal columns. Text spans columns 1-2, the first 2 cards
-          sit in columns 3-4, extra cards continue 4 per row, all the same size. */}
+          sit in columns 3-4, extra cards continue 4 per row, all the same size.
+          lg and up: larger vertical gap between the rows only (important, so it
+          wins over GRID_GAP); the horizontal gap is unchanged. */}
       <div
-        className={`grid w-full grid-cols-1 lg:grid-cols-4 lg:items-start xl:items-center ${GRID_GAP}`}
+        className={`grid w-full grid-cols-1 lg:grid-cols-4 lg:items-start lg:!gap-y-8 xl:items-center xl:!gap-y-10 ${GRID_GAP}`}
       >
         <div
           className={`flex min-w-0 flex-col pb-4 lg:col-span-2 lg:pb-0 lg:pr-6 ${TEXT_COLUMN_GAP}`}
@@ -125,7 +129,10 @@ export default function ImageCardsSection({
             </Typography>
           </div>
 
-          <Typography variant="body-lg" className="font-figtree text-[#5F6C6D]">
+          <Typography
+            variant="body-lg"
+            className="text-center font-figtree text-[#5F6C6D] lg:text-left"
+          >
             {description}
           </Typography>
         </div>
@@ -134,7 +141,11 @@ export default function ImageCardsSection({
             3 columns (md+), full width at md+.
             From lg: "contents", so each card is a cell of the 4-column grid. */}
         <div
-          className={`mx-auto grid w-full min-w-0 max-w-[22rem] grid-cols-1 sm:max-w-xl sm:grid-cols-2 md:max-w-none md:grid-cols-3 lg:contents ${GRID_GAP}`}
+          className={`mx-auto grid w-full min-w-0 max-w-[22rem] grid-cols-1 sm:max-w-xl sm:grid-cols-2 ${
+            items.length >= 3
+              ? "md:max-w-none md:grid-cols-3 lg:contents"
+              : "md:max-w-none md:grid-cols-2 lg:col-span-2 lg:grid-cols-2 lg:max-w-none"
+          } ${GRID_GAP}`}
         >
           {items.map((item, i) => (
             <ImageCard key={`${item.title}-${i}`} item={item} index={i} />

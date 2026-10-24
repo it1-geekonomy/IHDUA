@@ -13,8 +13,7 @@ export const THEMES: Record<CardTheme, { card: string; arrow: string }> = {
 
 export const THEME_ORDER: CardTheme[] = ["purple", "amber"];
 
-export const SECTION_PADDING_X =
-  "px-6 lg:px-[clamp(2.5rem,-35rem_+_46.875vw,10rem)]";
+export const SECTION_PADDING_X = "px-6 lg:px-10 2xl:px-40";
 export const SECTION_PADDING_Y =
   "pt-6 lg:py-[clamp(3rem,-1rem_+_6.25vw,4rem)]";
 export const SECTION_GAP =

@@ -15,11 +15,6 @@ export const DEFAULT_MILESTONES: readonly Milestone[] = [
   { year: "2020", description: "Diversified into education, health and livelihoods", },
   { year: "2025", description: "Stronger community partnerships" },
   { year: "2026", description: "Continuing the journey towards a more equitable future", },
-  { year: "2027", description: "Milestone description" },
-  { year: "2028", description: "Milestone description" },
-  { year: "2029", description: "Milestone description" },
-  { year: "2030", description: "Milestone description" },
-  { year: "2031", description: "Milestone description" },
 ];
 
 export const VIEWPORT = { min: 360, max: 1920 } as const;

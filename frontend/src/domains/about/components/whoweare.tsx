@@ -70,7 +70,7 @@ const WhoWeAre = () => {
               <Typography
                 key={id}
                 variant="body-lg"
-                className={`font-figtree font-light leading-relaxed ${SIZE.bodyText} ${COLOR.body}`}
+                className={`font-figtree font-normal leading-relaxed ${SIZE.bodyText} ${COLOR.body}`}
               >
                 {text}
               </Typography>

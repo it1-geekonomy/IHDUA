@@ -48,7 +48,7 @@ const StatsStrip = ({ items }: StatsStripProps) => {
                     </Typography>
                     <Typography
                       variant="body-sm"
-                      className="max-w-[12rem] font-figtree font-light text-[#5F6C6D]"
+                      className="max-w-[12rem] font-figtree font-normal text-[#5F6C6D]"
                     >
                       {item.label}
                     </Typography>

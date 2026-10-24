@@ -33,7 +33,7 @@ const Videosection = ({
           {/* Heading + top description */}
           <div className="flex w-full flex-col gap-2 sm:gap-3 lg:gap-4">
             <Typography
-              variant="h4"
+              variant="h3"
               as="h2"
               className="w-full font-lora font-normal text-center sm:text-left text-[#00191B]"
             >
@@ -46,7 +46,7 @@ const Videosection = ({
                   <Typography
                     key={index}
                     variant="body-lg"
-                    className="w-full font-figtree text-[#5F6C6D]"
+                    className="w-full font-figtree text-[#5F6C6D] text-center sm:text-left"
                   >
                     {text}
                   </Typography>
@@ -81,7 +81,7 @@ const Videosection = ({
                 <Typography
                   key={index}
                   variant="body-lg"
-                  className="w-full font-figtree font-normal text-[#5F6C6D]"
+                  className="w-full font-figtree font-normal text-[#5F6C6D] text-center sm:text-left"
                 >
                   {text}
                 </Typography>

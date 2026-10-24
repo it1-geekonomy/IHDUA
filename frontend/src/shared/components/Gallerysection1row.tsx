@@ -45,7 +45,7 @@ export default function GallerySection1Row({
       aria-label={heading}
       className={`flex w-full flex-col gap-5 px-6 pt-6 lg:gap-8 lg:px-10 lg:pt-12 2xl:px-40 ${className}`}
     >
-      <Typography variant="h4" as="h2" className="text-center font-lora leading-tight font-normal text-[#00191B] sm:text-left">
+      <Typography variant="h3" as="h2" className="text-center font-lora leading-tight font-normal text-[#00191B] sm:text-left">
         {heading}
       </Typography>
 
