@@ -9,22 +9,22 @@ export default function AdarshaStorySections() {
     <>
 
       {/* Story 2: Learning in the Heart of the Community (Lavender/purple background #F3EEF9) */}
-      <section className="w-full bg-[#F3EEF9] py-10 lg:py-16">
+      <section className="w-full bg-[#F3EEF9] mt-8 sm:mt-12 lg:mt-16 py-8 lg:py-12">
         <div className="w-full px-[clamp(1rem,-1.0769rem_+_9.2308vw,10rem)]">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left Image: Landscape Campus Overlooking KRS Reservoir */}
-            <div className="order-2 lg:order-1 lg:col-span-6 relative w-full max-w-lg sm:max-w-xl lg:max-w-none mx-auto aspect-[16/10] max-h-96 overflow-hidden rounded-md shadow-sm">
+            <div className="order-2 lg:order-1 lg:col-span-5 xl:col-span-5 relative w-full max-w-md sm:max-w-lg lg:max-w-none mx-auto aspect-[16/9] max-h-64 sm:max-h-72 lg:max-h-72 overflow-hidden rounded-md shadow-sm">
               <Image
                 src={story2.image}
                 alt={story2.imageAlt}
                 fill
-                sizes="(min-width: 1024px) 50vw, 100vw"
+                sizes="(min-width: 1024px) 45vw, 100vw"
                 className="object-cover"
               />
             </div>
 
             {/* Right Content */}
-            <div className="order-1 lg:order-2 lg:col-span-6 flex flex-col items-start">
+            <div className="order-1 lg:order-2 lg:col-span-7 xl:col-span-7 flex flex-col items-start">
               <Typography
                 variant="h2"
                 className="font-lora font-normal text-[#00191B] text-left leading-tight mb-4"
