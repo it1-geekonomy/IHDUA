@@ -27,7 +27,7 @@ const WomenOpportunities = ({
           {/* Heading + top description */}
           <div className="flex w-full flex-col gap-2 sm:gap-3 lg:gap-4">
             <Typography
-              variant="h4"
+              variant="h3"
               className="w-full font-lora font-normal text-[#00191B]"
             >
               {heading}
