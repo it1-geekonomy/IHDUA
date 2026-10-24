@@ -28,12 +28,12 @@ export const NAV_LINKS: NavLink[] = [
       },
       {
         label: "Skills & Employment",
-         href: "/Skills-and-Employment",
+         href: "/skills-and-employment",
         children: [
           { label: "Women", href: "/women" },
           { label: "Youth", href: "/youth" },
           { label: "Farmers", href: "/farmers" },
-          { label: "Stitching Unit", href: "/Stitching-Unit" },
+          { label: "Stitching Unit", href: "/stitching-unit" },
         ],
       },
       {
