@@ -37,7 +37,7 @@ const ImpactStats = ({
           {/* Heading + description */}
           <div className="flex w-full flex-col gap-3 lg:gap-4">
             <Typography
-              variant="body-xl"
+              variant="h3"
               as="h2"
               className="w-full text-center font-lora font-normal text-[#00191B] sm:text-left"
             >

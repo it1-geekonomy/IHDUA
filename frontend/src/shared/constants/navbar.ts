@@ -20,20 +20,20 @@ export const NAV_LINKS: NavLink[] = [
       },
       {
         label: "Women Empowerment",
-        href: "/Women-Empowerment",
+        href: "/women-empowerment",
         children: [
-          { label: "Self Help Group & Federation", href: "/Self-Help-Group-Federation" },
-          { label: "Micro-Finance Initiatives", href: "/Micro-Finance-Initiatives" },
+          { label: "Self Help Group & Federation", href: "/self-help-group-federation" },
+          { label: "Micro-Finance Initiatives", href: "/micro-finance-initiatives" },
         ],
       },
       {
         label: "Skills & Employment",
-         href: "/Skills-and-Employment",
+         href: "/skills-and-employment",
         children: [
           { label: "Women", href: "/women" },
           { label: "Youth", href: "/youth" },
           { label: "Farmers", href: "/farmers" },
-          { label: "Stitching Unit", href: "/Stitching-Unit" },
+          { label: "Stitching Unit", href: "/stitching-unit" },
         ],
       },
       {
