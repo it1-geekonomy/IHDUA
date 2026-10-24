@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Typography from "@/lib/Typography";
 
-const VIDEO_SRC = "/ourconviction/ourconviction.mp4";
+const VIDEO_SRC = "https://pub-bbab4b37d630465e8c49b68c7d045302.r2.dev/website/1792847607069-jik7l-trailer-journey-of-ihdua.mp4";
 
 interface FeatureProps {
   title: string;

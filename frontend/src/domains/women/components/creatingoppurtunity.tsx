@@ -10,7 +10,7 @@ const OpportunitiesSectionData = () => {
       ]}
       image="/skills%20and%20employement/women.png"
       imageAlt="Woman addressing a group of women at a community training session"
-      button={{ label: "View All Photos", href: "#" }}
+      button={{ label: "View All Photos", href: "/women/gallery" }}
     />
   );
 };

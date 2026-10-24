@@ -67,10 +67,10 @@ export default function MeetOurLeadership() {
 
       {/* Quote */}
       <div className="relative mx-auto mt-[clamp(32px,4vw,56px)] max-w-[calc(341px*2+96px)]">
-        {/* Opening quote mark: top-left corner of the text block, above the first line */}
+        {/* Opening quote mark: moved further left (was -translate-x-1/2) */}
         <span
           aria-hidden="true"
-          className="absolute left-0 top-0 -translate-x-1/2 -translate-y-[40%] font-lora text-[length:clamp(40px,5vw,64px)] font-bold leading-none text-[#684170]/30"
+          className="absolute left-0 top-0 -translate-x-full -translate-y-[40%] font-lora text-[length:clamp(40px,5vw,64px)] font-bold leading-none text-[#684170]/30"
         >
           &ldquo;
         </span>
