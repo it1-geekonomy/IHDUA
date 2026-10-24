@@ -25,7 +25,7 @@ const Section = () => {
             </div>
 
             <Typography
-              variant="h2"
+              variant="h3"
               className="w-full font-lora text-[#00191B]"
             >
               {HEADING}
