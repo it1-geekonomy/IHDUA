@@ -1,8 +1,8 @@
-export default function MicroCreditInitiativesPage() {
+export default function ContactPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-100">
       <h1 className="text-5xl font-bold text-black">
-        MICRO-CREDIT INITIATIVES
+        Contact Us
       </h1>
     </main>
   );
