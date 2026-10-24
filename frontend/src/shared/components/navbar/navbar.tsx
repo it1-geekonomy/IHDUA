@@ -49,7 +49,7 @@ export function useNavbarScroll(
       const y = readScrollY();
       const delta = y - last.current;
 
-      if (menuOpen || y <= 24) setHidden(false);
+      if (menuOpen || y <= 90) setHidden(false);
       else if (delta > 4) setHidden(true);
       else if (delta < -4) setHidden(false);
 
