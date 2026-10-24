@@ -4,6 +4,18 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
+        source: "/women-empowerment",
+        destination: "/Women-Empowerment",
+      },
+      {
+        source: "/self-help-group-federation",
+        destination: "/Self-Help-Group-Federation",
+      },
+      {
+        source: "/micro-finance-initiatives",
+        destination: "/Micro-Finance-Initiatives",
+      },
+      {
         source: "/education",
         destination: "/Education",
       },
