@@ -1,7 +1,16 @@
+"use client";
+
+import { useState } from "react";
 import { PATHS } from "@/domains/home/constants/ThreePathsSection";
 import Typography from "@/lib/Typography";
+import { scrollToDonateSection } from "@/domains/home/lib/donation";
+import VolunteerModal from "./VolunteerModal";
+import PartnershipModal from "./PartnershipModal";
 
 export default function ThreePathsSection() {
+  const [isVolunteerModalOpen, setIsVolunteerModalOpen] = useState(false);
+  const [isPartnershipModalOpen, setIsPartnershipModalOpen] = useState(false);
+
   return (
     <section className="w-full bg-[#FFD638]">
       <div className="w-full px-6 py-6 pb-6 sm:px-10 sm:py-20 lg:px-10 lg:py-16 2xl:px-40">
@@ -44,7 +53,19 @@ export default function ThreePathsSection() {
                 {path.description}
               </Typography>
 
-              <button className="mt-12 mb-4 w-full bg-[#9739A8] px-6 py-4 sm:w-fit cursor-pointer">
+              <button
+                type="button"
+                onClick={() => {
+                  if (path.title === "Volunteer") {
+                    setIsVolunteerModalOpen(true);
+                  } else if (path.title === "Partner") {
+                    setIsPartnershipModalOpen(true);
+                  } else if (path.title === "Donate") {
+                    void scrollToDonateSection();
+                  }
+                }}
+                className="mt-12 mb-4 w-full bg-[#9739A8] hover:bg-[#852f94] transition-colors px-6 py-4 sm:w-fit cursor-pointer"
+              >
                 <Typography variant="body-sm" className="font-medium font-figtree text-white">
                   {path.button}
                 </Typography>
@@ -53,6 +74,16 @@ export default function ThreePathsSection() {
           ))}
         </div>
       </div>
+
+      <VolunteerModal
+        isOpen={isVolunteerModalOpen}
+        onClose={() => setIsVolunteerModalOpen(false)}
+      />
+
+      <PartnershipModal
+        isOpen={isPartnershipModalOpen}
+        onClose={() => setIsPartnershipModalOpen(false)}
+      />
     </section>
   );
-}
+}

@@ -25,6 +25,7 @@ export default function ClientHomePage() {
 			<LastingChangeSection />
 			<GeographicFootprint />
 			<StoriesFromField />
+			
 			<ThreePathsSection />
 		</div>
 	);
