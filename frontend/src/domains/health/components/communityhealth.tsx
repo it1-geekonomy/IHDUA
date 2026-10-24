@@ -4,7 +4,7 @@ const CommunityHealthSection = () => {
   return (
     <CommunityHealthBanner
       heading="Community Health"
-      mainImage="/Health/healthyimg.png"
+      mainImage="/Health/healthgradientimg.png"
       mainImageAlt="Doctor speaking with a mother and her children"
       items={[
         {
