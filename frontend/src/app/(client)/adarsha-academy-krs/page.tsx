@@ -1,7 +1,8 @@
 import HeroBanner from "@/shared/components/Herobanner";
 import FeatureHighlightSection from "@/shared/components/Featurehighlightsection ";
 import OpportunitiesSection from "@/shared/components/OpportunitiesSection";
-import AdarshaStorySections from "@/domains/impact/education/components/AdarshaStorySections";
+import StoryLeftImageSection from "@/shared/components/StoryLeftImageSection";
+import CommunityStorySection from "@/shared/components/CommunityStorySection";
 import NewsletterSection from "@/shared/components/Newsletter";
 import {
   ADARSHA_HERO,
@@ -27,18 +28,28 @@ export default function AdarshaAcademyPage() {
         items={[...ADARSHA_HIGHLIGHTS]}
       />
 
+      {/* Story 1: Education in a Rural Setting (Image right, no button) */}
       <OpportunitiesSection
         heading={ADARSHA_STORIES.story1.title}
         descriptions={[...ADARSHA_STORIES.story1.paragraphs]}
         image={ADARSHA_STORIES.story1.image}
         imageAlt={ADARSHA_STORIES.story1.imageAlt}
+      />
+
+      {/* Story 2: Education for Rural Children (Image left, text & button right) */}
+      <StoryLeftImageSection
+        heading={ADARSHA_STORIES.ruralChildrenStory.title}
+        descriptions={[...ADARSHA_STORIES.ruralChildrenStory.paragraphs]}
+        image={ADARSHA_STORIES.ruralChildrenStory.image}
+        imageAlt={ADARSHA_STORIES.ruralChildrenStory.imageAlt}
         button={{
-          label: ADARSHA_STORIES.story1.ctaText,
-          href: ADARSHA_STORIES.story1.galleryHref,
+          label: ADARSHA_STORIES.ruralChildrenStory.ctaText,
+          href: ADARSHA_STORIES.ruralChildrenStory.galleryHref,
         }}
       />
 
-      <AdarshaStorySections />
+      {/* Story 3: Learning in the Heart of the Community (Purple section) */}
+      <CommunityStorySection />
 
       <NewsletterSection />
     </main>
