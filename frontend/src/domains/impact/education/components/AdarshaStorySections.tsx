@@ -9,7 +9,7 @@ export default function AdarshaStorySections() {
     <>
 
       {/* Story 2: Learning in the Heart of the Community (Lavender/purple background #F3EEF9) */}
-      <section className="w-full bg-[#F3EEF9] mt-8 sm:mt-12 lg:mt-16 py-8 lg:py-12">
+      <section className="w-full bg-[#F3EEF9] pt-10 sm:pt-12 lg:pt-16">
         <div className="w-full px-[clamp(1rem,-1.0769rem_+_9.2308vw,10rem)]">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left Image: Landscape Campus Overlooking KRS Reservoir */}
