@@ -1,154 +1,277 @@
+import type { Metadata } from "next";
+import Image from "next/image";
 import InitiativeBanner from "@/shared/components/InitiativeBanner";
-import InitiativeOverview from "@/domains/microfinanceinitiatives/components/initiativeOverview";
-import InitiativeContent from "@/domains/microfinanceinitiatives/components/initiativeContent";
-import InitiativeTwoImageSection from "@/domains/microfinanceinitiatives/components/initiativeTwoImageSection";
-import InitiativeStrongerTogether from "@/domains/microfinanceinitiatives/components/initiativeStrongerTogether";
-import InitiativeImpact from "@/domains/microfinanceinitiatives/components/initiativeImpact";
+import FeatureHighlightSection from "@/shared/components/Featurehighlightsection ";
+import InitiativeContent from "@/shared/components/InitiativeContent";
+import ImpactStats, {
+  type ImpactStatItem,
+} from "@/shared/components/ImpactStats";
+import SkillsTogether from "@/shared/components/SkillsTogether";
+import WomenOpportunities from "@/shared/components/WomenOpportunities";
 import NewsletterSection from "@/shared/components/Newsletter";
+import Typography from "@/lib/Typography";
 
-const IMPACT_STATS = [
+export const metadata: Metadata = {
+  title: "Microfinance Initiative | IHDUA",
+  description:
+    "IHDUA’s Microfinance Initiative helps rural women build savings, access credit and strengthen financial decision-making through Self-Help Groups.",
+};
+
+const CARD_STYLES = [
+  { background: "bg-[#F6EEF7]", icon: "bg-[#7D4387]" },
+  { background: "bg-[#FFF5E5]", icon: "bg-[#C89A3A]" },
+  { background: "bg-[#F6EEF7]", icon: "bg-[#7D4387]" },
+  { background: "bg-[#FFF5E5]", icon: "bg-[#C89A3A]" },
+] as const;
+
+const MICROFINANCE_STEPS = [
+  {
+    icon: "/statsection/homeicon.png",
+    title: "Build a Savings Fund",
+    description: "Members contribute ₹10 each week to grow their shared fund.",
+  },
+  {
+    icon: "/statsection/trainedicon.png",
+    title: "Access Group Loans",
+    description:
+      "Members may apply for loans after three months of contributions.",
+  },
+  {
+    icon: "/statsection/groupicon.png",
+    title: "Review Loan Requests",
+    description:
+      "The group collectively discusses and approves members’ loan requests.",
+  },
+  {
+    icon: "/statsection/locationicon.png",
+    title: "Build Bank Linkages",
+    description:
+      "After four lending rounds, groups can access bank loans directly.",
+  },
+] as const;
+
+const IMPACT_STATS: ImpactStatItem[] = [
   {
     icon: "/statsection/groupicon.png",
     iconBg: "#F1E7F4",
     value: "5,000+",
-    label: "People trained",
+    label: "People Trained",
   },
   {
     icon: "/statsection/homeicon.png",
     iconBg: "#FFEDCF",
     value: "600+",
-    label: "Self-Help Groups",
+    label: "Self-Help Groups Reported",
   },
   {
     icon: "/statsection/locationicon.png",
     iconBg: "#F1E7F4",
     value: "₹4.36 Cr",
-    label: "SHG savings",
+    label: "SHG Savings (Jan 2022)",
   },
   {
     icon: "/statsection/trainedicon.png",
     iconBg: "#FFEDCF",
     value: "₹10 Cr+",
-    label: "Loans historically issued",
+    label: "Loans Historically Issued",
   },
 ];
 
 export default function MicroFinanceInitiativesPage() {
   return (
     <>
-      {/* 1. Hero Banner */}
       <InitiativeBanner
-        title="Micro-Finance Initiative"
-        description="Creating opportunities to learn, grow and build brighter futures for rural women and communities."
+        title="Micro-finance Initiative"
+        description="Community-based savings and fair credit that help rural women invest in health, education and livelihoods."
         image="/microfinanceinitiatives/banner-desktop.png"
         mobileImage="/microfinanceinitiatives/banner-mobile.png"
-        imageAlt="Micro-Finance Initiative - IHDUA"
+        imageAlt="Women at an IHDUA microfinance meeting"
       />
 
-      {/* 2. Overview Section */}
-      <InitiativeOverview
-        title="Micro-Finance Initiative"
+      <FeatureHighlightSection
+        label="WOMEN EMPOWERMENT"
+        heading="Microfinance Initiative"
         description="IHDUA supports community-based savings and access to financial learning so rural women can make informed decisions."
-        mission="Supporting community-driven investment activities on behalf of rural women."
-        beneficiaries="More than 5,000 women have benefited from our programmes."
+        items={[
+          {
+            icon: "/icons/mission.png",
+            iconAlt: "Mission icon",
+            heading: "Mission",
+            description:
+              "Supporting community-driven investment activities on behalf of rural women.",
+          },
+          {
+            icon: "/icons/benifit.png",
+            iconAlt: "Beneficiaries icon",
+            heading: "Beneficiaries",
+            description: "More than 5,000 women have benefited from our programmes.",
+          },
+        ]}
       />
 
-      {/* 3 & 4. Content Sections Wrapper */}
-      <div className="flex flex-col gap-12 px-6 py-10 sm:gap-16 sm:px-10 sm:py-14 lg:gap-20 lg:py-20 2xl:px-40">
-        {/* Section 1: Why Microfinance Matters (with gold accent line) */}
+      <div className="px-6 py-10 sm:px-10 sm:py-14 lg:py-20 2xl:px-40">
         <InitiativeContent
+          imageAspectClass="aspect-[784/421]"
           title="Why Microfinance Matters"
           hasAccentBar={true}
           paragraphs={[
-            "IHDUA’s Micro-Finance Initiative makes it possible for rural women to become informed financial decision-makers who have access to loans at competitive rates. With guidance from the field team and local volunteers, members participate in training that introduces the group’s objectives, responsibilities and operating procedures.",
-            "Self-Help Groups provide a community-based platform where women can save together, access financial support and participate in income-generating activities.",
+            "IHDUA’s Microfinance Initiative makes it possible for rural women to become informed financial decision-makers who have access to loans at competitive rates, which they may use for their family’s health, education and livelihood needs. Microfinance also supports women through Self-Help Groups, where members can build savings, access loans, participate in income-generating activities and strengthen their role in household and community decision-making.",
+            "Self-Help Groups provide a community-based platform where women can save together, access financial support and participate in income-generating activities. Through these groups, IHDUA’s Microfinance Initiative encourages greater participation, shared responsibility and stronger financial decision-making within rural communities.",
           ]}
           image="/microfinanceinitiatives/why-microfinance-matters.png"
-          imageAlt="Rural women attending a microfinance session"
+          imageAlt="Rural women attending an IHDUA microfinance session"
         />
+      </div>
 
-        {/* Section 2: Creating Financial Independence for Rural Women (Two Images Side by Side) */}
-        <InitiativeTwoImageSection
-          title="Creating Financial Independence for Rural Women"
-          topParagraphs={[
-            "The initiative enables rural women to become informed financial decision-makers who have access to loans at competitive rates. Members participate in income-generating activities and strengthen their role in household and community decision-making.",
-          ]}
+      <section className="w-full bg-white">
+        <div className="w-full px-6 pt-2 pb-10 sm:px-10 sm:pb-14 lg:px-10 lg:pb-16 2xl:px-40">
+          <div className="flex w-full flex-col gap-6">
+            <div className="flex w-full flex-col items-start gap-3 text-left">
+              <div className="flex items-center gap-3">
+                <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
+                <Typography
+                  variant="caption"
+                  className="font-figtree font-bold uppercase tracking-wider text-[#9739A8]"
+                >
+                  HOW MICROFINANCE WORKS
+                </Typography>
+                <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
+              </div>
+
+              <Typography
+                variant="h3"
+                as="h2"
+                className="w-full font-lora font-normal text-[#00191B]"
+              >
+                Small Steps. Shared Progress.
+              </Typography>
+
+              <Typography
+                variant="body-lg"
+                className="w-full font-figtree font-normal text-[#5F6C6D]"
+              >
+                IHDUA supports Self-Help Groups through shared savings, group rules, meeting processes and financial recordkeeping. Two selected members receive additional training to maintain records and coordinate with bank officials.
+              </Typography>
+            </div>
+
+            <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {MICROFINANCE_STEPS.map((step, index) => {
+                const styles = CARD_STYLES[index % CARD_STYLES.length];
+                return (
+                  <div
+                    key={step.title}
+                    className={`flex min-w-0 flex-col items-start gap-3 p-4 sm:p-5 ${styles.background}`}
+                  >
+                    <div
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${styles.icon}`}
+                    >
+                      <Image
+                        src={step.icon}
+                        alt=""
+                        width={24}
+                        height={24}
+                        className="h-5 w-5 object-contain brightness-0 invert"
+                      />
+                    </div>
+                    <div className="flex min-w-0 flex-col gap-1">
+                      <Typography
+                        variant="body-sm"
+                        as="h3"
+                        className="font-lora font-normal text-[#00191B]"
+                      >
+                        {step.title}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        className="font-figtree font-normal normal-case text-[#5F6C6D]"
+                      >
+                        {step.description}
+                      </Typography>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="flex flex-col gap-10 pb-10 lg:gap-16 lg:pb-16">
+        <WomenOpportunities
+          heading="Creating Financial Independence Through Microfinance"
+          topDescription="IHDUA’s Microfinance Initiative helps rural women access financial resources through Self-Help Groups (SHGs). Members build shared savings, learn financial recordkeeping and collectively review loan requests. After three months of contributions, members may become eligible to borrow from their group fund."
           images={[
             {
               src: "/microfinanceinitiatives/financial-independence-1.png",
-              alt: "Self-help group members meeting on verandah",
+              alt: "Self-Help Group members meeting on a verandah to review group savings",
             },
             {
               src: "/microfinanceinitiatives/financial-independence-2.png",
-              alt: "Self-help group members gathered outside the bank branch",
+              alt: "Self-Help Group members gathered outside a local bank branch",
             },
           ]}
-          bottomParagraphs={[
-            "With guidance from the field team and local volunteers, members participate in training that introduces the group’s objectives, responsibilities and operating procedures. Self-Help Groups provide a community-based platform where women can save together, access financial support and participate in income-generating activities.",
-          ]}
-        />
-      </div>
-
-      {/* 5. Stronger Together Banner Band */}
-      <InitiativeStrongerTogether />
-
-      {/* 6 & 7. Capital Access & Self Help Groups Wrapper */}
-      <div className="flex flex-col gap-12 px-6 py-10 sm:gap-16 sm:px-10 sm:py-14 lg:gap-20 lg:py-20 2xl:px-40">
-        {/* Section 3: Ramping Up Access to Capital (Image Left, Text Right) */}
-        <InitiativeContent
-          label="STEP BY STEP"
-          title="Ramping Up Access to Capital"
-          reverse={true}
-          paragraphs={[
-            "The programme also focuses on building strong financial practices within Self-Help Groups. Members are trained in savings, rotation of funds, leadership participation and recordkeeping, helping groups manage their collective resources responsibly.",
-            "Access to credit enables members to invest in small businesses, livestock or home improvements, strengthening their economic resilience and ability to support their families.",
-          ]}
-          image="/microfinanceinitiatives/ramping-up-capital.png"
-          imageAlt="Financial literacy and credit training session with HDFC banner"
+          bottomDescription="The initiative supports women in managing finances, accessing credit and participating in income-generating activities. Through regular savings and group lending, members develop financial responsibility and strengthen their role in household and community decision-making."
         />
 
-        {/* Section 4: Self-Help Groups & Ramping Up Access to Capital (Two Images Side by Side) */}
-        <InitiativeTwoImageSection
-          subsections={[
-            {
-              subtitle: "Self-Help Groups",
-              paragraphs: [
-                "At the heart of this initiative are Self-Help Groups (SHGs), typically formed with 10–20 women from the same village who meet regularly to save, build financial discipline and support one another.",
-                "Our records show that 600+ self-help groups have been formed across villages in Gundlupet taluk, Karnataka. These groups provide a shared platform where members learn basic recordkeeping, rotation of funds and collective decision-making.",
-              ],
-            },
-            {
-              subtitle: "Ramping Up Access to Capital",
-              paragraphs: [
-                "The project also connects groups to formal banking institutions, facilitating access to loans for income-generating activities, livestock rearing and small businesses. Members receive training on loan processes, repayment schedules and financial responsibility.",
-                "Historical records indicate that the initiative has supported 5,000+ members through microfinance and skill-building programmes, resulting in cumulative savings of over ₹4.36 Crores and facilitating loans exceeding ₹10 Crores.",
-                "Through regular meetings and shared learning, members build confidence, strengthen their financial awareness and support one another in addressing common challenges. These gatherings encourage peer learning, collective problem-solving and stronger connections between groups.",
-              ],
-            },
-          ]}
+        <WomenOpportunities
+          heading="Creating Financial Independence for Rural Women"
+          topDescription="IHDUA’s Microfinance Initiative supports rural women through Self-Help Groups (SHGs), helping members build shared savings, develop financial management skills and access group loans. Members contribute regularly and participate in collective financial decisions."
           images={[
             {
               src: "/microfinanceinitiatives/self-help-groups.png",
-              alt: "Self-help group members sitting outdoors in discussion",
+              alt: "Self-Help Group members reviewing loan ledgers and accounts together",
             },
             {
               src: "/microfinanceinitiatives/field-household-visit.png",
-              alt: "Field workers interviewing women during household visit",
+              alt: "IHDUA field worker speaking with Self-Help Group members during a household visit",
+            },
+          ]}
+          bottomDescription="Groups that demonstrate consistent repayment discipline qualify for escalating credit tiers. After successfully completing four internal lending cycles, groups become eligible for formal bank credit lines, unlocking larger capital for micro-enterprises, agriculture, and family welfare."
+        />
+      </div>
+
+      <div className="py-10 lg:py-16 [&_img]:brightness-0 [&_img]:invert">
+        <SkillsTogether
+          label="SELF-HELP GROUPS"
+          heading="Stronger Together"
+          descriptions={[
+            "At the heart of this initiative are Self-Help Groups (SHGs), comprising 10 to 20 women from a single village. Members regularly contribute a small amount to a common fund, participate in training sessions and support each other in achieving their financial goals.",
+            "These groups not only provide access to credit, but also create a safe space for women to learn, share experiences and build confidence.",
+          ]}
+          items={[
+            {
+              icon: "/statsection/homeicon.png",
+              title: "Regular Savings",
+              description: "Small contributions create big opportunities.",
+            },
+            {
+              icon: "/statsection/trainedicon.png",
+              title: "Training & Guidance",
+              description: "Learn financial management and group responsibility.",
+            },
+            {
+              icon: "/statsection/groupicon.png",
+              title: "Peer Support",
+              description: "Grow together through shared knowledge.",
+            },
+            {
+              icon: "/statsection/locationicon.png",
+              title: "Access to Credit",
+              description: "Fair and affordable loans for real needs.",
             },
           ]}
         />
       </div>
 
-      {/* 8. Impact Stats */}
-      <InitiativeImpact
+      <ImpactStats
         heading="The Impact We Make"
-        description="The programme’s records show that Self-Help Groups across villages in Karnataka have helped women strengthen their savings habits, access credit and participate actively in local decision-making."
+        description="The programme’s records report 600 Self-Help Groups across 59 villages in Karnataka, including 492 groups composed entirely of women. Approximately 5,000 people have completed training seminars since the programme began in 2001. Historically, ₹10 crore in loans has been issued to SHGs, with a reported repayment rate of more than 90%. The records also report ₹4.36 crore in total SHG savings as of January 2022."
         bannerHeading="Creating Lasting Change"
         stats={IMPACT_STATS}
       />
 
-      {/* 9. Newsletter Section */}
       <NewsletterSection />
     </>
   );
 }
+
