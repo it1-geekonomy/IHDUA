@@ -107,7 +107,7 @@ export default function GallerySection({
     <>
       <section
         aria-label={heading}
-        className={`flex w-full flex-col gap-[clamp(1.25rem,3vw,2.5rem)] px-6 pt-6 lg:px-10 lg:py-12 xl:py-16 2xl:px-40 ${className}`}
+        className={`flex w-full flex-col gap-[clamp(1.25rem,3vw,2.5rem)] px-6 pt-6 lg:px-10 lg:pt-8 xl:pt-14 2xl:px-40 ${className}`}
       >
         <Typography variant="h2" className="text-center font-lora leading-[1.2] text-[#00191B] sm:text-left">
           {heading}
