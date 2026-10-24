@@ -22,7 +22,7 @@ export const FIELD_STORIES: FieldStory[] = [
   },
   {
     id: "tank-desiltation",
-    image: "/home/story-thumb.png",
+    image: "/home/storythumb1.png",
     category: "Building Stronger Villages",
     date: "February 12, 2026",
     title: "Village meetings bring communities together to address local challenges.",
@@ -32,7 +32,7 @@ export const FIELD_STORIES: FieldStory[] = [
   },
   {
     id: "handloom-export",
-    image: "/home/story-thumb-2.png",
+    image: "/home/storythumb2.png",
     category: "Skills for Tomorrow",
     date: "January 28, 2026",
     title: "Training helps rural youth develop skills and explore opportunities.",
