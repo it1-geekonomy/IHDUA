@@ -16,7 +16,7 @@ const EDUCATION_ITEMS: ImageCardItem[] = [
     href: "/youth",
   },
   {
-    image: "/Skillsandemployment/Farmers.png",
+    image: "/Skillsandemployment/Women.png",
     imageAlt: "Farmers",
     title: "Farmers",
     href: "/farmers",
