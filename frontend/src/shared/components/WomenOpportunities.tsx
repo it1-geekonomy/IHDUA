@@ -28,20 +28,20 @@ const WomenOpportunities = ({
           <div className="flex w-full flex-col gap-2 sm:gap-3 lg:gap-4">
             <Typography
               variant="h3"
-              className="w-full font-lora font-normal text-[#00191B]"
+              className="w-full font-lora font-normal text-center sm:text-left text-[#00191B]"
             >
               {heading}
             </Typography>
             <Typography
               variant="body-lg"
-              className="w-full font-figtree font-normal text-[#5F6C6D]"
+              className="w-full font-figtree font-normal text-center sm:text-left text-[#5F6C6D]"
             >
               {topDescription}
             </Typography>
           </div>
 
-          {/* Two images side by side on every screen, never cropped */}
-          <div className="grid w-full grid-cols-2 items-start gap-2 sm:gap-4 lg:gap-6">
+          {/* Images: 1 column on mobile, 2 columns on tablet/desktop */}
+          <div className="grid w-full grid-cols-1 items-start gap-4 sm:grid-cols-2 sm:gap-4 lg:gap-6">
             {images.map((image, index) => (
               <div key={`${image.src}-${index}`} className="w-full">
                 <Image
@@ -49,7 +49,7 @@ const WomenOpportunities = ({
                   alt={image.alt}
                   width={0}
                   height={0}
-                  sizes="(min-width: 1536px) 40vw, 50vw"
+                  sizes="(min-width: 1536px) 40vw, (min-width: 640px) 50vw, 100vw"
                   className="block h-auto w-full"
                 />
               </div>
@@ -59,7 +59,7 @@ const WomenOpportunities = ({
           {/* Bottom description */}
           <Typography
             variant="body-lg"
-            className="w-full font-figtree font-normal text-[#5F6C6D]"
+            className="w-full font-figtree font-normal text-center sm:text-left text-[#5F6C6D]"
           >
             {bottomDescription}
           </Typography>
