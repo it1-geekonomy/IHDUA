@@ -54,6 +54,6 @@ export const NAV_LINKS: NavLink[] = [
       },
     ],
   },
-  { label: "Farms & Dairy", href: "/farms-and-dairy" },
+  
   { label: "Blogs", href: "/blogs" },
 ];
