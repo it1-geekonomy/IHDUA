@@ -18,13 +18,13 @@ export function FormInput({
 }: FormInputProps) {
   return (
     <div className="w-full font-figtree">
-      <label className="block text-[13px] font-medium text-[#111827] mb-1.5">
-        {label}
+      <label className="text-[13px] font-medium text-[#111827] mb-1.5 h-5 flex items-center leading-none">
+        <span>{label}</span>
         {required && <span className="text-[#9739A8] ml-0.5">*</span>}
       </label>
       <input
         className={cn(
-          "w-full bg-[#F8F9FA] border rounded-md px-3.5 py-2.5 text-[14px] text-[#111827] placeholder:text-[#9CA3AF] outline-none transition-colors",
+          "w-full h-11 bg-[#F8F9FA] border rounded-md px-3.5 text-[14px] text-[#111827] placeholder:text-[#9CA3AF] outline-none transition-colors",
           error
             ? "border-red-500 ring-1 ring-red-500 focus:border-red-500"
             : "border-[#E5E7EB] focus:border-[#9739A8] focus:ring-1 focus:ring-[#9739A8]",

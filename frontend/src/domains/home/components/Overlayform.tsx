@@ -242,102 +242,85 @@ export default function Overlayform({ onClose }: OverlayformProps) {
         the form keeps its natural height, so the form is always fully visible.
         lg+ switches to a side-by-side layout.
       */}
-      <div
-        className={`
-          overlayform-card-in
-          relative flex w-[min(380px,calc(100vw-2rem))] max-h-[calc(100dvh-1.5rem)] shrink-0 flex-col
-          rounded-xl bg-white shadow-2xl
-          ${form.step === 1 ? "overflow-hidden" : "overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"}
-          transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none
-          lg:h-auto lg:max-h-[calc(100dvh-2rem)] lg:w-[min(860px,calc(100vw-4rem))] lg:flex-row lg:overflow-hidden lg:rounded-none
-          xl:w-[min(940px,calc(100vw-5rem))]
-          2xl:max-h-[calc(100dvh-3rem)] 2xl:w-[min(1080px,calc(100vw-6rem))]
-        `}
-        style={exiting ? { opacity: 0, transform: "scale(0.98)" } : undefined}
-      >
-        <button
-          type="button"
-          aria-label="Close"
-          onClick={beginClose}
-          className="absolute right-2 top-2 z-20 flex h-6 w-6 items-center justify-center rounded bg-[#FFD638] text-black transition-transform hover:scale-105 active:scale-95"
-        >
-          <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3" stroke="currentColor" strokeWidth={2.5}>
-            <path d="M6 6l12 12M18 6 6 18" strokeLinecap="round" />
-          </svg>
-        </button>
-
-        {intro && <IntroCurtains />}
-
-        {/* Image */}
-        <div className="relative h-40 min-h-28 w-full shrink overflow-hidden lg:h-auto lg:min-h-[360px] lg:w-[38%] lg:shrink-0 lg:self-stretch xl:w-[40%] 2xl:w-[42%]">
-          <div className="overlayform-img-in absolute inset-0">
-            <Image
-              src="/overlayform/mobileimg1.png"
-              alt="Family supported by IHDUA"
-              fill
-              className="object-cover object-center lg:hidden"
-              priority
-              sizes="380px"
-            />
-            <Image
-              src="/overlayform/formimg.png"
-              alt="Family supported by IHDUA"
-              fill
-              className="hidden object-cover object-center lg:block"
-              priority
-              sizes="(min-width: 1536px) 42vw, 40vw"
-            />
-          </div>
-        </div>
-
-        {/* Form */}
+      {form.step === 2 ? (
         <div
-          className="
-            flex w-full shrink-0 flex-col gap-2.5 bg-[#F6F2EC] px-5 py-3
-            [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
-            lg:w-[62%] lg:gap-4 lg:overflow-y-auto lg:px-6 lg:py-5
-            xl:w-[60%] xl:px-7 xl:py-6
-            2xl:w-[58%] 2xl:gap-5 2xl:px-9 2xl:py-7
-          "
+          className="relative w-full max-w-[620px] bg-white rounded-xl shadow-2xl p-6 sm:p-9 my-auto overflow-y-auto max-h-[calc(100dvh-2rem)] animate-in fade-in zoom-in-95 duration-200"
+          style={exiting ? { opacity: 0, transform: "scale(0.98)" } : undefined}
         >
-          {form.step === 1 ? (
-            <AmountStep form={form} rise={rise} delay={delay} />
-          ) : (
-            <div className="w-full flex-1 pt-2 lg:overflow-y-auto lg:pt-0">
-              <DetailsStep
-                chosenAmount={form.chosenAmount}
-                customDigits={form.customDigits}
-                usingCustom={form.usingCustom}
-                editingAmount={form.editingAmount}
-                currencySymbol={form.currencySymbol}
-                countryCode={form.countryCode}
-                phoneCountryCode={form.phoneCountryCode}
-                phoneCountryDial={form.phoneCountryDial}
-                isIndia={form.isIndia}
-                fullName={form.fullName}
-                mobile={form.mobile}
-                email={form.email}
-                taxId={form.taxId}
-                isPaying={form.isPaying}
-                statusMessage={form.statusMessage}
-                statusTone={form.statusTone}
-                showLargeAmountHint={form.showLargeAmountHint}
-                setPhoneCountryCode={form.setPhoneCountryCode}
-                setFullName={form.setFullName}
-                setMobile={form.setMobile}
-                setEmail={form.setEmail}
-                setTaxId={form.setTaxId}
-                setCustomFromInput={form.setCustomFromInput}
-                goBackToAmount={form.goBackToAmount}
-                startEditAmount={form.startEditAmount}
-                commitAmountEdit={form.commitAmountEdit}
-                cancelAmountEdit={form.cancelAmountEdit}
-                paySecurely={form.paySecurely}
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={beginClose}
+            className="absolute right-5 top-5 p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+          >
+            <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" stroke="currentColor" strokeWidth={2}>
+              <path d="M6 6l12 12M18 6 6 18" strokeLinecap="round" />
+            </svg>
+          </button>
+          <DetailsStep {...form} />
+        </div>
+      ) : (
+        <div
+          className={`
+            overlayform-card-in
+            relative flex w-[min(380px,calc(100vw-2rem))] max-h-[calc(100dvh-1.5rem)] shrink-0 flex-col
+            rounded-xl bg-white shadow-2xl overflow-hidden
+            transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none
+            lg:h-auto lg:max-h-[calc(100dvh-2rem)] lg:w-[min(860px,calc(100vw-4rem))] lg:flex-row lg:overflow-hidden lg:rounded-none
+            xl:w-[min(940px,calc(100vw-5rem))]
+            2xl:max-h-[calc(100dvh-3rem)] 2xl:w-[min(1080px,calc(100vw-6rem))]
+          `}
+          style={exiting ? { opacity: 0, transform: "scale(0.98)" } : undefined}
+        >
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={beginClose}
+            className="absolute right-2 top-2 z-20 flex h-6 w-6 items-center justify-center rounded bg-[#FFD638] text-black transition-transform hover:scale-105 active:scale-95 cursor-pointer"
+          >
+            <svg viewBox="0 0 24 24" fill="none" className="h-3 w-3" stroke="currentColor" strokeWidth={2.5}>
+              <path d="M6 6l12 12M18 6 6 18" strokeLinecap="round" />
+            </svg>
+          </button>
+
+          {intro && <IntroCurtains />}
+
+          {/* Image */}
+          <div className="relative h-40 min-h-28 w-full shrink overflow-hidden lg:h-auto lg:min-h-[360px] lg:w-[38%] lg:shrink-0 lg:self-stretch xl:w-[40%] 2xl:w-[42%]">
+            <div className="overlayform-img-in absolute inset-0">
+              <Image
+                src="/overlayform/mobileimg1.png"
+                alt="Family supported by IHDUA"
+                fill
+                className="object-cover object-center lg:hidden"
+                priority
+                sizes="380px"
+              />
+              <Image
+                src="/overlayform/formimg.png"
+                alt="Family supported by IHDUA"
+                fill
+                className="hidden object-cover object-center lg:block"
+                priority
+                sizes="(min-width: 1536px) 42vw, 40vw"
               />
             </div>
-          )}
+          </div>
+
+          {/* Form */}
+          <div
+            className="
+              flex w-full shrink-0 flex-col gap-2.5 bg-[#F6F2EC] px-5 py-3
+              [scrollbar-width:none] [&::-webkit-scrollbar]:hidden
+              lg:w-[62%] lg:gap-4 lg:overflow-y-auto lg:px-6 lg:py-5
+              xl:w-[60%] xl:px-7 xl:py-6
+              2xl:w-[58%] 2xl:gap-5 2xl:px-9 2xl:py-7
+            "
+          >
+            <AmountStep form={form} rise={rise} delay={delay} />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

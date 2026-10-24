@@ -1,15 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { Pencil, ArrowLeft } from "lucide-react";
-import { DONATION_COPY } from "@/shared/constants/donation";
+import { Pencil, Loader2 } from "lucide-react";
+import { INDIAN_STATES } from "@/domains/home/constants/indianStates";
 import {
-  AmountConfirmHint,
-  DonationSelectField,
-  DonationTextField,
-  DonationTrustNote,
-} from "./DonationFormPrimitives";
-import { CountrySelect } from "./CountrySelect";
+  FormInput,
+  FormSelect,
+  PhoneInputField,
+} from "@/shared/components/form";
 import type { DonationFormState } from "./useDonationForm";
 
 type DetailsStepProps = Pick<
@@ -27,6 +24,11 @@ type DetailsStepProps = Pick<
   | "mobile"
   | "email"
   | "taxId"
+  | "address"
+  | "stateName"
+  | "city"
+  | "pincode"
+  | "termsAccepted"
   | "isPaying"
   | "statusMessage"
   | "statusTone"
@@ -36,6 +38,11 @@ type DetailsStepProps = Pick<
   | "setMobile"
   | "setEmail"
   | "setTaxId"
+  | "setAddress"
+  | "setStateName"
+  | "setCity"
+  | "setPincode"
+  | "setTermsAccepted"
   | "setCustomFromInput"
   | "goBackToAmount"
   | "startEditAmount"
@@ -46,189 +53,196 @@ type DetailsStepProps = Pick<
 
 export function DetailsStep({
   chosenAmount,
-  customDigits,
-  usingCustom,
-  editingAmount,
-  currencySymbol,
-  countryCode,
-  phoneCountryCode,
-  phoneCountryDial,
-  isIndia,
   fullName,
   mobile,
   email,
   taxId,
+  address,
+  stateName,
+  city,
+  pincode,
+  termsAccepted,
   isPaying,
   statusMessage,
   statusTone,
-  showLargeAmountHint,
   setPhoneCountryCode,
   setFullName,
   setMobile,
   setEmail,
   setTaxId,
-  setCustomFromInput,
+  setAddress,
+  setStateName,
+  setCity,
+  setPincode,
+  setTermsAccepted,
   goBackToAmount,
-  startEditAmount,
-  commitAmountEdit,
-  cancelAmountEdit,
   paySecurely,
 }: DetailsStepProps) {
-  const amountEditRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (editingAmount) amountEditRef.current?.focus();
-  }, [editingAmount]);
-
   return (
-    <div className="mt-6 flex flex-col gap-3">
-      <button
-        type="button"
-        onClick={goBackToAmount}
-        disabled={isPaying}
-        className="mb-1 flex w-max items-center gap-1 font-figtree text-[13px] font-semibold text-[#8A847A] transition-colors hover:text-[#00191B] disabled:opacity-50"
-      >
-        <ArrowLeft className="h-3.5 w-3.5" />
-        Back
-      </button>
-
-      <div className="flex flex-col gap-2 rounded-sm border border-[#D9D3C9] bg-[#FAF8F4] px-4 py-3.5">
-        <div className="flex items-start justify-between gap-3">
-          <span className="shrink-0 pt-0.5 font-figtree text-[15px] text-[#5F6C6D]">
-            {DONATION_COPY.chosenAmount}
-          </span>
-          <span className="flex min-w-0 flex-1 flex-col items-end gap-1.5 font-figtree text-[15px] font-bold text-[#00191B]">
-            {editingAmount ? (
-              <span className="flex w-full max-w-[12rem] items-center justify-end border-b border-[#9739A8]">
-                <span>{currencySymbol}</span>
-                <input
-                  ref={amountEditRef}
-                  type="text"
-                  inputMode="numeric"
-                  value={customDigits}
-                  onChange={(e) => setCustomFromInput(e.target.value)}
-                  onBlur={commitAmountEdit}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      commitAmountEdit();
-                    }
-                    if (e.key === "Escape") {
-                      e.preventDefault();
-                      cancelAmountEdit();
-                    }
-                  }}
-                  className="min-w-0 flex-1 bg-transparent text-right font-figtree text-[15px] font-bold text-[#00191B] outline-none"
-                  aria-label="Edit chosen amount"
-                />
-              </span>
-            ) : (
-              <span className="max-w-full break-all text-right" title={chosenAmount}>
-                {chosenAmount}
-              </span>
-            )}
-            <button
-              type="button"
-              onClick={startEditAmount}
-              disabled={isPaying}
-              className="inline-flex shrink-0 items-center gap-1 font-semibold text-[#9739A8] hover:opacity-80 disabled:opacity-50"
-            >
-              {DONATION_COPY.edit}
-              <Pencil className="h-3.5 w-3.5" strokeWidth={2.5} />
-            </button>
-          </span>
-        </div>
-
-        {usingCustom && showLargeAmountHint ? (
-          <AmountConfirmHint message={DONATION_COPY.confirmBeforePay} />
-        ) : null}
+    <div className="w-full font-figtree animate-in fade-in duration-200">
+      {/* Header */}
+      <div>
+        <p className="text-[11px] sm:text-xs font-bold tracking-[0.15em] text-[#9739A8] uppercase font-figtree">
+          DONATE
+        </p>
+        <h2 className="mt-1 font-lora text-[26px] sm:text-[32px] font-normal text-[#111827] leading-tight">
+          Your Details
+        </h2>
+        <p className="mt-1 font-figtree text-[13px] sm:text-[14px] text-[#6B7280]">
+          Tell us a little about yourself to continue your donation.
+        </p>
       </div>
 
-      <DonationTextField
-        placeholder={DONATION_COPY.fullName}
-        value={fullName}
-        onChange={setFullName}
-        autoComplete="name"
-        disabled={isPaying}
-      />
-
-      <div className="flex gap-2">
-        <div className="w-[6rem] shrink-0">
-          <CountrySelect
-            value={phoneCountryCode}
-            onChange={setPhoneCountryCode}
-            disabled={isPaying}
-            compact
-          />
+      {/* Donation Amount Summary Box */}
+      <div className="mt-5 rounded-md border border-[#F3EBDD] bg-[#FDFBF7] p-4 flex items-center justify-between">
+        <div>
+          <span className="block text-xs font-medium text-[#5F6C6D]">
+            Donation Amount
+          </span>
+          <span className="block text-2xl font-bold text-[#111827] mt-0.5">
+            {chosenAmount}
+          </span>
         </div>
-        <DonationTextField
-          type="tel"
-          inputMode="tel"
-          placeholder={DONATION_COPY.mobile}
-          value={mobile}
-          onChange={(value) => setMobile(value.replace(/\D/g, ""))}
-          autoComplete="tel-national"
+        <button
+          type="button"
+          onClick={goBackToAmount}
           disabled={isPaying}
-          className="min-w-0 flex-1"
-        />
+          className="flex items-center gap-1.5 text-xs sm:text-[13px] font-semibold text-[#9739A8] hover:opacity-80 transition-opacity cursor-pointer disabled:opacity-50"
+        >
+          <span>Edit Donation Amount</span>
+          <Pencil className="w-3.5 h-3.5" />
+        </button>
       </div>
 
-      <DonationTextField
-        type="email"
-        placeholder={DONATION_COPY.email}
-        value={email}
-        onChange={setEmail}
-        autoComplete="email"
-        disabled={isPaying}
-      />
-
-      {isIndia ? (
-        <div className="flex flex-col gap-1.5">
-          <DonationTextField
-            placeholder={DONATION_COPY.taxId}
-            value={taxId}
-            onChange={(value) =>
-              setTaxId(value.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase())
-            }
-            autoComplete="off"
+      {/* Form Fields */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          void paySecurely();
+        }}
+        className="mt-5 space-y-4 font-figtree"
+      >
+        {/* Row 1: Full Name & Email Address */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <FormInput
+            label="Full Name"
+            required
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
             disabled={isPaying}
           />
-          <p className="px-0.5 font-figtree text-[11px] leading-snug text-[#8A847A]">
-            {DONATION_COPY.taxIdHint}
-          </p>
+          <FormInput
+            label="Email Address"
+            required
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isPaying}
+          />
         </div>
-      ) : (
-        <p className="px-0.5 font-figtree text-[11px] leading-snug text-[#8A847A]">
-          {DONATION_COPY.internationalNote}
-        </p>
-      )}
 
-      <button
-        type="button"
-        onClick={() => void paySecurely()}
-        disabled={isPaying}
-        className="mt-1 flex w-full flex-col items-center justify-center gap-0.5 rounded-sm bg-[#FFD638] px-4 py-3.5 font-figtree font-bold text-[#1C1C1C] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-      >
-        <span className="text-[16px]">
-          {isPaying ? DONATION_COPY.paying : DONATION_COPY.paySecurely}
-        </span>
-        <span className="max-w-full break-all text-center text-[14px] leading-snug">
-          {chosenAmount}
-        </span>
-      </button>
+        {/* Row 2: Mobile Number & PAN (Text Input, NOT dropdown) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <PhoneInputField
+            label="Mobile Number"
+            required
+            value={mobile}
+            onChange={setMobile}
+          />
+          <FormInput
+            label="PAN"
+            value={taxId}
+            onChange={(e) =>
+              setTaxId(e.target.value.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase())
+            }
+            disabled={isPaying}
+          />
+        </div>
 
-      {statusMessage ? (
-        <p
-          className={`text-center font-figtree text-[13px] leading-snug ${
-            statusTone === "ok" ? "text-[#2F6B4F]" : "text-[#A33B3B]"
-          }`}
-          role="status"
+        {/* Row 3: Address Line */}
+        <FormInput
+          label="Address Line"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          disabled={isPaying}
+        />
+
+        {/* Row 4: State, City, PIN Code */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
+          <FormSelect
+            label="State"
+            required
+            placeholder="Select state"
+            value={stateName}
+            options={INDIAN_STATES}
+            onChange={setStateName}
+            direction="up"
+            searchable={true}
+          />
+          <FormInput
+            label="City"
+            required
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            disabled={isPaying}
+          />
+          <FormInput
+            label="PIN Code"
+            required
+            value={pincode}
+            onChange={(e) =>
+              setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))
+            }
+            disabled={isPaying}
+          />
+        </div>
+
+        {/* Terms & Conditions Checkbox */}
+        <div className="pt-1">
+          <label className="flex items-center gap-2.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              className="w-4 h-4 rounded border-gray-300 text-[#9739A8] focus:ring-[#9739A8] accent-[#9739A8] cursor-pointer"
+            />
+            <span className="text-[13px] text-[#4B5563]">
+              I have read and agree to the{" "}
+              <span className="text-[#9739A8] font-semibold underline decoration-[#9739A8]/40">
+                Terms & Conditions
+              </span>
+            </span>
+          </label>
+        </div>
+
+        {/* Status / Error Message */}
+        {statusMessage && (
+          <p
+            className={`text-center font-figtree text-[13px] leading-snug ${
+              statusTone === "ok" ? "text-green-600" : "text-red-500 font-medium"
+            }`}
+            role="status"
+          >
+            {statusMessage}
+          </p>
+        )}
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isPaying}
+          className="w-full bg-[#FFD638] hover:bg-[#FACC15] active:scale-[0.99] disabled:opacity-75 disabled:cursor-not-allowed text-[#111827] font-semibold py-3.5 px-6 rounded-md shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer mt-3"
         >
-          {statusMessage}
-        </p>
-      ) : null}
-
-      <DonationTrustNote />
+          {isPaying ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin text-[#111827]" />
+              <span className="text-[15px]">Processing Payment...</span>
+            </>
+          ) : (
+            <span className="text-[15px]">Continue to Payment</span>
+          )}
+        </button>
+      </form>
     </div>
   );
 }

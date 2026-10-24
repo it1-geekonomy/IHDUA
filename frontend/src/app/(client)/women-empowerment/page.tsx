@@ -44,36 +44,33 @@ export default function WomenEmpowermentPage() {
         heading={["Supporting Women to", "Lead and Grow"]}
         description="We create opportunities for women to strengthen their skills, participate in economic activities and enhance their decision-making power. Through initiatives such as microfinance and vocational training, IHDUA supports women in becoming equal stakeholders in their households and communities."
         items={WOMEN_ITEMS}
-        className="pb-6 sm:pb-8 lg:pb-0"
       />
-      <section className="w-full bg-white">
-        <div className="w-full px-6 pt-8 pb-2 sm:pt-10 sm:pb-3 lg:px-10 lg:pt-14 lg:pb-4 2xl:px-40">
-          <div className="flex w-full flex-col items-center text-center lg:items-start lg:text-left gap-2.5 sm:gap-3.5">
-            <div className="flex items-center justify-center lg:justify-start gap-2 text-[#9739A8]">
-              <span aria-hidden="true" className="h-px w-6 bg-current" />
+      <section className="w-full">
+        <div className="w-full px-6 pt-10 lg:px-10 lg:pt-14 xl:pt-16 2xl:px-40">
+          <div className="flex w-full flex-col items-center text-center sm:items-start sm:text-left gap-3 lg:gap-4">
+            <div className="flex items-center justify-center sm:justify-start gap-3">
+              <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
               <Typography
                 variant="caption"
-                className="m-0 font-figtree font-bold uppercase tracking-[0.08em]"
+                className="font-bold font-figtree uppercase tracking-wider text-[#9739A8]"
               >
                 HOW WE SUPPORT WOMEN
               </Typography>
-              <span aria-hidden="true" className="h-px w-6 bg-current" />
+              <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
             </div>
+
             <Typography
               variant="h3"
               className="font-lora leading-[1.2] text-[#00191B]"
             >
               Creating Pathways to Greater Independence
             </Typography>
+
             <Typography
               variant="body-lg"
-              className="max-w-4xl font-figtree font-normal leading-relaxed text-[#5F6C6D] text-center lg:text-left"
+              className="w-full font-figtree font-normal text-[#5F6C6D] text-center sm:text-left"
             >
-              IHDUA’s women’s empowerment work combines Self-Help Groups,
-              microfinance initiatives and vocational training to create
-              opportunities for women to build skills, participate in economic
-              activities and take a more active role in their households and
-              communities.
+              IHDUA&apos;s women&apos;s empowerment work combines Self-Help Groups, microfinance initiatives and vocational training to create opportunities for women to build skills, participate in economic activities and take a more active role in their households and communities.
             </Typography>
           </div>
         </div>
@@ -103,4 +100,3 @@ export default function WomenEmpowermentPage() {
     </>
   );
 }
-
