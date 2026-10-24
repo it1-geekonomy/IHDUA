@@ -1,9 +1,28 @@
-export default function AboutPage() {
+import HeroBanner from "@/shared/components/Herobanner";
+import NewsletterSection from "@/shared/components/Newsletter";
+import BlogsGridSection from "@/domains/blogs/components/BlogsGridSection";
+import { BLOGS_HERO } from "@/domains/blogs/constants/blogsData";
+
+export const metadata = {
+  title: "Blogs & Stories | IHDUA",
+  description:
+    "Discover stories, updates, and inspiring moments from our work with rural communities across Karnataka.",
+};
+
+export default function BlogsPage() {
   return (
-    <section className="min-h-screen flex flex-col items-center justify-center px-6">
-      <h1 className="text-4xl md:text-5xl font-semibold text-center">
-        Blogs
-      </h1>
-    </section>
+    <main className="w-full">
+      <HeroBanner
+        heading={BLOGS_HERO.heading}
+        description={BLOGS_HERO.description}
+        image={BLOGS_HERO.image}
+        imageMobile={BLOGS_HERO.imageMobile}
+        imageAlt={BLOGS_HERO.imageAlt}
+      />
+
+      <BlogsGridSection />
+
+      <NewsletterSection />
+    </main>
   );
 }
