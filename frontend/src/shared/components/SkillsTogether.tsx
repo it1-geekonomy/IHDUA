@@ -50,13 +50,17 @@ const SkillsTogether = ({
             aligned with the other sections; vertical padding inside is small. */}
         <div className="w-full bg-[#F3EEF9] px-6 py-4 sm:py-5 lg:px-10 lg:py-5 xl:py-6 2xl:px-40">
           {/* Below lg: text block, then features stacked.
-              lg: narrow gap between text and features.
-              xl and up: two equal columns with a wider gap. */}
-          <div className="grid w-full grid-cols-1 items-center gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-4 xl:grid-cols-2 xl:gap-16">
-            {/* Label + heading + descriptions */}
-            <div className="flex w-full flex-col gap-4 lg:gap-5">
+              lg: label + heading span the full width on top; below them the
+                  descriptions sit on the left and the stats on the right.
+              xl and up: two equal columns, text block left, stats right. */}
+          <div className="grid w-full grid-cols-1 items-center gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-x-4 lg:gap-y-5 xl:grid-cols-2 xl:gap-16">
+            {/* Label + heading + descriptions.
+                At lg this wrapper uses display: contents so its two children
+                become direct cells of the outer grid. From xl it is a normal
+                flex column again. */}
+            <div className="flex w-full flex-col gap-4 lg:contents xl:flex xl:gap-5">
               {/* Label + heading: centered below 1024px, left-aligned from lg */}
-              <div className="flex w-full flex-col items-center gap-3 text-center lg:items-start lg:text-left">
+              <div className="flex w-full flex-col items-center gap-3 text-center lg:col-span-2 lg:items-start lg:text-left xl:col-span-1">
                 {/* Label with decorative lines on both sides */}
                 <div className="flex items-center gap-3">
                   <span className="h-px w-6 bg-[#9739A8]" aria-hidden="true" />
