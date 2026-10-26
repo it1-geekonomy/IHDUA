@@ -15,7 +15,7 @@ export class CreateDonors1760000000001 implements MigrationInterface {
       DO $$
       BEGIN
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'donation_status') THEN
-          CREATE TYPE donation_status AS ENUM ('pending', 'success', 'failed');
+          CREATE TYPE donation_status AS ENUM ('pending', 'paid', 'failed', 'refunded');
         END IF;
       END$$;
     `);
