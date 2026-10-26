@@ -50,6 +50,7 @@ export default function NavbarShell() {
     setIsOpen(false);
     if (typeof window !== "undefined") {
       sessionStorage.setItem("suppress_overlay", "true");
+      sessionStorage.setItem("ihdua_nav_time", Date.now().toString());
     }
 
     if (href === "/" && isHomePath(pathname)) {
@@ -62,6 +63,7 @@ export default function NavbarShell() {
   const handleHomeClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (typeof window !== "undefined") {
       sessionStorage.setItem("suppress_overlay", "true");
+      sessionStorage.setItem("ihdua_nav_time", Date.now().toString());
     }
     if (!isHomePath(pathname)) return;
     e.preventDefault();
