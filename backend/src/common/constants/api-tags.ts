@@ -4,4 +4,5 @@ export const ApiTagsConst = {
   USERS: 'users',
   DONORS: 'donors',
   LEADS_CONTACT: 'leads-contact',
+  LEADS_VOLUNTEER: 'leads-volunteer',
 } as const;
