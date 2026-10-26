@@ -56,7 +56,7 @@ export default function StoryLeftImageSection({
                   <Typography
                     key={idx}
                     variant="body-lg"
-                    className="font-figtree font-light text-[#5F6C6D] text-left leading-relaxed"
+                    className="font-figtree font-normal text-[#5F6C6D] text-left leading-relaxed"
                   >
                     {p}
                   </Typography>
