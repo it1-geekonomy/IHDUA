@@ -1,24 +1,23 @@
+import { MigrationInterface, QueryRunner, Table, TableUnique } from 'typeorm';
 import {
-  MigrationInterface,
-  QueryRunner,
-  Table,
-  TableUnique,
-} from 'typeorm';
+  idColumn,
+  softDeleteColumn,
+  timestampColumns,
+} from '../migration.helpers';
 
 export class CreateUsers1760000000000 implements MigrationInterface {
   name = 'CreateUsers1760000000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "pgcrypto"`);
+
+    if (await queryRunner.hasTable('users')) return;
+
     await queryRunner.createTable(
       new Table({
         name: 'users',
         columns: [
-          {
-            name: 'id',
-            type: 'uuid',
-            isPrimary: true,
-            default: 'gen_random_uuid()',
-          },
+          idColumn(),
           {
             name: 'full_name',
             type: 'varchar',
@@ -36,18 +35,8 @@ export class CreateUsers1760000000000 implements MigrationInterface {
             type: 'text',
             isNullable: false,
           },
-          {
-            name: 'created_at',
-            type: 'timestamptz',
-            isNullable: false,
-            default: 'CURRENT_TIMESTAMP',
-          },
-          {
-            name: 'updated_at',
-            type: 'timestamptz',
-            isNullable: false,
-            default: 'CURRENT_TIMESTAMP',
-          },
+          ...timestampColumns(),
+          softDeleteColumn(),
         ],
         uniques: [
           new TableUnique({
@@ -61,6 +50,6 @@ export class CreateUsers1760000000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('users');
+    await queryRunner.dropTable('users', true);
   }
 }

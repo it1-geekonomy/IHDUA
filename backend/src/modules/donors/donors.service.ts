@@ -4,13 +4,11 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as crypto from 'crypto';
-import Razorpay from 'razorpay';
 import { Repository } from 'typeorm';
-import { DonationStatus } from './donation-status.enum';
-import { Donor } from './donor.entity';
+import { DonationStatus } from '../../common/enums/donation-status.enum';
+import { RazorpayService } from '../../common/payments/razorpay.service';
+import { Donor } from './entities/donor.entity';
 import {
   CreateDonationOrderDto,
   DonationCurrencyCode,
@@ -30,43 +28,20 @@ type OrderNotes = {
 
 @Injectable()
 export class DonorsService {
-  private razorpayClient: Razorpay | null = null;
-
   constructor(
     @InjectRepository(Donor)
     private readonly donorsRepository: Repository<Donor>,
-    private readonly config: ConfigService,
-  ) {}
-
-  private getRazorpay(): Razorpay {
-    if (this.razorpayClient) return this.razorpayClient;
-
-    const keyId = this.config.get<string>('razorpay.keyId', '');
-    const keySecret = this.config.get<string>('razorpay.keySecret', '');
-
-    if (!keyId || !keySecret) {
-      throw new InternalServerErrorException(
-        'Razorpay credentials are not configured',
-      );
-    }
-
-    this.razorpayClient = new Razorpay({
-      key_id: keyId,
-      key_secret: keySecret,
-    });
-
-    return this.razorpayClient;
-  }
+    private readonly razorpay: RazorpayService,
+  ) { }
 
   private assertPaymentSignature(dto: VerifyDonationPaymentDto) {
-    const keySecret = this.config.get<string>('razorpay.keySecret', '');
-    const payload = `${dto.razorpayOrderId}|${dto.razorpayPaymentId}`;
-    const expected = crypto
-      .createHmac('sha256', keySecret)
-      .update(payload)
-      .digest('hex');
+    const isValid = this.razorpay.verifyPaymentSignature(
+      dto.razorpayOrderId,
+      dto.razorpayPaymentId,
+      dto.razorpaySignature,
+    );
 
-    if (expected !== dto.razorpaySignature) {
+    if (!isValid) {
       throw new BadRequestException('Invalid payment signature');
     }
   }
@@ -77,9 +52,7 @@ export class DonorsService {
     // currencies here are 2-decimal.
     const minor = major * 100;
     if (!Number.isSafeInteger(minor) || minor < 100) {
-      throw new BadRequestException(
-        `Minimum donation amount is 1 ${currency}`,
-      );
+      throw new BadRequestException(`Minimum donation amount is 1 ${currency}`);
     }
     return minor;
   }
@@ -97,8 +70,8 @@ export class DonorsService {
     const countryName = dto.countryName?.trim() || '';
 
     try {
-      const order = await this.getRazorpay().orders.create({
-        amount: amountMinor,
+      const order = await this.razorpay.createOrder({
+        amountPaise: amountMinor,
         currency,
         receipt: `ihdua_${Date.now()}`,
         notes: {
@@ -117,17 +90,17 @@ export class DonorsService {
         orderId: order.id,
         amount: order.amount,
         currency: order.currency,
-        keyId: this.config.get<string>('razorpay.keyId'),
+        keyId: this.razorpay.getKeyId(),
       };
     } catch (error) {
       if (error instanceof InternalServerErrorException) throw error;
       const message =
         error &&
-        typeof error === 'object' &&
-        'error' in error &&
-        error.error &&
-        typeof error.error === 'object' &&
-        'description' in error.error
+          typeof error === 'object' &&
+          'error' in error &&
+          error.error &&
+          typeof error.error === 'object' &&
+          'description' in error.error
           ? String((error.error as { description?: string }).description)
           : 'Failed to create Razorpay order';
       throw new InternalServerErrorException(message);
@@ -156,7 +129,7 @@ export class DonorsService {
     let currency = 'INR';
 
     try {
-      const order = await this.getRazorpay().orders.fetch(dto.razorpayOrderId);
+      const order = await this.razorpay.fetchOrder(dto.razorpayOrderId);
       if (order.id !== dto.razorpayOrderId) {
         throw new BadRequestException('Order ID mismatch');
       }
