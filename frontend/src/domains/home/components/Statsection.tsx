@@ -5,6 +5,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { STATS } from "@/domains/home/constants/stat";
 import Typography from "@/lib/Typography";
+import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 
 const DURATION_MS = 1100;
 const START_RATIO = 0.72;
@@ -110,8 +111,43 @@ export default function StatSection() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.35 });
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const checkAndScroll = () => {
+      const fromFooter = sessionStorage.getItem("scroll_to_our_impact");
+      const hasHash = window.location.hash.includes("our-impact");
+
+      if (fromFooter || hasHash) {
+        if (fromFooter) {
+          sessionStorage.removeItem("scroll_to_our_impact");
+        }
+        if (hasHash) {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+
+        const navOffset = window.innerWidth >= 1024 ? 80 : 64;
+        setTimeout(() => {
+          void smoothScrollToId("our-impact", navOffset);
+        }, 150);
+        setTimeout(() => {
+          const el = document.getElementById("our-impact");
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            if (Math.abs(rect.top - navOffset) > 40) {
+              void smoothScrollToId("our-impact", navOffset, { minMs: 300, maxMs: 600 });
+            }
+          }
+        }, 450);
+      }
+    };
+
+    checkAndScroll();
+  }, []);
+
   return (
-    <section className="w-full bg-[#FAF9F5] px-6 pt-8 pb-8 lg:px-10 lg:pt-36 lg:pb-24 2xl:px-40 2xl:pt-28">
+    <section id="our-impact" className="w-full bg-[#FAF9F5] px-6 pt-8 pb-8 lg:px-10 lg:pt-36 lg:pb-24 2xl:px-40 2xl:pt-28 scroll-mt-20">
+
       <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
         <div className="mb-4 flex items-center gap-3 self-center">
           <span className="h-px w-8 bg-[#9739A8]" />
