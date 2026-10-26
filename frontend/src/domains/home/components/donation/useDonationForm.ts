@@ -1,7 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { DONATION_COPY } from "@/shared/constants/donation";
+import {
+  DONATION_COPY,
+  DONATION_CAUSES,
+  DEFAULT_DONATION_CAUSE,
+  type DonationCause,
+} from "@/shared/constants/donation";
 import {
   DEFAULT_COUNTRY,
   DEFAULT_CURRENCY,
@@ -54,6 +59,7 @@ export function useDonationForm() {
   );
   const [customDigits, setCustomDigits] = useState("");
   const [usingCustom, setUsingCustom] = useState(false);
+  const [cause, setCause] = useState<DonationCause>(DEFAULT_DONATION_CAUSE);
   const [editingAmount, setEditingAmount] = useState(false);
   const [countryCode, setCountryCodeState] = useState(DEFAULT_COUNTRY.code);
   const [phoneCountryCode, setPhoneCountryCode] = useState(DEFAULT_COUNTRY.code);
@@ -69,6 +75,7 @@ export function useDonationForm() {
   const [isPaying, setIsPaying] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusTone, setStatusTone] = useState<"ok" | "error" | "info" | null>(null);
+
 
   const currencyMeta = useMemo(() => getCurrencyMeta(currency), [currency]);
   const country = useMemo(() => getCountryByCode(countryCode), [countryCode]);
@@ -289,7 +296,7 @@ export function useDonationForm() {
         amount: Number(order.amount),
         currency: order.currency,
         name: "IHDUA",
-        description: "Donation",
+        description: `${cause} - Donation`,
         order_id: order.orderId,
         prefill: {
           name,
@@ -354,6 +361,8 @@ export function useDonationForm() {
     selectedDigits,
     customDigits,
     usingCustom,
+    cause,
+    causes: DONATION_CAUSES,
     editingAmount,
     countryCode,
     phoneCountryCode,
@@ -385,6 +394,7 @@ export function useDonationForm() {
     setPincode,
     setTermsAccepted,
     setUsingCustom,
+    setCause,
     pickPreset,
     setCustomFromInput,
     goToDetails,
@@ -397,3 +407,4 @@ export function useDonationForm() {
 }
 
 export type DonationFormState = ReturnType<typeof useDonationForm>;
+

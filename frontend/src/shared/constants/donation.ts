@@ -3,6 +3,20 @@ export const DONATION_SECTION_ID = "cta-donate";
 export const CTA_PRESET_AMOUNTS = ["₹500", "₹1500", "₹2500", "₹5000"] as const;
 export type CtaPresetAmount = (typeof CTA_PRESET_AMOUNTS)[number];
 
+export const DONATION_CAUSES = [
+  "General Donation",
+  "Education & School Support",
+  "Healthcare & Medical Camps",
+  "Women’s Empowerment",
+  "Sustainable Livelihoods",
+  "Organic Farming",
+  "Rural Community Development",
+  "Where the Need Is Greatest",
+] as const;
+
+export type DonationCause = (typeof DONATION_CAUSES)[number];
+export const DEFAULT_DONATION_CAUSE: DonationCause = "General Donation";
+
 export const DONATION_COPY = {
   sectionTitle: "Help Create Opportunities For Stronger Communities",
   sectionBody:
@@ -13,6 +27,7 @@ export const DONATION_COPY = {
   cardTitle: "Make a Difference Today",
   cardBody:
     "Your support helps create opportunities through education, healthcare, sustainable livelihoods and stronger communities.",
+  chooseAmountStep: "1. Choose an amount",
   chooseAmount: "Choose an amount",
   chooseCountry: "Choose your country",
   otherAmountPlaceholder: "Other amount",
@@ -30,7 +45,7 @@ export const DONATION_COPY = {
   paySecurely: "Pay Securely",
   paying: "Opening secure checkout…",
   verifying: "Confirming payment…",
-  trustLine: "🔒 Secure Payment • Powered by Razorpay",
+  trustLine: "🔒 Secure Payment • Trusted by Thousands",
   confirmBeforeContinue:
     "Please confirm this contribution amount before you continue.",
   confirmBeforePay: "Please confirm this contribution amount before you pay.",
@@ -45,3 +60,4 @@ export const DONATION_COPY = {
 export function isCtaPresetAmount(amount: string): amount is CtaPresetAmount {
   return (CTA_PRESET_AMOUNTS as readonly string[]).includes(amount);
 }
+

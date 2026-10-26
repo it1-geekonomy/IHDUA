@@ -48,6 +48,9 @@ export default function NavbarShell() {
 
   const handleMobileLinkClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
     setIsOpen(false);
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("suppress_overlay", "true");
+    }
 
     if (href === "/" && isHomePath(pathname)) {
       e.preventDefault();
@@ -57,6 +60,9 @@ export default function NavbarShell() {
   };
 
   const handleHomeClick = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("suppress_overlay", "true");
+    }
     if (!isHomePath(pathname)) return;
     e.preventDefault();
     setIsOpen(false);

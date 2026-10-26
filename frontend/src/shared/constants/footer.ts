@@ -6,10 +6,11 @@ export type FooterLink = {
 export const FOOTER_WHAT_WE_DO: FooterLink[] = [
   { label: "Home", href: "/" },
   { label: "About us", href: "/about" },
-  { label: "Our Impact", href: "/impact" },
+  { label: "Our Impact", href: "/#our-impact" },
   { label: "Blogs & Stories", href: "/blogs" },
   { label: "Contact Us", href: "/contact" },
 ];
+
 
 export const FOOTER_GET_INVOLVED: FooterLink[] = [
   { label: "Donate", href: "/" },

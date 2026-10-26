@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Typography from "@/lib/Typography";
 import { LanguageToggle } from "./LanguageToggle";
@@ -29,12 +31,26 @@ export function FooterLegalBar() {
 
           <div className="order-1 flex w-full items-center justify-between gap-3 lg:order-3 lg:w-auto lg:justify-end lg:gap-4">
             <div className="flex items-center gap-4">
-              <Link href="/" className="text-[#00191B] hover:underline">
+              <Link
+                href="/"
+                onClick={(e) => {
+                  e.preventDefault();
+                  sessionStorage.setItem("suppress_overlay", "true");
+                }}
+                className="text-[#00191B] hover:underline"
+              >
                 <Typography variant="body-sm" className="font-regular font-figtree">
                   Privacy Policy
                 </Typography>
               </Link>
-              <Link href="/" className="text-[#00191B] hover:underline">
+              <Link
+                href="/"
+                onClick={(e) => {
+                  e.preventDefault();
+                  sessionStorage.setItem("suppress_overlay", "true");
+                }}
+                className="text-[#00191B] hover:underline"
+              >
                 <Typography variant="body-sm" className="font-regular font-figtree">
                   Terms of Service
                 </Typography>

@@ -31,6 +31,7 @@ export function FooterMain() {
   const router = useRouter();
 
   const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    sessionStorage.setItem("suppress_overlay", "true");
     if (isHomePath(pathname)) {
       e.preventDefault();
       void smoothScrollToTop();
@@ -39,11 +40,30 @@ export function FooterMain() {
 
   const handleDonateClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    void scrollToDonateSection();
+    sessionStorage.setItem("suppress_overlay", "true");
+    if (isHomePath(pathname)) {
+      void scrollToDonateSection();
+    } else {
+      sessionStorage.setItem("scroll_to_donate", "true");
+      router.push("/");
+    }
+  };
+
+  const handleOurImpactClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    sessionStorage.setItem("suppress_overlay", "true");
+    const navOffset = typeof window !== "undefined" && window.innerWidth >= 1024 ? 80 : 64;
+    if (isHomePath(pathname)) {
+      void smoothScrollToId("our-impact", navOffset);
+    } else {
+      sessionStorage.setItem("scroll_to_our_impact", "true");
+      router.push("/");
+    }
   };
 
   const handleGetInvolvedClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
+    sessionStorage.setItem("suppress_overlay", "true");
     if (isHomePath(pathname)) {
       void smoothScrollToId("get-involved", 80);
     } else {
@@ -51,6 +71,7 @@ export function FooterMain() {
       router.push("/");
     }
   };
+
 
   return (
     <div className={`${CONTAINER} pb-2 lg:py-8`}>
@@ -108,7 +129,10 @@ export function FooterMain() {
                   <Link
                     href={item.href}
                     onClick={(e) => {
-                      if (item.href === "/" && isHomePath(pathname)) {
+                      sessionStorage.setItem("suppress_overlay", "true");
+                      if (item.label === "Our Impact") {
+                        handleOurImpactClick(e);
+                      } else if (item.href === "/" && isHomePath(pathname)) {
                         e.preventDefault();
                         void smoothScrollToTop();
                       }
@@ -124,6 +148,7 @@ export function FooterMain() {
                   </Link>
                 </li>
               ))}
+
             </ul>
           </div>
 
