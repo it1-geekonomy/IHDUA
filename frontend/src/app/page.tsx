@@ -17,8 +17,9 @@ declare global {
 if (typeof window !== "undefined") {
   if (!window.__PAGE_SESSION_ID__) {
     window.__PAGE_SESSION_ID__ = Math.random();
-    sessionStorage.removeItem("ihdua_overlay_dismissed");
-    sessionStorage.removeItem("suppress_overlay");
+    if (sessionStorage.getItem("suppress_overlay") !== "true") {
+      sessionStorage.removeItem("ihdua_overlay_dismissed");
+    }
   }
 }
 
