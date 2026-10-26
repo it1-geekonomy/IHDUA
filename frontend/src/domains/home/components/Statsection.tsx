@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AnimatePresence,
   motion,
@@ -25,6 +25,9 @@ const FADE_MASK =
 const EASE = [0.16, 1, 0.3, 1] as const;
 const ROLL_SECONDS = 1.6;
 
+/** Fraction of the roll after which the digit counts as "seated" */
+const SETTLE_AT = 0.45;
+
 const DULL = "#B4BCBD";
 const DARK = "#00191B";
 
@@ -36,6 +39,27 @@ const STEP_COOLDOWN_MS = 900;
 
 /** Visual order in the 2-column mobile grid; reset with `lg:order-none`. */
 const MOBILE_ORDER = ["order-1", "order-2", "order-4", "order-3"];
+
+const formatValue = (stat: StatValue) => {
+  const decimals = stat.decimals ?? 0;
+  return stat.value.toLocaleString("en-IN", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+};
+
+/** Rough visual width of a stat, used only to pick the widest one */
+const widthScore = (stat: StatValue) => {
+  const text = formatValue(stat);
+  const digits = (text.match(/\d/g) ?? []).length;
+  const separators = text.length - digits;
+  return (
+    digits * 1.2 +
+    separators * 0.5 +
+    (stat.prefix?.length ?? 0) * 0.6 +
+    (stat.suffix?.length ?? 0) * 0.5
+  );
+};
 
 /* ----------------------------- Rolling digit ----------------------------- */
 
@@ -53,10 +77,19 @@ function Digit({
   const index = zero ? 0 : 10 + digit;
   const [settled, setSettled] = useState(true);
 
-  // A new target means a new roll: show the faded neighbours until it lands
+  // Mark the digit as seated as soon as it visually lands
   useEffect(() => {
-    if (!instant) setSettled(false);
-  }, [index, instant]);
+    if (instant) {
+      setSettled(true);
+      return;
+    }
+    setSettled(false);
+    const t = window.setTimeout(
+      () => setSettled(true),
+      (delay + ROLL_SECONDS * SETTLE_AT) * 1000,
+    );
+    return () => window.clearTimeout(t);
+  }, [index, instant, delay]);
 
   return (
     <span
@@ -67,7 +100,10 @@ function Digit({
       <span
         aria-hidden
         className="absolute inset-0 rounded-[0.28em] bg-white"
-        style={{ boxShadow: "0 1px 2px rgba(0,25,27,0.08), 0 4px 10px -4px rgba(0,25,27,0.12)" }}
+        style={{
+          boxShadow:
+            "0 1px 2px rgba(0,25,27,0.08), 0 4px 10px -4px rgba(0,25,27,0.12)",
+        }}
       />
 
       {/* Roll window: taller than the card, faded at its edges */}
@@ -87,7 +123,6 @@ function Digit({
           transition={
             instant ? { duration: 0 } : { duration: ROLL_SECONDS, delay, ease: EASE }
           }
-          onAnimationComplete={() => setSettled(true)}
         >
           {STRIP.map((n, i) => {
             const active = i === index;
@@ -100,7 +135,9 @@ function Digit({
                   lineHeight: `${CARD_H}em`,
                   color: active && settled ? DARK : DULL,
                   opacity: active || !settled ? 1 : 0,
-                  transition: instant ? "none" : "color 0.45s ease, opacity 0.35s ease",
+                  transition: instant
+                    ? "none"
+                    : "color 0.12s ease-out, opacity 0.2s ease-out",
                 }}
               >
                 {n}
@@ -113,29 +150,31 @@ function Digit({
   );
 }
 
+/**
+ * `sizer` renders the same layout with plain empty cards and no animation.
+ * It is used invisibly to reserve the width of the widest value.
+ */
 function Odometer({
   stat,
   zero,
   instant,
   baseDelay,
+  sizer = false,
 }: {
   stat: StatValue;
   zero: boolean;
   instant: boolean;
   baseDelay: number;
+  sizer?: boolean;
 }) {
-  const decimals = stat.decimals ?? 0;
-  const formatted = stat.value.toLocaleString("en-IN", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
+  const formatted = formatValue(stat);
   const chars = formatted.split("");
 
   return (
     <span
       className="inline-flex items-center font-lora font-bold tabular-nums"
       style={{ fontSize: "clamp(1.125rem, 0.8rem + 1.3vw, 1.875rem)", color: DARK }}
-      aria-label={`${stat.prefix ?? ""}${formatted}${stat.suffix ?? ""}`}
+      aria-label={sizer ? undefined : `${stat.prefix ?? ""}${formatted}${stat.suffix ?? ""}`}
     >
       {stat.prefix && (
         <span className="mr-1 text-[#9739A8]" style={{ lineHeight: `${CARD_H}em` }}>
@@ -146,15 +185,25 @@ function Odometer({
         {chars.map((ch, i) => {
           // Key from the right so columns keep their identity when the length changes
           const key = chars.length - i;
-          return /\d/.test(ch) ? (
-            <Digit
-              key={key}
-              digit={Number(ch)}
-              delay={baseDelay + (chars.length - 1 - i) * 0.09}
-              zero={zero}
-              instant={instant}
-            />
-          ) : (
+          if (/\d/.test(ch)) {
+            return sizer ? (
+              <span
+                key={key}
+                className="inline-block"
+                style={{ height: `${CARD_H}em`, width: CARD_W }}
+              />
+            ) : (
+              <Digit
+                key={key}
+                digit={Number(ch)}
+                // Right-most digit starts first, like an odometer
+                delay={baseDelay + (chars.length - 1 - i) * 0.09}
+                zero={zero}
+                instant={instant}
+              />
+            );
+          }
+          return (
             <span
               key={key}
               className="self-end text-[0.7em]"
@@ -165,26 +214,34 @@ function Odometer({
           );
         })}
       </span>
-      {stat.suffix && (
-        <motion.span
-          className="ml-1.5 inline-block whitespace-pre text-[0.6em] text-[#9739A8]"
-          style={{ lineHeight: `${CARD_H}em` }}
-          initial={false}
-          animate={zero ? { opacity: 0, scale: 0.4 } : { opacity: 1, scale: 1 }}
-          transition={
-            instant
-              ? { duration: 0 }
-              : {
-                  type: "spring",
-                  stiffness: 400,
-                  damping: 14,
-                  delay: baseDelay + ROLL_SECONDS * 0.8,
-                }
-          }
-        >
-          {stat.suffix}
-        </motion.span>
-      )}
+      {stat.suffix &&
+        (sizer ? (
+          <span
+            className="ml-1.5 inline-block whitespace-pre text-[0.6em]"
+            style={{ lineHeight: `${CARD_H}em` }}
+          >
+            {stat.suffix}
+          </span>
+        ) : (
+          <motion.span
+            className="ml-1.5 inline-block whitespace-pre text-[0.6em] text-[#9739A8]"
+            style={{ lineHeight: `${CARD_H}em` }}
+            initial={false}
+            animate={zero ? { opacity: 0, scale: 0.4 } : { opacity: 1, scale: 1 }}
+            transition={
+              instant
+                ? { duration: 0 }
+                : {
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 14,
+                    delay: baseDelay + ROLL_SECONDS * 0.8,
+                  }
+            }
+          >
+            {stat.suffix}
+          </motion.span>
+        ))}
     </span>
   );
 }
@@ -194,6 +251,9 @@ function Odometer({
 /**
  * Each partition owns its own position in STAT_SETS, so scrolling over one
  * stat changes only that stat. Top row: icon + number cards. Label below, centered.
+ *
+ * The number area always reserves the width of the widest value this stat can
+ * show, so the icon never moves when the digit count changes.
  */
 function Partition({
   slot,
@@ -220,9 +280,10 @@ function Partition({
     if (!el) return;
 
     const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+      if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return; // ignore sideways scroll
 
       const now = performance.now();
+      // Right after a step, swallow the rest of the wheel/trackpad momentum
       if (now < lockUntil.current) {
         e.preventDefault();
         return;
@@ -242,6 +303,17 @@ function Partition({
   }, [steps]);
 
   const stat = STAT_SETS[active][slotIndex];
+
+  // Widest value this slot can ever show
+  const widest = useMemo(
+    () =>
+      STAT_SETS.map((set) => set[slotIndex]).reduce((a, b) =>
+        widthScore(b) > widthScore(a) ? b : a,
+      ),
+    [slotIndex],
+  );
+
+  // Stats start one after another on entry; later steps only stagger the digits
   const baseDelay = zero || active === 0 ? slotIndex * 0.15 : 0;
 
   return (
@@ -279,7 +351,30 @@ function Partition({
           />
         </motion.div>
 
-        <Odometer stat={stat} zero={zero} instant={instant} baseDelay={baseDelay} />
+        {/* Stacked in one grid cell: the invisible widest value sets the width,
+            the real digits sit at the left edge and grow to the right. */}
+        <span className="inline-grid">
+          <span
+            aria-hidden
+            className="invisible col-start-1 row-start-1 pointer-events-none"
+          >
+            <Odometer
+              stat={widest}
+              zero={false}
+              instant
+              baseDelay={0}
+              sizer
+            />
+          </span>
+          <span className="col-start-1 row-start-1 justify-self-start">
+            <Odometer
+              stat={stat}
+              zero={zero}
+              instant={instant}
+              baseDelay={baseDelay}
+            />
+          </span>
+        </span>
       </div>
 
       <AnimatePresence mode="wait" initial={false}>
@@ -308,6 +403,7 @@ export default function StatSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion() ?? false;
 
+  // Digits roll up from 0 the first time the section is on screen
   const inView = useInView(sectionRef, { once: true, amount: 0.35 });
 
   return (
