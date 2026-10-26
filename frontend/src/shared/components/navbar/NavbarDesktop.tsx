@@ -71,17 +71,41 @@ function DesktopDropdown({
 
   useEffect(() => clear, []);
 
+  /**
+   * While the menu is open, close it when:
+   *  - the user clicks/taps outside
+   *  - Escape is pressed
+   *  - the page (or any scroll container) scrolls — scrolling does not move the
+   *    pointer, so onMouseLeave never fires and the menu would otherwise stay open
+   *  - the mouse wheel is used (covers pages that are too short to scroll)
+   * Scrolling inside the menu itself is ignored.
+   */
   useEffect(() => {
     if (!open) return;
+
     const down = (e: PointerEvent) => {
       if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
     };
     const key = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+
+    const onScroll = (e: Event) => {
+      const t = e.target as Node | null;
+      if (t && t !== document && rootRef.current?.contains(t)) return;
+      clear();
+      setOpen(false);
+    };
+
     document.addEventListener("pointerdown", down);
     document.addEventListener("keydown", key);
+    // scroll events don't bubble, so capture is needed to catch inner containers
+    document.addEventListener("scroll", onScroll, { capture: true, passive: true });
+    window.addEventListener("wheel", onScroll, { passive: true });
+
     return () => {
       document.removeEventListener("pointerdown", down);
       document.removeEventListener("keydown", key);
+      document.removeEventListener("scroll", onScroll, { capture: true });
+      window.removeEventListener("wheel", onScroll);
     };
   }, [open]);
 
