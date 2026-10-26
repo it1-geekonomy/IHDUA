@@ -7,6 +7,7 @@ import configuration from './config/configuration';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DonorsModule } from './modules/donors/donors.module';
+import { LeadsContactModule } from './modules/leads-contact/leads-contact.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -21,6 +22,7 @@ import { UsersModule } from './modules/users/users.module';
     AuthModule,
     UsersModule,
     DonorsModule,
+    LeadsContactModule,
   ],
   controllers: [AppController],
   providers: [AppService],
