@@ -118,7 +118,7 @@ export default function NavbarShell() {
             <div className="flex shrink-0 items-center gap-1 sm:gap-3">
               <Link
                 href={CONTACT_HREF}
-                className="relative hidden items-center gap-2 overflow-hidden rounded-full bg-white px-6 py-2.5 text-[#9739A8] shadow-lg shadow-black/10 sm:inline-flex lg:px-4 lg:py-2 xl:px-6 xl:py-2.5"
+                className="relative hidden items-center gap-2 overflow-hidden bg-white px-6 py-2.5 text-[#9739A8] shadow-lg shadow-black/10 sm:inline-flex lg:px-4 lg:py-2 xl:px-6 xl:py-2.5"
               >
                 <Typography
                   variant="body-lg"
@@ -126,20 +126,7 @@ export default function NavbarShell() {
                 >
                   Contact Us
                 </Typography>
-                <svg
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  aria-hidden
-                  className="relative z-10 h-4 w-4"
-                >
-                  <path
-                    d="M4 10h11m0 0-4.5-4.5M15 10l-4.5 4.5"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+              
               </Link>
 
               <MenuToggle open={isOpen} onToggle={() => setIsOpen((p) => !p)} />
