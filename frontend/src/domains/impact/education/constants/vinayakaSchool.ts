@@ -41,7 +41,6 @@ export const VINAYAKA_HEADER = {
   title: "Vinayaka Jnana Vidyashale, Mysuru",
   description:
     "Creating opportunities for rural children through accessible, quality education.",
-  websiteUrl: "javascript:void(0)",
   buttonText: "Visit School Website",
   highlights: [
     {
