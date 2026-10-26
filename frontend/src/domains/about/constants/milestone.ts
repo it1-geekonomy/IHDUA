@@ -8,7 +8,7 @@ export interface Milestone {
 export type RevealKind = "anim" | "instant";
 
 export const DEFAULT_MILESTONES: readonly Milestone[] = [
-  { year: "2003", description: "IHDUA established" },
+  { year: "1991", description: "IHDUA established" },
   { year: "2005", description: "Early community initiatives" },
   { year: "2010", description: "Early community initiatives" },
   { year: "2015", description: "Expanded to more villages" },
