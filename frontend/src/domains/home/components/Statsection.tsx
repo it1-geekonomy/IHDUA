@@ -409,7 +409,7 @@ export default function StatSection() {
   return (
     <section
       ref={sectionRef}
-      className="w-full bg-[#FAF9F5] px-6 py-10 lg:px-10 xl:py-20 2xl:px-40"
+      className="w-full bg-[#FAF9F5] px-6 py-10 lg:px-10 lg:py-20 2xl:px-40"
     >
       <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
         <div className="mb-4 flex items-center gap-3 self-center">
