@@ -320,7 +320,9 @@ function DesktopDropdown({
                         </h3>
                       )}
                     </div>
-                    <ul className="grid grid-cols-2 gap-2.5">
+
+                    {/* auto-rows-fr → every row is the same height; li + Link are h-full so the card fills its cell */}
+                    <ul className="grid grid-cols-2 auto-rows-fr gap-2.5">
                       {focused.children?.map((n, i) => {
                         if (!n.href) return null;
                         const a = popIn(i, 140);
@@ -330,14 +332,14 @@ function DesktopDropdown({
                             key={`${n.label}-${n.href}`}
                             role="none"
                             style={a.style}
-                            className={a.className}
+                            className={cn("h-full", a.className)}
                           >
                             <Link
                               role="menuitem"
                               href={n.href}
                               onClick={close}
                               className={cn(
-                                "group flex items-center justify-between gap-2 rounded-xl bg-white/5 px-4 py-3.5 ring-1 ring-white/5 transition-colors duration-300 hover:bg-white/10 hover:text-[#FFD638] hover:ring-[#FFD638]/40",
+                                "group flex h-full items-center justify-between gap-2 rounded-xl bg-white/5 px-4 py-3.5 ring-1 ring-white/5 transition-colors duration-300 hover:bg-white/10 hover:text-[#FFD638] hover:ring-[#FFD638]/40",
                                 lit ? YELLOW : "text-white/90",
                               )}
                             >
@@ -371,7 +373,7 @@ function DesktopDropdown({
               >
                 {link.label}
               </p>
-              <ul className="grid grid-cols-2 gap-3">
+              <ul className="grid grid-cols-2 auto-rows-fr gap-3">
                 {kids.map((child, i) => {
                   const a = popIn(i, 120);
                   const lit = isNavLinkActive(pathname, child);
@@ -380,7 +382,7 @@ function DesktopDropdown({
                       key={`${child.label}-${child.href ?? ""}`}
                       role="none"
                       style={a.style}
-                      className={a.className}
+                      className={cn("h-full", a.className)}
                     >
                       {child.href && (
                         <Link
@@ -388,7 +390,7 @@ function DesktopDropdown({
                           href={child.href}
                           onClick={close}
                           className={cn(
-                            "group flex items-center gap-4 whitespace-nowrap rounded-2xl bg-white/5 p-4 ring-1 ring-white/5 transition-colors duration-300 hover:bg-white/10 hover:text-[#FFD638] hover:ring-[#FFD638]/40",
+                            "group flex h-full items-center gap-4 whitespace-nowrap rounded-2xl bg-white/5 p-4 ring-1 ring-white/5 transition-colors duration-300 hover:bg-white/10 hover:text-[#FFD638] hover:ring-[#FFD638]/40",
                             lit ? YELLOW : "text-white",
                           )}
                         >
