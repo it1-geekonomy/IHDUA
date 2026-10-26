@@ -38,9 +38,21 @@ export default function HomePage() {
       return;
     }
 
-    // Only reaches here on fresh initial page load or full browser reload
+    // Mark as handled for this browser session
     window.__IHDUA_POPUP_SHOWN__ = true;
-    setShowOverlay(true);
+
+    // Show after 5 seconds instead of immediately upon entering
+    const timer = setTimeout(() => {
+      const currentSuppressed = sessionStorage.getItem("suppress_overlay") === "true";
+      const currentDismissed = sessionStorage.getItem("ihdua_overlay_dismissed") === "true";
+      if (!currentSuppressed && !currentDismissed) {
+        setShowOverlay(true);
+      }
+    }, 5000);
+
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   const handleCloseOverlay = () => {
