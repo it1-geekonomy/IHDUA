@@ -30,8 +30,13 @@ export function FooterMain() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const markInternalNav = () => {
     sessionStorage.setItem("suppress_overlay", "true");
+    sessionStorage.setItem("ihdua_nav_time", Date.now().toString());
+  };
+
+  const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    markInternalNav();
     if (isHomePath(pathname)) {
       e.preventDefault();
       void smoothScrollToTop();
@@ -40,7 +45,7 @@ export function FooterMain() {
 
   const handleDonateClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    sessionStorage.setItem("suppress_overlay", "true");
+    markInternalNav();
     if (isHomePath(pathname)) {
       void scrollToDonateSection();
     } else {
@@ -51,7 +56,7 @@ export function FooterMain() {
 
   const handleOurImpactClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    sessionStorage.setItem("suppress_overlay", "true");
+    markInternalNav();
     const navOffset = typeof window !== "undefined" && window.innerWidth >= 1024 ? 80 : 64;
     if (isHomePath(pathname)) {
       void smoothScrollToId("our-impact", navOffset);
@@ -63,7 +68,7 @@ export function FooterMain() {
 
   const handleGetInvolvedClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    sessionStorage.setItem("suppress_overlay", "true");
+    markInternalNav();
     if (isHomePath(pathname)) {
       void smoothScrollToId("get-involved", 80);
     } else {
@@ -129,7 +134,7 @@ export function FooterMain() {
                   <Link
                     href={item.href}
                     onClick={(e) => {
-                      sessionStorage.setItem("suppress_overlay", "true");
+                      markInternalNav();
                       if (item.label === "Our Impact") {
                         handleOurImpactClick(e);
                       } else if (item.href === "/" && isHomePath(pathname)) {

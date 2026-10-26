@@ -24,6 +24,7 @@ export default function CTASection() {
     } else {
       if (typeof window !== "undefined") {
         sessionStorage.setItem("suppress_overlay", "true");
+        sessionStorage.setItem("ihdua_nav_time", Date.now().toString());
         sessionStorage.setItem("scroll_to_focus_areas", "true");
       }
       router.push("/#focus-areas");
