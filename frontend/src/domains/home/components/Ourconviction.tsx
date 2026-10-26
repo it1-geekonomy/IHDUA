@@ -181,7 +181,7 @@ export default function OurConviction() {
 
           {/* Button */}
           <Link
-            href="/"
+            href="/about"
             className="mt-9 flex w-fit items-center gap-2 justify-self-center rounded bg-[#FFD638] px-6 py-3 transition-opacity lg:mt-14 xl:col-start-2 xl:row-start-3 xl:justify-self-start"
           >
             <Typography variant="body-lg" className="font-semibold font-figtree tracking-wide text-[#1E1E1E]">

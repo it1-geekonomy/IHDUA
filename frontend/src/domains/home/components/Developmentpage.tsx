@@ -62,42 +62,32 @@ function Caption({
   );
 }
 
+/**
+ * Image is colored by default. When an ancestor with the `group` class
+ * is hovered, the image smoothly turns black & white via a CSS grayscale filter.
+ */
 function ImageTile({
   src,
-  hoverSrc,
   aspectClass,
   sizes,
   objectPositionClass = "",
   className = "",
 }: {
   src: string;
-  /** When provided, smoothly fades in over the base image on hover. */
-  hoverSrc?: string;
   aspectClass: string;
   sizes: string;
   objectPositionClass?: string;
   className?: string;
 }) {
   return (
-    <div className={`group relative w-full overflow-hidden ${aspectClass} ${className}`}>
-      {/* Base image stays fully visible underneath (no dip while swapping) */}
+    <div className={`relative w-full overflow-hidden ${aspectClass} ${className}`}>
       <Image
         src={src}
         alt=""
         fill
         sizes={sizes}
-        className={`object-cover ${objectPositionClass}`}
+        className={`object-cover ${objectPositionClass} grayscale-0 transition-[filter] duration-[800ms] ease-in-out will-change-[filter] group-hover:grayscale`}
       />
-      {/* Hover image fades in on top, fades out on mouse-leave */}
-      {hoverSrc && (
-        <Image
-          src={hoverSrc}
-          alt=""
-          fill
-          sizes={sizes}
-          className={`absolute inset-0 object-cover ${objectPositionClass} opacity-0 transition-opacity duration-[800ms] ease-in-out will-change-[opacity] group-hover:opacity-100`}
-        />
-      )}
     </div>
   );
 }
@@ -111,8 +101,6 @@ interface GridCellProps {
   mobileObjectPositionClass?: string;
   /** Always renders the compact caption, regardless of item.variant. */
   forceCompactCaption?: boolean;
-  /** Uses item.hoverImage as the static image instead of item.image. */
-  mobileUseHoverImage?: boolean;
   /** Replaces item.image entirely (mobile layout). */
   mobileImage?: string;
 }
@@ -123,21 +111,15 @@ function GridCell({
   mobileAspectClass,
   mobileObjectPositionClass,
   forceCompactCaption,
-  mobileUseHoverImage,
   mobileImage,
 }: GridCellProps) {
-  const useHoverAsPrimary = !mobileImage && !!mobileUseHoverImage && !!item.hoverImage;
-  const primarySrc = useHoverAsPrimary ? item.hoverImage! : (mobileImage ?? item.image);
-  const hoverSrc = useHoverAsPrimary ? undefined : item.hoverImage;
-
   const captionVariant: CaptionVariant =
     item.variant === "edge" && !forceCompactCaption ? "edge" : "compact";
 
   return (
-    <div className={`flex flex-col ${FLUID.cardGap}`}>
+    <div className={`group flex flex-col ${FLUID.cardGap}`}>
       <ImageTile
-        src={primarySrc}
-        hoverSrc={hoverSrc}
+        src={mobileImage ?? item.image}
         sizes={sizes}
         aspectClass={mobileAspectClass ?? getAspectClass(item)}
         objectPositionClass={mobileObjectPositionClass}
@@ -226,7 +208,7 @@ export default function RuralDevelopmentSection() {
 
           <div className={`grid grid-cols-2 ${FLUID.gridGap}`}>
             <GridCell item={item2} sizes="50vw" mobileAspectClass="aspect-square" />
-            <GridCell item={item3} sizes="50vw" mobileAspectClass="aspect-square" mobileUseHoverImage />
+            <GridCell item={item3} sizes="50vw" mobileAspectClass="aspect-square" />
           </div>
 
           <div className={`grid grid-cols-2 ${FLUID.gridGap}`}>
@@ -235,7 +217,6 @@ export default function RuralDevelopmentSection() {
               sizes="50vw"
               mobileAspectClass="aspect-square"
               forceCompactCaption
-              mobileUseHoverImage
             />
             <GridCell item={item4} sizes="50vw" mobileAspectClass="aspect-square" />
           </div>
@@ -249,11 +230,10 @@ export default function RuralDevelopmentSection() {
         {GRID_ITEMS.map((item) => (
           <div
             key={item.image}
-            className={`flex flex-col lg:h-full lg:justify-end 2xl:h-auto 2xl:justify-start ${FLUID.cardGap} ${ROW_OFFSET[item.row]}`}
+            className={`group flex flex-col lg:h-full lg:justify-end 2xl:h-auto 2xl:justify-start ${FLUID.cardGap} ${ROW_OFFSET[item.row]}`}
           >
             <ImageTile
               src={item.image}
-              hoverSrc={item.hoverImage}
               sizes="20vw"
               aspectClass={getAspectClass(item)}
             />

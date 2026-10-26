@@ -79,6 +79,6 @@ export const ROWS: { label: string; value: string; region: RegionId }[] = [
     value: "All villages in Gundlupete taluk",
     region: "gundlupete",
   },
-  { label: "Mulluru School", value: "Mulluru Village, Mysuru", region: "mysuru" },
+  { label: "Vinayaka Jnana Vidyashale", value: "Mulluru Village, Mysuru", region: "mysuru" },
   { label: "Adarsha Academy", value: "KRS, Mandya", region: "mandya" },
 ];
