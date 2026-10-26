@@ -1,9 +1,16 @@
-import { Controller, Get, Param, ParseUUIDPipe, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ApiTagsConst } from '../../common/constants/api-tags';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
 
-@ApiTags('users')
+@ApiTags(ApiTagsConst.USERS)
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('users')

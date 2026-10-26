@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Donor } from './donor.entity';
+import { Donor } from './entities/donor.entity';
 import { DonorsController } from './donors.controller';
 import { DonorsService } from './donors.service';
 

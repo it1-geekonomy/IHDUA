@@ -8,24 +8,30 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ApiTagsConst } from '../../common/constants/api-tags';
+import { Public } from '../../common/decorators/public.decorator';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateDonationOrderDto } from './dto/create-donation-order.dto';
 import { VerifyDonationPaymentDto } from './dto/verify-donation-payment.dto';
 import { DonorsService } from './donors.service';
 
-@ApiTags('donors')
+@ApiTags(ApiTagsConst.DONORS)
 @Controller('donors')
 export class DonorsController {
   constructor(private readonly donorsService: DonorsService) {}
 
+  @Public()
   @Post('create-order')
   @ApiOperation({ summary: 'Create a Razorpay order for a donation' })
   createOrder(@Body() dto: CreateDonationOrderDto) {
     return this.donorsService.createOrder(dto);
   }
 
+  @Public()
   @Post('verify-payment')
-  @ApiOperation({ summary: 'Verify Razorpay payment and mark donation success' })
+  @ApiOperation({
+    summary: 'Verify Razorpay payment and mark donation success',
+  })
   verifyPayment(@Body() dto: VerifyDonationPaymentDto) {
     return this.donorsService.verifyPayment(dto);
   }
