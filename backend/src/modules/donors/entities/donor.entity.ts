@@ -9,23 +9,35 @@ export class Donor extends BaseEntity {
   @Column({ name: 'full_name', type: 'varchar', length: 255 })
   fullName: string;
 
-  @ApiPropertyOptional({ example: '+919876543210' })
+  @ApiProperty({ example: '+919876543210' })
   @Index('idx_donors_phone')
-  @Column({ type: 'varchar', length: 20, nullable: true })
-  phone: string | null;
+  @Column({ type: 'varchar', length: 20 })
+  phone: string;
 
-  @ApiPropertyOptional({ example: 'ramesh@example.com' })
+  @ApiProperty({ example: 'ramesh@example.com' })
   @Index('idx_donors_email')
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  email: string | null;
-
-  @ApiPropertyOptional({ example: 'Bengaluru' })
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  city: string | null;
+  @Column({ type: 'varchar', length: 255 })
+  email: string;
 
   @ApiPropertyOptional({ example: 'ABCDE1234F' })
   @Column({ type: 'varchar', length: 20, nullable: true })
   pan: string | null;
+
+  @ApiPropertyOptional({ example: '123, Green Road' })
+  @Column({ type: 'text', nullable: true })
+  address: string | null;
+
+  @ApiPropertyOptional({ example: 'Karnataka' })
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  state: string | null;
+
+  @ApiPropertyOptional({ example: 'Bengaluru' })
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  city: string | null;
+
+  @ApiPropertyOptional({ example: '560001' })
+  @Column({ type: 'varchar', length: 20, nullable: true })
+  pincode: string | null;
 
   @ApiPropertyOptional({ example: 'Supporting rural healthcare' })
   @Column({ type: 'text', nullable: true })
@@ -38,6 +50,16 @@ export class Donor extends BaseEntity {
   @ApiProperty({ example: 'INR', default: 'INR' })
   @Column({ type: 'varchar', length: 10, default: 'INR' })
   currency: string;
+
+  @ApiProperty({ example: 'General Donation', default: 'General Donation' })
+  @Index('idx_donors_donation_category')
+  @Column({
+    name: 'donation_category',
+    type: 'varchar',
+    length: 100,
+    default: 'General Donation',
+  })
+  donationCategory: string;
 
   @ApiPropertyOptional({ example: 'IHDUA-1730000000000' })
   @Column({ name: 'receipt_number', type: 'varchar', length: 50, nullable: true })
