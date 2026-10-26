@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsEnum,
   IsIn,
   IsNotEmpty,
   IsNumberString,
@@ -11,6 +12,8 @@ import {
   MinLength,
   ValidateIf,
 } from 'class-validator';
+
+import { DonationCategory } from '../../../common/enums/donation-category.enum';
 
 export const SUPPORTED_DONATION_CURRENCIES = [
   'INR',
@@ -33,17 +36,17 @@ export class CreateDonationOrderDto {
   @MaxLength(255)
   fullName: string;
 
-  @ApiPropertyOptional({ example: '+919876543210' })
-  @IsOptional()
+  @ApiProperty({ example: '+919876543210' })
   @IsString()
+  @IsNotEmpty()
   @MaxLength(20)
-  phone?: string;
+  phone: string;
 
-  @ApiPropertyOptional({ example: 'donor@example.com' })
-  @IsOptional()
+  @ApiProperty({ example: 'donor@example.com' })
   @IsEmail()
+  @IsNotEmpty()
   @MaxLength(255)
-  email?: string;
+  email: string;
 
   @ApiPropertyOptional({ example: 'IN' })
   @IsOptional()
@@ -56,6 +59,43 @@ export class CreateDonationOrderDto {
   @IsString()
   @MaxLength(255)
   countryName?: string;
+
+  @ApiPropertyOptional({ example: '123, Green Road' })
+  @IsOptional()
+  @IsString()
+  address?: string;
+
+  @ApiPropertyOptional({ example: 'Karnataka' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  state?: string;
+
+  @ApiPropertyOptional({ example: 'Bengaluru' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  city?: string;
+
+  @ApiPropertyOptional({ example: '560001' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(20)
+  pincode?: string;
+
+  @ApiPropertyOptional({ example: 'Supporting rural healthcare' })
+  @IsOptional()
+  @IsString()
+  message?: string;
+
+  @ApiPropertyOptional({
+    enum: DonationCategory,
+    example: DonationCategory.GENERAL_DONATION,
+    default: DonationCategory.GENERAL_DONATION,
+  })
+  @IsOptional()
+  @IsEnum(DonationCategory)
+  donationCategory?: DonationCategory;
 
   @ApiProperty({
     description: 'Donation amount in major units (e.g. 1500 INR or 25 USD)',
