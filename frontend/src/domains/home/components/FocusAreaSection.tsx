@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { FOCUS_AREAS } from "@/domains/home/constants/focusarea";
 import Typography from "@/lib/Typography";
+import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 
 type FocusArea = (typeof FOCUS_AREAS)[number];
 
@@ -163,8 +164,42 @@ function HoverRow({ area }: { area: FocusArea }) {
 export default function FocusAreaSection() {
   const [openIndex, setOpenIndex] = useState(0);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const checkAndScroll = () => {
+      const fromOtherPage = sessionStorage.getItem("scroll_to_focus_areas");
+      const hasHash = window.location.hash.includes("focus-areas");
+
+      if (fromOtherPage || hasHash) {
+        if (fromOtherPage) {
+          sessionStorage.removeItem("scroll_to_focus_areas");
+        }
+        if (hasHash) {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+
+        const navOffset = window.innerWidth >= 1024 ? 80 : 64;
+        setTimeout(() => {
+          void smoothScrollToId("focus-areas", navOffset);
+        }, 150);
+        setTimeout(() => {
+          const el = document.getElementById("focus-areas");
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            if (Math.abs(rect.top - navOffset) > 40) {
+              void smoothScrollToId("focus-areas", navOffset, { minMs: 300, maxMs: 600 });
+            }
+          }
+        }, 450);
+      }
+    };
+
+    checkAndScroll();
+  }, []);
+
   return (
-    <section id="focus-areas" className="w-full bg-[#FAF9F5]">
+    <section id="focus-areas" className="w-full bg-[#FAF9F5] scroll-mt-20">
       <div className="w-full px-6 pt-6 lg:px-10 lg:py-24 2xl:px-40">
         {/* Label, heading and description: centered at all screen sizes */}
         <div className="flex flex-col items-center text-center">

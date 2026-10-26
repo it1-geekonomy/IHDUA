@@ -22,7 +22,7 @@ export const DONATION_COPY = {
   sectionBody:
     "Every contribution helps create opportunities for rural communities through education, healthcare, sustainable livelihoods, and community development.",
   exploreCta: "Explore Our Work",
-  exploreHref: "#focus-areas",
+  exploreHref: "/#focus-areas",
   exploreTargetId: "focus-areas",
   cardTitle: "Make a Difference Today",
   cardBody:

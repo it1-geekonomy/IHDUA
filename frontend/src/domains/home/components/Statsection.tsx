@@ -1,153 +1,320 @@
 "use client";
 
 import Image from "next/image";
-import { Fragment, useEffect, useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
-import { STATS } from "@/domains/home/constants/stat";
+import { useEffect, useRef, useState } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useInView,
+  useReducedMotion,
+} from "framer-motion";
+import { STATS, STAT_SETS, type StatValue } from "@/domains/home/constants/stat";
 import Typography from "@/lib/Typography";
-import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 
-const DURATION_MS = 1100;
-const START_RATIO = 0.72;
-const STAGGER_MS = 140;
+/** Card (white box) height = one digit row, in em */
+const CARD_H = 1.45;
+const CARD_W = "1.05em";
+/** The roll window is taller than the card so faded neighbours peek out above and below */
+const WINDOW_H = CARD_H * 1.7;
+const WINDOW_TOP = -((WINDOW_H - CARD_H) / 2);
+/** Centres the active row inside the window */
+const CENTER = (WINDOW_H - CARD_H) / 2;
+
+const FADE_MASK =
+  "linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%)";
+const EASE = [0.16, 1, 0.3, 1] as const;
+const ROLL_SECONDS = 1.6;
+
+const DULL = "#B4BCBD";
+const DARK = "#00191B";
+
+/** Three 0-9 cycles; digits land on the middle cycle so they spin on entry */
+const STRIP = Array.from({ length: 30 }, (_, i) => i % 10);
+
+/** Minimum time between steps while wheel-scrolling over a stat (ms) */
+const STEP_COOLDOWN_MS = 900;
 
 /** Visual order in the 2-column mobile grid; reset with `lg:order-none`. */
 const MOBILE_ORDER = ["order-1", "order-2", "order-4", "order-3"];
 
-const formatStat = (value: number) => value.toLocaleString("en-US");
+/* ----------------------------- Rolling digit ----------------------------- */
 
-const easeOut = (t: number) => 1 - (1 - t) ** 2.5;
+function Digit({
+  digit,
+  delay,
+  zero,
+  instant,
+}: {
+  digit: number;
+  delay: number;
+  zero: boolean;
+  instant: boolean;
+}) {
+  const index = zero ? 0 : 10 + digit;
+  const [settled, setSettled] = useState(true);
 
-function useSettleCount(target: number, active: boolean, delayMs: number) {
-  const from = Math.round(target * START_RATIO);
-  const [value, setValue] = useState(from);
-
+  // A new target means a new roll: show the faded neighbours until it lands
   useEffect(() => {
-    if (!active) {
-      setValue(from);
-      return;
-    }
+    if (!instant) setSettled(false);
+  }, [index, instant]);
 
-    let frame = 0;
-    let start = 0;
+  return (
+    <span
+      className="relative inline-block"
+      style={{ height: `${CARD_H}em`, width: CARD_W }}
+    >
+      {/* White card */}
+      <span
+        aria-hidden
+        className="absolute inset-0 rounded-[0.28em] bg-white"
+        style={{ boxShadow: "0 1px 2px rgba(0,25,27,0.08), 0 4px 10px -4px rgba(0,25,27,0.12)" }}
+      />
 
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / DURATION_MS);
-      setValue(Math.round(from + (target - from) * easeOut(t)));
-      if (t < 1) frame = requestAnimationFrame(tick);
-    };
-
-    const timeoutId = window.setTimeout(() => {
-      start = performance.now();
-      frame = requestAnimationFrame(tick);
-    }, delayMs);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-      cancelAnimationFrame(frame);
-    };
-  }, [active, target, delayMs, from]);
-
-  return value;
+      {/* Roll window: taller than the card, faded at its edges */}
+      <span
+        className="absolute left-0 w-full overflow-hidden"
+        style={{
+          top: `${WINDOW_TOP}em`,
+          height: `${WINDOW_H}em`,
+          maskImage: FADE_MASK,
+          WebkitMaskImage: FADE_MASK,
+        }}
+      >
+        <motion.span
+          className="absolute left-0 top-0 flex w-full flex-col will-change-transform"
+          initial={{ y: `${CENTER}em` }}
+          animate={{ y: `${CENTER - index * CARD_H}em` }}
+          transition={
+            instant ? { duration: 0 } : { duration: ROLL_SECONDS, delay, ease: EASE }
+          }
+          onAnimationComplete={() => setSettled(true)}
+        >
+          {STRIP.map((n, i) => {
+            const active = i === index;
+            return (
+              <span
+                key={i}
+                className="flex items-center justify-center"
+                style={{
+                  height: `${CARD_H}em`,
+                  lineHeight: `${CARD_H}em`,
+                  color: active && settled ? DARK : DULL,
+                  opacity: active || !settled ? 1 : 0,
+                  transition: instant ? "none" : "color 0.45s ease, opacity 0.35s ease",
+                }}
+              >
+                {n}
+              </span>
+            );
+          })}
+        </motion.span>
+      </span>
+    </span>
+  );
 }
 
-interface StatItemProps {
-  stat: (typeof STATS)[number];
-  active: boolean;
-  index: number;
+function Odometer({
+  stat,
+  zero,
+  instant,
+  baseDelay,
+}: {
+  stat: StatValue;
+  zero: boolean;
+  instant: boolean;
+  baseDelay: number;
+}) {
+  const decimals = stat.decimals ?? 0;
+  const formatted = stat.value.toLocaleString("en-IN", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+  const chars = formatted.split("");
+
+  return (
+    <span
+      className="inline-flex items-center font-lora font-bold tabular-nums"
+      style={{ fontSize: "clamp(1.125rem, 0.8rem + 1.3vw, 1.875rem)", color: DARK }}
+      aria-label={`${stat.prefix ?? ""}${formatted}${stat.suffix ?? ""}`}
+    >
+      {stat.prefix && (
+        <span className="mr-1 text-[#9739A8]" style={{ lineHeight: `${CARD_H}em` }}>
+          {stat.prefix}
+        </span>
+      )}
+      <span aria-hidden className="inline-flex items-center gap-[0.18em]">
+        {chars.map((ch, i) => {
+          // Key from the right so columns keep their identity when the length changes
+          const key = chars.length - i;
+          return /\d/.test(ch) ? (
+            <Digit
+              key={key}
+              digit={Number(ch)}
+              delay={baseDelay + (chars.length - 1 - i) * 0.09}
+              zero={zero}
+              instant={instant}
+            />
+          ) : (
+            <span
+              key={key}
+              className="self-end text-[0.7em]"
+              style={{ lineHeight: 1, paddingBottom: "0.15em", color: DARK }}
+            >
+              {ch}
+            </span>
+          );
+        })}
+      </span>
+      {stat.suffix && (
+        <motion.span
+          className="ml-1.5 inline-block whitespace-pre text-[0.6em] text-[#9739A8]"
+          style={{ lineHeight: `${CARD_H}em` }}
+          initial={false}
+          animate={zero ? { opacity: 0, scale: 0.4 } : { opacity: 1, scale: 1 }}
+          transition={
+            instant
+              ? { duration: 0 }
+              : {
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 14,
+                  delay: baseDelay + ROLL_SECONDS * 0.8,
+                }
+          }
+        >
+          {stat.suffix}
+        </motion.span>
+      )}
+    </span>
+  );
+}
+
+/* ------------------------------ Partition ------------------------------- */
+
+/**
+ * Each partition owns its own position in STAT_SETS, so scrolling over one
+ * stat changes only that stat. Top row: icon + number cards. Label below, centered.
+ */
+function Partition({
+  slot,
+  slotIndex,
+  zero,
+  instant,
+  className = "",
+}: {
+  slot: (typeof STATS)[number];
+  slotIndex: number;
+  zero: boolean;
+  instant: boolean;
   className?: string;
-}
+}) {
+  const steps = STAT_SETS.length;
+  const ref = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+  const activeRef = useRef(0);
+  const lockUntil = useRef(0);
 
-function StatItem({ stat, active, index, className = "" }: StatItemProps) {
-  const value = useSettleCount(stat.target, active, index * STAGGER_MS);
+  // Needs a non-passive native listener so preventDefault can hold the page still
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+
+      const now = performance.now();
+      if (now < lockUntil.current) {
+        e.preventDefault();
+        return;
+      }
+
+      const next = activeRef.current + (e.deltaY > 0 ? 1 : -1);
+      if (next < 0 || next >= steps) return; // first/last value: let the page scroll
+
+      e.preventDefault();
+      lockUntil.current = now + STEP_COOLDOWN_MS;
+      activeRef.current = next;
+      setActive(next);
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [steps]);
+
+  const stat = STAT_SETS[active][slotIndex];
+  const baseDelay = zero || active === 0 ? slotIndex * 0.15 : 0;
 
   return (
     <motion.div
-      // gap: 10px → 16px
-      className={`flex w-full min-w-0 items-start gap-[clamp(0.625rem,0.25rem_+_1.875vw,1rem)] ${className}`}
-      initial={{ opacity: 0, y: 14 }}
-      animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-      transition={{
-        duration: 0.45,
-        delay: index * 0.1,
-        ease: [0.22, 1, 0.36, 1],
-      }}
+      ref={ref}
+      initial={false}
+      animate={zero ? { opacity: 0, y: 18 } : { opacity: 1, y: 0 }}
+      transition={
+        instant
+          ? { duration: 0 }
+          : { duration: 0.6, delay: slotIndex * 0.15, ease: EASE }
+      }
+      className={`flex w-full min-w-0 flex-col items-center gap-[clamp(0.75rem,0.5rem+1vw,1.25rem)] ${className}`}
     >
-      <div
-        // box: 36px → 48px, radius: 8px → 12px
-        className="flex size-[clamp(2.25rem,1.5rem_+_3.75vw,3rem)] shrink-0 items-center justify-center rounded-[clamp(0.5rem,0.25rem_+_1.25vw,0.75rem)]"
-        style={{ backgroundColor: stat.bg }}
-      >
-        <Image
-          src={stat.icon}
-          alt=""
-          width={24}
-          height={24}
-          // icon: 16px → 24px
-          className="size-[clamp(1rem,0.5rem_+_2.5vw,1.5rem)] object-contain"
-        />
+      {/* Icon (left, vertically centered) + number cards */}
+      <div className="flex items-center gap-[clamp(0.625rem,0.3rem+1.4vw,1rem)]">
+        <motion.div
+          // box: 40px → 56px, radius: 10px → 14px
+          className="flex size-[clamp(2.5rem,1.7rem+3.4vw,3.5rem)] shrink-0 items-center justify-center rounded-[clamp(0.625rem,0.4rem+1vw,0.875rem)]"
+          style={{ backgroundColor: slot.bg }}
+          initial={false}
+          animate={zero ? { scale: 0.5, rotate: -12 } : { scale: 1, rotate: 0 }}
+          transition={
+            instant
+              ? { duration: 0 }
+              : { type: "spring", stiffness: 260, damping: 16, delay: slotIndex * 0.15 }
+          }
+        >
+          <Image
+            src={slot.icon}
+            alt=""
+            width={28}
+            height={28}
+            className="size-[clamp(1.125rem,0.7rem+1.8vw,1.75rem)] object-contain"
+          />
+        </motion.div>
+
+        <Odometer stat={stat} zero={zero} instant={instant} baseDelay={baseDelay} />
       </div>
 
-      <div className="flex min-w-0 flex-col gap-0.5 text-left">
-        <Typography
-          variant="h2"
-          className="!mb-0 font-lora font-bold leading-none text-[#00191B] tabular-nums"
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={stat.label}
+          initial={instant ? false : { opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={instant ? undefined : { opacity: 0, y: -6 }}
+          transition={{ duration: 0.2, ease: EASE }}
         >
-          {formatStat(value)}
-          {stat.suffix}
-        </Typography>
-        <Typography
-          variant="body-sm"
-          className="!mb-0 font-figtree font-medium leading-snug text-[#5F6C6D]"
-        >
-          {stat.label}
-        </Typography>
-      </div>
+          <Typography
+            variant="body-sm"
+            className="!mb-0 text-center font-figtree font-medium leading-snug text-[#5F6C6D]"
+          >
+            {stat.label}
+          </Typography>
+        </motion.div>
+      </AnimatePresence>
     </motion.div>
   );
 }
 
+/* ------------------------------- Section -------------------------------- */
+
 export default function StatSection() {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.35 });
+  const sectionRef = useRef<HTMLElement>(null);
+  const reduceMotion = useReducedMotion() ?? false;
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const checkAndScroll = () => {
-      const fromFooter = sessionStorage.getItem("scroll_to_our_impact");
-      const hasHash = window.location.hash.includes("our-impact");
-
-      if (fromFooter || hasHash) {
-        if (fromFooter) {
-          sessionStorage.removeItem("scroll_to_our_impact");
-        }
-        if (hasHash) {
-          window.history.replaceState(null, "", window.location.pathname);
-        }
-
-        const navOffset = window.innerWidth >= 1024 ? 80 : 64;
-        setTimeout(() => {
-          void smoothScrollToId("our-impact", navOffset);
-        }, 150);
-        setTimeout(() => {
-          const el = document.getElementById("our-impact");
-          if (el) {
-            const rect = el.getBoundingClientRect();
-            if (Math.abs(rect.top - navOffset) > 40) {
-              void smoothScrollToId("our-impact", navOffset, { minMs: 300, maxMs: 600 });
-            }
-          }
-        }, 450);
-      }
-    };
-
-    checkAndScroll();
-  }, []);
+  const inView = useInView(sectionRef, { once: true, amount: 0.35 });
 
   return (
-    <section id="our-impact" className="w-full bg-[#FAF9F5] px-6 pt-8 pb-8 lg:px-10 lg:pt-36 lg:pb-24 2xl:px-40 2xl:pt-28 scroll-mt-20">
-
+    <section
+      ref={sectionRef}
+      className="w-full bg-[#FAF9F5] px-6 py-10 lg:px-10 xl:py-20 2xl:px-40"
+    >
       <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
         <div className="mb-4 flex items-center gap-3 self-center">
           <span className="h-px w-8 bg-[#9739A8]" />
@@ -168,26 +335,16 @@ export default function StatSection() {
         </Typography>
       </div>
 
-      <div
-        ref={ref}
-        // mt: 32px → 40px | gap-x: 20px → 24px | gap-y: 24px → 32px
-        className="mt-[clamp(2rem,1.5rem_+_2.5vw,2.5rem)] grid w-full grid-cols-2 justify-items-stretch gap-x-[clamp(1.25rem,1rem_+_1.25vw,1.5rem)] gap-y-[clamp(1.5rem,1rem_+_2.5vw,2rem)] lg:mx-auto lg:mt-16 lg:flex lg:max-w-5xl lg:items-center lg:justify-between lg:gap-y-0 xl:max-w-6xl"
-      >
-        {STATS.map((stat, index) => (
-          <Fragment key={stat.label}>
-            {index > 0 && (
-              <span
-                aria-hidden
-                className="hidden lg:block lg:h-16 lg:w-px lg:bg-[#45454530]"
-              />
-            )}
-            <StatItem
-              stat={stat}
-              active={inView}
-              index={index}
-              className={`${MOBILE_ORDER[index] ?? ""} lg:order-none`}
-            />
-          </Fragment>
+      <div className="mt-10 grid w-full grid-cols-2 justify-items-stretch gap-x-5 gap-y-10 lg:mt-14 lg:grid-cols-4 lg:gap-x-8">
+        {STATS.map((slot, i) => (
+          <Partition
+            key={slot.label}
+            slot={slot}
+            slotIndex={i}
+            zero={!inView}
+            instant={reduceMotion}
+            className={`${MOBILE_ORDER[i] ?? ""} lg:order-none`}
+          />
         ))}
       </div>
     </section>

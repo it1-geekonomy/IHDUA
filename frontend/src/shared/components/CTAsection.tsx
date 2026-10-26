@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import Typography from "@/lib/Typography";
 import {
   DONATION_COPY,
@@ -8,11 +9,25 @@ import {
 } from "@/shared/constants/donation";
 import { DonationFormCard } from "@/domains/home/components/donation";
 import { smoothScrollToId } from "@/shared/lib/smoothScroll";
+import { isHomePath } from "@/shared/lib/path";
 
 export default function CTASection() {
+  const pathname = usePathname();
+  const router = useRouter();
+
   const handleExploreClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    smoothScrollToId(DONATION_COPY.exploreTargetId);
+    const navOffset = typeof window !== "undefined" && window.innerWidth >= 1024 ? 80 : 64;
+
+    if (isHomePath(pathname)) {
+      void smoothScrollToId(DONATION_COPY.exploreTargetId, navOffset);
+    } else {
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("suppress_overlay", "true");
+        sessionStorage.setItem("scroll_to_focus_areas", "true");
+      }
+      router.push("/#focus-areas");
+    }
   };
 
   return (
