@@ -42,6 +42,10 @@ function isValidPhone(localNumber: string, countryCode: string) {
   return digits.length >= 7 && digits.length <= 15;
 }
 
+// Flag to control payment gateway availability.
+// Set to true once backend payment integration endpoints are deployed.
+const IS_PAYMENT_ENABLED = false;
+
 export function useDonationForm() {
   const [step, setStep] = useState<DonationStep>(1);
   const [currency, setCurrencyState] = useState<DonationCurrency>(DEFAULT_CURRENCY);
@@ -64,7 +68,7 @@ export function useDonationForm() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isPaying, setIsPaying] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
-  const [statusTone, setStatusTone] = useState<"ok" | "error" | null>(null);
+  const [statusTone, setStatusTone] = useState<"ok" | "error" | "info" | null>(null);
 
   const currencyMeta = useMemo(() => getCurrencyMeta(currency), [currency]);
   const country = useMemo(() => getCountryByCode(countryCode), [countryCode]);
@@ -193,6 +197,18 @@ export function useDonationForm() {
   const paySecurely = async () => {
     setStatusMessage(null);
     setStatusTone(null);
+
+    // Backend payment gateway integration is currently in progress and not pushed yet.
+    if (!IS_PAYMENT_ENABLED) {
+      setStatusTone("info");
+      const trimmedName = fullName.trim();
+      setStatusMessage(
+        trimmedName
+          ? `Thank you, ${trimmedName}! Payment gateway integration is currently in progress and will be available soon.`
+          : "Payment gateway integration is currently in progress and will be available soon. Thank you for your support!",
+      );
+      return;
+    }
 
     const name = fullName.trim();
     const localPhone = mobile.trim();
