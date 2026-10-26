@@ -38,7 +38,7 @@ export const GRID_ITEMS: GridItem[] = [
     row: "mid",
   },
   {
-    image: "/development/dev33.png",
+    image: "/development/dev333.png",
     icon: "/development/Dicon3.png",
     caption: ["Stronger together,", "better forever."],
     bg: "#FFD638",
