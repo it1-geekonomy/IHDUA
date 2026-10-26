@@ -116,9 +116,9 @@ export default function BlogDetailClient({ initialPost }: BlogDetailClientProps)
               {/* Lead Paragraph */}
               {currentPost.leadParagraph && (
                 <Typography
-                  variant="body-sm"
+                  variant="body-lg"
                   as="p"
-                  className="font-figtree leading-[1.8] text-[#5F6C6D] text-justify"
+                  className="font-figtree font-normal leading-relaxed text-[#5F6C6D]"
                 >
                   {currentPost.leadParagraph}
                 </Typography>
@@ -155,9 +155,9 @@ export default function BlogDetailClient({ initialPost }: BlogDetailClientProps)
                         {sec.paragraphs.map((p, pIdx) => (
                           <Typography
                             key={pIdx}
-                            variant="body-sm"
+                            variant="body-lg"
                             as="p"
-                            className="font-figtree leading-[1.8] text-[#5F6C6D] text-justify"
+                            className="font-figtree font-normal leading-relaxed text-[#5F6C6D]"
                           >
                             {p}
                           </Typography>
