@@ -38,14 +38,15 @@ export default function HomePage() {
       return;
     }
 
-    // Mark as handled for this browser session
-    window.__IHDUA_POPUP_SHOWN__ = true;
-
     // Show after 5 seconds instead of immediately upon entering
     const timer = setTimeout(() => {
       const currentSuppressed = sessionStorage.getItem("suppress_overlay") === "true";
       const currentDismissed = sessionStorage.getItem("ihdua_overlay_dismissed") === "true";
-      if (!currentSuppressed && !currentDismissed) {
+      const currentShown = window.__IHDUA_POPUP_SHOWN__ === true;
+
+      if (!currentSuppressed && !currentDismissed && !currentShown) {
+        window.__IHDUA_POPUP_SHOWN__ = true;
+        sessionStorage.setItem("ihdua_overlay_dismissed", "true");
         setShowOverlay(true);
       }
     }, 5000);
