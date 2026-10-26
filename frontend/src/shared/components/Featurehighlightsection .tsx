@@ -124,21 +124,37 @@ const FeatureHighlightSection = ({
         )}
 
         {button?.label && (
-          <a
-            href={button.href ?? "#"}
-            target={button.external ? "_blank" : undefined}
-            rel={button.external ? "noopener noreferrer" : undefined}
-            className="mt-[clamp(0.25rem,0.5vw,0.75rem)] inline-flex items-center gap-2 px-[clamp(0.875rem,0.6rem+1vw,1.25rem)] py-[clamp(0.5rem,0.4rem+0.4vw,0.75rem)] transition-[filter] duration-200 hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            style={{ backgroundColor: COLORS.button, color: COLORS.heading }}
-          >
-            <Typography
-              variant="body-lg"
-              className="m-0 font-figtree font-normal"
+          button.href && button.href !== "#" && button.href !== "javascript:void(0)" ? (
+            <a
+              href={button.href}
+              target={button.external ? "_blank" : undefined}
+              rel={button.external ? "noopener noreferrer" : undefined}
+              className="mt-[clamp(0.25rem,0.5vw,0.75rem)] inline-flex items-center gap-2 px-[clamp(0.875rem,0.6rem+1vw,1.25rem)] py-[clamp(0.5rem,0.4rem+0.4vw,0.75rem)] transition-[filter] duration-200 hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+              style={{ backgroundColor: COLORS.button, color: COLORS.heading }}
             >
-              {button.label}
-            </Typography>
-            <ArrowUpRight />
-          </a>
+              <Typography
+                variant="body-lg"
+                className="m-0 font-figtree font-normal"
+              >
+                {button.label}
+              </Typography>
+              <ArrowUpRight />
+            </a>
+          ) : (
+            <button
+              type="button"
+              className="mt-[clamp(0.25rem,0.5vw,0.75rem)] inline-flex items-center gap-2 px-[clamp(0.875rem,0.6rem+1vw,1.25rem)] py-[clamp(0.5rem,0.4rem+0.4vw,0.75rem)] transition-[filter] duration-200 hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer"
+              style={{ backgroundColor: COLORS.button, color: COLORS.heading }}
+            >
+              <Typography
+                variant="body-lg"
+                className="m-0 font-figtree font-normal"
+              >
+                {button.label}
+              </Typography>
+              <ArrowUpRight />
+            </button>
+          )
         )}
       </div>
 

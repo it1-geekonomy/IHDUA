@@ -30,8 +30,6 @@ export default function MullurSchoolGalleryPage() {
         description={VINAYAKA_HEADER.description}
         button={{
           label: VINAYAKA_HEADER.buttonText,
-          href: VINAYAKA_HEADER.websiteUrl,
-          external: false,
         }}
         items={[...VINAYAKA_HEADER.highlights]}
       />
