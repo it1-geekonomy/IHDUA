@@ -1,28 +1,32 @@
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 import {
-  MigrationInterface,
-  QueryRunner,
-  Table,
-  TableIndex,
-} from 'typeorm';
+  idColumn,
+  softDeleteColumn,
+  timestampColumns,
+} from '../migration.helpers';
 
 export class CreateDonors1760000000001 implements MigrationInterface {
   name = 'CreateDonors1760000000001';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "pgcrypto"`);
+
     await queryRunner.query(`
-      CREATE TYPE donation_status AS ENUM ('pending', 'success', 'failed')
+      DO $$
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'donation_status') THEN
+          CREATE TYPE donation_status AS ENUM ('pending', 'success', 'failed');
+        END IF;
+      END$$;
     `);
+
+    if (await queryRunner.hasTable('donors')) return;
 
     await queryRunner.createTable(
       new Table({
         name: 'donors',
         columns: [
-          {
-            name: 'id',
-            type: 'uuid',
-            isPrimary: true,
-            default: 'gen_random_uuid()',
-          },
+          idColumn(),
           {
             name: 'full_name',
             type: 'varchar',
@@ -96,18 +100,8 @@ export class CreateDonors1760000000001 implements MigrationInterface {
             isNullable: false,
             default: `'pending'`,
           },
-          {
-            name: 'created_at',
-            type: 'timestamptz',
-            isNullable: false,
-            default: 'CURRENT_TIMESTAMP',
-          },
-          {
-            name: 'updated_at',
-            type: 'timestamptz',
-            isNullable: false,
-            default: 'CURRENT_TIMESTAMP',
-          },
+          ...timestampColumns(),
+          softDeleteColumn(),
         ],
       }),
       true,
@@ -138,7 +132,7 @@ export class CreateDonors1760000000001 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('donors');
-    await queryRunner.query(`DROP TYPE donation_status`);
+    await queryRunner.dropTable('donors', true);
+    await queryRunner.query(`DROP TYPE IF EXISTS donation_status`);
   }
 }
