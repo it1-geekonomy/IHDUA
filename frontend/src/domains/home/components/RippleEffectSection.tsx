@@ -13,7 +13,7 @@ export default function RippleEffectSection() {
             Real People, Real Change
           </Typography>
           {/* Right-side line only below lg, so the centered label is balanced */}
-          <span className="h-px w-8 bg-[#9739A8] lg:hidden" />
+          <span className="h-px w-8 bg-[#9739A8]" />
         </div>
 
         <Typography
