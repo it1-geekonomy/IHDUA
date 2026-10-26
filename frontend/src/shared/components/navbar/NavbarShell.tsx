@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import Typography from "@/lib/Typography";
 import { isHomePath } from "@/shared/lib/path";
 import { smoothScrollToTop } from "@/shared/lib/smoothScroll";
+import { markClientNav } from "@/shared/lib/navState";
 import {
   CONTACT_HREF,
   MenuToggle,
@@ -48,10 +49,7 @@ export default function NavbarShell() {
 
   const handleMobileLinkClick = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
     setIsOpen(false);
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("suppress_overlay", "true");
-      sessionStorage.setItem("ihdua_nav_time", Date.now().toString());
-    }
+    markClientNav();
 
     if (href === "/" && isHomePath(pathname)) {
       e.preventDefault();
@@ -61,10 +59,7 @@ export default function NavbarShell() {
   };
 
   const handleHomeClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem("suppress_overlay", "true");
-      sessionStorage.setItem("ihdua_nav_time", Date.now().toString());
-    }
+    markClientNav();
     if (!isHomePath(pathname)) return;
     e.preventDefault();
     setIsOpen(false);

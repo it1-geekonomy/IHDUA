@@ -12,6 +12,7 @@ import Typography from "@/lib/Typography";
 import { isHomePath } from "@/shared/lib/path";
 import { smoothScrollToId, smoothScrollToTop } from "@/shared/lib/smoothScroll";
 import { scrollToDonateSection } from "@/domains/home/lib/donation";
+import { markClientNav } from "@/shared/lib/navState";
 
 const CONTAINER = "max-w-[1200px] 2xl:max-w-[1600px] mx-auto px-6";
 
@@ -31,8 +32,8 @@ export function FooterMain() {
   const router = useRouter();
 
   const markInternalNav = () => {
+    markClientNav();
     sessionStorage.setItem("suppress_overlay", "true");
-    sessionStorage.setItem("ihdua_nav_time", Date.now().toString());
   };
 
   const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {

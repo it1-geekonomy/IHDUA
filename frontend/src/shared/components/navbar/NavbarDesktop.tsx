@@ -13,6 +13,7 @@ import { NAV_LINKS, type NavLink } from "@/shared/constants/navbar";
 import { cn } from "@/lib/utils";
 import Typography from "@/lib/Typography";
 import { YELLOW, EASE, Chevron, Arrow, isNavLinkActive } from "./navbar";
+import { markClientNav } from "@/shared/lib/navState";
 
 /* ────────────────────────────  desktop  ─────────────────────────── */
 
@@ -60,6 +61,7 @@ function DesktopDropdown({
   };
   const close = () => {
     clear();
+    markClientNav();
     setOpen(false);
   };
   const scheduleClose = () => {
@@ -443,7 +445,7 @@ export function DesktopNav({
           <li key={link.href} className="flex h-full items-center">
             <Link
               href={link.href}
-              onClick={link.href === "/" ? onHomeClick : undefined}
+              onClick={link.href === "/" ? onHomeClick : markClientNav}
               className="group whitespace-nowrap px-2.5 py-2 xl:px-4"
             >
               <Typography

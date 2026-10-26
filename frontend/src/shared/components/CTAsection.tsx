@@ -10,6 +10,7 @@ import {
 import { DonationFormCard } from "@/domains/home/components/donation";
 import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 import { isHomePath } from "@/shared/lib/path";
+import { markClientNav } from "@/shared/lib/navState";
 
 export default function CTASection() {
   const pathname = usePathname();
@@ -17,14 +18,13 @@ export default function CTASection() {
 
   const handleExploreClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
+    markClientNav();
     const navOffset = typeof window !== "undefined" && window.innerWidth >= 1024 ? 80 : 64;
 
     if (isHomePath(pathname)) {
       void smoothScrollToId(DONATION_COPY.exploreTargetId, navOffset);
     } else {
       if (typeof window !== "undefined") {
-        sessionStorage.setItem("suppress_overlay", "true");
-        sessionStorage.setItem("ihdua_nav_time", Date.now().toString());
         sessionStorage.setItem("scroll_to_focus_areas", "true");
       }
       router.push("/#focus-areas");
