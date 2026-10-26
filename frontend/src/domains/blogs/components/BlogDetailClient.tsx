@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Typography from "@/lib/Typography";
@@ -12,6 +12,28 @@ interface BlogDetailClientProps {
 
 export default function BlogDetailClient({ initialPost }: BlogDetailClientProps) {
   const [currentPost, setCurrentPost] = useState<BlogPost>(initialPost);
+
+  // Option 2: Scoped strictly to this page's lifecycle without touching globals.css
+  useEffect(() => {
+    const prevHtmlOverflowX = document.documentElement.style.overflowX;
+    const prevHtmlOverflowY = document.documentElement.style.overflowY;
+    const prevBodyOverflowX = document.body.style.overflowX;
+    const prevBodyOverflowY = document.body.style.overflowY;
+
+    // Apply clip with !important priority on this page only
+    document.documentElement.style.setProperty("overflow-x", "clip", "important");
+    document.documentElement.style.setProperty("overflow-y", "visible", "important");
+    document.body.style.setProperty("overflow-x", "clip", "important");
+    document.body.style.setProperty("overflow-y", "visible", "important");
+
+    return () => {
+      // Revert to exact defaults when navigating away
+      document.documentElement.style.overflowX = prevHtmlOverflowX;
+      document.documentElement.style.overflowY = prevHtmlOverflowY;
+      document.body.style.overflowX = prevBodyOverflowX;
+      document.body.style.overflowY = prevBodyOverflowY;
+    };
+  }, []);
 
   // Related stories: all other stories except active, taking top 3
   const relatedStories = useMemo(() => {
@@ -29,15 +51,15 @@ export default function BlogDetailClient({ initialPost }: BlogDetailClientProps)
   };
 
   return (
-    <section className="w-full bg-white px-6 pt-8 pb-16 sm:pt-10 sm:pb-20 lg:px-12 lg:pt-12 2xl:px-32">
-      <div className="mx-auto w-full max-w-[1600px]">
+    <section className="blog-sticky-active w-full bg-white px-6 pt-8 pb-16 sm:pt-10 sm:pb-20 lg:px-12 lg:pt-12 2xl:px-32">
+      <div className="mx-auto w-full max-w-[100rem]">
         {/* Top Header: Category Tag & Date */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="h-px w-6 bg-[#9739A8]" />
             <Typography
               variant="caption"
-              className="font-figtree font-bold uppercase tracking-wider text-[#9739A8] text-xs sm:text-[13px]"
+              className="font-figtree font-bold uppercase tracking-wider text-[#9739A8]"
             >
               {currentPost.category}
             </Typography>
@@ -46,7 +68,7 @@ export default function BlogDetailClient({ initialPost }: BlogDetailClientProps)
 
           <Typography
             variant="caption"
-            className="font-figtree text-xs sm:text-[13px] font-normal text-[#7A8889]"
+            className="font-figtree font-normal text-[#7A8889] normal-case tracking-normal"
           >
             {currentPost.date}
           </Typography>
@@ -55,8 +77,9 @@ export default function BlogDetailClient({ initialPost }: BlogDetailClientProps)
         {/* Story Title & Subtitle */}
         <div className="mt-3">
           <Typography
-            variant="h1"
-            className="font-lora text-2xl sm:text-3xl lg:text-[2.35rem] font-normal leading-[1.2] text-[#00191B]"
+            variant="h3"
+            as="h1"
+            className="font-lora font-normal leading-[1.25] text-[#00191B]"
           >
             {currentPost.title}
           </Typography>
@@ -64,7 +87,8 @@ export default function BlogDetailClient({ initialPost }: BlogDetailClientProps)
           {currentPost.subtitle && (
             <Typography
               variant="body-lg"
-              className="mt-2 font-figtree text-sm sm:text-base font-normal text-[#5F6C6D]"
+              as="p"
+              className="mt-2 font-figtree font-normal text-[#5F6C6D]"
             >
               {currentPost.subtitle}
             </Typography>
@@ -72,7 +96,7 @@ export default function BlogDetailClient({ initialPost }: BlogDetailClientProps)
         </div>
 
         {/* Side-by-side on 1024px+ (lg), stacked up-and-down below 1024px */}
-        <div className="mt-6 sm:mt-8 flex flex-col lg:flex-row lg:items-start lg:gap-8 xl:gap-12 2xl:gap-14">
+        <div className="mt-6 sm:mt-8 flex flex-col lg:flex-row lg:gap-8 xl:gap-12 2xl:gap-14">
           {/* Left Column (Article Photo & Full Natural Story Content) */}
           <article className="w-full lg:flex-1 min-w-0 flex flex-col">
             {/* Main Photo (Exact Figma: 64.9375rem x 33.5625rem, Radius: 0.375rem) */}
@@ -91,9 +115,13 @@ export default function BlogDetailClient({ initialPost }: BlogDetailClientProps)
             <div className="mt-6 flex flex-col gap-6">
               {/* Lead Paragraph */}
               {currentPost.leadParagraph && (
-                <p className="font-figtree text-[15px] sm:text-base leading-[1.7] text-[#2B3839]">
+                <Typography
+                  variant="body-sm"
+                  as="p"
+                  className="font-figtree leading-[1.8] text-[#5F6C6D] text-justify"
+                >
                   {currentPost.leadParagraph}
-                </p>
+                </Typography>
               )}
 
               {/* Subsections */}
@@ -103,15 +131,36 @@ export default function BlogDetailClient({ initialPost }: BlogDetailClientProps)
                     <div key={idx} className="flex flex-col">
                       {sec.heading && (
                         <Typography
-                          variant="h2"
-                          className="font-lora text-xl sm:text-[22px] font-normal text-[#00191B]"
+                          variant="h4"
+                          as="h2"
+                          className="font-lora font-normal leading-[1.4] text-[#00191B]"
                         >
                           {sec.heading}
                         </Typography>
                       )}
-                      <div className="mt-3 flex flex-col gap-3 font-figtree text-[14.5px] sm:text-[15px] leading-[1.7] text-[#5F6C6D]">
+
+                      {sec.image && (
+                        <div className="relative mt-4 aspect-[16/9] w-full overflow-hidden rounded-[0.375rem] bg-neutral-100 shadow-xs">
+                          <Image
+                            src={sec.image}
+                            alt={sec.imageAlt || sec.heading || "Story section image"}
+                            fill
+                            sizes="(max-width: 1024px) 100vw, 1040px"
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+
+                      <div className="mt-3 flex flex-col gap-3">
                         {sec.paragraphs.map((p, pIdx) => (
-                          <p key={pIdx}>{p}</p>
+                          <Typography
+                            key={pIdx}
+                            variant="body-sm"
+                            as="p"
+                            className="font-figtree leading-[1.8] text-[#5F6C6D] text-justify"
+                          >
+                            {p}
+                          </Typography>
                         ))}
                       </div>
                     </div>
@@ -172,11 +221,14 @@ export default function BlogDetailClient({ initialPost }: BlogDetailClientProps)
           </article>
 
           {/* Right Column: Sticky side-by-side on lg+ (1024px+), Horizontal row on < 1024px */}
-          <aside className="w-full lg:w-[24rem] xl:w-[28rem] 2xl:w-[31.4375rem] lg:shrink-0 mt-8 lg:mt-0 flex justify-center lg:justify-end lg:sticky lg:top-[96px] self-start">
-            <div className="w-full rounded-[0.375rem] bg-[#F8F5F0] p-5 sm:p-6 lg:p-5 xl:p-6 shadow-xs">
+          <aside className="w-full lg:w-[24rem] xl:w-[28rem] 2xl:w-[31.4375rem] lg:shrink-0 mt-8 lg:mt-0">
+            <div
+              className="w-full rounded-[0.375rem] bg-[#F8F5F0] p-5 sm:p-6 lg:p-5 xl:p-6 shadow-xs lg:sticky lg:top-24"
+              style={{ position: "sticky", top: "6rem" }}
+            >
               <Typography
                 variant="h3"
-                className="font-lora text-xl sm:text-[1.35rem] xl:text-[1.5rem] font-normal text-[#00191B]"
+                className="font-lora font-normal text-[#00191B]"
               >
                 Related Stories
               </Typography>
@@ -209,13 +261,21 @@ export default function BlogDetailClient({ initialPost }: BlogDetailClientProps)
 
                     {/* Story Title & Date */}
                     <div className="flex-1 min-w-0 sm:w-full flex flex-col justify-center sm:justify-start">
-                      <h4 className="font-lora text-[14.5px] sm:text-base lg:text-[1.05rem] xl:text-[1.2rem] font-normal leading-[1.35] text-[#00191B] transition-colors group-hover:text-[#9739A8] line-clamp-2">
+                      <Typography
+                        variant="body-md"
+                        as="h4"
+                        className="font-lora font-normal leading-[1.35] text-[#00191B] transition-colors group-hover:text-[#9739A8] line-clamp-2"
+                      >
                         {story.title}
-                      </h4>
+                      </Typography>
 
-                      <p className="mt-1 sm:mt-1.5 font-figtree text-xs sm:text-[13px] xl:text-[0.875rem] leading-[1.5] text-[#1E1E1E]/40 font-normal">
+                      <Typography
+                        variant="caption"
+                        as="p"
+                        className="mt-1 sm:mt-1.5 font-figtree font-normal text-[#1E1E1E]/40"
+                      >
                         {story.date}
-                      </p>
+                      </Typography>
                     </div>
                   </div>
                 ))}
