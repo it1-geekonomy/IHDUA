@@ -70,7 +70,7 @@ export default function ThreePathsSection() {
             <div
               key={path.title}
               id={`get-involved-${path.title.toLowerCase()}`}
-              className={`w-72 bg-white px-6 py-6 sm:w-full sm:px-7 sm:py-7 lg:mx-auto lg:w-full lg:max-w-lg lg:px-8 lg:py-6 xl:px-14 xl:py-10 ${
+              className={`flex flex-col w-72 bg-white px-6 py-6 sm:w-full sm:px-7 sm:py-7 lg:mx-auto lg:w-full lg:max-w-lg lg:px-8 lg:py-6 xl:px-14 xl:py-10 ${
                 index === 2
                   ? "sm:col-span-2 sm:mx-auto sm:w-full sm:max-w-[calc(50%-theme(spacing.5))] lg:col-span-1 lg:max-w-lg"
                   : ""
@@ -84,7 +84,10 @@ export default function ThreePathsSection() {
                 {path.title}
               </Typography>
 
-              <Typography variant="body-lg" className="mt-6 leading-relaxed text-[#5F6C6D] font-normal font-figtree">
+              <Typography
+                variant="body-lg"
+                className="mt-6 mb-12 leading-relaxed text-[#5F6C6D] font-normal font-figtree"
+              >
                 {path.description}
               </Typography>
 
@@ -99,7 +102,7 @@ export default function ThreePathsSection() {
                     void scrollToDonateSection();
                   }
                 }}
-                className="mt-12 mb-4 w-full bg-[#9739A8] hover:bg-[#852f94] transition-colors px-6 py-4 sm:w-fit cursor-pointer"
+                className="mt-auto mb-4 w-full bg-[#9739A8] hover:bg-[#852f94] transition-colors px-6 py-4 sm:w-fit sm:self-start cursor-pointer"
               >
                 <Typography variant="body-sm" className="font-medium font-figtree text-white">
                   {path.button}

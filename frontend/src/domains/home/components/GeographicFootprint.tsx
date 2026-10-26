@@ -201,7 +201,7 @@ export default function GeographicFootprint() {
               </div>
 
               <a
-                href="#"
+                href="/education"
                 className="mt-9 lg:mt-10 xl:mt-14 mx-auto flex w-fit items-center gap-2 rounded bg-[#FFD638] px-6 py-3 transition-opacity lg:mx-0"
               >
                 <Typography variant="body-lg" className="font-medium font-figtree text-[#1E1E1E]">

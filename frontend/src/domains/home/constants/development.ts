@@ -4,7 +4,7 @@ export type GridRow = "top" | "mid" | "low";
 export interface GridItem {
   image: string;
   /** When provided, cross-fades to this image on hover. */
-  hoverImage?: string;
+
   icon: string;
   caption: string[];
   /** Any valid CSS color, applied via inline style. */
@@ -20,8 +20,7 @@ export const MOBILE_HERO_IMAGE = "/development/mobilelayoutimg.png";
 
 export const GRID_ITEMS: GridItem[] = [
   {
-    image: "/development/rural1.png",
-    hoverImage: "/development/rural11.png",
+    image: "/development/rural11.png",
     icon: "/development/Dicon1.png",
     caption: ["Empowering communities,", "Creating opportunities."],
     bg: "#FFD638",
@@ -39,8 +38,7 @@ export const GRID_ITEMS: GridItem[] = [
     row: "mid",
   },
   {
-    image: "/development/dev3.png",
-    hoverImage: "/development/dev33.png",
+    image: "/development/dev33.png",
     icon: "/development/Dicon3.png",
     caption: ["Stronger together,", "better forever."],
     bg: "#FFD638",
@@ -49,7 +47,7 @@ export const GRID_ITEMS: GridItem[] = [
     row: "low",
   },
   {
-    image: "/development/rural4.png",
+    image: "/development/dev44.png",
     icon: "/development/Dicon4.png",
     caption: ["Sustainable livelihoods,", "sustainable future."],
     bg: "#9739A8",
@@ -58,8 +56,7 @@ export const GRID_ITEMS: GridItem[] = [
     row: "mid",
   },
   {
-    image: "/development/rural5.png",
-    hoverImage: "/development/rural55.png",
+    image: "/development/rural55.png",
     icon: "/development/Dicon5.png",
     caption: ["Recognising learning, progress", "and new opportunities."],
     bg: "#FFD638",
