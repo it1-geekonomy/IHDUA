@@ -34,6 +34,7 @@ type DetailsStepProps = Pick<
   | "statusMessage"
   | "statusTone"
   | "showLargeAmountHint"
+  | "cause"
   | "setPhoneCountryCode"
   | "setFullName"
   | "setMobile"
@@ -54,6 +55,7 @@ type DetailsStepProps = Pick<
 
 export function DetailsStep({
   chosenAmount,
+  cause,
   fullName,
   mobile,
   email,
@@ -103,6 +105,11 @@ export function DetailsStep({
           <span className="block text-2xl font-bold text-[#111827] mt-0.5">
             {chosenAmount}
           </span>
+          {cause && (
+            <span className="mt-1 inline-block rounded-full bg-[#9739A8]/10 px-2.5 py-0.5 text-[11px] font-semibold text-[#9739A8]">
+              {cause}
+            </span>
+          )}
         </div>
         <button
           type="button"
@@ -114,6 +121,7 @@ export function DetailsStep({
           <Pencil className="w-3.5 h-3.5" />
         </button>
       </div>
+
 
       {/* Form Fields */}
       <form

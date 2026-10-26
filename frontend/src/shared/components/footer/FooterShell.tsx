@@ -1,3 +1,5 @@
+"use client";
+
 import MovementMarquee from "@/domains/home/components/Movementmarquee";
 import { FooterLegalBar } from "./FooterLegalBar";
 import { FooterMain } from "./FooterMain";
