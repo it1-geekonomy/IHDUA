@@ -19,7 +19,7 @@ export interface GalleryPhoto {
 }
 
 export const VINAYAKA_HERO = {
-  heading: "Education",
+  heading: "Vinayaka Jnana Vidyashale, Mysuru",
   description:
     "Creating opportunities to learn, grow and build brighter futures for rural children and communities.",
   image: "/Rural Education/Frame 648 (4).png",
@@ -28,7 +28,7 @@ export const VINAYAKA_HERO = {
 } as const;
 
 export const VINAYAKA_GALLERY_HERO = {
-  heading: "Education",
+  heading: "Vinayaka Jnana Vidyashale, Mysuru",
   description:
     "Creating opportunities to learn, grow and build brighter futures for rural children and communities.",
   image: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Frame 752.png",
@@ -41,7 +41,7 @@ export const VINAYAKA_HEADER = {
   title: "Vinayaka Jnana Vidyashale, Mysuru",
   description:
     "Creating opportunities for rural children through accessible, quality education.",
-  websiteUrl: "https://ihdua.org",
+  websiteUrl: "javascript:void(0)",
   buttonText: "Visit School Website",
   highlights: [
     {

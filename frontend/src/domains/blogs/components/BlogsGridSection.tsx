@@ -29,6 +29,34 @@ export default function BlogsGridSection() {
     return sortedPosts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   }, [sortedPosts, currentPage]);
 
+  const getPageNumbers = () => {
+    // If 5 or fewer total pages, show all of them directly
+    if (totalPages <= 5) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+
+    // Near the start: show 1, 2, 3, '...', lastPage
+    if (currentPage <= 3) {
+      return [1, 2, 3, "...", totalPages];
+    }
+
+    // Near the end: show 1, '...', last - 2, last - 1, lastPage
+    if (currentPage >= totalPages - 2) {
+      return [1, "...", totalPages - 2, totalPages - 1, totalPages];
+    }
+
+    // In the middle: show 1, '...', current - 1, current, current + 1, '...', lastPage
+    return [
+      1,
+      "...",
+      currentPage - 1,
+      currentPage,
+      currentPage + 1,
+      "...",
+      totalPages,
+    ];
+  };
+
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages) return;
     setCurrentPage(newPage);
@@ -175,8 +203,20 @@ export default function BlogsGridSection() {
               </svg>
             </button>
 
-            {/* Page Number Buttons */}
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => {
+            {/* Page Number Buttons with Smart Ellipsis */}
+            {getPageNumbers().map((item, index) => {
+              if (item === "...") {
+                return (
+                  <span
+                    key={`ellipsis-${index}`}
+                    className="flex size-10 items-center justify-center font-figtree text-sm font-semibold text-neutral-400 select-none"
+                  >
+                    ...
+                  </span>
+                );
+              }
+
+              const pageNum = item as number;
               const isActive = pageNum === currentPage;
               return (
                 <button

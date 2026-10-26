@@ -30,7 +30,7 @@ export default function VinayakAgnanaVidyashalePage() {
         label={VINAYAKA_HEADER.eyebrow}
         heading={VINAYAKA_HEADER.title}
         description={VINAYAKA_HEADER.description}
-        button={{ label: VINAYAKA_HEADER.buttonText, href: VINAYAKA_HEADER.websiteUrl, external: true }}
+        button={{ label: VINAYAKA_HEADER.buttonText, href: VINAYAKA_HEADER.websiteUrl, external: false }}
         items={[...VINAYAKA_HEADER.highlights]}
       />
 
