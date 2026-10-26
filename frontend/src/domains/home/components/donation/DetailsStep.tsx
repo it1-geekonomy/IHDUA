@@ -1,6 +1,7 @@
 "use client";
 
-import { Pencil, Loader2 } from "lucide-react";
+import { Pencil, Loader2, Info, AlertCircle, CheckCircle2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { INDIAN_STATES } from "@/domains/home/constants/indianStates";
 import {
   FormInput,
@@ -223,16 +224,22 @@ export function DetailsStep({
           </label>
         </div>
 
-        {/* Status / Error Message */}
+        {/* Status / Notice / Error Message */}
         {statusMessage && (
-          <p
-            className={`text-center font-figtree text-[13px] leading-snug ${
-              statusTone === "ok" ? "text-green-600" : "text-red-500 font-medium"
-            }`}
+          <div
+            className={cn(
+              "rounded-lg p-3.5 text-center font-figtree text-[13px] sm:text-[14px] leading-snug transition-all flex items-center justify-center gap-2",
+              statusTone === "ok" && "bg-emerald-50 text-emerald-800 border border-emerald-200",
+              statusTone === "info" && "bg-[#FAF5FC] text-[#9739A8] border border-[#9739A8]/30 font-medium",
+              statusTone === "error" && "bg-red-50 text-red-600 border border-red-200 font-medium"
+            )}
             role="status"
           >
-            {statusMessage}
-          </p>
+            {statusTone === "info" && <Info className="w-4 h-4 shrink-0 text-[#9739A8]" />}
+            {statusTone === "error" && <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />}
+            {statusTone === "ok" && <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />}
+            <span>{statusMessage}</span>
+          </div>
         )}
 
         {/* Submit Button */}
