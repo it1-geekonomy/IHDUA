@@ -1,6 +1,8 @@
 export interface BlogSection {
   heading?: string;
   paragraphs: string[];
+  image?: string;
+  imageAlt?: string;
 }
 
 export interface BlogPost {
@@ -51,6 +53,27 @@ export const BLOG_POSTS: BlogPost[] = [
         heading: "Community and Teacher Collaboration",
         paragraphs: [
           "Teachers work closely with village parents to track student attendance, nutrition, and extracurricular growth. Together, they create an ecosystem where every child can dream bigger.",
+        ],
+      },
+      {
+        heading: "Libraries as Hubs of Exploration",
+        paragraphs: [
+          "A corner filled with bilingual storybooks and interactive educational kits transforms reading from a chore into a daily adventure. Students from standard 1 to 7 now hold weekly book discussion circles, building language fluency and critical thinking.",
+          "Volunteers and local alumni regularly visit to conduct storytelling sessions, sparking curiosity about science, geography, and literature beyond standard syllabus textbooks.",
+        ],
+      },
+      {
+        heading: "Bridging Digital Literacy for Rural Learners",
+        paragraphs: [
+          "Access to basic computing equipment and digital educational tablets allows students to explore visual simulations of science experiments and practice mathematics at their own pace.",
+          "Teachers receive dedicated training on using digital tools in the classroom, ensuring that technology directly complements lesson plans rather than functioning as a passive display.",
+        ],
+      },
+      {
+        heading: "Long-Term Academic and Social Impact",
+        paragraphs: [
+          "Within eighteen months of upgrading classroom facilities, student retention rates increased by over twenty-two percent across participating schools, with parents expressing greater confidence in public village schooling.",
+          "By creating an environment where curiosity is nurtured daily, these rural schools demonstrate that every child, regardless of geography, has the potential to excel when given the right foundation.",
         ],
       },
     ],

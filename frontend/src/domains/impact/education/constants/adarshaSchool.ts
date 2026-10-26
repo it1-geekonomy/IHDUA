@@ -1,10 +1,10 @@
 export const ADARSHA_HERO = {
-  heading: "Education",
+  heading: "Adarsha Academy",
   description:
     "Creating opportunities to learn, grow and build brighter futures for rural children and communities.",
-  image: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Frame 752.png",
-  imageMobile: "/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/mobile Frame 754.png",
-  imageAlt: "Children in rural classroom",
+  image: "/Rural Education/Frame 648 (7).png",
+  imageMobile: "/Rural Education/Frame 695.png",
+  imageAlt: "Students at Adarsha Academy",
 } as const;
 
 export const ADARSHA_HIGHLIGHTS = [
