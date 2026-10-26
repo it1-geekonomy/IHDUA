@@ -14,11 +14,11 @@ export const LEADERS: LeaderItem[] = [
   {
     name: "Dr. B.S. Ajaikumar",
     designation: "Chairperson",
-    image: "/aboutus/Ajai.png",
+    image: "/aboutus/ajaikumarsir.png",
   },
   {
     name: "Bhagya Ajaikumar",
     designation: "Trustee",
-    image: "/aboutus/bhagya.png",
+    image: "/aboutus/bhagyamam.png",
   },
 ];
