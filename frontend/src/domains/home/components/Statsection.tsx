@@ -10,6 +10,7 @@ import {
 } from "framer-motion";
 import { STATS, STAT_SETS, type StatValue } from "@/domains/home/constants/stat";
 import Typography from "@/lib/Typography";
+import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 
 /** Card (white box) height = one digit row, in em */
 const CARD_H = 1.45;
@@ -406,10 +407,45 @@ export default function StatSection() {
   // Digits roll up from 0 the first time the section is on screen
   const inView = useInView(sectionRef, { once: true, amount: 0.35 });
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const checkAndScroll = () => {
+      const fromFooter = sessionStorage.getItem("scroll_to_our_impact");
+      const hasHash = window.location.hash.includes("our-impact");
+
+      if (fromFooter || hasHash) {
+        if (fromFooter) {
+          sessionStorage.removeItem("scroll_to_our_impact");
+        }
+        if (hasHash) {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+
+        const navOffset = window.innerWidth >= 1024 ? 80 : 64;
+        setTimeout(() => {
+          void smoothScrollToId("our-impact", navOffset);
+        }, 150);
+        setTimeout(() => {
+          const el = document.getElementById("our-impact");
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            if (Math.abs(rect.top - navOffset) > 40) {
+              void smoothScrollToId("our-impact", navOffset, { minMs: 300, maxMs: 600 });
+            }
+          }
+        }, 450);
+      }
+    };
+
+    checkAndScroll();
+  }, []);
+
   return (
     <section
+      id="our-impact"
       ref={sectionRef}
-      className="w-full bg-[#FAF9F5] px-6 py-10 lg:px-10 lg:py-20 2xl:px-40"
+      className="w-full bg-[#FAF9F5] px-6 py-10 lg:px-10 lg:py-20 2xl:px-40 scroll-mt-20 lg:scroll-mt-24"
     >
       <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
         <div className="mb-4 flex items-center gap-3 self-center">
