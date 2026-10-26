@@ -13,13 +13,18 @@ declare global {
   }
 }
 
-// Executed only on real document loads/reloads, NEVER on client-side routing
-if (typeof window !== "undefined") {
-  if (!window.__PAGE_SESSION_ID__) {
-    window.__PAGE_SESSION_ID__ = Math.random();
-    if (sessionStorage.getItem("suppress_overlay") !== "true") {
-      sessionStorage.removeItem("ihdua_overlay_dismissed");
+function isPageReload(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const navEntries = performance.getEntriesByType("navigation");
+    if (navEntries.length > 0) {
+      return (navEntries[0] as PerformanceNavigationTiming).type === "reload";
     }
+    // Fallback for older browsers
+    const perfNav = (window.performance as unknown as { navigation?: { type?: number } })?.navigation;
+    return perfNav?.type === 1;
+  } catch {
+    return false;
   }
 }
 
@@ -28,26 +33,41 @@ export default function HomePage() {
   const [showOverlay, setShowOverlay] = useState(false);
 
   useEffect(() => {
-    // If user clicked any footer/nav link or dismissed the overlay previously during this browser session
-    const isSuppressed = sessionStorage.getItem("suppress_overlay") === "true";
+    // If the user refreshed / hard-refreshed the page, ALWAYS clear suppression & dismissal
+    if (isPageReload()) {
+      sessionStorage.removeItem("suppress_overlay");
+      sessionStorage.removeItem("ihdua_overlay_dismissed");
+      sessionStorage.removeItem("ihdua_nav_time");
+      window.__IHDUA_POPUP_SHOWN__ = false;
+    }
+
+    // Check if the user navigated here via an internal footer/nav link within the last 8 seconds
+    const navTime = Number(sessionStorage.getItem("ihdua_nav_time") || 0);
+    const isRecentInternalNav = navTime > 0 && Date.now() - navTime < 8000;
+
+    const isSuppressed =
+      isRecentInternalNav || sessionStorage.getItem("suppress_overlay") === "true";
     const isDismissed = sessionStorage.getItem("ihdua_overlay_dismissed") === "true";
     const alreadyShown = window.__IHDUA_POPUP_SHOWN__ === true;
 
     if (isSuppressed || isDismissed || alreadyShown) {
-      window.__IHDUA_POPUP_SHOWN__ = true;
-      sessionStorage.setItem("ihdua_overlay_dismissed", "true");
+      // Clear the temporary internal nav timestamp once checked
+      if (isRecentInternalNav) {
+        sessionStorage.removeItem("ihdua_nav_time");
+      }
       return;
     }
 
     // Show after 5 seconds instead of immediately upon entering
     const timer = setTimeout(() => {
-      const currentSuppressed = sessionStorage.getItem("suppress_overlay") === "true";
-      const currentDismissed = sessionStorage.getItem("ihdua_overlay_dismissed") === "true";
+      const currentSuppressed =
+        sessionStorage.getItem("suppress_overlay") === "true";
+      const currentDismissed =
+        sessionStorage.getItem("ihdua_overlay_dismissed") === "true";
       const currentShown = window.__IHDUA_POPUP_SHOWN__ === true;
 
       if (!currentSuppressed && !currentDismissed && !currentShown) {
         window.__IHDUA_POPUP_SHOWN__ = true;
-        sessionStorage.setItem("ihdua_overlay_dismissed", "true");
         setShowOverlay(true);
       }
     }, 5000);
