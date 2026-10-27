@@ -96,7 +96,7 @@ export const FLUID = {
   compactIcon:
     "h-[clamp(1.25rem,1rem_+_1.25vw,1.5rem)] w-[clamp(1.25rem,1rem_+_1.25vw,1.5rem)]",
   /** 32px → 80px (was pt-8 lg:pt-20) */
-  sectionPaddingTop: "pt-[clamp(2rem,7.8vw,5rem)]",
+  sectionPaddingTop: "pt-[clamp(1rem,7.8vw,2rem)]",
   /** 16px → 32px (was mt-4 lg:mt-8) */
   subtextMarginTop: "mt-[clamp(1rem,0.35rem_+_2.6vw,2rem)]",
 } as const;

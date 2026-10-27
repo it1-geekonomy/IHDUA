@@ -21,10 +21,12 @@ const SIZE = {
   // Card padding: 20/24px (375px) -> 24/32px (640px)
   cardPadding:
     "px-[clamp(1.25rem,0.9rem+1.5vw,1.5rem)] py-[clamp(1.5rem,0.8rem+3vw,2rem)]",
-  // Icon box: 56px -> 64px
-  iconBox: "h-[clamp(3.5rem,2.8rem+3vw,4rem)] w-[clamp(3.5rem,2.8rem+3vw,4rem)]",
-  // Icon: 28px -> 32px
-  icon: "h-[clamp(1.75rem,1.4rem+1.5vw,2rem)] w-[clamp(1.75rem,1.4rem+1.5vw,2rem)]",
+
+  // Icon box: <640px 40px | sm 44px | md 48px | lg 52px
+  iconBox: "h-10 w-10 sm:h-11 sm:w-11 md:h-12 md:w-12 lg:h-[52px] lg:w-[52px]",
+
+  // Icon: <640px 20px | sm 22px | md 24px | lg 26px
+  icon: "h-5 w-5 sm:h-[22px] sm:w-[22px] md:h-6 md:w-6 lg:h-[26px] lg:w-[26px]",
 } as const;
 
 /** Slower, readable unroll, not a snap */
@@ -114,9 +116,19 @@ function HelpCard({ item, variants, reduceMotion }: HelpCardProps) {
           />
         </div>
 
-        <Typography variant="h4" className="mt-6 font-lora font-normal text-[#00191B]">
-          {item.title}
-        </Typography>
+        <Typography
+  variant="h4"
+  className="mt-6 font-lora font-normal text-[#00191B] lg:max-xl:hidden"
+>
+  {item.title}
+</Typography>
+<Typography
+  variant="body-xl"
+  aria-hidden="true"
+  className="mt-6 hidden font-lora font-normal text-[#00191B] lg:max-xl:block"
+>
+  {item.title}
+</Typography>
         <Typography
           variant="body-sm"
           className="mt-2 font-normal font-figtree leading-relaxed text-[#5F6C6D]"
@@ -134,7 +146,7 @@ export default function HowCanYouHelpSection() {
 
   return (
     <section className="w-full bg-white">
-      <div className="w-full px-6 pt-6 lg:px-10 lg:py-30 2xl:px-40">
+      <div className="w-full px-6 pt-6 lg:px-10 lg:pt-8 xl:py-14 2xl:px-40">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <Typography variant="display-xl" className="font-lora font-normal text-[#00191B]">
             How can you help?

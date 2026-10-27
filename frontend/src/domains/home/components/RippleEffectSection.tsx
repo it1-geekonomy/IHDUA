@@ -5,7 +5,7 @@ import Typography from "@/lib/Typography";
 export default function RippleEffectSection() {
   return (
     <section className="w-full bg-[#FAF9F5]">
-      <div className="w-full px-6 pt-6 pb-6 lg:py-20 lg:px-10 2xl:px-40">
+      <div className="w-full px-6 pt-6 pb-6 xl:py-14 lg:px-10 lg:pt-8 lg:pb-8 2xl:px-40">
         {/* Eyebrow + heading: centered below lg, left-aligned at lg+ */}
         <div className="flex items-center justify-center gap-3 lg:justify-start">
           <span className="h-px w-8 bg-[#9739A8]" />
