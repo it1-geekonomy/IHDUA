@@ -44,7 +44,8 @@ export class BlogCategoriesService {
 
     const qb = this.repo
       .createQueryBuilder('entity')
-      .orderBy('entity.createdAt', 'DESC');
+      .orderBy('entity.name', 'ASC');
+
     applyDeletedFilter(qb, query);
 
     if (query.search) {
@@ -62,12 +63,6 @@ export class BlogCategoriesService {
     return buildPaginatedResult(data, total, page, limit);
   }
 
-  async findPublished(): Promise<BlogCategory[]> {
-    return this.repo.find({
-      order: { name: 'ASC' },
-    });
-  }
-
   async findDeleted(
     query: PaginationQueryDto,
   ): Promise<PaginatedResult<BlogCategory>> {
@@ -79,16 +74,6 @@ export class BlogCategoriesService {
     if (!entity) {
       throw new NotFoundException(
         `Blog category not found for id "${id}". Check the id and try again.`,
-      );
-    }
-    return entity;
-  }
-
-  async findBySlug(slug: string): Promise<BlogCategory> {
-    const entity = await this.repo.findOne({ where: { slug } });
-    if (!entity) {
-      throw new NotFoundException(
-        `Blog category not found for slug "${slug}".`,
       );
     }
     return entity;

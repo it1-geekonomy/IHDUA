@@ -78,11 +78,14 @@ export class BlogsAndStoriesService {
     const page = query.page ?? 1;
     const limit = query.limit ?? 20;
 
+    const isOldest = query.sort?.toLowerCase() === 'oldest';
+    const direction = isOldest ? 'ASC' : 'DESC';
+
     const qb = this.repo
       .createQueryBuilder('entity')
       .leftJoinAndSelect('entity.category', 'category')
-      .orderBy('entity.blogDate', 'DESC', 'NULLS LAST')
-      .addOrderBy('entity.createdAt', 'DESC');
+      .orderBy('entity.blogDate', direction, 'NULLS LAST')
+      .addOrderBy('entity.createdAt', direction);
 
     applyDeletedFilter(qb, query);
 
