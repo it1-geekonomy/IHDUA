@@ -2,7 +2,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import Typography from "@/lib/Typography";
-import { ARROW_BOX,ARROW_ICON,CAPTION_MARGIN_TOP,GRID_GAP,HEADING_GROUP_GAP,SECTION_PADDING_X,SECTION_PADDING_Y,TEXT_COLUMN_GAP,THEMES,THEME_ORDER,
+import {
+  ARROW_BOX,
+  ARROW_ICON,
+  CAPTION_MARGIN_TOP,
+  GRID_GAP,
+  HEADING_GROUP_GAP,
+  SECTION_PADDING_X,
+  SECTION_PADDING_Y,
+  TEXT_COLUMN_GAP,
+  THEMES,
+  THEME_ORDER,
   type CardTheme,
 } from "@/shared/constants/imagecard";
 
@@ -132,7 +142,9 @@ export default function ImageCardsSection({
 
         {/* Cards */}
         {items.length <= 2 ? (
-          <div className={`grid w-full grid-cols-1 sm:grid-cols-2 lg:col-span-2 ${GRID_GAP}`}>
+          <div
+            className={`mx-auto grid w-full min-w-0 max-w-[22rem] grid-cols-1 sm:max-w-xl sm:grid-cols-2 lg:col-span-2 lg:max-w-none ${GRID_GAP}`}
+          >
             {items.map((item, i) => (
               <ImageCard key={`${item.title}-${i}`} item={item} index={i} />
             ))}
