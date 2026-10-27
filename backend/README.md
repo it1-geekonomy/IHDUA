@@ -66,7 +66,17 @@ pnpm run migration:run
 
 For local bootstrap only you may set `DB_SYNCHRONIZE=true` once in `.env` — keep it `false` in shared/prod environments.
 
-### 5. Run
+### 5. Seeding
+
+```bash
+pnpm run seed
+```
+
+Default credentials:
+- Email: `admin@ihdua.org` (or `ADMIN_EMAIL` in `.env`)
+- Password: `Admin@123` (or `ADMIN_PASSWORD` in `.env`)
+
+### 6. Run
 
 ```bash
 pnpm run start:dev
