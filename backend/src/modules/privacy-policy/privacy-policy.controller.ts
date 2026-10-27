@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -40,8 +41,12 @@ export class PrivacyPolicyController {
     description: 'Current published privacy policy',
     type: PrivacyPolicy,
   })
-  findPublished() {
-    return this.privacyPolicyService.findPublished();
+  async findPublished() {
+    const data = await this.privacyPolicyService.findPublished();
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Get('deleted')
@@ -50,8 +55,12 @@ export class PrivacyPolicyController {
   @ApiOperation({
     summary: 'List soft-deleted privacy policies (Admin)',
   })
-  findDeleted(@Query() query: PaginationQueryDto) {
-    return this.privacyPolicyService.findDeleted(query);
+  async findDeleted(@Query() query: PaginationQueryDto) {
+    const result = await this.privacyPolicyService.findDeleted(query);
+    return {
+      statusCode: HttpStatus.OK,
+      ...result,
+    };
   }
 
   @Post()
@@ -63,8 +72,12 @@ export class PrivacyPolicyController {
     description: 'Privacy policy created successfully',
     type: PrivacyPolicy,
   })
-  create(@Body() dto: CreatePrivacyPolicyDto) {
-    return this.privacyPolicyService.create(dto);
+  async create(@Body() dto: CreatePrivacyPolicyDto) {
+    const data = await this.privacyPolicyService.create(dto);
+    return {
+      statusCode: HttpStatus.CREATED,
+      data,
+    };
   }
 
   @Get()
@@ -74,8 +87,12 @@ export class PrivacyPolicyController {
     summary:
       'List all privacy policy entries with pagination and filtering (Admin)',
   })
-  findAll(@Query() query: PaginationQueryDto) {
-    return this.privacyPolicyService.findAll(query);
+  async findAll(@Query() query: PaginationQueryDto) {
+    const result = await this.privacyPolicyService.findAll(query);
+    return {
+      statusCode: HttpStatus.OK,
+      ...result,
+    };
   }
 
   @Get(':id')
@@ -87,8 +104,12 @@ export class PrivacyPolicyController {
     description: 'Privacy policy entry',
     type: PrivacyPolicy,
   })
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.privacyPolicyService.findOne(id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.privacyPolicyService.findOne(id);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Patch(':id/restore')
@@ -100,8 +121,12 @@ export class PrivacyPolicyController {
     description: 'Restored privacy policy entry',
     type: PrivacyPolicy,
   })
-  restore(@Param('id', ParseUUIDPipe) id: string) {
-    return this.privacyPolicyService.restore(id);
+  async restore(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.privacyPolicyService.restore(id);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Patch(':id')
@@ -113,18 +138,25 @@ export class PrivacyPolicyController {
     description: 'Updated privacy policy entry',
     type: PrivacyPolicy,
   })
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdatePrivacyPolicyDto,
   ) {
-    return this.privacyPolicyService.update(id, dto);
+    const data = await this.privacyPolicyService.update(id, dto);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Soft-delete privacy policy entry by id (Admin)' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.privacyPolicyService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    await this.privacyPolicyService.remove(id);
+    return {
+      statusCode: HttpStatus.OK,
+    };
   }
 }

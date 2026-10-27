@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -45,7 +44,6 @@ export class LeadsContactController {
     const data = await this.service.create(dto);
     return {
       statusCode: HttpStatus.CREATED,
-      message: 'Contact lead submitted successfully',
       data,
     };
   }
@@ -65,10 +63,6 @@ export class LeadsContactController {
     const result = await this.service.findAll(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No contact leads found'
-          : 'Contact leads fetched successfully',
       ...result,
     };
   }
@@ -89,10 +83,6 @@ export class LeadsContactController {
     const result = await this.service.findDeleted(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No deleted contact leads found'
-          : 'Deleted contact leads fetched successfully',
       ...result,
     };
   }
@@ -109,7 +99,6 @@ export class LeadsContactController {
     const data = await this.service.findOne(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Contact lead fetched successfully',
       data,
     };
   }
@@ -129,7 +118,6 @@ export class LeadsContactController {
     const data = await this.service.update(id, dto);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Contact lead updated successfully',
       data,
     };
   }
@@ -149,13 +137,11 @@ export class LeadsContactController {
     const data = await this.service.restore(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Contact lead restored successfully',
       data,
     };
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -169,7 +155,6 @@ export class LeadsContactController {
     await this.service.remove(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Contact lead deleted successfully',
     };
   }
 }

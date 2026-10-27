@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
   Post,
@@ -23,8 +24,12 @@ export class DonorsController {
   @Public()
   @Post('create-order')
   @ApiOperation({ summary: 'Create a Razorpay order for a donation' })
-  createOrder(@Body() dto: CreateDonationOrderDto) {
-    return this.donorsService.createOrder(dto);
+  async createOrder(@Body() dto: CreateDonationOrderDto) {
+    const data = await this.donorsService.createOrder(dto);
+    return {
+      statusCode: HttpStatus.CREATED,
+      data,
+    };
   }
 
   @Public()
@@ -32,23 +37,35 @@ export class DonorsController {
   @ApiOperation({
     summary: 'Verify Razorpay payment and mark donation success',
   })
-  verifyPayment(@Body() dto: VerifyDonationPaymentDto) {
-    return this.donorsService.verifyPayment(dto);
+  async verifyPayment(@Body() dto: VerifyDonationPaymentDto) {
+    const data = await this.donorsService.verifyPayment(dto);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'List all donations (admin)' })
-  findAll() {
-    return this.donorsService.findAll();
+  async findAll() {
+    const data = await this.donorsService.findAll();
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get donation by id (admin)' })
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.donorsService.findOne(id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.donorsService.findOne(id);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 }

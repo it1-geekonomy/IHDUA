@@ -61,7 +61,7 @@ export class Donor extends BaseEntity {
   })
   donationCategory: string;
 
-  @ApiPropertyOptional({ example: 'IHDUA-1730000000000' })
+  @ApiPropertyOptional({ example: 'IHDUA-20261026-A1B2C3D4' })
   @Column({ name: 'receipt_number', type: 'varchar', length: 50, nullable: true })
   receiptNumber: string | null;
 

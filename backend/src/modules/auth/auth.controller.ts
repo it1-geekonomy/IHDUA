@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
@@ -18,15 +25,23 @@ export class AuthController {
   @Public()
   @Post('login')
   @ApiOperation({ summary: 'Admin login — returns JWT' })
-  login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  async login(@Body() dto: LoginDto) {
+    const data = await this.authService.login(dto);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Current authenticated admin user' })
-  me(@CurrentUser() user: AuthUser) {
-    return this.authService.me(user.id);
+  async me(@CurrentUser() user: AuthUser) {
+    const data = await this.authService.me(user.id);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 }
