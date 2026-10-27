@@ -17,6 +17,7 @@ import { OrganizationalDocumentsModule } from './modules/organizational-document
 import { PrivacyPolicyModule } from './modules/privacy-policy/privacy-policy.module';
 import { TermsAndConditionsModule } from './modules/terms-and-conditions/terms-and-conditions.module';
 import { PartnershipInquiriesModule } from './modules/partnership-inquiries/partnership-inquiries.module';
+import { MilestonesModule } from './modules/milestones/milestones.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -39,6 +40,7 @@ import { UsersModule } from './modules/users/users.module';
     OrganizationalDocumentsModule,
     AnnualReportsModule,
     PartnershipInquiriesModule,
+    MilestonesModule,
     BlogCategoriesModule,
     BlogsAndStoriesModule,
   ],
