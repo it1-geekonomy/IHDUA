@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -41,13 +39,8 @@ export class LeadsContactController {
     description: 'Public endpoint for website contact form submissions.',
   })
   @ApiCreatedResponse({ type: LeadContact })
-  async create(@Body() dto: CreateLeadContactDto) {
-    const data = await this.service.create(dto);
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Contact lead submitted successfully',
-      data,
-    };
+  create(@Body() dto: CreateLeadContactDto) {
+    return this.service.create(dto);
   }
 
   @Get()
@@ -61,16 +54,8 @@ export class LeadsContactController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findAll(@Query() query: PaginationQueryDto) {
-    const result = await this.service.findAll(query);
-    return {
-      statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No contact leads found'
-          : 'Contact leads fetched successfully',
-      ...result,
-    };
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.service.findAll(query);
   }
 
   @Get('deleted')
@@ -85,16 +70,8 @@ export class LeadsContactController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findDeleted(@Query() query: PaginationQueryDto) {
-    const result = await this.service.findDeleted(query);
-    return {
-      statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No deleted contact leads found'
-          : 'Deleted contact leads fetched successfully',
-      ...result,
-    };
+  findDeleted(@Query() query: PaginationQueryDto) {
+    return this.service.findDeleted(query);
   }
 
   @Get(':id')
@@ -105,13 +82,8 @@ export class LeadsContactController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const data = await this.service.findOne(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Contact lead fetched successfully',
-      data,
-    };
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.findOne(id);
   }
 
   @Patch(':id')
@@ -122,16 +94,11 @@ export class LeadsContactController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async update(
+  update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateLeadContactDto,
   ) {
-    const data = await this.service.update(id, dto);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Contact lead updated successfully',
-      data,
-    };
+    return this.service.update(id, dto);
   }
 
   @Post(':id/restore')
@@ -145,17 +112,11 @@ export class LeadsContactController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async restore(@Param('id', ParseUUIDPipe) id: string) {
-    const data = await this.service.restore(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Contact lead restored successfully',
-      data,
-    };
+  restore(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.restore(id);
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -165,11 +126,7 @@ export class LeadsContactController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
-    await this.service.remove(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Contact lead deleted successfully',
-    };
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.remove(id);
   }
 }

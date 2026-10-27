@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -54,16 +52,11 @@ export class LeadsVolunteerController {
     description: 'Public endpoint for website volunteer modal submissions with resume upload.',
   })
   @ApiCreatedResponse({ type: LeadVolunteer })
-  async create(
+  create(
     @Body() dto: CreateLeadVolunteerDto,
     @UploadedFile() file?: CdnFile,
   ) {
-    const data = await this.service.create(dto, file);
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Volunteer inquiry submitted successfully',
-      data,
-    };
+    return this.service.create(dto, file);
   }
 
   @Get()
@@ -77,16 +70,8 @@ export class LeadsVolunteerController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findAll(@Query() query: PaginationQueryDto) {
-    const result = await this.service.findAll(query);
-    return {
-      statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No volunteer inquiries found'
-          : 'Volunteer inquiries fetched successfully',
-      ...result,
-    };
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.service.findAll(query);
   }
 
   @Get('deleted')
@@ -101,16 +86,8 @@ export class LeadsVolunteerController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findDeleted(@Query() query: PaginationQueryDto) {
-    const result = await this.service.findDeleted(query);
-    return {
-      statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No deleted volunteer inquiries found'
-          : 'Deleted volunteer inquiries fetched successfully',
-      ...result,
-    };
+  findDeleted(@Query() query: PaginationQueryDto) {
+    return this.service.findDeleted(query);
   }
 
   @Get(':id')
@@ -121,13 +98,8 @@ export class LeadsVolunteerController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const data = await this.service.findOne(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Volunteer inquiry fetched successfully',
-      data,
-    };
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.findOne(id);
   }
 
   @Patch(':id')
@@ -141,17 +113,12 @@ export class LeadsVolunteerController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async update(
+  update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateLeadVolunteerDto,
     @UploadedFile() file?: CdnFile,
   ) {
-    const data = await this.service.update(id, dto, file);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Volunteer inquiry updated successfully',
-      data,
-    };
+    return this.service.update(id, dto, file);
   }
 
   @Post(':id/restore')
@@ -165,17 +132,11 @@ export class LeadsVolunteerController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async restore(@Param('id', ParseUUIDPipe) id: string) {
-    const data = await this.service.restore(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Volunteer inquiry restored successfully',
-      data,
-    };
+  restore(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.restore(id);
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -185,11 +146,7 @@ export class LeadsVolunteerController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
-    await this.service.remove(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Volunteer inquiry deleted successfully',
-    };
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.remove(id);
   }
 }

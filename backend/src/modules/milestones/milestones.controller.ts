@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -45,13 +43,8 @@ export class MilestonesController {
     description: 'Chronological list of published milestones',
     type: [Milestone],
   })
-  async getYearWise() {
-    const data = await this.service.findYearWise();
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Milestones fetched successfully',
-      data,
-    };
+  getYearWise() {
+    return this.service.findYearWise();
   }
 
   @Post()
@@ -64,13 +57,8 @@ export class MilestonesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async create(@Body() dto: CreateMilestoneDto) {
-    const data = await this.service.create(dto);
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Milestone created successfully',
-      data,
-    };
+  create(@Body() dto: CreateMilestoneDto) {
+    return this.service.create(dto);
   }
 
   @Get()
@@ -84,16 +72,8 @@ export class MilestonesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findAll(@Query() query: PaginationQueryDto) {
-    const result = await this.service.findAll(query);
-    return {
-      statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No milestones found'
-          : 'Milestones fetched successfully',
-      ...result,
-    };
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.service.findAll(query);
   }
 
   @Get('deleted')
@@ -107,16 +87,8 @@ export class MilestonesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findDeleted(@Query() query: PaginationQueryDto) {
-    const result = await this.service.findDeleted(query);
-    return {
-      statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No deleted milestones found'
-          : 'Deleted milestones fetched successfully',
-      ...result,
-    };
+  findDeleted(@Query() query: PaginationQueryDto) {
+    return this.service.findDeleted(query);
   }
 
   @Get(':id')
@@ -127,13 +99,8 @@ export class MilestonesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const data = await this.service.findOne(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Milestone fetched successfully',
-      data,
-    };
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.findOne(id);
   }
 
   @Patch(':id')
@@ -144,16 +111,11 @@ export class MilestonesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async update(
+  update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateMilestoneDto,
   ) {
-    const data = await this.service.update(id, dto);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Milestone updated successfully',
-      data,
-    };
+    return this.service.update(id, dto);
   }
 
   @Post(':id/restore')
@@ -166,17 +128,11 @@ export class MilestonesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async restore(@Param('id', ParseUUIDPipe) id: string) {
-    const data = await this.service.restore(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Milestone restored successfully',
-      data,
-    };
+  restore(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.restore(id);
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -185,11 +141,7 @@ export class MilestonesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
-    await this.service.remove(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Milestone deleted successfully',
-    };
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.remove(id);
   }
 }
