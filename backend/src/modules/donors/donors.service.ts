@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DonationStatus } from '../../common/enums/donation-status.enum';
+import { DonationCategory } from '../../common/enums/donation-category.enum';
 import { RazorpayService } from '../../common/payments/razorpay.service';
 import { Donor } from './entities/donor.entity';
 import {
@@ -20,6 +21,12 @@ type OrderNotes = {
   phone?: string;
   email?: string;
   pan?: string;
+  address?: string;
+  state?: string;
+  city?: string;
+  pincode?: string;
+  message?: string;
+  donationCategory?: string;
   amount?: string;
   currency?: string;
   countryCode?: string;
@@ -32,7 +39,7 @@ export class DonorsService {
     @InjectRepository(Donor)
     private readonly donorsRepository: Repository<Donor>,
     private readonly razorpay: RazorpayService,
-  ) { }
+  ) {}
 
   private assertPaymentSignature(dto: VerifyDonationPaymentDto) {
     const isValid = this.razorpay.verifyPaymentSignature(
@@ -63,9 +70,15 @@ export class DonorsService {
     const amountMinor = this.toMinorUnits(dto.amount, currency);
 
     const fullName = dto.fullName.trim();
-    const phone = dto.phone?.trim() || '';
-    const email = dto.email?.trim().toLowerCase() || '';
+    const phone = dto.phone.trim();
+    const email = dto.email.trim().toLowerCase();
     const pan = dto.pan?.trim().toUpperCase() || '';
+    const address = dto.address?.trim() || '';
+    const state = dto.state?.trim() || '';
+    const city = dto.city?.trim() || '';
+    const pincode = dto.pincode?.trim() || '';
+    const message = dto.message?.trim() || '';
+    const donationCat = dto.donationCategory || DonationCategory.GENERAL_DONATION;
     const countryCode = dto.countryCode?.trim().toUpperCase() || '';
     const countryName = dto.countryName?.trim() || '';
 
@@ -79,6 +92,12 @@ export class DonorsService {
           phone,
           email,
           pan,
+          address,
+          state,
+          city,
+          pincode,
+          message,
+          donationCategory: donationCat,
           amount: dto.amount,
           currency,
           countryCode,
@@ -96,18 +115,18 @@ export class DonorsService {
       if (error instanceof InternalServerErrorException) throw error;
       const message =
         error &&
-          typeof error === 'object' &&
-          'error' in error &&
-          error.error &&
-          typeof error.error === 'object' &&
-          'description' in error.error
+        typeof error === 'object' &&
+        'error' in error &&
+        error.error &&
+        typeof error.error === 'object' &&
+        'description' in error.error
           ? String((error.error as { description?: string }).description)
           : 'Failed to create Razorpay order';
       throw new InternalServerErrorException(message);
     }
   }
 
-  /** Verifies Razorpay payment, then inserts the donors row (success only). */
+  /** Verifies Razorpay payment, then inserts the donors row (paid only). */
   async verifyPayment(dto: VerifyDonationPaymentDto) {
     this.assertPaymentSignature(dto);
 
@@ -121,6 +140,7 @@ export class DonorsService {
         receiptNumber: existing.receiptNumber,
         amount: existing.amount,
         currency: existing.currency,
+        donationCategory: existing.donationCategory,
       };
     }
 
@@ -150,15 +170,20 @@ export class DonorsService {
 
     const donor = this.donorsRepository.create({
       fullName: notes.fullName,
-      phone: notes.phone || null,
-      email: notes.email || null,
+      phone: notes.phone || '',
+      email: notes.email || '',
       pan: notes.pan || null,
-      city: notes.countryName || notes.countryCode || null,
+      address: notes.address || null,
+      state: notes.state || null,
+      city: notes.city || notes.countryName || notes.countryCode || null,
+      pincode: notes.pincode || null,
+      message: notes.message || null,
+      donationCategory: (notes.donationCategory as DonationCategory) || DonationCategory.GENERAL_DONATION,
       amount: amountMajor,
       currency,
       razorpayOrderId: dto.razorpayOrderId,
       razorpayPaymentId: dto.razorpayPaymentId,
-      status: DonationStatus.SUCCESS,
+      status: DonationStatus.PAID,
       receiptNumber: `IHDUA-${Date.now()}`,
     });
 
@@ -170,6 +195,7 @@ export class DonorsService {
       receiptNumber: saved.receiptNumber,
       amount: saved.amount,
       currency: saved.currency,
+      donationCategory: saved.donationCategory,
     };
   }
 

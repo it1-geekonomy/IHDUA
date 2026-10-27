@@ -73,7 +73,7 @@ export default function StoriesFromField() {
 
   return (
     <section className="w-full bg-[#FAF9F5]">
-      <div className="w-full px-6 pt-6 pb-6 lg:px-10 lg:py-16 2xl:px-40">
+      <div className="w-full px-6 pt-6 pb-6 lg:pt-8 lg:pb-8 lg:px-10 xl:py-14 2xl:px-40">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
           {/* Label + heading: centered below sm (640px), left-aligned from sm up */}

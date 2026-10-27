@@ -2,7 +2,7 @@ export const STATS = [
   {
     icon: "/statsection/locationicon.png",
     bg: "#9739A8",
-    target: 59,
+    target: 202,
     suffix: "+",
     label: "Villages Reached",
   },

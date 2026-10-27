@@ -110,7 +110,11 @@ export default function CountUp({
   }, [hasAnimated, parsed.isValid, parsed.target, duration]);
 
   if (!parsed.isValid) {
-    return <span className={className}>{value}</span>;
+    return (
+      <span translate="no" className={`notranslate ${className}`}>
+        {value}
+      </span>
+    );
   }
 
   // Format the animated number
@@ -127,7 +131,11 @@ export default function CountUp({
   }
 
   return (
-    <span ref={elementRef} className={`inline-block tabular-nums ${className}`}>
+    <span
+      ref={elementRef}
+      translate="no"
+      className={`notranslate inline-block tabular-nums ${className}`}
+    >
       {parsed.prefix}
       {formattedNumber}
       {parsed.suffix}

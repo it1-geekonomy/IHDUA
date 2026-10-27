@@ -22,4 +22,12 @@ export default () => ({
     password: process.env.ADMIN_PASSWORD ?? 'Admin@123',
     fullName: process.env.ADMIN_FULL_NAME ?? 'IHDUA Admin',
   },
+  r2: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID ?? '',
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY ?? '',
+    bucketName: process.env.R2_BUCKET_NAME ?? '',
+    endpoint: process.env.R2_ENDPOINT ?? '',
+    publicUrl: process.env.R2_PUBLIC_URL ?? '',
+    region: process.env.R2_REGION ?? 'auto',
+  },
 });
