@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class UpdateDonorsTable1760000000002 implements MigrationInterface {
-  name = 'UpdateDonorsTable1760000000002';
+export class UpdateDonorsTable1760000000006 implements MigrationInterface {
+  name = 'UpdateDonorsTable1760000000006';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // 1. Ensure donation_status enum has 'paid' and 'refunded'
@@ -25,6 +25,10 @@ export class UpdateDonorsTable1760000000002 implements MigrationInterface {
         END IF;
       END$$;
     `);
+
+    // In PostgreSQL, new enum values must be committed before they can be used in the same connection
+    await queryRunner.commitTransaction();
+    await queryRunner.startTransaction();
 
     // 2. Migrate any existing 'success' rows to 'paid'
     await queryRunner.query(`
