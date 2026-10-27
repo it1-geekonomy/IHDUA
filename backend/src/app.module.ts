@@ -12,6 +12,7 @@ import { LeadsContactModule } from './modules/leads-contact/leads-contact.module
 import { LeadsVolunteerModule } from './modules/leads-volunteer/leads-volunteer.module';
 import { PrivacyPolicyModule } from './modules/privacy-policy/privacy-policy.module';
 import { TermsAndConditionsModule } from './modules/terms-and-conditions/terms-and-conditions.module';
+import { PartnershipInquiriesModule } from './modules/partnership-inquiries/partnership-inquiries.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -31,6 +32,7 @@ import { UsersModule } from './modules/users/users.module';
     LeadsVolunteerModule,
     TermsAndConditionsModule,
     PrivacyPolicyModule,
+    PartnershipInquiriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
