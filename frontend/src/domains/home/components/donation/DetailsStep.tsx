@@ -6,6 +6,7 @@ import { INDIAN_STATES } from "@/domains/home/constants/indianStates";
 import {
   FormInput,
   FormSelect,
+  FormTextarea,
   PhoneInputField,
 } from "@/shared/components/form";
 import type { DonationFormState } from "./useDonationForm";
@@ -29,6 +30,7 @@ type DetailsStepProps = Pick<
   | "stateName"
   | "city"
   | "pincode"
+  | "message"
   | "termsAccepted"
   | "isPaying"
   | "statusMessage"
@@ -44,6 +46,7 @@ type DetailsStepProps = Pick<
   | "setStateName"
   | "setCity"
   | "setPincode"
+  | "setMessage"
   | "setTermsAccepted"
   | "setCustomFromInput"
   | "goBackToAmount"
@@ -64,6 +67,7 @@ export function DetailsStep({
   stateName,
   city,
   pincode,
+  message,
   termsAccepted,
   isPaying,
   statusMessage,
@@ -77,6 +81,7 @@ export function DetailsStep({
   setStateName,
   setCity,
   setPincode,
+  setMessage,
   setTermsAccepted,
   goBackToAmount,
   paySecurely,
@@ -205,6 +210,16 @@ export function DetailsStep({
             disabled={isPaying}
           />
         </div>
+
+        {/* Row 5: Message (Optional) */}
+        <FormTextarea
+          label="Message (Optional)"
+          placeholder="Leave a message or words of support..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          disabled={isPaying}
+          rows={3}
+        />
 
         {/* Terms & Conditions Checkbox */}
         <div className="pt-1">

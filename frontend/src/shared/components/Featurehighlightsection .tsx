@@ -3,7 +3,9 @@ import Image from "next/image";
 import Typography from "@/lib/Typography";
 import CountUp from "@/shared/components/CountUp";
 import { cn } from "@/lib/utils";
-import { COLORS,CARD_GRADIENT,} from "@/shared/constants/featuredhighlight";
+import { COLORS, CARD_GRADIENT } from "@/shared/constants/featuredhighlight";
+import { SECTION_PADDING_X } from "@/shared/constants/imagecard";
+
 export interface FeatureItem {
   icon: ReactNode | string;
   iconAlt?: string;
@@ -66,6 +68,7 @@ const IconBadge = ({ icon, alt = "" }: IconBadgeProps) => (
     </span>
   </span>
 );
+
 const FeatureHighlightSection = ({
   label,
   heading,
@@ -78,7 +81,8 @@ const FeatureHighlightSection = ({
     <section
       className={cn(
         "w-full bg-[#FFFFFF]",
-        "px-[clamp(1rem,-1.0769rem_+_9.2308vw,10rem)] pt-6 lg:pt-8",
+        SECTION_PADDING_X,
+        "pt-6 lg:pt-8",
         "flex flex-col gap-[clamp(1.5rem,4vw,4rem)] lg:flex-row lg:items-center",
         className,
       )}
@@ -201,4 +205,5 @@ const FeatureHighlightSection = ({
     </section>
   );
 };
+
 export default FeatureHighlightSection;

@@ -32,6 +32,18 @@ import {
 
 export type DonationStep = 1 | 2;
 
+export type DonationReceipt = {
+  receiptNumber: string;
+  donorName: string;
+  amount: string;
+  currency: string;
+  currencySymbol: string;
+  donationCategory: string;
+  date: string;
+  email: string;
+  paymentId?: string;
+};
+
 function isValidTaxId(value: string) {
   const trimmed = value.trim().toUpperCase();
   if (!trimmed) return true;
@@ -49,7 +61,7 @@ function isValidPhone(localNumber: string, countryCode: string) {
 
 // Flag to control payment gateway availability.
 // Set to true once backend payment integration endpoints are deployed.
-const IS_PAYMENT_ENABLED = false;
+const IS_PAYMENT_ENABLED = true;
 
 export function useDonationForm() {
   const [step, setStep] = useState<DonationStep>(1);
@@ -71,7 +83,9 @@ export function useDonationForm() {
   const [stateName, setStateName] = useState("");
   const [city, setCity] = useState("");
   const [pincode, setPincode] = useState("");
+  const [message, setMessage] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [successReceipt, setSuccessReceipt] = useState<DonationReceipt | null>(null);
   const [isPaying, setIsPaying] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusTone, setStatusTone] = useState<"ok" | "error" | "info" | null>(null);
@@ -201,11 +215,18 @@ export function useDonationForm() {
 
   const cancelAmountEdit = () => setEditingAmount(false);
 
+  const closeReceiptModal = useCallback(() => {
+    setSuccessReceipt(null);
+    setStep(1);
+    setStatusMessage(null);
+    setStatusTone(null);
+  }, []);
+
   const paySecurely = async () => {
     setStatusMessage(null);
     setStatusTone(null);
 
-    // Backend payment gateway integration is currently in progress and not pushed yet.
+    // Backend payment gateway integration check
     if (!IS_PAYMENT_ENABLED) {
       setStatusTone("info");
       const trimmedName = fullName.trim();
@@ -289,6 +310,8 @@ export function useDonationForm() {
         state: stateName.trim(),
         city: city.trim(),
         pincode: pincode.trim(),
+        ...(message.trim() ? { message: message.trim() } : {}),
+        donationCategory: cause,
       });
 
       openRazorpayCheckout({
@@ -307,13 +330,28 @@ export function useDonationForm() {
         handler: async (response) => {
           setStatusMessage(DONATION_COPY.verifying);
           try {
-            await verifyDonationPayment({
+            const verifyResult = await verifyDonationPayment({
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
             });
             setStatusTone("ok");
             setStatusMessage(DONATION_COPY.paymentSuccess);
+            setSuccessReceipt({
+              receiptNumber: verifyResult.receiptNumber || `IHDUA-${Date.now()}`,
+              donorName: name,
+              amount: verifyResult.amount || amount,
+              currency: verifyResult.currency || currency,
+              currencySymbol: currencyMeta.symbol,
+              donationCategory: verifyResult.donationCategory || cause,
+              date: new Date().toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              }),
+              email: mail,
+              paymentId: response.razorpay_payment_id,
+            });
             setFullName("");
             setMobile("");
             setEmail("");
@@ -322,6 +360,7 @@ export function useDonationForm() {
             setStateName("");
             setCity("");
             setPincode("");
+            setMessage("");
             setTermsAccepted(false);
           } catch (error) {
             setStatusTone("error");
@@ -376,6 +415,7 @@ export function useDonationForm() {
     stateName,
     city,
     pincode,
+    message,
     termsAccepted,
     isPaying,
     statusMessage,
@@ -392,6 +432,7 @@ export function useDonationForm() {
     setStateName,
     setCity,
     setPincode,
+    setMessage,
     setTermsAccepted,
     setUsingCustom,
     setCause,
@@ -403,6 +444,9 @@ export function useDonationForm() {
     commitAmountEdit,
     cancelAmountEdit,
     paySecurely,
+    successReceipt,
+    setSuccessReceipt,
+    closeReceiptModal,
   };
 }
 
