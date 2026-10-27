@@ -8,10 +8,13 @@ import {
   AmountConfirmHint,
   DonationTrustNote,
 } from "./DonationFormPrimitives";
+import { CountrySelect } from "./CountrySelect";
 import type { DonationFormState } from "./useDonationForm";
 
 type AmountStepProps = Pick<
   DonationFormState,
+  | "countryCode"
+  | "setCountryCode"
   | "currencySymbol"
   | "presets"
   | "selectedDigits"
@@ -30,6 +33,8 @@ type AmountStepProps = Pick<
 };
 
 export function AmountStep({
+  countryCode,
+  setCountryCode,
   currencySymbol,
   presets,
   selectedDigits,
@@ -62,13 +67,36 @@ export function AmountStep({
 
   return (
     <div className={`flex flex-col ${compact ? "mt-2 gap-2" : "mt-4 sm:mt-5 gap-3 sm:gap-3.5"}`}>
+      {/* Country Selection */}
+      <div>
+        <Typography
+          variant="caption"
+          className={`font-bold font-figtree tracking-normal text-[#1E1E1E] !normal-case ${
+            compact ? "text-[12.5px] sm:text-[13px]" : "text-[14px] sm:text-[15px]"
+          }`}
+        >
+          {DONATION_COPY.chooseCountry}
+        </Typography>
+        <div className="mt-1.5">
+          <CountrySelect
+            value={countryCode}
+            onChange={setCountryCode}
+            compact={compact}
+          />
+        </div>
+        <p className="mt-1 font-figtree text-[11px] sm:text-[11.5px] text-[#8A847A]">
+          {DONATION_COPY.internationalNote}
+        </p>
+      </div>
+
+      {/* Choose Amount */}
       <Typography
         variant="caption"
         className={`font-bold font-figtree tracking-normal text-[#1E1E1E] !normal-case ${
           compact ? "text-[12.5px] sm:text-[13px]" : "text-[14px] sm:text-[15px]"
         }`}
       >
-        {DONATION_COPY.chooseAmountStep}
+        {DONATION_COPY.chooseAmount}
       </Typography>
 
       {/* Preset amount pills (4 equal columns) */}

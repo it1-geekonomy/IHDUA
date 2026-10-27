@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import {
   BadRequestException,
   Injectable,
@@ -62,6 +63,11 @@ export class DonorsService {
       throw new BadRequestException(`Minimum donation amount is 1 ${currency}`);
     }
     return minor;
+  }
+
+  private buildReceiptNumber(id: string): string {
+    const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    return `IHDUA-${stamp}-${id.replace(/-/g, '').slice(0, 8).toUpperCase()}`;
   }
 
   /** Creates a Razorpay order only — no donors row until payment succeeds. */
@@ -168,7 +174,9 @@ export class DonorsService {
       throw new BadRequestException('Donation details missing on order');
     }
 
+    const donorId = randomUUID();
     const donor = this.donorsRepository.create({
+      id: donorId,
       fullName: notes.fullName,
       phone: notes.phone || '',
       email: notes.email || '',
@@ -184,7 +192,7 @@ export class DonorsService {
       razorpayOrderId: dto.razorpayOrderId,
       razorpayPaymentId: dto.razorpayPaymentId,
       status: DonationStatus.PAID,
-      receiptNumber: `IHDUA-${Date.now()}`,
+      receiptNumber: this.buildReceiptNumber(donorId),
     });
 
     const saved = await this.donorsRepository.save(donor);
