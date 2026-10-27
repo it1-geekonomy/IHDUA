@@ -59,7 +59,7 @@ export default function CommunityStorySection({
                       <Typography
                         key={idx}
                         variant="body-lg"
-                        className="font-figtree font-light text-[#5F6C6D] text-left leading-relaxed"
+                        className="font-figtree font-normal text-[#5F6C6D] text-left leading-relaxed"
                       >
                         {p}
                       </Typography>
@@ -87,7 +87,7 @@ export default function CommunityStorySection({
                     </Typography>
                     <Typography
                       variant="body-lg"
-                      className="font-figtree font-light text-[#5F6C6D] text-left mt-1 leading-relaxed"
+                      className="font-figtree font-normal text-[#5F6C6D] text-left mt-1 leading-relaxed"
                     >
                       {featureCard.description}
                     </Typography>
