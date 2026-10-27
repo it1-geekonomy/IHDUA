@@ -73,7 +73,7 @@ export class PartnershipInquiriesController {
   @ApiOperation({
     summary: 'List recently deleted partnership inquiries (CMS trash)',
     description:
-      'Soft-deleted inquiries only, newest first. Restore with POST /partnership-inquiries/:id/restore.',
+      'Soft-deleted inquiries only, newest first. Restore with PATCH /partnership-inquiries/:id/restore.',
   })
   @ApiOkResponse({ description: 'Paginated trash list' })
   @ApiUnauthorizedResponse({
@@ -122,7 +122,7 @@ export class PartnershipInquiriesController {
     };
   }
 
-  @Post(':id/restore')
+  @Patch(':id/restore')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({

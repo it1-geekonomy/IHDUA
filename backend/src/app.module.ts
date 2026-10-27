@@ -19,6 +19,7 @@ import { TermsAndConditionsModule } from './modules/terms-and-conditions/terms-a
 import { PartnershipInquiriesModule } from './modules/partnership-inquiries/partnership-inquiries.module';
 import { MilestonesModule } from './modules/milestones/milestones.module';
 import { ImpactStatsModule } from './modules/impact-stats/impact-stats.module';
+import { NewsletterSubscribersModule } from './modules/newsletter-subscribers/newsletter-subscribers.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -45,6 +46,7 @@ import { UsersModule } from './modules/users/users.module';
     BlogCategoriesModule,
     BlogsAndStoriesModule,
     ImpactStatsModule,
+    NewsletterSubscribersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -14,4 +14,5 @@ export const ApiTagsConst = {
   BLOG_CATEGORIES: 'blog-categories',
   BLOGS_AND_STORIES: 'blogs-and-stories',
   IMPACT_STATS: 'impact-stats',
+  NEWSLETTER_SUBSCRIBERS: 'newsletter-subscribers',
 } as const;
