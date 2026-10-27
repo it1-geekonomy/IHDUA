@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -60,10 +59,6 @@ export class AnnualReportsController {
     const data = await this.service.findPublished();
     return {
       statusCode: HttpStatus.OK,
-      message:
-        data.length === 0
-          ? 'No published annual reports found'
-          : 'Published annual reports fetched successfully',
       data,
     };
   }
@@ -83,10 +78,6 @@ export class AnnualReportsController {
     const result = await this.service.findDeleted(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No deleted annual reports found'
-          : 'Deleted annual reports fetched successfully',
       ...result,
     };
   }
@@ -116,7 +107,6 @@ export class AnnualReportsController {
     const data = await this.service.create(dto, file);
     return {
       statusCode: HttpStatus.CREATED,
-      message: 'Annual report created successfully',
       data,
     };
   }
@@ -137,10 +127,6 @@ export class AnnualReportsController {
     const result = await this.service.findAll(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No annual reports found'
-          : 'Annual reports fetched successfully',
       ...result,
     };
   }
@@ -163,7 +149,6 @@ export class AnnualReportsController {
     const data = await this.service.findOne(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Annual report fetched successfully',
       data,
     };
   }
@@ -194,7 +179,6 @@ export class AnnualReportsController {
     const data = await this.service.update(id, dto, file);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Annual report updated successfully',
       data,
     };
   }
@@ -217,13 +201,11 @@ export class AnnualReportsController {
     const data = await this.service.restore(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Annual report restored successfully',
       data,
     };
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -237,7 +219,6 @@ export class AnnualReportsController {
     await this.service.remove(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Annual report deleted successfully',
     };
   }
 }

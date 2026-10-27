@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -61,7 +60,6 @@ export class LeadsVolunteerController {
     const data = await this.service.create(dto, file);
     return {
       statusCode: HttpStatus.CREATED,
-      message: 'Volunteer inquiry submitted successfully',
       data,
     };
   }
@@ -81,10 +79,6 @@ export class LeadsVolunteerController {
     const result = await this.service.findAll(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No volunteer inquiries found'
-          : 'Volunteer inquiries fetched successfully',
       ...result,
     };
   }
@@ -105,10 +99,6 @@ export class LeadsVolunteerController {
     const result = await this.service.findDeleted(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No deleted volunteer inquiries found'
-          : 'Deleted volunteer inquiries fetched successfully',
       ...result,
     };
   }
@@ -125,7 +115,6 @@ export class LeadsVolunteerController {
     const data = await this.service.findOne(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Volunteer inquiry fetched successfully',
       data,
     };
   }
@@ -149,7 +138,6 @@ export class LeadsVolunteerController {
     const data = await this.service.update(id, dto, file);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Volunteer inquiry updated successfully',
       data,
     };
   }
@@ -169,13 +157,11 @@ export class LeadsVolunteerController {
     const data = await this.service.restore(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Volunteer inquiry restored successfully',
       data,
     };
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -189,7 +175,6 @@ export class LeadsVolunteerController {
     await this.service.remove(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Volunteer inquiry deleted successfully',
     };
   }
 }
