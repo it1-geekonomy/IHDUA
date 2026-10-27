@@ -18,6 +18,7 @@ import { PrivacyPolicyModule } from './modules/privacy-policy/privacy-policy.mod
 import { TermsAndConditionsModule } from './modules/terms-and-conditions/terms-and-conditions.module';
 import { PartnershipInquiriesModule } from './modules/partnership-inquiries/partnership-inquiries.module';
 import { MilestonesModule } from './modules/milestones/milestones.module';
+import { LeadershipMembersModule } from './modules/leadership-members/leadership-members.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -43,6 +44,7 @@ import { UsersModule } from './modules/users/users.module';
     MilestonesModule,
     BlogCategoriesModule,
     BlogsAndStoriesModule,
+    LeadershipMembersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
