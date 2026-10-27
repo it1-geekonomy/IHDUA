@@ -7,7 +7,7 @@ export const DONATION_CAUSES = [
   "General Donation",
   "Education & School Support",
   "Healthcare & Medical Camps",
-  "Women’s Empowerment",
+  "Women's Empowerment",
   "Sustainable Livelihoods",
   "Organic Farming",
   "Rural Community Development",
