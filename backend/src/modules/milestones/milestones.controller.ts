@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -49,7 +48,6 @@ export class MilestonesController {
     const data = await this.service.findYearWise();
     return {
       statusCode: HttpStatus.OK,
-      message: 'Milestones fetched successfully',
       data,
     };
   }
@@ -68,7 +66,6 @@ export class MilestonesController {
     const data = await this.service.create(dto);
     return {
       statusCode: HttpStatus.CREATED,
-      message: 'Milestone created successfully',
       data,
     };
   }
@@ -88,10 +85,6 @@ export class MilestonesController {
     const result = await this.service.findAll(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No milestones found'
-          : 'Milestones fetched successfully',
       ...result,
     };
   }
@@ -111,10 +104,6 @@ export class MilestonesController {
     const result = await this.service.findDeleted(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No deleted milestones found'
-          : 'Deleted milestones fetched successfully',
       ...result,
     };
   }
@@ -131,7 +120,6 @@ export class MilestonesController {
     const data = await this.service.findOne(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Milestone fetched successfully',
       data,
     };
   }
@@ -151,7 +139,6 @@ export class MilestonesController {
     const data = await this.service.update(id, dto);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Milestone updated successfully',
       data,
     };
   }
@@ -170,13 +157,11 @@ export class MilestonesController {
     const data = await this.service.restore(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Milestone restored successfully',
       data,
     };
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -189,7 +174,6 @@ export class MilestonesController {
     await this.service.remove(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Milestone deleted successfully',
     };
   }
 }

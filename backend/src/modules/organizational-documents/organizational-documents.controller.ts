@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -61,10 +60,6 @@ export class OrganizationalDocumentsController {
     const data = await this.service.findPublished();
     return {
       statusCode: HttpStatus.OK,
-      message:
-        data.length === 0
-          ? 'No published organizational documents found'
-          : 'Published organizational documents fetched successfully',
       data,
     };
   }
@@ -84,10 +79,6 @@ export class OrganizationalDocumentsController {
     const result = await this.service.findDeleted(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No deleted organizational documents found'
-          : 'Deleted organizational documents fetched successfully',
       ...result,
     };
   }
@@ -117,7 +108,6 @@ export class OrganizationalDocumentsController {
     const data = await this.service.create(dto, file);
     return {
       statusCode: HttpStatus.CREATED,
-      message: 'Organizational document created successfully',
       data,
     };
   }
@@ -138,10 +128,6 @@ export class OrganizationalDocumentsController {
     const result = await this.service.findAll(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No organizational documents found'
-          : 'Organizational documents fetched successfully',
       ...result,
     };
   }
@@ -164,7 +150,6 @@ export class OrganizationalDocumentsController {
     const data = await this.service.findOne(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Organizational document fetched successfully',
       data,
     };
   }
@@ -195,7 +180,6 @@ export class OrganizationalDocumentsController {
     const data = await this.service.update(id, dto, file);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Organizational document updated successfully',
       data,
     };
   }
@@ -218,13 +202,11 @@ export class OrganizationalDocumentsController {
     const data = await this.service.restore(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Organizational document restored successfully',
       data,
     };
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -238,7 +220,6 @@ export class OrganizationalDocumentsController {
     await this.service.remove(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Organizational document deleted successfully',
     };
   }
 }

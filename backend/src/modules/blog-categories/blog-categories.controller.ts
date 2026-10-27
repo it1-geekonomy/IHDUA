@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -40,8 +41,12 @@ export class BlogCategoriesController {
     description: 'List of active blog categories',
     type: [BlogCategory],
   })
-  findPublished() {
-    return this.blogCategoriesService.findPublished();
+  async findPublished() {
+    const data = await this.blogCategoriesService.findPublished();
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Public()
@@ -52,16 +57,24 @@ export class BlogCategoriesController {
     description: 'Blog category details',
     type: BlogCategory,
   })
-  findBySlug(@Param('slug') slug: string) {
-    return this.blogCategoriesService.findBySlug(slug);
+  async findBySlug(@Param('slug') slug: string) {
+    const data = await this.blogCategoriesService.findBySlug(slug);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Get('deleted')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'List soft-deleted blog categories (Admin)' })
-  findDeleted(@Query() query: PaginationQueryDto) {
-    return this.blogCategoriesService.findDeleted(query);
+  async findDeleted(@Query() query: PaginationQueryDto) {
+    const result = await this.blogCategoriesService.findDeleted(query);
+    return {
+      statusCode: HttpStatus.OK,
+      ...result,
+    };
   }
 
   @Post()
@@ -73,8 +86,12 @@ export class BlogCategoriesController {
     description: 'Blog category created successfully',
     type: BlogCategory,
   })
-  create(@Body() dto: CreateBlogCategoryDto) {
-    return this.blogCategoriesService.create(dto);
+  async create(@Body() dto: CreateBlogCategoryDto) {
+    const data = await this.blogCategoriesService.create(dto);
+    return {
+      statusCode: HttpStatus.CREATED,
+      data,
+    };
   }
 
   @Get()
@@ -83,8 +100,12 @@ export class BlogCategoriesController {
   @ApiOperation({
     summary: 'List all blog categories with pagination & filters (Admin)',
   })
-  findAll(@Query() query: PaginationQueryDto) {
-    return this.blogCategoriesService.findAll(query);
+  async findAll(@Query() query: PaginationQueryDto) {
+    const result = await this.blogCategoriesService.findAll(query);
+    return {
+      statusCode: HttpStatus.OK,
+      ...result,
+    };
   }
 
   @Get(':id')
@@ -96,8 +117,12 @@ export class BlogCategoriesController {
     description: 'Blog category details',
     type: BlogCategory,
   })
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.blogCategoriesService.findOne(id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.blogCategoriesService.findOne(id);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Patch(':id/restore')
@@ -109,8 +134,12 @@ export class BlogCategoriesController {
     description: 'Restored blog category',
     type: BlogCategory,
   })
-  restore(@Param('id', ParseUUIDPipe) id: string) {
-    return this.blogCategoriesService.restore(id);
+  async restore(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.blogCategoriesService.restore(id);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Patch(':id')
@@ -122,18 +151,25 @@ export class BlogCategoriesController {
     description: 'Updated blog category',
     type: BlogCategory,
   })
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateBlogCategoryDto,
   ) {
-    return this.blogCategoriesService.update(id, dto);
+    const data = await this.blogCategoriesService.update(id, dto);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Soft-delete blog category by id (Admin)' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.blogCategoriesService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    await this.blogCategoriesService.remove(id);
+    return {
+      statusCode: HttpStatus.OK,
+    };
   }
 }

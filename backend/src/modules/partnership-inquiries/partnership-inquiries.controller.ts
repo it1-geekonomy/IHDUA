@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -45,7 +44,6 @@ export class PartnershipInquiriesController {
     const data = await this.service.create(dto);
     return {
       statusCode: HttpStatus.CREATED,
-      message: 'Partnership inquiry submitted successfully',
       data,
     };
   }
@@ -65,10 +63,6 @@ export class PartnershipInquiriesController {
     const result = await this.service.findAll(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No partnership inquiries found'
-          : 'Partnership inquiries fetched successfully',
       ...result,
     };
   }
@@ -89,10 +83,6 @@ export class PartnershipInquiriesController {
     const result = await this.service.findDeleted(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No deleted partnership inquiries found'
-          : 'Deleted partnership inquiries fetched successfully',
       ...result,
     };
   }
@@ -109,7 +99,6 @@ export class PartnershipInquiriesController {
     const data = await this.service.findOne(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Partnership inquiry fetched successfully',
       data,
     };
   }
@@ -129,7 +118,6 @@ export class PartnershipInquiriesController {
     const data = await this.service.update(id, dto);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Partnership inquiry updated successfully',
       data,
     };
   }
@@ -149,13 +137,11 @@ export class PartnershipInquiriesController {
     const data = await this.service.restore(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Partnership inquiry restored successfully',
       data,
     };
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -169,7 +155,6 @@ export class PartnershipInquiriesController {
     await this.service.remove(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Partnership inquiry deleted successfully',
     };
   }
 }

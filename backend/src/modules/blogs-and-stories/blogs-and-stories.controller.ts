@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -69,7 +68,6 @@ export class BlogsAndStoriesController {
     const data = await this.blogsAndStoriesService.create(dto, file);
     return {
       statusCode: HttpStatus.CREATED,
-      message: 'Blog or story created successfully',
       data,
     };
   }
@@ -90,10 +88,6 @@ export class BlogsAndStoriesController {
     const result = await this.blogsAndStoriesService.findAll(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No blogs or stories found'
-          : 'Blogs and stories fetched successfully',
       ...result,
     };
   }
@@ -114,10 +108,6 @@ export class BlogsAndStoriesController {
     const result = await this.blogsAndStoriesService.findDeleted(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No deleted blogs or stories found'
-          : 'Deleted blogs and stories fetched successfully',
       ...result,
     };
   }
@@ -133,10 +123,6 @@ export class BlogsAndStoriesController {
     const result = await this.blogsAndStoriesService.findPublished(query);
     return {
       statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No published blogs or stories found'
-          : 'Published blogs and stories fetched successfully',
       ...result,
     };
   }
@@ -174,7 +160,6 @@ export class BlogsAndStoriesController {
       );
     return {
       statusCode: HttpStatus.OK,
-      message: 'Published blog or story fetched successfully',
       data,
     };
   }
@@ -211,7 +196,6 @@ export class BlogsAndStoriesController {
     );
     return {
       statusCode: HttpStatus.OK,
-      message: 'Published blog or story fetched successfully',
       data,
     };
   }
@@ -228,7 +212,6 @@ export class BlogsAndStoriesController {
     const data = await this.blogsAndStoriesService.findOne(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Blog or story fetched successfully',
       data,
     };
   }
@@ -249,7 +232,6 @@ export class BlogsAndStoriesController {
     const data = await this.blogsAndStoriesService.restore(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Blog or story restored successfully',
       data,
     };
   }
@@ -277,13 +259,11 @@ export class BlogsAndStoriesController {
     const data = await this.blogsAndStoriesService.update(id, dto, file);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Blog or story updated successfully',
       data,
     };
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -297,7 +277,6 @@ export class BlogsAndStoriesController {
     await this.blogsAndStoriesService.remove(id);
     return {
       statusCode: HttpStatus.OK,
-      message: 'Blog or story deleted successfully',
     };
   }
 }
