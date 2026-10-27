@@ -8,7 +8,7 @@ export const WHO_WE_ARE_HEADING = {
 export const WHO_WE_ARE_PARAGRAPHS = [
   {
     id: "mission",
-    text: "The Integrated Humanitarian Development & Upliftment Association (IHDUA) is a not-for-profit organisation working with rural and underserved communities to improve quality of life through education, healthcare, livelihood support and sustainable development initiatives. We work closely with communities to understand their needs and develop practical programmes that respond to local challenges and opportunities.",
+    text: "The International Humanitarian Development & Upliftment Association (IHDUA) is a not-for-profit organisation working with rural and underserved communities to improve quality of life through education, healthcare, livelihood support and sustainable development initiatives. We work closely with communities to understand their needs and develop practical programmes that respond to local challenges and opportunities.",
   },
   {
     id: "approach",
