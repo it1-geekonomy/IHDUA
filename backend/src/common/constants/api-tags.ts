@@ -4,4 +4,6 @@ export const ApiTagsConst = {
   USERS: 'users',
   DONORS: 'donors',
   LEADS_CONTACT: 'leads-contact',
+  TERMS_AND_CONDITIONS: 'terms-and-conditions',
+  PRIVACY_POLICY: 'privacy-policy',
 } as const;
