@@ -53,7 +53,7 @@ function validateField(field: FieldName, values: FormValues, country: DonationCo
 
     case "email":
       if (!value) return "Please enter your email address.";
-      if (!EMAIL_RE.test(value)) return "Enter a valid email address, e.g. name@example.com.";
+      if (!EMAIL_RE.test(value)) return "Enter a valid email address";
       return "";
 
     case "phone":
