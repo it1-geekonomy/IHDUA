@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
   UseGuards,
@@ -19,13 +20,21 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'List all users (admin)' })
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    const data = await this.usersService.findAll();
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get user by id (admin)' })
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.usersService.findOneSafe(id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.usersService.findOneSafe(id);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 }

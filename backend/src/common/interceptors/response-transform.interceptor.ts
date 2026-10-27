@@ -16,8 +16,7 @@ export class ResponseTransformInterceptor implements NestInterceptor {
         if (
           data &&
           typeof data === 'object' &&
-          'statusCode' in data &&
-          'message' in data
+          'statusCode' in data
         ) {
           return data;
         }

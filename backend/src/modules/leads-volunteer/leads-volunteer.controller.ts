@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -52,11 +53,15 @@ export class LeadsVolunteerController {
     description: 'Public endpoint for website volunteer modal submissions with resume upload.',
   })
   @ApiCreatedResponse({ type: LeadVolunteer })
-  create(
+  async create(
     @Body() dto: CreateLeadVolunteerDto,
     @UploadedFile() file?: CdnFile,
   ) {
-    return this.service.create(dto, file);
+    const data = await this.service.create(dto, file);
+    return {
+      statusCode: HttpStatus.CREATED,
+      data,
+    };
   }
 
   @Get()
@@ -70,8 +75,12 @@ export class LeadsVolunteerController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  findAll(@Query() query: PaginationQueryDto) {
-    return this.service.findAll(query);
+  async findAll(@Query() query: PaginationQueryDto) {
+    const result = await this.service.findAll(query);
+    return {
+      statusCode: HttpStatus.OK,
+      ...result,
+    };
   }
 
   @Get('deleted')
@@ -86,8 +95,12 @@ export class LeadsVolunteerController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  findDeleted(@Query() query: PaginationQueryDto) {
-    return this.service.findDeleted(query);
+  async findDeleted(@Query() query: PaginationQueryDto) {
+    const result = await this.service.findDeleted(query);
+    return {
+      statusCode: HttpStatus.OK,
+      ...result,
+    };
   }
 
   @Get(':id')
@@ -98,8 +111,12 @@ export class LeadsVolunteerController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.service.findOne(id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.service.findOne(id);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Patch(':id')
@@ -113,12 +130,16 @@ export class LeadsVolunteerController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateLeadVolunteerDto,
     @UploadedFile() file?: CdnFile,
   ) {
-    return this.service.update(id, dto, file);
+    const data = await this.service.update(id, dto, file);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Post(':id/restore')
@@ -132,8 +153,12 @@ export class LeadsVolunteerController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  restore(@Param('id', ParseUUIDPipe) id: string) {
-    return this.service.restore(id);
+  async restore(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.service.restore(id);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Delete(':id')
@@ -146,7 +171,10 @@ export class LeadsVolunteerController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.service.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    await this.service.remove(id);
+    return {
+      statusCode: HttpStatus.OK,
+    };
   }
 }

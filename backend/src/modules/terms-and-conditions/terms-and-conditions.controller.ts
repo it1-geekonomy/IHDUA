@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -42,8 +43,12 @@ export class TermsAndConditionsController {
     description: 'Current published terms and conditions',
     type: TermsAndConditions,
   })
-  findPublished() {
-    return this.termsAndConditionsService.findPublished();
+  async findPublished() {
+    const data = await this.termsAndConditionsService.findPublished();
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Get('deleted')
@@ -52,8 +57,12 @@ export class TermsAndConditionsController {
   @ApiOperation({
     summary: 'List soft-deleted terms and conditions (Admin)',
   })
-  findDeleted(@Query() query: PaginationQueryDto) {
-    return this.termsAndConditionsService.findDeleted(query);
+  async findDeleted(@Query() query: PaginationQueryDto) {
+    const result = await this.termsAndConditionsService.findDeleted(query);
+    return {
+      statusCode: HttpStatus.OK,
+      ...result,
+    };
   }
 
   @Post()
@@ -65,8 +74,12 @@ export class TermsAndConditionsController {
     description: 'Terms and conditions created successfully',
     type: TermsAndConditions,
   })
-  create(@Body() dto: CreateTermsAndConditionsDto) {
-    return this.termsAndConditionsService.create(dto);
+  async create(@Body() dto: CreateTermsAndConditionsDto) {
+    const data = await this.termsAndConditionsService.create(dto);
+    return {
+      statusCode: HttpStatus.CREATED,
+      data,
+    };
   }
 
   @Get()
@@ -76,8 +89,12 @@ export class TermsAndConditionsController {
     summary:
       'List all terms and conditions with pagination and filtering (Admin)',
   })
-  findAll(@Query() query: PaginationQueryDto) {
-    return this.termsAndConditionsService.findAll(query);
+  async findAll(@Query() query: PaginationQueryDto) {
+    const result = await this.termsAndConditionsService.findAll(query);
+    return {
+      statusCode: HttpStatus.OK,
+      ...result,
+    };
   }
 
   @Get(':id')
@@ -89,8 +106,12 @@ export class TermsAndConditionsController {
     description: 'Terms and conditions entry',
     type: TermsAndConditions,
   })
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.termsAndConditionsService.findOne(id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.termsAndConditionsService.findOne(id);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Patch(':id/restore')
@@ -104,8 +125,12 @@ export class TermsAndConditionsController {
     description: 'Restored terms and conditions entry',
     type: TermsAndConditions,
   })
-  restore(@Param('id', ParseUUIDPipe) id: string) {
-    return this.termsAndConditionsService.restore(id);
+  async restore(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.termsAndConditionsService.restore(id);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Patch(':id')
@@ -117,11 +142,15 @@ export class TermsAndConditionsController {
     description: 'Updated terms and conditions entry',
     type: TermsAndConditions,
   })
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateTermsAndConditionsDto,
   ) {
-    return this.termsAndConditionsService.update(id, dto);
+    const data = await this.termsAndConditionsService.update(id, dto);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Delete(':id')
@@ -130,7 +159,10 @@ export class TermsAndConditionsController {
   @ApiOperation({
     summary: 'Soft-delete terms and conditions entry by id (Admin)',
   })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.termsAndConditionsService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    await this.termsAndConditionsService.remove(id);
+    return {
+      statusCode: HttpStatus.OK,
+    };
   }
 }

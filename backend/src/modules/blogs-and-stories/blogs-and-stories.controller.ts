@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -60,11 +61,15 @@ export class BlogsAndStoriesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  create(
+  async create(
     @Body() dto: CreateBlogAndStoryDto,
     @UploadedFile() file?: CdnFile,
   ) {
-    return this.blogsAndStoriesService.create(dto, file);
+    const data = await this.blogsAndStoriesService.create(dto, file);
+    return {
+      statusCode: HttpStatus.CREATED,
+      data,
+    };
   }
 
   @Get()
@@ -79,8 +84,12 @@ export class BlogsAndStoriesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  findAll(@Query() query: QueryBlogAndStoryDto) {
-    return this.blogsAndStoriesService.findAll(query);
+  async findAll(@Query() query: QueryBlogAndStoryDto) {
+    const result = await this.blogsAndStoriesService.findAll(query);
+    return {
+      statusCode: HttpStatus.OK,
+      ...result,
+    };
   }
 
   @Get('deleted')
@@ -95,8 +104,12 @@ export class BlogsAndStoriesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  findDeleted(@Query() query: QueryBlogAndStoryDto) {
-    return this.blogsAndStoriesService.findDeleted(query);
+  async findDeleted(@Query() query: QueryBlogAndStoryDto) {
+    const result = await this.blogsAndStoriesService.findDeleted(query);
+    return {
+      statusCode: HttpStatus.OK,
+      ...result,
+    };
   }
 
   @Public()
@@ -106,8 +119,12 @@ export class BlogsAndStoriesController {
     description: 'Public. Only status=published. No token required.',
   })
   @ApiOkResponse({ description: 'Paginated published list' })
-  findPublished(@Query() query: QueryBlogAndStoryDto) {
-    return this.blogsAndStoriesService.findPublished(query);
+  async findPublished(@Query() query: QueryBlogAndStoryDto) {
+    const result = await this.blogsAndStoriesService.findPublished(query);
+    return {
+      statusCode: HttpStatus.OK,
+      ...result,
+    };
   }
 
   @Public()
@@ -130,16 +147,21 @@ export class BlogsAndStoriesController {
     type: Number,
     description: 'Page number for related items (default: 1)',
   })
-  findPublishedBySlug(
+  async findPublishedBySlug(
     @Param('slug') slug: string,
     @Query('limit') limit?: string,
     @Query('page') page?: string,
   ) {
-    return this.blogsAndStoriesService.findPublishedBySlugWithRelated(
-      slug,
-      limit ? parseInt(limit, 10) : undefined,
-      page ? parseInt(page, 10) : undefined,
-    );
+    const data =
+      await this.blogsAndStoriesService.findPublishedBySlugWithRelated(
+        slug,
+        limit ? parseInt(limit, 10) : undefined,
+        page ? parseInt(page, 10) : undefined,
+      );
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Public()
@@ -162,16 +184,20 @@ export class BlogsAndStoriesController {
     type: Number,
     description: 'Page number for related items (default: 1)',
   })
-  findRelated(
+  async findRelated(
     @Param('id', ParseUUIDPipe) id: string,
     @Query('limit') limit?: string,
     @Query('page') page?: string,
   ) {
-    return this.blogsAndStoriesService.findRelated(
+    const data = await this.blogsAndStoriesService.findRelated(
       id,
       limit ? parseInt(limit, 10) : undefined,
       page ? parseInt(page, 10) : undefined,
     );
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Get(':id')
@@ -182,8 +208,12 @@ export class BlogsAndStoriesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.blogsAndStoriesService.findOne(id);
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.blogsAndStoriesService.findOne(id);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Patch(':id/restore')
@@ -198,8 +228,12 @@ export class BlogsAndStoriesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  restore(@Param('id', ParseUUIDPipe) id: string) {
-    return this.blogsAndStoriesService.restore(id);
+  async restore(@Param('id', ParseUUIDPipe) id: string) {
+    const data = await this.blogsAndStoriesService.restore(id);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Patch(':id')
@@ -217,12 +251,16 @@ export class BlogsAndStoriesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  update(
+  async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateBlogAndStoryDto,
     @UploadedFile() file?: CdnFile,
   ) {
-    return this.blogsAndStoriesService.update(id, dto, file);
+    const data = await this.blogsAndStoriesService.update(id, dto, file);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
   }
 
   @Delete(':id')
@@ -235,7 +273,10 @@ export class BlogsAndStoriesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.blogsAndStoriesService.remove(id);
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    await this.blogsAndStoriesService.remove(id);
+    return {
+      statusCode: HttpStatus.OK,
+    };
   }
 }
