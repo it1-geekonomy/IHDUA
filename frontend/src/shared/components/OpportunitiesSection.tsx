@@ -58,7 +58,8 @@ const OpportunitiesSection = ({
           </div>
 
           {/* Image: never cropped.
-              Below lg: centered and smaller.
+              Below 640px: full width.
+              sm to lg: centered and smaller.
               lg: right of the text.
               xl and up: slightly larger column, centered vertically in its cell. */}
           <div className="flex w-full items-center justify-center lg:col-start-2 lg:row-start-2 lg:justify-end lg:self-stretch xl:row-span-2 xl:row-start-1 xl:justify-end xl:self-center">
@@ -67,8 +68,8 @@ const OpportunitiesSection = ({
               alt={imageAlt}
               width={0}
               height={0}
-              sizes="(min-width: 1536px) 28vw, (min-width: 1280px) 32vw, (min-width: 1024px) 40vw, (min-width: 768px) 50vw, (min-width: 640px) 60vw, 55vw"
-              className="block h-auto w-[55%] sm:w-3/5 md:w-1/2 lg:w-full"
+              sizes="(min-width: 1536px) 28vw, (min-width: 1280px) 32vw, (min-width: 1024px) 40vw, (min-width: 768px) 50vw, (min-width: 640px) 60vw, 100vw"
+              className="block h-auto w-full sm:w-3/5 md:w-1/2 lg:w-full"
             />
           </div>
 

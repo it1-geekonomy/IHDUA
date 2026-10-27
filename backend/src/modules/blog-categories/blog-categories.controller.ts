@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   ParseUUIDPipe,
@@ -13,9 +14,11 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
-  ApiResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
@@ -34,43 +37,15 @@ export class BlogCategoriesController {
   ) {}
 
   @Public()
-  @Get('published')
-  @ApiOperation({ summary: 'Get all active blog categories (Public)' })
-  @ApiResponse({
-    status: 200,
-    description: 'List of active blog categories',
-    type: [BlogCategory],
+  @Get()
+  @ApiOperation({
+    summary: 'List all blog categories (Public / Website & CMS)',
+    description:
+      'Public endpoint. Supports search, pagination, and alphabetical ordering by name.',
   })
-  async findPublished() {
-    const data = await this.blogCategoriesService.findPublished();
-    return {
-      statusCode: HttpStatus.OK,
-      data,
-    };
-  }
-
-  @Public()
-  @Get('slug/:slug')
-  @ApiOperation({ summary: 'Get blog category by slug (Public)' })
-  @ApiResponse({
-    status: 200,
-    description: 'Blog category details',
-    type: BlogCategory,
-  })
-  async findBySlug(@Param('slug') slug: string) {
-    const data = await this.blogCategoriesService.findBySlug(slug);
-    return {
-      statusCode: HttpStatus.OK,
-      data,
-    };
-  }
-
-  @Get('deleted')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'List soft-deleted blog categories (Admin)' })
-  async findDeleted(@Query() query: PaginationQueryDto) {
-    const result = await this.blogCategoriesService.findDeleted(query);
+  @ApiOkResponse({ description: 'Paginated list of blog categories' })
+  async findAll(@Query() query: PaginationQueryDto) {
+    const result = await this.blogCategoriesService.findAll(query);
     return {
       statusCode: HttpStatus.OK,
       ...result,
@@ -81,10 +56,12 @@ export class BlogCategoriesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new blog category (Admin)' })
-  @ApiResponse({
-    status: 201,
+  @ApiCreatedResponse({
     description: 'Blog category created successfully',
     type: BlogCategory,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Missing, invalid, or expired bearer token',
   })
   async create(@Body() dto: CreateBlogCategoryDto) {
     const data = await this.blogCategoriesService.create(dto);
@@ -94,14 +71,16 @@ export class BlogCategoriesController {
     };
   }
 
-  @Get()
+  @Get('deleted')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({
-    summary: 'List all blog categories with pagination & filters (Admin)',
+  @ApiOperation({ summary: 'List soft-deleted blog categories (CMS trash)' })
+  @ApiOkResponse({ description: 'Paginated trash list' })
+  @ApiUnauthorizedResponse({
+    description: 'Missing, invalid, or expired bearer token',
   })
-  async findAll(@Query() query: PaginationQueryDto) {
-    const result = await this.blogCategoriesService.findAll(query);
+  async findDeleted(@Query() query: PaginationQueryDto) {
+    const result = await this.blogCategoriesService.findDeleted(query);
     return {
       statusCode: HttpStatus.OK,
       ...result,
@@ -112,10 +91,12 @@ export class BlogCategoriesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get blog category by id (Admin)' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Blog category details',
     type: BlogCategory,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Missing, invalid, or expired bearer token',
   })
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     const data = await this.blogCategoriesService.findOne(id);
@@ -129,10 +110,12 @@ export class BlogCategoriesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Restore soft-deleted blog category (Admin)' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Restored blog category',
     type: BlogCategory,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Missing, invalid, or expired bearer token',
   })
   async restore(@Param('id', ParseUUIDPipe) id: string) {
     const data = await this.blogCategoriesService.restore(id);
@@ -146,10 +129,12 @@ export class BlogCategoriesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update blog category by id (Admin)' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Updated blog category',
     type: BlogCategory,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Missing, invalid, or expired bearer token',
   })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -163,9 +148,13 @@ export class BlogCategoriesController {
   }
 
   @Delete(':id')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Soft-delete blog category by id (Admin)' })
+  @ApiUnauthorizedResponse({
+    description: 'Missing, invalid, or expired bearer token',
+  })
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     await this.blogCategoriesService.remove(id);
     return {
