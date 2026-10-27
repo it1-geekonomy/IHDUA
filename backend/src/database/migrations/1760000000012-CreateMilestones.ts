@@ -13,8 +13,8 @@ import {
   timestampColumns,
 } from '../migration.helpers';
 
-export class CreateMilestones1760000000011 implements MigrationInterface {
-  name = 'CreateMilestones1760000000011';
+export class CreateMilestones1760000000012 implements MigrationInterface {
+  name = 'CreateMilestones1760000000012';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "pgcrypto"`);
