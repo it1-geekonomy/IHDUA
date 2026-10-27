@@ -8,6 +8,8 @@ import { StorageModule } from './common/storage/storage.module';
 import { DatabaseModule } from './database/database.module';
 import { AnnualReportsModule } from './modules/annual-reports/annual-reports.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { BlogCategoriesModule } from './modules/blog-categories/blog-categories.module';
+import { BlogsAndStoriesModule } from './modules/blogs-and-stories/blogs-and-stories.module';
 import { DonorsModule } from './modules/donors/donors.module';
 import { LeadsContactModule } from './modules/leads-contact/leads-contact.module';
 import { LeadsVolunteerModule } from './modules/leads-volunteer/leads-volunteer.module';
@@ -37,6 +39,8 @@ import { UsersModule } from './modules/users/users.module';
     OrganizationalDocumentsModule,
     AnnualReportsModule,
     PartnershipInquiriesModule,
+    BlogCategoriesModule,
+    BlogsAndStoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
