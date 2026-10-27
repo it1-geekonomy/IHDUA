@@ -6,6 +6,7 @@ import { IMPACT_ITEMS } from "@/domains/home/constants/overlayform";
 import { useDonationForm } from "@/domains/home/components/donation/useDonationForm";
 import { DetailsStep } from "@/domains/home/components/donation/DetailsStep";
 import { AmountStep } from "@/domains/home/components/donation/AmountStep";
+import { DonationReceiptModal } from "@/domains/home/components/donation/DonationReceiptModal";
 import Typography from "@/lib/Typography";
 import {
   OverlayformAnimations,
@@ -98,6 +99,8 @@ function OverlayAmountSection({ form, rise, delay }: OverlayAmountProps) {
 
       <div style={delay(900)} className={`${rise} flex shrink-0 flex-col`}>
         <AmountStep
+          countryCode={form.countryCode}
+          setCountryCode={form.setCountryCode}
           currencySymbol={form.currencySymbol}
           presets={form.presets}
           selectedDigits={form.selectedDigits}
@@ -216,6 +219,16 @@ export default function Overlayform({ onClose }: OverlayformProps) {
             <OverlayAmountSection form={form} rise={rise} delay={delay} />
           </div>
         </div>
+      )}
+
+      {form.successReceipt && (
+        <DonationReceiptModal
+          receipt={form.successReceipt}
+          onClose={() => {
+            form.closeReceiptModal();
+            beginClose();
+          }}
+        />
       )}
     </div>
   );
