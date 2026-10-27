@@ -78,25 +78,25 @@ export default function BlogsGridSection() {
     >
       <div className="w-full">
         {/* Header: Eyebrow + Sort Dropdown */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center justify-between gap-4">
           {/* Eyebrow */}
-          <div className="flex items-center gap-3">
-            <span className="h-px w-6 sm:w-8 bg-[#9739A8]" />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="h-px w-4 sm:w-8 bg-[#9739A8]" />
             <Typography
               variant="caption"
               className="font-figtree font-bold uppercase tracking-wider text-[#9739A8]"
             >
               LATEST STORIES
             </Typography>
-            <span className="h-px w-6 sm:w-8 bg-[#9739A8]" />
+            <span className="h-px w-4 sm:w-8 bg-[#9739A8]" />
           </div>
 
           {/* Sort Dropdown */}
-          <div className="relative self-end sm:self-auto">
+          <div className="relative">
             <button
               type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="inline-flex cursor-pointer items-center gap-2 rounded border border-[#E0E0E0] bg-white px-4 py-2 text-sm font-medium text-[#1E1E1E] shadow-xs transition hover:bg-neutral-50"
+              className="inline-flex cursor-pointer items-center gap-2 rounded border border-[#E0E0E0] bg-white px-3 py-1.5 text-xs font-medium text-[#1E1E1E] shadow-xs transition hover:bg-neutral-50 sm:px-4 sm:py-2 sm:text-sm"
               aria-expanded={isDropdownOpen}
             >
               <span>{sortOrder === "newest" ? "Newest First" : "Oldest First"}</span>
@@ -157,17 +157,17 @@ export default function BlogsGridSection() {
                 <Typography
                   variant="body-xl"
                   as="h3"
-                  className="font-lora font-normal leading-snug text-[#00191B] transition-colors group-hover:text-[#9739A8]"
+                  className="flex-1 font-lora font-normal leading-snug text-[#00191B] transition-colors group-hover:text-[#9739A8]"
                 >
                   {post.title}
                 </Typography>
 
                 <div
-                  className="flex size-12 shrink-0 items-center justify-center rounded bg-[#FFD638] text-black shadow-xs transition-transform duration-200 group-hover:scale-105"
+                  className="flex size-9 shrink-0 items-center justify-center rounded bg-[#FFD638] text-black shadow-xs transition-transform duration-200 group-hover:scale-105"
                   aria-hidden="true"
                 >
                   <svg
-                    className="size-6 stroke-[2.5]"
+                    className="size-4.5 stroke-[2.5]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
