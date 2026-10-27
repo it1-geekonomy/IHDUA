@@ -96,7 +96,7 @@ export default function OurConviction() {
 
   return (
     <section ref={sectionRef} className="w-full bg-white">
-      <div className="w-full px-6 py-10 lg:px-10 xl:py-20 2xl:px-40">
+      <div className="w-full px-6 pt-6 pb-6 lg:pt-8 lg:pb-6 lg:px-10 xl:py-10 2xl:px-40">
         {/*
           Below xl: single centered column (text -> video -> features -> button).
           xl and up: two columns, video on the left, all content on the right.

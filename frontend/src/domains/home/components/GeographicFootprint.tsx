@@ -23,7 +23,7 @@ export default function GeographicFootprint() {
 
   return (
     <section className="w-full bg-white">
-      <div className="w-full px-6 pt-6 pb-6 lg:py-24 lg:px-10 2xl:px-40">
+      <div className="w-full px-6 pt-6 pb-6 lg:pt-8 lg:pb-8 xl:py-14 lg:px-10 2xl:px-40">
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-x-6 lg:gap-y-12 xl:gap-x-16 xl:gap-y-16">
           <div className="order-2 mx-auto aspect-[542/528] w-full max-w-sm lg:order-none lg:col-start-1 lg:row-start-2 lg:mx-0 lg:aspect-auto lg:max-w-none xl:order-1 xl:row-start-1">
             <svg
