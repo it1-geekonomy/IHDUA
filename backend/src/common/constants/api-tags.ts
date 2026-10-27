@@ -10,6 +10,7 @@ export const ApiTagsConst = {
   ORGANIZATIONAL_DOCUMENTS: 'organizational-documents',
   ANNUAL_REPORTS: 'annual-reports',
   PARTNERSHIP_INQUIRIES: 'partnership-inquiries',
+  MILESTONES: 'milestones',
   BLOG_CATEGORIES: 'blog-categories',
   BLOGS_AND_STORIES: 'blogs-and-stories',
 } as const;
