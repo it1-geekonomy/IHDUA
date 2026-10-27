@@ -9,8 +9,8 @@ const API_BASE =
 
 export type CreateDonationOrderPayload = {
   fullName: string;
-  phone?: string;
-  email?: string;
+  phone: string;
+  email: string;
   amount: string;
   currency?: string;
   countryCode?: string;
@@ -20,6 +20,8 @@ export type CreateDonationOrderPayload = {
   state?: string;
   city?: string;
   pincode?: string;
+  message?: string;
+  donationCategory?: string;
 };
 
 export type CreateDonationOrderResponse = {
@@ -41,6 +43,7 @@ export type VerifyDonationPaymentResponse = {
   receiptNumber: string | null;
   amount: string;
   currency: string;
+  donationCategory?: string;
 };
 
 async function parseError(res: Response) {
@@ -62,7 +65,8 @@ export async function createDonationOrder(payload: CreateDonationOrderPayload) {
   });
 
   if (!res.ok) throw new Error(await parseError(res));
-  return (await res.json()) as CreateDonationOrderResponse;
+  const json = await res.json();
+  return (json?.data ?? json) as CreateDonationOrderResponse;
 }
 
 export async function verifyDonationPayment(
@@ -75,7 +79,8 @@ export async function verifyDonationPayment(
   });
 
   if (!res.ok) throw new Error(await parseError(res));
-  return (await res.json()) as VerifyDonationPaymentResponse;
+  const json = await res.json();
+  return (json?.data ?? json) as VerifyDonationPaymentResponse;
 }
 
 /** Whole-rupee digits from a display amount like "₹2,500". */
