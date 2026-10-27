@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -57,16 +55,8 @@ export class OrganizationalDocumentsController {
     description: 'List of published organizational documents',
     type: [OrganizationalDocument],
   })
-  async findPublished() {
-    const data = await this.service.findPublished();
-    return {
-      statusCode: HttpStatus.OK,
-      message:
-        data.length === 0
-          ? 'No published organizational documents found'
-          : 'Published organizational documents fetched successfully',
-      data,
-    };
+  findPublished() {
+    return this.service.findPublished();
   }
 
   @Get('deleted')
@@ -80,16 +70,8 @@ export class OrganizationalDocumentsController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findDeleted(@Query() query: PaginationQueryDto) {
-    const result = await this.service.findDeleted(query);
-    return {
-      statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No deleted organizational documents found'
-          : 'Deleted organizational documents fetched successfully',
-      ...result,
-    };
+  findDeleted(@Query() query: PaginationQueryDto) {
+    return this.service.findDeleted(query);
   }
 
   @Post()
@@ -110,16 +92,11 @@ export class OrganizationalDocumentsController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async create(
+  create(
     @Body() dto: CreateOrganizationalDocumentDto,
     @UploadedFile() file?: CdnFile,
   ) {
-    const data = await this.service.create(dto, file);
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Organizational document created successfully',
-      data,
-    };
+    return this.service.create(dto, file);
   }
 
   @Get()
@@ -134,16 +111,8 @@ export class OrganizationalDocumentsController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findAll(@Query() query: PaginationQueryDto) {
-    const result = await this.service.findAll(query);
-    return {
-      statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No organizational documents found'
-          : 'Organizational documents fetched successfully',
-      ...result,
-    };
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.service.findAll(query);
   }
 
   @Get(':id')
@@ -160,13 +129,8 @@ export class OrganizationalDocumentsController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const data = await this.service.findOne(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Organizational document fetched successfully',
-      data,
-    };
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.findOne(id);
   }
 
   @Patch(':id')
@@ -187,17 +151,12 @@ export class OrganizationalDocumentsController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async update(
+  update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateOrganizationalDocumentDto,
     @UploadedFile() file?: CdnFile,
   ) {
-    const data = await this.service.update(id, dto, file);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Organizational document updated successfully',
-      data,
-    };
+    return this.service.update(id, dto, file);
   }
 
   @Patch(':id/restore')
@@ -214,17 +173,11 @@ export class OrganizationalDocumentsController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async restore(@Param('id', ParseUUIDPipe) id: string) {
-    const data = await this.service.restore(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Organizational document restored successfully',
-      data,
-    };
+  restore(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.restore(id);
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -234,11 +187,7 @@ export class OrganizationalDocumentsController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
-    await this.service.remove(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Organizational document deleted successfully',
-    };
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.remove(id);
   }
 }

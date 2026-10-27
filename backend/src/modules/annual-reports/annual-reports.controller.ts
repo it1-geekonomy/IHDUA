@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -56,16 +54,8 @@ export class AnnualReportsController {
     description: 'List of published annual reports',
     type: [AnnualReport],
   })
-  async findPublished() {
-    const data = await this.service.findPublished();
-    return {
-      statusCode: HttpStatus.OK,
-      message:
-        data.length === 0
-          ? 'No published annual reports found'
-          : 'Published annual reports fetched successfully',
-      data,
-    };
+  findPublished() {
+    return this.service.findPublished();
   }
 
   @Get('deleted')
@@ -79,16 +69,8 @@ export class AnnualReportsController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findDeleted(@Query() query: PaginationQueryDto) {
-    const result = await this.service.findDeleted(query);
-    return {
-      statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No deleted annual reports found'
-          : 'Deleted annual reports fetched successfully',
-      ...result,
-    };
+  findDeleted(@Query() query: PaginationQueryDto) {
+    return this.service.findDeleted(query);
   }
 
   @Post()
@@ -109,16 +91,11 @@ export class AnnualReportsController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async create(
+  create(
     @Body() dto: CreateAnnualReportDto,
     @UploadedFile() file?: CdnFile,
   ) {
-    const data = await this.service.create(dto, file);
-    return {
-      statusCode: HttpStatus.CREATED,
-      message: 'Annual report created successfully',
-      data,
-    };
+    return this.service.create(dto, file);
   }
 
   @Get()
@@ -133,16 +110,8 @@ export class AnnualReportsController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findAll(@Query() query: AnnualReportQueryDto) {
-    const result = await this.service.findAll(query);
-    return {
-      statusCode: HttpStatus.OK,
-      message:
-        result.meta.total === 0
-          ? 'No annual reports found'
-          : 'Annual reports fetched successfully',
-      ...result,
-    };
+  findAll(@Query() query: AnnualReportQueryDto) {
+    return this.service.findAll(query);
   }
 
   @Get(':id')
@@ -159,13 +128,8 @@ export class AnnualReportsController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const data = await this.service.findOne(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Annual report fetched successfully',
-      data,
-    };
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.findOne(id);
   }
 
   @Patch(':id')
@@ -186,17 +150,12 @@ export class AnnualReportsController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async update(
+  update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateAnnualReportDto,
     @UploadedFile() file?: CdnFile,
   ) {
-    const data = await this.service.update(id, dto, file);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Annual report updated successfully',
-      data,
-    };
+    return this.service.update(id, dto, file);
   }
 
   @Patch(':id/restore')
@@ -213,17 +172,11 @@ export class AnnualReportsController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async restore(@Param('id', ParseUUIDPipe) id: string) {
-    const data = await this.service.restore(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Annual report restored successfully',
-      data,
-    };
+  restore(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.restore(id);
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
@@ -233,11 +186,7 @@ export class AnnualReportsController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
-    await this.service.remove(id);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Annual report deleted successfully',
-    };
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.service.remove(id);
   }
 }
