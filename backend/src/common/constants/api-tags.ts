@@ -7,4 +7,5 @@ export const ApiTagsConst = {
   LEADS_VOLUNTEER: 'leads-volunteer',
   TERMS_AND_CONDITIONS: 'terms-and-conditions',
   PRIVACY_POLICY: 'privacy-policy',
+  PARTNERSHIP_INQUIRIES: 'partnership-inquiries',
 } as const;
