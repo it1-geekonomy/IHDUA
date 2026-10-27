@@ -10,6 +10,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { DonorsModule } from './modules/donors/donors.module';
 import { LeadsContactModule } from './modules/leads-contact/leads-contact.module';
 import { LeadsVolunteerModule } from './modules/leads-volunteer/leads-volunteer.module';
+import { PrivacyPolicyModule } from './modules/privacy-policy/privacy-policy.module';
+import { TermsAndConditionsModule } from './modules/terms-and-conditions/terms-and-conditions.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -27,6 +29,8 @@ import { UsersModule } from './modules/users/users.module';
     DonorsModule,
     LeadsContactModule,
     LeadsVolunteerModule,
+    TermsAndConditionsModule,
+    PrivacyPolicyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
