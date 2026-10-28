@@ -89,7 +89,7 @@ export class LeadsVolunteerController {
   @ApiOperation({
     summary: 'List recently deleted volunteer leads (CMS trash)',
     description:
-      'Soft-deleted leads only, newest first. Restore with POST /leads-volunteer/:id/restore.',
+      'Soft-deleted leads only, newest first. Restore with PATCH /leads-volunteer/:id/restore.',
   })
   @ApiOkResponse({ description: 'Paginated trash list' })
   @ApiUnauthorizedResponse({
@@ -142,7 +142,7 @@ export class LeadsVolunteerController {
     };
   }
 
-  @Post(':id/restore')
+  @Patch(':id/restore')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
