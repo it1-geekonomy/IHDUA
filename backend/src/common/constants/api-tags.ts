@@ -13,6 +13,7 @@ export const ApiTagsConst = {
   MILESTONES: 'milestones',
   BLOG_CATEGORIES: 'blog-categories',
   BLOGS_AND_STORIES: 'blogs-and-stories',
+  LEADERSHIP_MEMBERS: 'leadership-members',
   IMPACT_STATS: 'impact-stats',
   NEWSLETTER_SUBSCRIBERS: 'newsletter-subscribers',
 } as const;
