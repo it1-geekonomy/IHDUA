@@ -487,7 +487,7 @@ export function ChatbotWidget() {
               <div className="flex items-center gap-2.5">
                 <div className="relative flex size-8.5 items-center justify-center rounded-full bg-[#9739A8]/10">
                   <Image
-                    src="/IHDUAFavicon.png"
+                    src="/chatbot/chatbot-icon.svg"
                     alt="IHDUA"
                     width={22}
                     height={22}
@@ -547,7 +547,7 @@ export function ChatbotWidget() {
                 >
                   <div className="flex size-14 items-center justify-center rounded-2xl bg-[#9739A8]/10 mb-3">
                     <Image
-                      src="/IHDUAFavicon.png"
+                      src="/chatbot/chatbot-icon.svg"
                       alt="IHDUA"
                       width={36}
                       height={36}
@@ -596,7 +596,7 @@ export function ChatbotWidget() {
                       {!isUser ? (
                         <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#9739A8]/10 mt-1">
                           <Image
-                            src="/IHDUAFavicon.png"
+                            src="/chatbot/chatbot-icon.svg"
                             alt="IHDUA"
                             width={18}
                             height={18}
@@ -737,7 +737,13 @@ export function ChatbotWidget() {
           {open ? (
             <X className="size-6 text-white" strokeWidth={2} />
           ) : (
-            <MessageSquare className="size-6 text-white" />
+            <Image
+              src="/chatbot/chatbot-icon.svg"
+              alt="IHDUA Chatbot"
+              width={32}
+              height={32}
+              className="size-8 object-contain"
+            />
           )}
         </motion.button>
       </div>
