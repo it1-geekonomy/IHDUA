@@ -18,12 +18,30 @@ type OurDocumentsProps = {
   groups?: DocumentGroup[]; // pass CMS data here
 };
 
+// Only this group gets the view-only eye + custom icons.
+// Change to match your data (e.g. group.id or group.variant of Organizational Documents).
+const isViewOnlyGroup = (group: DocumentGroup) =>
+  group.title.toLowerCase().includes("organizational");
+
+// Icons (files live in /public/aboutus/)
+const EYE_ICON = "/aboutus/eye.png";
+
+// Pick an icon per organizational document by title; falls back to the generic PDF icon
+const getDocIcon = (title: string) => {
+  const t = title.toLowerCase();
+  if (t.includes("private trust")) return "/aboutus/private.png";
+  if (t.includes("80g")) return "/aboutus/80G.png";
+  if (t.includes("fcra")) return "/aboutus/fcar.png"; // file name as you gave it
+  return PDF_ICON;
+};
+
 // Open the PDF preview in a new tab
 const openPdf = (url: string) => window.open(url, "_blank", "noopener,noreferrer");
 
 function DocumentCard({ group }: { group: DocumentGroup }) {
   const theme = DOCUMENT_THEMES[group.variant];
   const [page, setPage] = useState(1);
+  const viewOnly = isViewOnlyGroup(group);
 
   const totalPages = Math.max(1, Math.ceil(group.items.length / DOCUMENTS_PAGE_SIZE));
   const currentPage = Math.min(page, totalPages); // safe if CMS data shrinks
@@ -34,88 +52,137 @@ function DocumentCard({ group }: { group: DocumentGroup }) {
     <article
       className={`flex h-full flex-col border p-[clamp(16px,2.4vw,32px)] ${theme.card}`}
     >
-{/* Card header */}
-<div className="flex items-center gap-[clamp(10px,1.2vw,16px)]">
-  <div
-    className={`flex h-[clamp(36px,3.4vw,48px)] w-[clamp(36px,3.4vw,48px)] shrink-0 items-center justify-center rounded-full ${theme.headerIconBg}`}
-  >
-    <Image
-      src={theme.headerIcon}
-      alt=""
-      width={28}
-      height={28}
-      className="h-[clamp(20px,2vw,28px)] w-[clamp(20px,2vw,28px)]"
-    />
-  </div>
+      {/* Card header */}
+      <div className="flex items-center gap-[clamp(10px,1.2vw,16px)]">
+        <div
+          className={`flex h-[clamp(36px,3.4vw,48px)] w-[clamp(36px,3.4vw,48px)] shrink-0 items-center justify-center rounded-full ${theme.headerIconBg}`}
+        >
+          <Image
+            src={theme.headerIcon}
+            alt=""
+            width={28}
+            height={28}
+            className="h-[clamp(20px,2vw,28px)] w-[clamp(20px,2vw,28px)]"
+          />
+        </div>
 
-  <div className="min-w-0">
-    <Typography
-      variant="body-lg"
-      className="font-lora font-normal text-[length:clamp(16px,1.6vw,22px)] leading-[1.3] text-[#311645]"
-    >
-      {group.title}
-    </Typography>
-    <Typography
-      variant="body-sm"
-      className="mt-[clamp(2px,0.3vw,4px)] font-figtree font-normal text-[length:clamp(11px,1vw,13px)] leading-[1.4] text-[#7E7783]"
-    >
-      {group.description}
-    </Typography>
-  </div>
-</div>
+        <div className="min-w-0">
+          <Typography
+            variant="body-lg"
+            className="font-lora font-normal text-[length:clamp(16px,1.6vw,22px)] leading-[1.3] text-[#311645]"
+          >
+            {group.title}
+          </Typography>
+          <Typography
+            variant="body-sm"
+            className="mt-[clamp(2px,0.3vw,4px)] font-figtree font-normal text-[length:clamp(11px,1vw,13px)] leading-[1.4] text-[#7E7783]"
+          >
+            {group.description}
+          </Typography>
+        </div>
+      </div>
 
       {/* PDF list */}
       <ul className="mt-[clamp(16px,2vw,24px)] flex flex-col gap-[clamp(8px,1vw,12px)]">
-        {visibleItems.map((doc) => (
-          <li
-            key={doc.id}
-            role="button"
-            tabIndex={0}
-            aria-label={`Preview ${doc.title}`}
-            onClick={() => openPdf(doc.url)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                openPdf(doc.url);
-              }
-            }}
-            className="flex cursor-pointer items-center gap-[clamp(8px,1.2vw,16px)] bg-white p-[clamp(8px,1vw,12px)]"
-          >
-            <Image
-              src={PDF_ICON}
-              alt=""
-              width={32}
-              height={32}
-              className="h-[clamp(24px,2.4vw,32px)] w-[clamp(24px,2.4vw,32px)] shrink-0"
-            />
-
-            <Typography
-              variant="body-sm"
-              className="min-w-0 flex-1 break-words font-figtree font-medium text-[length:clamp(12px,1.1vw,14px)] leading-[1.4] text-[#212121]"
+        {visibleItems.map((doc) =>
+          viewOnly ? (
+            /* ---------- Organizational Documents: view only ---------- */
+            <li
+              key={doc.id}
+              onClick={() => openPdf(doc.url)}
+              className="flex cursor-pointer items-center gap-[clamp(8px,1.2vw,16px)] bg-white p-[clamp(8px,1vw,12px)]"
             >
-              {doc.title}
-            </Typography>
+              {/* Document icon in tinted square */}
+              <div
+                className={`flex h-[clamp(32px,3.2vw,44px)] w-[clamp(32px,3.2vw,44px)] shrink-0 items-center justify-center rounded-md ${theme.headerIconBg}`}
+              >
+                <Image
+                  src={getDocIcon(doc.title)}
+                  alt=""
+                  width={24}
+                  height={24}
+                  className="h-[clamp(16px,1.6vw,24px)] w-[clamp(16px,1.6vw,24px)] object-contain"
+                />
+              </div>
 
-            <a
-              href={doc.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              download
-              aria-label={`Download ${doc.title}`}
-              onClick={(e) => e.stopPropagation()} // download only, don't open preview
-              onKeyDown={(e) => e.stopPropagation()}
-              className={`flex h-[clamp(30px,3vw,40px)] w-[clamp(30px,3vw,40px)] shrink-0 items-center justify-center rounded-md transition-opacity hover:opacity-80 ${theme.button}`}
+              <Typography
+                variant="body-sm"
+                className="min-w-0 flex-1 break-words font-figtree font-medium text-[length:clamp(12px,1.1vw,14px)] leading-[1.4] text-[#212121]"
+              >
+                {doc.title}
+              </Typography>
+
+              {/* View button (eye) */}
+              <button
+                type="button"
+                aria-label={`View ${doc.title}`}
+                onClick={(e) => {
+                  e.stopPropagation(); // avoid double-open from the row click
+                  openPdf(doc.url);
+                }}
+                className="flex h-[clamp(30px,3vw,40px)] w-[clamp(30px,3vw,40px)] shrink-0 items-center justify-center rounded-md transition-opacity hover:opacity-70"
+              >
+                <Image
+                  src={EYE_ICON}
+                  alt=""
+                  width={24}
+                  height={24}
+                  className="h-[clamp(18px,1.8vw,24px)] w-[clamp(18px,1.8vw,24px)] object-contain"
+                />
+              </button>
+            </li>
+          ) : (
+            /* ---------- Other groups (Annual Reports): original ---------- */
+            <li
+              key={doc.id}
+              role="button"
+              tabIndex={0}
+              aria-label={`Preview ${doc.title}`}
+              onClick={() => openPdf(doc.url)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  openPdf(doc.url);
+                }
+              }}
+              className="flex cursor-pointer items-center gap-[clamp(8px,1.2vw,16px)] bg-white p-[clamp(8px,1vw,12px)]"
             >
               <Image
-                src={theme.buttonIcon}
+                src={PDF_ICON}
                 alt=""
-                width={20}
-                height={20}
-                className="h-[clamp(14px,1.4vw,20px)] w-[clamp(14px,1.4vw,20px)]"
+                width={32}
+                height={32}
+                className="h-[clamp(24px,2.4vw,32px)] w-[clamp(24px,2.4vw,32px)] shrink-0"
               />
-            </a>
-          </li>
-        ))}
+
+              <Typography
+                variant="body-sm"
+                className="min-w-0 flex-1 break-words font-figtree font-medium text-[length:clamp(12px,1.1vw,14px)] leading-[1.4] text-[#212121]"
+              >
+                {doc.title}
+              </Typography>
+
+              <a
+                href={doc.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                download
+                aria-label={`Download ${doc.title}`}
+                onClick={(e) => e.stopPropagation()} // download only, don't open preview
+                onKeyDown={(e) => e.stopPropagation()}
+                className={`flex h-[clamp(30px,3vw,40px)] w-[clamp(30px,3vw,40px)] shrink-0 items-center justify-center rounded-md transition-opacity hover:opacity-80 ${theme.button}`}
+              >
+                <Image
+                  src={theme.buttonIcon}
+                  alt=""
+                  width={20}
+                  height={20}
+                  className="h-[clamp(14px,1.4vw,20px)] w-[clamp(14px,1.4vw,20px)]"
+                />
+              </a>
+            </li>
+          )
+        )}
       </ul>
 
       {/* Pagination: only when this card has more PDFs than one page */}
