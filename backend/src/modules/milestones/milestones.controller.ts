@@ -143,7 +143,7 @@ export class MilestonesController {
     };
   }
 
-  @Post(':id/restore')
+  @Patch(':id/restore')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
