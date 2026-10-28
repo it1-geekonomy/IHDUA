@@ -104,7 +104,7 @@ def _answer(message: str, session_id: str | None) -> dict:
     sources = pick_sources(ranked, intents, answer)
 
     if answer.strip() == C.NO_ANSWER_TOKEN or answer.strip() == C.FALLBACK_ANSWER.strip():
-        answer = C.FALLBACK_ANSWER if bool(ranked) else C.OUT_OF_SCOPE_ANSWER
+        answer = C.FALLBACK_ANSWER
         sources = []
     elif answer.strip() == C.OUT_OF_SCOPE_ANSWER.strip():
         sources = []
