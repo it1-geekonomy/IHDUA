@@ -485,7 +485,7 @@ export function ChatbotWidget() {
             {/* ────── Minimal Header ────── */}
             <div className="flex shrink-0 items-center justify-between border-b border-[#E5DDF3] bg-white px-4 py-3">
               <div className="flex items-center gap-2.5">
-                <div className="relative flex size-8.5 items-center justify-center rounded-full bg-[#9739A8]/10">
+                <div className="flex size-8.5 items-center justify-center rounded-full bg-[#9739A8]/10">
                   <Image
                     src="/chatbot/chatbot-icon.svg"
                     alt="IHDUA"
@@ -493,7 +493,6 @@ export function ChatbotWidget() {
                     height={22}
                     className="size-5 object-contain"
                   />
-                  <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-white bg-emerald-500" />
                 </div>
                 <div className="leading-tight">
                   <p className="font-figtree text-sm font-bold text-[#00191B]">
