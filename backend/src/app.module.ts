@@ -20,6 +20,7 @@ import { PartnershipInquiriesModule } from './modules/partnership-inquiries/part
 import { MilestonesModule } from './modules/milestones/milestones.module';
 import { LeadershipMembersModule } from './modules/leadership-members/leadership-members.module';
 import { ImpactStatsModule } from './modules/impact-stats/impact-stats.module';
+import { ImpactCategoriesModule } from './modules/impact-categories/impact-categories.module';
 import { NewsletterSubscribersModule } from './modules/newsletter-subscribers/newsletter-subscribers.module';
 import { UsersModule } from './modules/users/users.module';
 
@@ -48,6 +49,7 @@ import { UsersModule } from './modules/users/users.module';
     BlogsAndStoriesModule,
     LeadershipMembersModule,
     ImpactStatsModule,
+    ImpactCategoriesModule,
     NewsletterSubscribersModule,
   ],
   controllers: [AppController],
