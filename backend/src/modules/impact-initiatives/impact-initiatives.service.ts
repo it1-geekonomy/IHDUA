@@ -98,8 +98,11 @@ export class ImpactInitiativesService {
         'category.status = :catStatus',
         { catStatus: ContentStatus.PUBLISHED },
       )
+      .leftJoinAndSelect('entity.stories', 'stories')
       .where('entity.slug = :slug', { slug: slug.trim().toLowerCase() })
       .andWhere('entity.status = :status', { status: ContentStatus.PUBLISHED })
+      .orderBy('stories.displayOrder', 'ASC')
+      .addOrderBy('stories.createdAt', 'DESC')
       .getOne();
 
     if (!entity) {

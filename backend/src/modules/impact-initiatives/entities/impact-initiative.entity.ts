@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { ContentStatus } from '../../../common/enums/content-status.enum';
 import { ImpactCategory } from '../../impact-categories/entities/impact-category.entity';
+import { ImpactInitiativeStory } from '../../impact-initiative-stories/entities/impact-initiative-story.entity';
 
 /**
  * ImpactInitiative entity mapping to impact_initiatives table
@@ -62,5 +63,7 @@ export class ImpactInitiative extends BaseEntity {
   })
   @JoinColumn({ name: 'category_id' })
   category?: ImpactCategory;
-}
 
+  @OneToMany(() => ImpactInitiativeStory, (story) => story.initiative)
+  stories?: ImpactInitiativeStory[];
+}

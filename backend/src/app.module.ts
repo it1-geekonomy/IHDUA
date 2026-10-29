@@ -22,6 +22,7 @@ import { LeadershipMembersModule } from './modules/leadership-members/leadership
 import { ImpactStatsModule } from './modules/impact-stats/impact-stats.module';
 import { ImpactCategoriesModule } from './modules/impact-categories/impact-categories.module';
 import { ImpactInitiativesModule } from './modules/impact-initiatives/impact-initiatives.module';
+import { ImpactInitiativeStoriesModule } from './modules/impact-initiative-stories/impact-initiative-stories.module';
 import { NewsletterSubscribersModule } from './modules/newsletter-subscribers/newsletter-subscribers.module';
 import { UsersModule } from './modules/users/users.module';
 
@@ -52,6 +53,7 @@ import { UsersModule } from './modules/users/users.module';
     ImpactStatsModule,
     ImpactCategoriesModule,
     ImpactInitiativesModule,
+    ImpactInitiativeStoriesModule,
     NewsletterSubscribersModule,
   ],
   controllers: [AppController],
