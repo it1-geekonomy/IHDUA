@@ -16,7 +16,6 @@ import {
   Mail,
   Menu,
   MessageSquare,
-  Milestone,
   ScrollText,
   Shield,
   Tag,
@@ -37,7 +36,6 @@ const ICONS = {
   newsletter: Mail,
   orgDocs: FileCheck,
   reports: FileText,
-  milestones: Milestone,
   terms: ScrollText,
   privacy: Shield,
   categories: Tag,
@@ -57,7 +55,6 @@ const PATH_LABELS: Record<string, string> = {
   users: "Users",
   "organizational-documents": "Organizational Documents",
   "annual-reports": "Annual Reports",
-  milestones: "Key Milestones",
   "terms-and-conditions": "Terms & Conditions",
   "privacy-policy": "Privacy Policy",
 };
