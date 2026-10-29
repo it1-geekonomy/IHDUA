@@ -1624,3 +1624,130 @@ export async function restoreBlogAndStory(
     token,
   });
 }
+
+// ─────────────────────────────────────────────────────────────
+// Milestones
+// ─────────────────────────────────────────────────────────────
+
+export interface MilestoneItem {
+  id: string;
+  year: string;
+  description: string;
+  status: ContentStatus;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}
+
+export interface MilestoneQueryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: ContentStatus;
+}
+
+export interface PaginatedMilestonesResponse {
+  data: MilestoneItem[];
+  meta: PaginationMeta;
+}
+
+export interface CreateMilestoneInput {
+  year: string;
+  description: string;
+  status?: ContentStatus;
+}
+
+export interface UpdateMilestoneInput {
+  year?: string;
+  description?: string;
+  status?: ContentStatus;
+}
+
+export async function fetchMilestones(
+  token: string,
+  params: MilestoneQueryParams = {},
+): Promise<PaginatedMilestonesResponse> {
+  const query = new URLSearchParams();
+  if (params.page !== undefined) query.set("page", String(params.page));
+  if (params.limit !== undefined) query.set("limit", String(params.limit));
+  if (params.search && params.search.trim()) query.set("search", params.search.trim());
+  if (params.status) query.set("status", params.status);
+
+  const qs = query.toString();
+  return apiRequest<PaginatedMilestonesResponse>(
+    `/milestones${qs ? `?${qs}` : ""}`,
+    { token },
+  );
+}
+
+export async function fetchDeletedMilestones(
+  token: string,
+  params: MilestoneQueryParams = {},
+): Promise<PaginatedMilestonesResponse> {
+  const query = new URLSearchParams();
+  if (params.page !== undefined) query.set("page", String(params.page));
+  if (params.limit !== undefined) query.set("limit", String(params.limit));
+  if (params.search && params.search.trim()) query.set("search", params.search.trim());
+
+  const qs = query.toString();
+  return apiRequest<PaginatedMilestonesResponse>(
+    `/milestones/deleted${qs ? `?${qs}` : ""}`,
+    { token },
+  );
+}
+
+export async function fetchMilestonesYearWise(): Promise<MilestoneItem[]> {
+  return apiRequest<MilestoneItem[]>("/milestones/year-wise", {
+    isPublic: true,
+  });
+}
+
+export async function fetchMilestoneById(
+  token: string,
+  id: string,
+): Promise<MilestoneItem> {
+  return apiRequest<MilestoneItem>(`/milestones/${id}`, { token });
+}
+
+export async function createMilestone(
+  token: string,
+  input: CreateMilestoneInput,
+): Promise<MilestoneItem> {
+  return apiRequest<MilestoneItem>("/milestones", {
+    method: "POST",
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
+export async function updateMilestone(
+  token: string,
+  id: string,
+  input: UpdateMilestoneInput,
+): Promise<MilestoneItem> {
+  return apiRequest<MilestoneItem>(`/milestones/${id}`, {
+    method: "PATCH",
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
+export async function deleteMilestone(
+  token: string,
+  id: string,
+): Promise<void> {
+  return apiRequest<void>(`/milestones/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export async function restoreMilestone(
+  token: string,
+  id: string,
+): Promise<MilestoneItem> {
+  return apiRequest<MilestoneItem>(`/milestones/${id}/restore`, {
+    method: "PATCH",
+    token,
+  });
+}
