@@ -1,6 +1,8 @@
 import Bannersection from "@/domains/women/components/bannersection";
 import Supportingwomen from "@/domains/women/components/supportingwomen";
-import Gallerysection from"@/domains/women/components/gallerysection";
+import Creatingoppurtunity from "@/domains/women/components/creatingoppurtunity";
+import Statstrip from "@/domains/women/components/StatsStripSection";
+import WomenOpportunities from "@/domains/women/components/WomenOpportunitiesSection";
 import NewsletterSection from "@/shared/components/Newsletter";
 
 export default function OurTeamPage() {
@@ -8,7 +10,9 @@ export default function OurTeamPage() {
     <> 
       <Bannersection />
       <Supportingwomen />
-      <Gallerysection />
+      <Creatingoppurtunity />
+      <WomenOpportunities />
+      <Statstrip />
       <NewsletterSection />
     </>
   );
