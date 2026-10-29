@@ -18,7 +18,9 @@ export default function ClientHomePage() {
 			<Statsection />
 			<OurConviction />
 			<FocusAreaSection />
-			<MovementMarquee />
+			<div className="lg:pb-12">
+				<MovementMarquee />
+			</div>
 			<HowCanYouHelpSection />
 			<Missionsection />
 			<RippleEffectSection />

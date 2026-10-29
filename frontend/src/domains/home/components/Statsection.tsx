@@ -74,7 +74,7 @@ function PageFace({ stat }: { stat: StatValue }) {
       <span className="my-3 h-px w-full bg-[#ECE8DC] lg:my-4" />
       <Typography
         variant="body-sm"
-        className="!mb-0 text-center font-figtree font-medium leading-snug text-[#3C4A4B]"
+        className="!mb-0 text-center font-figtree font-bold leading-snug text-[#3B3B3B]"
       >
         {stat.label}
       </Typography>

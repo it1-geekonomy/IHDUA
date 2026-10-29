@@ -170,6 +170,20 @@ function HeroBackground() {
   );
 }
 
+/** Fades the bottom of the hero into the white "Our Impact" section below. */
+function BottomBlend() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-24 lg:h-32"
+      style={{
+        background:
+          "linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 60%, #FFFFFF 100%)",
+      }}
+    />
+  );
+}
+
 export default function RuralDevelopmentSection() {
   const handleExploreClick = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -179,7 +193,7 @@ export default function RuralDevelopmentSection() {
   return (
     <section
       id="home-top"
-      className={`relative overflow-hidden bg-[#FDFBF5] ${FLUID.sectionPaddingTop}`}
+      className={`relative overflow-hidden bg-[#FDFBF5] pb-8 lg:pb-12 ${FLUID.sectionPaddingTop}`}
     >
       <style>{MARQUEE_CSS}</style>
 
@@ -220,7 +234,7 @@ export default function RuralDevelopmentSection() {
             <button
               type="button"
               onClick={scrollToDonateSection}
-              className="inline-flex w-fit cursor-pointer items-center justify-center gap-2 rounded-md bg-[#FFD638] px-6 py-3 font-bold text-[#1E1E1E]"
+              className="inline-flex w-fit cursor-pointer items-center justify-center gap-2 rounded bg-[#FFD638] px-6 py-3 font-bold text-[#1E1E1E]"
             >
               <Typography variant="body-sm" className="font-figtree font-semibold text-[#1E1E1E]">
                 Donate Now
@@ -232,7 +246,7 @@ export default function RuralDevelopmentSection() {
             <a
               href={`#${FOCUS_AREAS_ID}`}
               onClick={handleExploreClick}
-              className="inline-flex w-fit cursor-pointer rounded-md border border-black bg-white px-6 py-3 font-bold text-[#00191B]"
+              className="inline-flex w-fit cursor-pointer rounded border border-black bg-white px-6 py-3 font-bold text-[#00191B]"
             >
               <Typography variant="body-sm" className="font-figtree font-semibold text-[#00191B]">
                 Explore Our Work
@@ -251,6 +265,8 @@ export default function RuralDevelopmentSection() {
           <MarqueeColumn items={COLUMN_B} reverse duration={DURATION_B} offset={0.35} />
         </div>
       </div>
+
+      <BottomBlend />
     </section>
   );
 }
