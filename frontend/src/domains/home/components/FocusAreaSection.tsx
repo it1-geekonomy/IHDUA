@@ -200,7 +200,7 @@ export default function FocusAreaSection() {
 
   return (
     <section id="focus-areas" className="w-full bg-[#FAF9F5] scroll-mt-20">
-      <div className="w-full px-6 pt-6 lg:pt-8 lg:px-10 xl:py-10 2xl:px-40">
+      <div className="w-full px-6 pt-6 lg:pt-8 lg:px-10 lg:pb-16 xl:pb-16 xl:py-10 2xl:px-40">
         {/* Label, heading and description: centered at all screen sizes */}
         <div className="flex flex-col items-center text-center">
           <SectionLabel>OUR FOCUS AREAS</SectionLabel>
