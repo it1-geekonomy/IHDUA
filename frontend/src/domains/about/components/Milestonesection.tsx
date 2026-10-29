@@ -9,6 +9,7 @@ import { DEFAULT_MILESTONES,DESKTOP_QUERY,FLUID_TOKENS,FRAME_MS,GESTURE_GAP_MS,M
   type Milestone,
   type RevealKind,
 } from "@/domains/about/constants/milestone";
+import { fetchMilestonesYearWise } from "@/domains/admin/lib/api";
 import { MilestoneListDesktop } from "./KeyMilestonesDesktop";
 import { MilestoneListMobile } from "./KeyMilestonesMobile";
 
@@ -233,12 +234,26 @@ function useSequentialReveal(count: number) {
 export default function KeyMilestones({
   label = "Our Journey",
   heading = "Key Milestones",
-  milestones = DEFAULT_MILESTONES,
+  milestones: initialMilestones = DEFAULT_MILESTONES,
   className,
 }: KeyMilestonesProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+
+  const [milestones, setMilestones] = useState<readonly Milestone[]>(initialMilestones);
+
+  useEffect(() => {
+    fetchMilestonesYearWise()
+      .then((items) => {
+        if (Array.isArray(items) && items.length > 0) {
+          setMilestones(items.map((m) => ({ year: m.year, description: m.description })));
+        }
+      })
+      .catch(() => {
+        // Fallback to default milestones
+      });
+  }, []);
 
   const count = milestones.length;
 
