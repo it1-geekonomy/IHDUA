@@ -1,8 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image"; // use <img> if you're not on Next.js
 import Typography from "@/lib/Typography";
+import {
+  fetchPublishedAnnualReports,
+  fetchPublishedOrganizationalDocuments,
+} from "@/domains/admin/lib/api";
 import {
   DOCUMENT_GROUPS,
   DOCUMENT_THEMES,
@@ -217,6 +221,61 @@ function DocumentCard({ group }: { group: DocumentGroup }) {
 }
 
 export default function OurDocuments({ groups = DOCUMENT_GROUPS }: OurDocumentsProps) {
+  const [effectiveGroups, setEffectiveGroups] = useState<DocumentGroup[]>(groups);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    Promise.allSettled([
+      fetchPublishedOrganizationalDocuments(),
+      fetchPublishedAnnualReports(),
+    ]).then(([orgResult, annualResult]) => {
+      if (!isMounted) return;
+
+      setEffectiveGroups((prev) =>
+        prev.map((g) => {
+          if (
+            g.variant === "organizational" &&
+            orgResult.status === "fulfilled" &&
+            Array.isArray(orgResult.value) &&
+            orgResult.value.length > 0
+          ) {
+            return {
+              ...g,
+              items: orgResult.value.map((doc) => ({
+                id: doc.id,
+                title: doc.title,
+                url: doc.fileUrl,
+              })),
+            };
+          }
+
+          if (
+            g.variant === "annual" &&
+            annualResult.status === "fulfilled" &&
+            Array.isArray(annualResult.value) &&
+            annualResult.value.length > 0
+          ) {
+            return {
+              ...g,
+              items: annualResult.value.map((report) => ({
+                id: report.id,
+                title: report.title,
+                url: report.fileUrl,
+              })),
+            };
+          }
+
+          return g;
+        }),
+      );
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <section className="w-full px-6 pt-6 pb-6 lg:px-10 lg:pt-8 lg:pb-8 xl:pt-16 xl:pb-16 2xl:px-40">
       {/* Label + heading + description */}
@@ -250,7 +309,7 @@ export default function OurDocuments({ groups = DOCUMENT_GROUPS }: OurDocumentsP
 
       {/* Cards: stacked below lg, side by side from lg */}
       <div className="mt-[clamp(24px,4vw,56px)] grid grid-cols-1 items-stretch gap-[clamp(16px,2vw,24px)] lg:grid-cols-2">
-        {groups.map((group) => (
+        {effectiveGroups.map((group) => (
           <DocumentCard key={group.id} group={group} />
         ))}
       </div>
