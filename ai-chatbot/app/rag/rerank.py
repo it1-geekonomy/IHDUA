@@ -28,6 +28,10 @@ def rerank(hits: list[dict], intents: set[str]) -> list[dict]:
             bonus += 0.15
         if "contact" in intents and any(k in title or k in content for k in ("contact", "office", "address", "mysore")):
             bonus += 0.20
+        if "leadership" in intents and any(k in title or k in content for k in ("leadership", "ajaikumar", "founder", "chairperson", "trustee", "board")):
+            bonus += 0.25
+        if "stories" in intents and any(k in title or k in content for k in ("blog", "story", "stories", "shanthamma", "village", "article")):
+            bonus += 0.25
 
         scored.append((base_sim + bonus, h))
 
