@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Typography from "@/lib/Typography";
 import { cn } from "@/lib/utils";
+import { subscribeNewsletter } from "@/domains/admin/lib/api";
 import {
   NEWSLETTER_DEFAULTS,
   NEWSLETTER_GLOW_ID,
@@ -37,11 +38,15 @@ export default function NewsletterSection({
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (status === "loading") return;
+    if (status === "loading" || !email.trim()) return;
 
     setStatus("loading");
     try {
-      await onSubscribe?.(email.trim());
+      if (onSubscribe) {
+        await onSubscribe(email.trim());
+      } else {
+        await subscribeNewsletter(email.trim());
+      }
       setStatus("success");
       setEmail("");
     } catch {

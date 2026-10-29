@@ -232,9 +232,15 @@ export function DetailsStep({
             />
             <span className="text-[13px] text-[#4B5563]">
               I have read and agree to the{" "}
-              <span className="text-[#9739A8] font-semibold underline decoration-[#9739A8]/40">
+              <a
+                href="/terms-and-conditions"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-[#9739A8] font-semibold underline decoration-[#9739A8]/40 hover:text-[#7B2E88]"
+              >
                 Terms & Conditions
-              </span>
+              </a>
             </span>
           </label>
         </div>
