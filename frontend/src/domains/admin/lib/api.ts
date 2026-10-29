@@ -379,7 +379,7 @@ export async function restoreContactLead(
   id: string,
 ): Promise<LeadContact> {
   return apiRequest<LeadContact>(`/leads-contact/${id}/restore`, {
-    method: "POST",
+    method: "PATCH",
     token,
   });
 }
@@ -468,7 +468,7 @@ export async function restoreVolunteerLead(
   id: string,
 ): Promise<LeadVolunteer> {
   return apiRequest<LeadVolunteer>(`/leads-volunteer/${id}/restore`, {
-    method: "POST",
+    method: "PATCH",
     token,
   });
 }
@@ -560,7 +560,7 @@ export async function restorePartnershipInquiry(
   id: string,
 ): Promise<LeadPartnership> {
   return apiRequest<LeadPartnership>(`/partnership-inquiries/${id}/restore`, {
-    method: "POST",
+    method: "PATCH",
     token,
   });
 }
