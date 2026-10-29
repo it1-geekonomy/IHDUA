@@ -24,9 +24,36 @@ export async function generateMetadata({ params }: BlogSlugPageProps) {
     };
   }
 
+  const description = post.excerpt || post.leadParagraph || "Read this story from IHDUA.";
+
+  const canonical = post.canonicalUrl || `/blogs/${slug}`;
+
   return {
     title: `${post.title} | IHDUA`,
-    description: post.excerpt || post.leadParagraph,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      title: `${post.title} | IHDUA`,
+      description,
+      url: canonical,
+      type: "article",
+      images: post.image
+        ? [
+            {
+              url: post.image,
+              alt: post.imageAlt || post.title,
+            },
+          ]
+        : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${post.title} | IHDUA`,
+      description,
+      images: post.image ? [post.image] : undefined,
+    },
   };
 }
 
