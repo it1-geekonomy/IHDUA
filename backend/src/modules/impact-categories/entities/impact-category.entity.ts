@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { ContentStatus } from '../../../common/enums/content-status.enum';
+import { ImpactInitiative } from '../../impact-initiatives/entities/impact-initiative.entity';
 
 /**
  * ImpactCategory entity mapping to impact_categories table (Main navigation categories)
@@ -47,5 +48,7 @@ export class ImpactCategory extends BaseEntity {
     default: ContentStatus.PUBLISHED,
   })
   status: ContentStatus;
-}
 
+  @OneToMany(() => ImpactInitiative, (initiative) => initiative.category)
+  initiatives?: ImpactInitiative[];
+}

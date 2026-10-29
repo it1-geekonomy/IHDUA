@@ -16,5 +16,6 @@ export const ApiTagsConst = {
   LEADERSHIP_MEMBERS: 'leadership-members',
   IMPACT_STATS: 'impact-stats',
   IMPACT_CATEGORIES: 'impact-categories',
+  IMPACT_INITIATIVES: 'impact-initiatives',
   NEWSLETTER_SUBSCRIBERS: 'newsletter-subscribers',
 } as const;
