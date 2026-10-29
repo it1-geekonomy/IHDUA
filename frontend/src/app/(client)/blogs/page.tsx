@@ -7,6 +7,16 @@ export const metadata = {
   title: "Blogs & Stories | IHDUA",
   description:
     "Discover stories, updates, and inspiring moments from our work with rural communities across Karnataka.",
+  alternates: {
+    canonical: "/blogs",
+  },
+  openGraph: {
+    title: "Blogs & Stories | IHDUA",
+    description:
+      "Discover stories, updates, and inspiring moments from our work with rural communities across Karnataka.",
+    url: "/blogs",
+    type: "website",
+  },
 };
 
 export default function BlogsPage() {

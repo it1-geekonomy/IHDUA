@@ -27,7 +27,7 @@ export const FOOTER_HEADQUARTERS = {
 };
 
 export const FOOTER_SOCIAL_LINKS = [
-  { name: "Instagram", href: "https://www.instagram.com/", icon: "/footer/instagramicon.png" },
+  { name: "Instagram", href: "https://www.instagram.com/ihduadigital?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw%3D%3D", icon: "/footer/instagramicon.png" },
   { name: "Twitter", href: "https://twitter.com/", icon: "/footer/twittericon.png" },
   { name: "LinkedIn", href: "https://www.linkedin.com/", icon: "/footer/linkedinicon.png" },
 ];

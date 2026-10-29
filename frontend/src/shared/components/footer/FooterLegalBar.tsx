@@ -32,11 +32,7 @@ export function FooterLegalBar() {
           <div className="order-1 flex w-full items-center justify-between gap-3 lg:order-3 lg:w-auto lg:justify-end lg:gap-4">
             <div className="flex items-center gap-4">
               <Link
-                href="/"
-                onClick={(e) => {
-                  e.preventDefault();
-                  sessionStorage.setItem("suppress_overlay", "true");
-                }}
+                href="/privacy-policy"
                 className="text-[#00191B] hover:underline"
               >
                 <Typography variant="body-sm" className="font-regular font-figtree">
@@ -44,11 +40,7 @@ export function FooterLegalBar() {
                 </Typography>
               </Link>
               <Link
-                href="/"
-                onClick={(e) => {
-                  e.preventDefault();
-                  sessionStorage.setItem("suppress_overlay", "true");
-                }}
+                href="/terms-and-conditions"
                 className="text-[#00191B] hover:underline"
               >
                 <Typography variant="body-sm" className="font-regular font-figtree">
