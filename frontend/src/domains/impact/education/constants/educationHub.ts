@@ -28,7 +28,7 @@ export const EDUCATION_SCHOOL_ITEMS: ImageCardItem[] = [
 
 export const EDUCATION_TRANSFORMS_BANNER = {
   heading: "Education Transforms Communities",
-  mainImage: "/Rural Education/image 50.png",
+  mainImage: "/Rural Education/house.png",
   mainImageAlt: "Rural School Illustration",
   items: [
     {
