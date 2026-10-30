@@ -26,12 +26,11 @@ export class BlogCategoriesService {
   ) {}
 
   async create(dto: CreateBlogCategoryDto): Promise<BlogCategory> {
-    const slug = dto.slug.trim();
-    await this.assertUniqueNameAndSlug(dto.name, slug);
+    const trimmedName = dto.name.trim();
+    await this.assertUniqueName(trimmedName);
 
     const entity = this.repo.create({
-      ...dto,
-      slug,
+      name: trimmedName,
     });
     return await this.repo.save(entity);
   }
@@ -49,10 +48,9 @@ export class BlogCategoriesService {
     applyDeletedFilter(qb, query);
 
     if (query.search) {
-      qb.andWhere(
-        '(entity.name ILIKE :search OR entity.slug ILIKE :search)',
-        { search: `%${query.search}%` },
-      );
+      qb.andWhere('entity.name ILIKE :search', {
+        search: `%${query.search}%`,
+      });
     }
 
     const [data, total] = await qb
@@ -84,22 +82,18 @@ export class BlogCategoriesService {
     dto: UpdateBlogCategoryDto,
   ): Promise<BlogCategory> {
     const entity = await this.findOne(id);
-    const newSlug = dto.slug ? dto.slug.trim() : entity.slug;
-    const newName = dto.name ?? entity.name;
+    const newName = dto.name !== undefined ? dto.name.trim() : entity.name;
 
-    await this.assertUniqueNameAndSlug(newName, newSlug, id);
+    await this.assertUniqueName(newName, id);
 
-    Object.assign(entity, {
-      ...dto,
-      slug: newSlug,
-    });
+    entity.name = newName;
 
     try {
       return await this.repo.save(entity);
     } catch (err) {
       if (this.isUniqueViolation(err)) {
         throw new ConflictException(
-          'A blog category with this name or slug already exists. Choose a different one.',
+          'A blog category with this name already exists. Choose a different one.',
         );
       }
       throw err;
@@ -115,17 +109,13 @@ export class BlogCategoriesService {
     return restoreSoftDeleted(this.repo, id, 'Blog category');
   }
 
-  private async assertUniqueNameAndSlug(
+  private async assertUniqueName(
     name: string,
-    slug: string,
     currentId?: string,
   ): Promise<void> {
     const qb = this.repo
       .createQueryBuilder('category')
-      .where(
-        '(LOWER(TRIM(category.name)) = LOWER(TRIM(:name)) OR category.slug = :slug)',
-        { name, slug },
-      );
+      .where('LOWER(TRIM(category.name)) = LOWER(TRIM(:name))', { name });
 
     if (currentId) {
       qb.andWhere('category.id != :id', { id: currentId });
@@ -133,11 +123,6 @@ export class BlogCategoriesService {
 
     const existing = await qb.getOne();
     if (existing) {
-      if (existing.slug === slug) {
-        throw new ConflictException(
-          `A category with slug "${slug}" already exists. Please choose a different slug.`,
-        );
-      }
       throw new ConflictException(
         `A category named "${name}" already exists. Please choose a different name.`,
       );

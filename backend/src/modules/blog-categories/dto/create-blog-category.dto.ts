@@ -11,14 +11,4 @@ export class CreateBlogCategoryDto {
   @IsNotEmpty()
   @MaxLength(100)
   name: string;
-
-  @ApiProperty({
-    example: 'healthcare-and-medical',
-    description: 'URL-friendly slug',
-    maxLength: 120,
-  })
-  @IsString()
-  @IsNotEmpty()
-  @MaxLength(120)
-  slug: string;
 }
