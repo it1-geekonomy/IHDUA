@@ -2,10 +2,10 @@
 
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -19,86 +19,134 @@ import {
   storeSession,
   type AdminUser,
 } from "@/domains/admin/lib/api";
+import { getTokenRemainingMs, isTokenExpired } from "@/domains/admin/lib/jwt";
+import {
+  ADMIN_TOKEN_KEY,
+  SESSION_EXPIRED_EVENT,
+} from "@/domains/admin/lib/session";
 
-type AuthContextValue = {
+type AuthContextType = {
   user: AdminUser | null;
   token: string | null;
   ready: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  login: (email: string, pass: string, remember?: boolean) => Promise<AdminUser>;
+  logout: (reason?: string) => void;
 };
 
-const AuthContext = createContext<AuthContextValue | null>(null);
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const logout = (reason = "logged_out") => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    clearSession();
+    setToken(null);
+    setUser(null);
+
+    const next =
+      pathname?.startsWith("/admin") && pathname !== "/admin/login"
+        ? `&next=${encodeURIComponent(pathname)}`
+        : "";
+    if (pathname !== "/admin/login") {
+      router.replace(`/admin/login?reason=${reason}${next}`);
+    }
+  };
+
+  const scheduleExpiry = (jwt: string) => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    const ms = getTokenRemainingMs(jwt);
+    if (ms <= 0) return logout("session_expired");
+    timerRef.current = setTimeout(() => logout("session_expired"), ms);
+  };
+
+  const initializedTokenRef = useRef<string | null>(null);
 
   useEffect(() => {
-    const storedToken = getStoredToken();
-    const storedUser = getStoredUser();
-
-    if (!storedToken) {
+    const t = getStoredToken();
+    if (!t || isTokenExpired(t)) {
+      clearSession();
       setReady(true);
       return;
     }
 
-    setToken(storedToken);
-    setUser(storedUser);
+    setToken(t);
+    setUser(getStoredUser());
+    scheduleExpiry(t);
 
-    fetchAdminMe(storedToken)
-      .then((me) => {
-        setUser(me);
-        storeSession(storedToken, me);
-      })
-      .catch(() => {
-        clearSession();
-        setToken(null);
-        setUser(null);
-      })
-      .finally(() => setReady(true));
+    if (initializedTokenRef.current !== t) {
+      initializedTokenRef.current = t;
+      fetchAdminMe(t)
+        .then((u) => {
+          setUser(u);
+          storeSession(t, u);
+        })
+        .catch(() => logout("session_expired"))
+        .finally(() => setReady(true));
+    } else {
+      setReady(true);
+    }
+
+    const onStorage = (e: StorageEvent) =>
+      e.key === ADMIN_TOKEN_KEY && !e.newValue && logout("session_expired");
+    const onExpiry = () => logout("session_expired");
+    const onFocus = () =>
+      t && isTokenExpired(getStoredToken()) && logout("session_expired");
+
+    window.addEventListener("storage", onStorage);
+    window.addEventListener(SESSION_EXPIRED_EVENT, onExpiry);
+    window.addEventListener("focus", onFocus);
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener(SESSION_EXPIRED_EVENT, onExpiry);
+      window.removeEventListener("focus", onFocus);
+    };
   }, []);
 
-  const login = useCallback(async (email: string, password: string) => {
-    const result = await adminLogin(email, password);
-    storeSession(result.accessToken, result.user);
-    setToken(result.accessToken);
-    setUser(result.user);
-  }, []);
-
-  const logout = useCallback(() => {
-    clearSession();
-    setToken(null);
-    setUser(null);
-  }, []);
+  const login = async (email: string, pass: string, rem = true) => {
+    const res = await adminLogin(email, pass);
+    storeSession(res.accessToken, res.user, rem);
+    setToken(res.accessToken);
+    setUser(res.user);
+    scheduleExpiry(res.accessToken);
+    return res.user;
+  };
 
   const value = useMemo(
     () => ({ user, token, ready, login, logout }),
-    [user, token, ready, login, logout],
+    [user, token, ready],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAdminAuth() {
+export const useAdminAuth = () => {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAdminAuth must be used within AdminAuthProvider");
+  if (!ctx) throw new Error("useAdminAuth must be used inside AdminAuthProvider");
   return ctx;
-}
+};
 
-/** Protects panel routes; redirects unauthenticated users to login. */
-export function useRequireAdminAuth() {
+export const useRequireAdminAuth = () => {
   const auth = useAdminAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!auth.ready) return;
-    if (!auth.token) {
-      router.replace(`/admin/login?next=${encodeURIComponent(pathname)}`);
+    if (auth.ready && !auth.token) {
+      const next =
+        pathname && pathname !== "/admin/login"
+          ? `?next=${encodeURIComponent(pathname)}`
+          : "";
+      router.replace(`/admin/login${next}`);
     }
   }, [auth.ready, auth.token, pathname, router]);
 
   return auth;
-}
+};

@@ -1,7 +1,6 @@
 "use client";
 
-import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   AnimatePresence,
   motion,
@@ -12,30 +11,27 @@ import { STATS, STAT_SETS, type StatValue } from "@/domains/home/constants/stat"
 import Typography from "@/lib/Typography";
 import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 
-/** Card (white box) height = one digit row, in em */
-const CARD_H = 1.45;
-const CARD_W = "1.05em";
-/** The roll window is taller than the card so faded neighbours peek out above and below */
-const WINDOW_H = CARD_H * 1.7;
-const WINDOW_TOP = -((WINDOW_H - CARD_H) / 2);
-/** Centres the active row inside the window */
-const CENTER = (WINDOW_H - CARD_H) / 2;
-
-const FADE_MASK =
-  "linear-gradient(to bottom, transparent 0%, #000 22%, #000 78%, transparent 100%)";
 const EASE = [0.16, 1, 0.3, 1] as const;
-const ROLL_SECONDS = 1.6;
+/** Calendar-page ease: slow lift, fast fall */
+const EASE_FLIP = [0.5, 0, 0.2, 1] as const;
 
-/** Fraction of the roll after which the digit counts as "seated" */
-const SETTLE_AT = 0.45;
+const FLIP_SECONDS = 0.7;
+/** How far the page swings (past 90deg so it disappears behind the binding) */
+const FLIP_ANGLE = 100;
+/** Slight tilt of the page when the card is hovered (the "peek") */
+const PEEK_ANGLE = 7;
+const PERSPECTIVE = 900;
 
-const DULL = "#B4BCBD";
+const PURPLE = "#9739A8";
+const YELLOW = "#F5C93B";
 const DARK = "#00191B";
+const PAPER = "#FFFEFA";
 
-/** Three 0-9 cycles; digits land on the middle cycle so they spin on entry */
-const STRIP = Array.from({ length: 30 }, (_, i) => i % 10);
+/** Binding colour per card (purple / yellow / purple / yellow, as in Figma) */
+const BAND_COLORS = [PURPLE, YELLOW, PURPLE, YELLOW];
+const RING_COUNT = 9;
 
-/** Minimum time between steps while wheel-scrolling over a stat (ms) */
+/** Minimum time between flips while wheel-scrolling over a card (ms) */
 const STEP_COOLDOWN_MS = 900;
 
 /** Visual order in the 2-column mobile grid; reset with `lg:order-none`. */
@@ -49,214 +45,97 @@ const formatValue = (stat: StatValue) => {
   });
 };
 
-/** Rough visual width of a stat, used only to pick the widest one */
-const widthScore = (stat: StatValue) => {
-  const text = formatValue(stat);
-  const digits = (text.match(/\d/g) ?? []).length;
-  const separators = text.length - digits;
+/**
+ * The sheet with the longest label across EVERY card and EVERY step. Each card
+ * renders it invisibly to reserve its height, so all calendars are identical in
+ * size on every screen (all cards share the same width, so they wrap the same).
+ */
+const TALLEST_STAT: StatValue = STAT_SETS.flat().reduce((a, b) =>
+  b.label.length > a.label.length ? b : a,
+);
+
+/* ------------------------------ Calendar page ----------------------------- */
+
+/** The printed face of one calendar sheet: number, divider, label. */
+function PageFace({ stat }: { stat: StatValue }) {
   return (
-    digits * 1.2 +
-    separators * 0.5 +
-    (stat.prefix?.length ?? 0) * 0.6 +
-    (stat.suffix?.length ?? 0) * 0.5
-  );
-};
-
-/* ----------------------------- Rolling digit ----------------------------- */
-
-function Digit({
-  digit,
-  delay,
-  zero,
-  instant,
-}: {
-  digit: number;
-  delay: number;
-  zero: boolean;
-  instant: boolean;
-}) {
-  const index = zero ? 0 : 10 + digit;
-  const [settled, setSettled] = useState(true);
-
-  // Mark the digit as seated as soon as it visually lands
-  useEffect(() => {
-    if (instant) {
-      setSettled(true);
-      return;
-    }
-    setSettled(false);
-    const t = window.setTimeout(
-      () => setSettled(true),
-      (delay + ROLL_SECONDS * SETTLE_AT) * 1000,
-    );
-    return () => window.clearTimeout(t);
-  }, [index, instant, delay]);
-
-  return (
-    <span
-      className="relative inline-block"
-      style={{ height: `${CARD_H}em`, width: CARD_W }}
-    >
-      {/* White card */}
+    <div className="flex h-full flex-col items-center px-3 pb-4 pt-5 lg:px-4">
       <span
-        aria-hidden
-        className="absolute inset-0 rounded-[0.28em] bg-white"
+        className="font-figtree font-bold tabular-nums leading-none"
         style={{
-          boxShadow:
-            "0 1px 2px rgba(0,25,27,0.08), 0 4px 10px -4px rgba(0,25,27,0.12)",
-        }}
-      />
-
-      {/* Roll window: taller than the card, faded at its edges */}
-      <span
-        className="absolute left-0 w-full overflow-hidden"
-        style={{
-          top: `${WINDOW_TOP}em`,
-          height: `${WINDOW_H}em`,
-          maskImage: FADE_MASK,
-          WebkitMaskImage: FADE_MASK,
+          fontSize: "clamp(1.5rem, 1rem + 2vw, 2.5rem)",
+          color: DARK,
         }}
       >
-        <motion.span
-          className="absolute left-0 top-0 flex w-full flex-col will-change-transform"
-          initial={{ y: `${CENTER}em` }}
-          animate={{ y: `${CENTER - index * CARD_H}em` }}
-          transition={
-            instant ? { duration: 0 } : { duration: ROLL_SECONDS, delay, ease: EASE }
-          }
-        >
-          {STRIP.map((n, i) => {
-            const active = i === index;
-            return (
-              <span
-                key={i}
-                className="flex items-center justify-center"
-                style={{
-                  height: `${CARD_H}em`,
-                  lineHeight: `${CARD_H}em`,
-                  color: active && settled ? DARK : DULL,
-                  opacity: active || !settled ? 1 : 0,
-                  transition: instant
-                    ? "none"
-                    : "color 0.12s ease-out, opacity 0.2s ease-out",
-                }}
-              >
-                {n}
-              </span>
-            );
-          })}
-        </motion.span>
+        {stat.prefix}
+        {formatValue(stat)}
+        {stat.suffix}
       </span>
-    </span>
+      <span className="my-3 h-px w-full bg-[#ECE8DC] lg:my-4" />
+      <Typography
+        variant="body-sm"
+        className="!mb-0 text-center font-figtree font-bold leading-snug text-[#3B3B3B]"
+      >
+        {stat.label}
+      </Typography>
+    </div>
   );
 }
 
-/**
- * `sizer` renders the same layout with plain empty cards and no animation.
- * It is used invisibly to reserve the width of the widest value.
- */
-function Odometer({
-  stat,
-  zero,
-  instant,
-  baseDelay,
-  sizer = false,
-}: {
-  stat: StatValue;
-  zero: boolean;
-  instant: boolean;
-  baseDelay: number;
-  sizer?: boolean;
-}) {
-  const formatted = formatValue(stat);
-  const chars = formatted.split("");
+type FlipCustom = { dir: 1 | -1; instant: boolean };
 
-  return (
-    <span
-      className="inline-flex items-center font-lora font-bold tabular-nums"
-      style={{ fontSize: "clamp(1.125rem, 0.8rem + 1.3vw, 1.875rem)", color: DARK }}
-      aria-label={sizer ? undefined : `${stat.prefix ?? ""}${formatted}${stat.suffix ?? ""}`}
-    >
-      {stat.prefix && (
-        <span className="mr-1 text-[#9739A8]" style={{ lineHeight: `${CARD_H}em` }}>
-          {stat.prefix}
-        </span>
-      )}
-      <span aria-hidden className="inline-flex items-center gap-[0.18em]">
-        {chars.map((ch, i) => {
-          // Key from the right so columns keep their identity when the length changes
-          const key = chars.length - i;
-          if (/\d/.test(ch)) {
-            return sizer ? (
-              <span
-                key={key}
-                className="inline-block"
-                style={{ height: `${CARD_H}em`, width: CARD_W }}
-              />
-            ) : (
-              <Digit
-                key={key}
-                digit={Number(ch)}
-                // Right-most digit starts first, like an odometer
-                delay={baseDelay + (chars.length - 1 - i) * 0.09}
-                zero={zero}
-                instant={instant}
-              />
-            );
-          }
-          return (
-            <span
-              key={key}
-              className="self-end text-[0.7em]"
-              style={{ lineHeight: 1, paddingBottom: "0.15em", color: DARK }}
-            >
-              {ch}
-            </span>
-          );
-        })}
-      </span>
-      {stat.suffix &&
-        (sizer ? (
-          <span
-            className="ml-1.5 inline-block whitespace-pre text-[0.6em]"
-            style={{ lineHeight: `${CARD_H}em` }}
-          >
-            {stat.suffix}
-          </span>
-        ) : (
-          <motion.span
-            className="ml-1.5 inline-block whitespace-pre text-[0.6em] text-[#9739A8]"
-            style={{ lineHeight: `${CARD_H}em` }}
-            initial={false}
-            animate={zero ? { opacity: 0, scale: 0.4 } : { opacity: 1, scale: 1 }}
-            transition={
-              instant
-                ? { duration: 0 }
-                : {
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 14,
-                    delay: baseDelay + ROLL_SECONDS * 0.8,
-                  }
-            }
-          >
-            {stat.suffix}
-          </motion.span>
-        ))}
-    </span>
-  );
-}
-
-/* ------------------------------ Partition ------------------------------- */
+const flipTransition = {
+  rotateX: { duration: FLIP_SECONDS, ease: EASE_FLIP },
+  scale: { duration: FLIP_SECONDS, ease: EASE_FLIP },
+};
 
 /**
- * Each partition owns its own position in STAT_SETS, so scrolling over one
- * stat changes only that stat. Top row: icon + number cards. Label below, centered.
- *
- * The number area always reserves the width of the widest value this stat can
- * show, so the icon never moves when the digit count changes.
+ * dir = +1 (next): the current sheet lifts and flips up over the binding,
+ *                  revealing the next sheet already sitting underneath.
+ * dir = -1 (prev): the previous sheet swings back down over the current one.
  */
-function Partition({
+const pageVariants = {
+  enter: ({ dir }: FlipCustom) =>
+    dir > 0
+      ? { rotateX: 0, scale: 0.96, opacity: 1, zIndex: 1 }
+      : { rotateX: FLIP_ANGLE, scale: 1, opacity: 0, zIndex: 2 },
+  center: ({ dir, instant }: FlipCustom) => ({
+    rotateX: 0,
+    scale: 1,
+    opacity: 1,
+    zIndex: dir < 0 ? 2 : 1,
+    transition: instant
+      ? { duration: 0 }
+      : { ...flipTransition, opacity: { duration: 0.12 } },
+  }),
+  exit: ({ dir, instant }: FlipCustom) =>
+    dir > 0
+      ? {
+          rotateX: FLIP_ANGLE,
+          opacity: 0,
+          zIndex: 2,
+          transition: instant
+            ? { duration: 0 }
+            : {
+                ...flipTransition,
+                opacity: { duration: 0.15, delay: FLIP_SECONDS * 0.75 },
+              },
+        }
+      : {
+          scale: 0.96,
+          zIndex: 1,
+          transition: instant ? { duration: 0 } : flipTransition,
+        },
+};
+
+/* -------------------------------- Calendar -------------------------------- */
+
+/**
+ * One calendar card. Each card owns its position in STAT_SETS, so wheel-scrolling
+ * over a card flips only that card. Click / tap / Enter flips to the next sheet
+ * (touch devices have no hover + wheel).
+ */
+function CalendarCard({
   slot,
   slotIndex,
   zero,
@@ -271,9 +150,18 @@ function Partition({
 }) {
   const steps = STAT_SETS.length;
   const ref = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState(0);
-  const activeRef = useRef(0);
+  const [view, setView] = useState<{ index: number; dir: 1 | -1 }>({
+    index: 0,
+    dir: 1,
+  });
+  const [hovered, setHovered] = useState(false);
+  const indexRef = useRef(0);
   const lockUntil = useRef(0);
+
+  const flipTo = (next: number, dir: 1 | -1) => {
+    indexRef.current = next;
+    setView({ index: next, dir });
+  };
 
   // Needs a non-passive native listener so preventDefault can hold the page still
   useEffect(() => {
@@ -284,38 +172,39 @@ function Partition({
       if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return; // ignore sideways scroll
 
       const now = performance.now();
-      // Right after a step, swallow the rest of the wheel/trackpad momentum
+      // Right after a flip, swallow the rest of the wheel/trackpad momentum
       if (now < lockUntil.current) {
         e.preventDefault();
         return;
       }
 
-      const next = activeRef.current + (e.deltaY > 0 ? 1 : -1);
-      if (next < 0 || next >= steps) return; // first/last value: let the page scroll
+      const dir = e.deltaY > 0 ? 1 : -1;
+      const next = indexRef.current + dir;
+      if (next < 0 || next >= steps) return; // first/last sheet: let the page scroll
 
       e.preventDefault();
       lockUntil.current = now + STEP_COOLDOWN_MS;
-      activeRef.current = next;
-      setActive(next);
+      indexRef.current = next;
+      setView({ index: next, dir });
     };
 
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
   }, [steps]);
 
-  const stat = STAT_SETS[active][slotIndex];
+  const handleNext = () => {
+    const now = performance.now();
+    if (now < lockUntil.current) return;
+    lockUntil.current = now + FLIP_SECONDS * 1000;
+    // Wrap around so a tap always does something
+    const next = (indexRef.current + 1) % steps;
+    flipTo(next, 1);
+  };
 
-  // Widest value this slot can ever show
-  const widest = useMemo(
-    () =>
-      STAT_SETS.map((set) => set[slotIndex]).reduce((a, b) =>
-        widthScore(b) > widthScore(a) ? b : a,
-      ),
-    [slotIndex],
-  );
+  const stat = STAT_SETS[view.index][slotIndex];
+  const custom: FlipCustom = { dir: view.dir, instant };
 
-  // Stats start one after another on entry; later steps only stagger the digits
-  const baseDelay = zero || active === 0 ? slotIndex * 0.15 : 0;
+  const band = BAND_COLORS[slotIndex % BAND_COLORS.length];
 
   return (
     <motion.div
@@ -327,73 +216,115 @@ function Partition({
           ? { duration: 0 }
           : { duration: 0.6, delay: slotIndex * 0.15, ease: EASE }
       }
-      className={`flex w-full min-w-0 flex-col items-center gap-[clamp(0.75rem,0.5rem+1vw,1.25rem)] ${className}`}
+      className={`h-full w-full min-w-0 ${className}`}
     >
-      {/* Icon (left, vertically centered) + number cards */}
-      <div className="flex items-center gap-[clamp(0.625rem,0.3rem+1.4vw,1rem)]">
+      <motion.div
+        role="button"
+        tabIndex={0}
+        aria-label={`${stat.prefix ?? ""}${formatValue(stat)}${stat.suffix ?? ""} ${stat.label}. Press to flip to the next figure.`}
+        onClick={handleNext}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleNext();
+          }
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onFocus={() => setHovered(true)}
+        onBlur={() => setHovered(false)}
+        whileHover={instant ? undefined : { y: -4 }}
+        transition={{ type: "spring", stiffness: 300, damping: 22 }}
+        className="relative mx-auto flex h-full w-full max-w-[16.5rem] cursor-pointer flex-col select-none rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-[#9739A8] focus-visible:ring-offset-2"
+      >
+        {/* Binding: coloured band + metal rings */}
+        <div
+          className="relative z-10 h-3.5 rounded-t-xl lg:h-4"
+          style={{ backgroundColor: band }}
+        >
+          <div className="absolute inset-x-0 -top-1.5 flex justify-between px-[22%]">
+            {Array.from({ length: RING_COUNT }, (_, i) => (
+              <span
+                key={i}
+                aria-hidden
+                className="h-3 w-[3px] rounded-full lg:h-3.5"
+                style={{
+                  background:
+                    "linear-gradient(to right, #8E9697, #F4F6F6 45%, #A9B1B2)",
+                  boxShadow: "0 1px 1px rgba(0,25,27,0.25)",
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Pad of pages underneath: hints there's more to flip */}
+        <div
+          aria-hidden
+          className="absolute inset-x-1.5 bottom-0 top-3.5 rounded-b-xl bg-[#EDE9DC] transition-transform duration-300 lg:top-4"
+          style={{
+            transform: hovered ? "translateY(7px)" : "translateY(4px)",
+            boxShadow: "0 6px 14px -6px rgba(0,25,27,0.18)",
+          }}
+        />
+
+        {/* Page area */}
         <motion.div
-          // box: 40px → 56px, radius: 10px → 14px
-          className="flex size-[clamp(2.5rem,1.7rem+3.4vw,3.5rem)] shrink-0 items-center justify-center rounded-[clamp(0.625rem,0.4rem+1vw,0.875rem)]"
-          style={{ backgroundColor: slot.bg }}
+          className="relative flex-1"
+          style={{ transformOrigin: "top center", transformPerspective: PERSPECTIVE }}
           initial={false}
-          animate={zero ? { scale: 0.5, rotate: -12 } : { scale: 1, rotate: 0 }}
+          // The first sheet falls into place when the section scrolls into view
+          animate={zero ? { rotateX: 90, opacity: 0 } : { rotateX: 0, opacity: 1 }}
           transition={
             instant
               ? { duration: 0 }
-              : { type: "spring", stiffness: 260, damping: 16, delay: slotIndex * 0.15 }
+              : {
+                  duration: 0.8,
+                  delay: slotIndex * 0.15 + 0.1,
+                  ease: EASE_FLIP,
+                }
           }
         >
-          <Image
-            src={slot.icon}
-            alt=""
-            width={28}
-            height={28}
-            className="size-[clamp(1.125rem,0.7rem+1.8vw,1.75rem)] object-contain"
-          />
-        </motion.div>
+          {/* Invisible sizer holds the card's height */}
+          <div aria-hidden className="invisible rounded-b-xl">
+            <PageFace stat={TALLEST_STAT} />
+          </div>
 
-        {/* Stacked in one grid cell: the invisible widest value sets the width,
-            the real digits sit at the left edge and grow to the right. */}
-        <span className="inline-grid">
-          <span
-            aria-hidden
-            className="invisible col-start-1 row-start-1 pointer-events-none"
-          >
-            <Odometer
-              stat={widest}
-              zero={false}
-              instant
-              baseDelay={0}
-              sizer
-            />
-          </span>
-          <span className="col-start-1 row-start-1 justify-self-start">
-            <Odometer
-              stat={stat}
-              zero={zero}
-              instant={instant}
-              baseDelay={baseDelay}
-            />
-          </span>
-        </span>
-      </div>
-
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={stat.label}
-          initial={instant ? false : { opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={instant ? undefined : { opacity: 0, y: -6 }}
-          transition={{ duration: 0.2, ease: EASE }}
-        >
-          <Typography
-            variant="body-sm"
-            className="!mb-0 text-center font-figtree font-medium leading-snug text-[#5F6C6D]"
-          >
-            {stat.label}
-          </Typography>
+          <AnimatePresence initial={false} custom={custom}>
+            <motion.div
+              key={view.index}
+              custom={custom}
+              variants={pageVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              className="absolute inset-0"
+              style={{
+                transformOrigin: "top center",
+                transformPerspective: PERSPECTIVE,
+                backfaceVisibility: "hidden",
+                willChange: "transform",
+              }}
+            >
+              {/* Peek: the free edge lifts slightly on hover */}
+              <motion.div
+                className="h-full rounded-b-xl"
+                style={{
+                  backgroundColor: PAPER,
+                  transformOrigin: "top center",
+                  transformPerspective: PERSPECTIVE,
+                  boxShadow:
+                    "0 1px 2px rgba(0,25,27,0.08), 0 8px 16px -8px rgba(0,25,27,0.16)",
+                }}
+                animate={{ rotateX: hovered && !instant ? PEEK_ANGLE : 0 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+              >
+                <PageFace stat={stat} />
+              </motion.div>
+            </motion.div>
+          </AnimatePresence>
         </motion.div>
-      </AnimatePresence>
+      </motion.div>
     </motion.div>
   );
 }
@@ -404,7 +335,7 @@ export default function StatSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion() ?? false;
 
-  // Digits roll up from 0 the first time the section is on screen
+  // Cards flip in the first time the section is on screen
   const inView = useInView(sectionRef, { once: true, amount: 0.35 });
 
   useEffect(() => {
@@ -445,7 +376,7 @@ export default function StatSection() {
     <section
       id="our-impact"
       ref={sectionRef}
-      className="w-full bg-[#FAF9F5] px-6 py-10 lg:px-10 lg:py-20 2xl:px-40 scroll-mt-20 lg:scroll-mt-24"
+      className="w-full bg-[#FFFFFF] px-6 pt-6 lg:pt-8 pb-6 lg:pb-8 xl:py-14 lg:px-10 2xl:px-40 scroll-mt-20 lg:scroll-mt-24"
     >
       <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
         <div className="mb-4 flex items-center gap-3 self-center">
@@ -467,9 +398,9 @@ export default function StatSection() {
         </Typography>
       </div>
 
-      <div className="mt-10 grid w-full grid-cols-2 justify-items-stretch gap-x-5 gap-y-10 lg:mt-14 lg:grid-cols-4 lg:gap-x-8">
+      <div className="mt-10 grid w-full grid-cols-2 justify-items-stretch gap-x-5 gap-y-12 lg:mt-14 lg:grid-cols-4 lg:gap-x-8">
         {STATS.map((slot, i) => (
-          <Partition
+          <CalendarCard
             key={slot.label}
             slot={slot}
             slotIndex={i}
