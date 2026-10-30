@@ -1,27 +1,20 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  MaxLength,
-} from 'class-validator';
-import { ImpactIconType } from '../../../common/enums/impact-icon-type.enum';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { ImpactCardPosition } from '../../../common/enums/impact-card-position.enum';
 
 export class CreateImpactStatDto {
   @ApiProperty({
-    enum: ImpactIconType,
-    example: ImpactIconType.USERS,
-    description: 'Icon identifier representing the metric',
+    enum: ImpactCardPosition,
+    example: ImpactCardPosition.FIRST,
+    description:
+      'Card position and theme on the website (first = purple, second = yellow, third = purple, fourth = yellow)',
   })
-  @IsEnum(ImpactIconType)
+  @IsEnum(ImpactCardPosition)
   @IsNotEmpty()
-  iconType: ImpactIconType;
+  cardPosition: ImpactCardPosition;
 
   @ApiProperty({
-    example: 'Lives Impacted',
+    example: 'Villages Reached',
     description: 'Name/title of the metric',
     maxLength: 150,
   })
@@ -31,31 +24,13 @@ export class CreateImpactStatDto {
   metricName: string;
 
   @ApiProperty({
-    example: 50000,
-    description: 'Numeric value of the metric',
+    example: '202+',
+    description:
+      'Formatted string value of the metric (e.g. 202+, 600+, ₹9.14 Cr, 3,487+)',
+    maxLength: 50,
   })
-  @Type(() => Number)
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  metricValue: number;
-
-  @ApiPropertyOptional({
-    example: '+',
-    description: 'Optional prefix for the metric (e.g. +, $)',
-    maxLength: 10,
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(10)
-  prefix?: string;
-
-  @ApiPropertyOptional({
-    example: 'K+',
-    description: 'Optional suffix for the metric (e.g. +, %, M)',
-    maxLength: 10,
-  })
-  @IsOptional()
-  @IsString()
-  @MaxLength(10)
-  suffix?: string;
+  @MaxLength(50)
+  metricValue: string;
 }
