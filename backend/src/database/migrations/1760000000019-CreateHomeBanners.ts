@@ -35,37 +35,9 @@ export class CreateHomeBanners1760000000019 implements MigrationInterface {
         columns: [
           idColumn(),
           {
-            name: 'title',
-            type: 'varchar',
-            length: '255',
-            isNullable: false,
-          },
-          {
-            name: 'location',
-            type: 'varchar',
-            length: '255',
-            isNullable: true,
-          },
-          {
-            name: 'short_description',
-            type: 'text',
-            isNullable: true,
-          },
-          {
             name: 'banner_image_url',
             type: 'text',
             isNullable: false,
-          },
-          {
-            name: 'mobile_banner_image_url',
-            type: 'text',
-            isNullable: true,
-          },
-          {
-            name: 'display_order',
-            type: 'integer',
-            isNullable: false,
-            default: 1,
           },
           {
             name: 'status',
@@ -84,10 +56,6 @@ export class CreateHomeBanners1760000000019 implements MigrationInterface {
       new TableIndex({
         name: 'idx_home_banners_status',
         columnNames: ['status'],
-      }),
-      new TableIndex({
-        name: 'idx_home_banners_display_order',
-        columnNames: ['display_order'],
       }),
       new TableIndex({
         name: 'idx_home_banners_created_at',

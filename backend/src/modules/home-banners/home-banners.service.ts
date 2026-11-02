@@ -25,7 +25,6 @@ const CDN_FOLDER = 'home-banners';
 
 export interface HomeBannerFiles {
   bannerImage?: CdnFile[];
-  mobileBannerImage?: CdnFile[];
 }
 
 @Injectable()
@@ -43,7 +42,6 @@ export class HomeBannersService {
     files?: HomeBannerFiles,
   ): Promise<HomeBanner> {
     const bannerImageFile = files?.bannerImage?.[0];
-    const mobileBannerImageFile = files?.mobileBannerImage?.[0];
 
     if (!bannerImageFile) {
       throw new BadRequestException('Desktop banner image file is required.');
@@ -55,21 +53,9 @@ export class HomeBannersService {
       'image',
     );
 
-    let mobileBannerImageUrl: string | null = null;
-    if (mobileBannerImageFile) {
-      mobileBannerImageUrl = await this.cdn.upload(
-        mobileBannerImageFile,
-        CDN_FOLDER,
-        'image',
-      );
-    }
-
     try {
       const entity = this.repo.create({
-        ...dto,
         bannerImageUrl,
-        mobileBannerImageUrl,
-        displayOrder: dto.displayOrder ?? 1,
         status: dto.status ?? ContentStatus.DRAFT,
       });
 
@@ -79,9 +65,6 @@ export class HomeBannersService {
     } catch (err) {
       if (bannerImageUrl) {
         await this.cdn.delete(bannerImageUrl);
-      }
-      if (mobileBannerImageUrl) {
-        await this.cdn.delete(mobileBannerImageUrl);
       }
       throw err;
     }
@@ -95,20 +78,12 @@ export class HomeBannersService {
 
     const qb = this.repo
       .createQueryBuilder('entity')
-      .orderBy('entity.displayOrder', 'ASC')
-      .addOrderBy('entity.createdAt', 'DESC');
+      .orderBy('entity.createdAt', 'DESC');
 
     applyDeletedFilter(qb, query);
 
     if (query.status) {
       qb.andWhere('entity.status = :status', { status: query.status });
-    }
-
-    if (query.search) {
-      qb.andWhere(
-        '(entity.title ILIKE :search OR entity.location ILIKE :search OR entity.shortDescription ILIKE :search)',
-        { search: `%${query.search}%` },
-      );
     }
 
     const [data, total] = await qb
@@ -122,7 +97,7 @@ export class HomeBannersService {
   async findPublished(): Promise<HomeBanner[]> {
     return this.repo.find({
       where: { status: ContentStatus.PUBLISHED },
-      order: { displayOrder: 'ASC', createdAt: 'DESC' },
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -148,10 +123,12 @@ export class HomeBannersService {
     files?: HomeBannerFiles,
   ): Promise<HomeBanner> {
     const entity = await this.findOne(id);
-    Object.assign(entity, dto);
+
+    if (dto.status !== undefined) {
+      entity.status = dto.status;
+    }
 
     const bannerImageFile = files?.bannerImage?.[0];
-    const mobileBannerImageFile = files?.mobileBannerImage?.[0];
 
     if (bannerImageFile) {
       entity.bannerImageUrl =
@@ -162,19 +139,6 @@ export class HomeBannersService {
           'image',
         )) ?? entity.bannerImageUrl;
       this.logger.log(`Replaced CDN banner image for home banner ID ${id}`);
-    }
-
-    if (mobileBannerImageFile) {
-      entity.mobileBannerImageUrl =
-        (await this.cdn.replace(
-          entity.mobileBannerImageUrl,
-          mobileBannerImageFile,
-          CDN_FOLDER,
-          'image',
-        )) ?? entity.mobileBannerImageUrl;
-      this.logger.log(
-        `Replaced CDN mobile banner image for home banner ID ${id}`,
-      );
     }
 
     return await this.repo.save(entity);

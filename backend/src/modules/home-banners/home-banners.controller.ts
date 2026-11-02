@@ -46,8 +46,7 @@ export class HomeBannersController {
   @Get('published')
   @ApiOperation({
     summary: 'Get all published home banners (Public Website)',
-    description:
-      'Returns all published home banners sorted by display_order ASC, newest first.',
+    description: 'Returns all published home banners sorted by newest first.',
   })
   @ApiOkResponse({
     description: 'List of published home banners',
@@ -88,7 +87,6 @@ export class HomeBannersController {
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'bannerImage', maxCount: 1 },
-      { name: 'mobileBannerImage', maxCount: 1 },
     ]),
   )
   @ApiOperation({
@@ -164,7 +162,6 @@ export class HomeBannersController {
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'bannerImage', maxCount: 1 },
-      { name: 'mobileBannerImage', maxCount: 1 },
     ]),
   )
   @ApiOperation({
