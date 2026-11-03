@@ -3,7 +3,7 @@ export const FOCUS_AREAS = [
     title: "Education & Learning",
     description:
       "Creating better access to education and learning opportunities for rural communities.",
-    image: "/focusarea/education1.png",
+    image: "/focusarea/education11.png",
     href: "/education",
   },
   {
