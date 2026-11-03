@@ -17,6 +17,7 @@ export default function SkillsAndEmploymentGallery() {
   return (
     <GallerySection
       heading="Gallery"
+      rows={3}
       images={[
         { src: encodeURI(IMG_1), alt: "Gallery photo 1" },
         { src: encodeURI(IMG_2), alt: "Gallery photo 2" },

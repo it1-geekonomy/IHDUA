@@ -1,43 +1,57 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 /**
- * Robust scroll-lock hook that freezes background scrolling without layout shift.
- * Uses `position: fixed` with inverted scroll offset to reliably prevent wheel,
- * touch, and trackpad scrolling on both desktop and mobile devices.
+ * Locks page scroll without moving the page.
+ * - No position:fixed (that is what was resetting the scroll to the hero)
+ * - Forces the page back to its original position if anything scrolls it
+ * - Restores the exact position instantly on close
  */
 export function useBodyScrollLock(isLocked: boolean): void {
-  const lockedScrollY = useRef(0);
-
   useEffect(() => {
     if (!isLocked) return;
 
-    const scrollY = window.scrollY;
-    lockedScrollY.current = scrollY;
-    const { body, documentElement } = document;
+    const html = document.documentElement;
+    const body = document.body;
+    const lockedY = window.scrollY;
+    const lockedX = window.scrollX;
 
     const original = {
-      bodyPosition: body.style.position,
-      bodyTop: body.style.top,
-      bodyWidth: body.style.width,
-      bodyOverflow: body.style.overflow,
-      htmlOverflow: documentElement.style.overflow,
+      htmlOverflow: html.style.overflow,
+      htmlScrollBehavior: html.style.scrollBehavior,
+      bodyPaddingRight: body.style.paddingRight,
     };
 
-    body.style.position = "fixed";
-    body.style.top = `-${scrollY}px`;
-    body.style.width = "100%";
-    body.style.overflow = "hidden";
-    documentElement.style.overflow = "hidden";
+    // Keep the layout from shifting when the scrollbar disappears
+    const scrollbarWidth = window.innerWidth - html.clientWidth;
+    if (scrollbarWidth > 0) {
+      body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    html.style.scrollBehavior = "auto";
+    html.style.overflow = "hidden";
+
+    // Safety net: if anything moves the page while the modal is open, put it back
+    const keepPosition = () => {
+      if (window.scrollY !== lockedY || window.scrollX !== lockedX) {
+        window.scrollTo({ top: lockedY, left: lockedX, behavior: "instant" as ScrollBehavior });
+      }
+    };
+    window.addEventListener("scroll", keepPosition);
 
     return () => {
-      body.style.position = original.bodyPosition;
-      body.style.top = original.bodyTop;
-      body.style.width = original.bodyWidth;
-      body.style.overflow = original.bodyOverflow;
-      documentElement.style.overflow = original.htmlOverflow;
-      window.scrollTo(0, lockedScrollY.current);
+      window.removeEventListener("scroll", keepPosition);
+
+      html.style.overflow = original.htmlOverflow;
+      body.style.paddingRight = original.bodyPaddingRight;
+
+      // Instant restore (no smooth animation)
+      html.style.scrollBehavior = "auto";
+      window.scrollTo({ top: lockedY, left: lockedX, behavior: "instant" as ScrollBehavior });
+      requestAnimationFrame(() => {
+        html.style.scrollBehavior = original.htmlScrollBehavior;
+      });
     };
   }, [isLocked]);
 }
