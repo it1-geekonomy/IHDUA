@@ -21,6 +21,7 @@ import { MilestonesModule } from './modules/milestones/milestones.module';
 import { LeadershipMembersModule } from './modules/leadership-members/leadership-members.module';
 import { ImpactStatsModule } from './modules/impact-stats/impact-stats.module';
 import { NewsletterSubscribersModule } from './modules/newsletter-subscribers/newsletter-subscribers.module';
+import { HomeBannersModule } from './modules/home-banners/home-banners.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -49,8 +50,9 @@ import { UsersModule } from './modules/users/users.module';
     LeadershipMembersModule,
     ImpactStatsModule,
     NewsletterSubscribersModule,
+    HomeBannersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
