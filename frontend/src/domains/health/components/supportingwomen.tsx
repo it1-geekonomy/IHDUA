@@ -4,13 +4,13 @@ import ImageCardsSection, {
 
 const EDUCATION_ITEMS: ImageCardItem[] = [
   {
-    image: "/Health/support1.png",
+    image: "/Health/health111.png",
     imageAlt: "Health Awareness",
     title: "Health Awareness",
     href: "/health-awareness",
   },
   {
-    image: "/Health/support1.png",
+    image: "/Health/health222.png",
     imageAlt: "Health Camps",
     title: "Health Camps",
     href: "/health-camps",
