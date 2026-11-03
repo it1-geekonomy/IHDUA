@@ -31,12 +31,14 @@ export class ImpactStatsService {
   }
 
   /**
-   * Public endpoint helper: Get all active impact stats for the website counters
+   * Public endpoint helper: Get all active impact stats for the website cards
+   * Ordered by card position (first, second, third, fourth) and recently created first within each position
    */
   async findPublic(): Promise<ImpactStat[]> {
     return this.repo.find({
       order: {
-        createdAt: 'ASC',
+        cardPosition: 'ASC',
+        createdAt: 'DESC',
       },
     });
   }
@@ -49,14 +51,18 @@ export class ImpactStatsService {
 
     const qb = this.repo
       .createQueryBuilder('entity')
-      .orderBy('entity.createdAt', 'ASC');
+      .orderBy('entity.cardPosition', 'ASC')
+      .addOrderBy('entity.createdAt', 'DESC');
 
     applyDeletedFilter(qb, query);
 
     if (query.search) {
-      qb.andWhere('entity.metricName ILIKE :search', {
-        search: `%${query.search}%`,
-      });
+      qb.andWhere(
+        '(entity.metricName ILIKE :search OR entity.metricValue ILIKE :search)',
+        {
+          search: `%${query.search}%`,
+        },
+      );
     }
 
     const [data, total] = await qb

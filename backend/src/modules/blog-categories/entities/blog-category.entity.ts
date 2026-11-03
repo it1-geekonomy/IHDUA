@@ -5,13 +5,13 @@ import { BlogAndStory } from '../../blogs-and-stories/entities/blog-and-story.en
 
 @Entity('blog_categories')
 export class BlogCategory extends BaseEntity {
-  @ApiProperty({ example: 'Healthcare & Medical' })
+  @ApiProperty({
+    example: 'Healthcare & Medical',
+    description: 'Name of the blog category',
+    maxLength: 100,
+  })
   @Column({ type: 'varchar', length: 100 })
   name: string;
-
-  @ApiProperty({ example: 'healthcare-and-medical' })
-  @Column({ type: 'varchar', length: 120, unique: true })
-  slug: string;
 
   @OneToMany(() => BlogAndStory, (blog) => blog.category)
   blogs?: BlogAndStory[];
