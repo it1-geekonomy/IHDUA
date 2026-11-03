@@ -1,6 +1,7 @@
 "use client";
 
 import { Search, X } from "lucide-react";
+import { AdminSelect, type AdminSelectOption } from "@/domains/admin/components/AdminSelect";
 import type { ContentStatus } from "@/domains/admin/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +13,13 @@ interface AnnualReportsToolbarProps {
   statusFilter: ContentStatus | "all";
   onStatusFilterChange: (status: ContentStatus | "all") => void;
 }
+
+const STATUS_OPTIONS: AdminSelectOption<ContentStatus | "all">[] = [
+  { value: "all", label: "All Statuses" },
+  { value: "published", label: "Published", dotColor: "bg-emerald-500" },
+  { value: "draft", label: "Draft", dotColor: "bg-amber-500" },
+  { value: "archived", label: "Archived", dotColor: "bg-neutral-400" },
+];
 
 export function AnnualReportsToolbar({
   activeTab,
@@ -74,16 +82,12 @@ export function AnnualReportsToolbar({
         </div>
 
         {activeTab === "active" && (
-          <select
+          <AdminSelect<ContentStatus | "all">
             value={statusFilter}
-            onChange={(e) => onStatusFilterChange(e.target.value as ContentStatus | "all")}
-            className="rounded-lg border border-[#D9D3C9] bg-white px-3 py-1.5 font-figtree text-xs text-[#5F6C6D] focus:border-[#9739A8] focus:outline-hidden cursor-pointer"
-          >
-            <option value="all">All Statuses</option>
-            <option value="published">Published</option>
-            <option value="draft">Draft</option>
-            <option value="archived">Archived</option>
-          </select>
+            onChange={onStatusFilterChange}
+            options={STATUS_OPTIONS}
+            dropdownClassName="w-36 right-0 left-auto"
+          />
         )}
       </div>
     </div>

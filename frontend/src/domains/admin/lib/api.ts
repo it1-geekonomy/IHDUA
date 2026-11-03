@@ -1751,3 +1751,271 @@ export async function restoreMilestone(
     token,
   });
 }
+
+// ─────────────────────────────────────────────────────────────
+// Home Banners
+// ─────────────────────────────────────────────────────────────
+
+export interface HomeBannerItem {
+  id: string;
+  bannerImageUrl: string;
+  status: ContentStatus;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}
+
+export interface HomeBannerQueryParams {
+  page?: number;
+  limit?: number;
+  status?: ContentStatus;
+  search?: string;
+}
+
+export interface PaginatedHomeBannersResponse {
+  data: HomeBannerItem[];
+  meta: PaginationMeta;
+}
+
+export interface CreateHomeBannerInput {
+  file: File;
+  status?: ContentStatus;
+}
+
+export interface UpdateHomeBannerInput {
+  file?: File;
+  status?: ContentStatus;
+}
+
+export async function fetchHomeBanners(
+  token: string,
+  params: HomeBannerQueryParams = {},
+): Promise<PaginatedHomeBannersResponse> {
+  const query = new URLSearchParams();
+  if (params.page !== undefined) query.set("page", String(params.page));
+  if (params.limit !== undefined) query.set("limit", String(params.limit));
+  if (params.search && params.search.trim()) query.set("search", params.search.trim());
+  if (params.status) query.set("status", params.status);
+
+  const qs = query.toString();
+  return apiRequest<PaginatedHomeBannersResponse>(
+    `/home-banners${qs ? `?${qs}` : ""}`,
+    { token },
+  );
+}
+
+export async function fetchDeletedHomeBanners(
+  token: string,
+  params: HomeBannerQueryParams = {},
+): Promise<PaginatedHomeBannersResponse> {
+  const query = new URLSearchParams();
+  if (params.page !== undefined) query.set("page", String(params.page));
+  if (params.limit !== undefined) query.set("limit", String(params.limit));
+  if (params.search && params.search.trim()) query.set("search", params.search.trim());
+
+  const qs = query.toString();
+  return apiRequest<PaginatedHomeBannersResponse>(
+    `/home-banners/deleted${qs ? `?${qs}` : ""}`,
+    { token },
+  );
+}
+
+export async function fetchPublishedHomeBanners(): Promise<HomeBannerItem[]> {
+  return apiRequest<HomeBannerItem[]>("/home-banners/published", {
+    isPublic: true,
+  });
+}
+
+export async function fetchHomeBannerById(
+  token: string,
+  id: string,
+): Promise<HomeBannerItem> {
+  return apiRequest<HomeBannerItem>(`/home-banners/${id}`, { token });
+}
+
+export async function createHomeBanner(
+  token: string,
+  input: CreateHomeBannerInput,
+): Promise<HomeBannerItem> {
+  const formData = new FormData();
+  formData.append("bannerImage", input.file);
+  if (input.status) {
+    formData.append("status", input.status);
+  }
+
+  return apiRequest<HomeBannerItem>("/home-banners", {
+    method: "POST",
+    token,
+    body: formData,
+  });
+}
+
+export async function updateHomeBanner(
+  token: string,
+  id: string,
+  input: UpdateHomeBannerInput,
+): Promise<HomeBannerItem> {
+  const formData = new FormData();
+  if (input.file) {
+    formData.append("bannerImage", input.file);
+  }
+  if (input.status) {
+    formData.append("status", input.status);
+  }
+
+  return apiRequest<HomeBannerItem>(`/home-banners/${id}`, {
+    method: "PATCH",
+    token,
+    body: formData,
+  });
+}
+
+export async function deleteHomeBanner(
+  token: string,
+  id: string,
+): Promise<void> {
+  return apiRequest<void>(`/home-banners/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export async function restoreHomeBanner(
+  token: string,
+  id: string,
+): Promise<HomeBannerItem> {
+  return apiRequest<HomeBannerItem>(`/home-banners/${id}/restore`, {
+    method: "PATCH",
+    token,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// Impact Stats
+// ─────────────────────────────────────────────────────────────
+
+export type ImpactCardPosition = "first" | "second" | "third" | "fourth";
+
+export interface ImpactStatItem {
+  id: string;
+  cardPosition: ImpactCardPosition;
+  metricName: string;
+  metricValue: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}
+
+export interface ImpactStatQueryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  cardPosition?: ImpactCardPosition;
+}
+
+export interface PaginatedImpactStatsResponse {
+  data: ImpactStatItem[];
+  meta: PaginationMeta;
+}
+
+export interface CreateImpactStatInput {
+  cardPosition: ImpactCardPosition;
+  metricName: string;
+  metricValue: string;
+}
+
+export interface UpdateImpactStatInput {
+  cardPosition?: ImpactCardPosition;
+  metricName?: string;
+  metricValue?: string;
+}
+
+export async function fetchImpactStats(
+  token: string,
+  params: ImpactStatQueryParams = {},
+): Promise<PaginatedImpactStatsResponse> {
+  const query = new URLSearchParams();
+  if (params.page !== undefined) query.set("page", String(params.page));
+  if (params.limit !== undefined) query.set("limit", String(params.limit));
+  if (params.search && params.search.trim()) query.set("search", params.search.trim());
+
+  const qs = query.toString();
+  return apiRequest<PaginatedImpactStatsResponse>(
+    `/impact-stats${qs ? `?${qs}` : ""}`,
+    { token },
+  );
+}
+
+export async function fetchDeletedImpactStats(
+  token: string,
+  params: ImpactStatQueryParams = {},
+): Promise<PaginatedImpactStatsResponse> {
+  const query = new URLSearchParams();
+  if (params.page !== undefined) query.set("page", String(params.page));
+  if (params.limit !== undefined) query.set("limit", String(params.limit));
+  if (params.search && params.search.trim()) query.set("search", params.search.trim());
+
+  const qs = query.toString();
+  return apiRequest<PaginatedImpactStatsResponse>(
+    `/impact-stats/deleted${qs ? `?${qs}` : ""}`,
+    { token },
+  );
+}
+
+export async function fetchPublicImpactStats(): Promise<ImpactStatItem[]> {
+  return apiRequest<ImpactStatItem[]>("/impact-stats/public", {
+    isPublic: true,
+  });
+}
+
+export async function fetchImpactStatById(
+  token: string,
+  id: string,
+): Promise<ImpactStatItem> {
+  return apiRequest<ImpactStatItem>(`/impact-stats/${id}`, { token });
+}
+
+export async function createImpactStat(
+  token: string,
+  input: CreateImpactStatInput,
+): Promise<ImpactStatItem> {
+  return apiRequest<ImpactStatItem>("/impact-stats", {
+    method: "POST",
+    token,
+    body: JSON.stringify(input),
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+export async function updateImpactStat(
+  token: string,
+  id: string,
+  input: UpdateImpactStatInput,
+): Promise<ImpactStatItem> {
+  return apiRequest<ImpactStatItem>(`/impact-stats/${id}`, {
+    method: "PATCH",
+    token,
+    body: JSON.stringify(input),
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+export async function deleteImpactStat(
+  token: string,
+  id: string,
+): Promise<void> {
+  return apiRequest<void>(`/impact-stats/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export async function restoreImpactStat(
+  token: string,
+  id: string,
+): Promise<ImpactStatItem> {
+  return apiRequest<ImpactStatItem>(`/impact-stats/${id}/restore`, {
+    method: "PATCH",
+    token,
+  });
+}
