@@ -24,6 +24,7 @@ import { ImpactCategoriesModule } from './modules/impact-categories/impact-categ
 import { ImpactInitiativesModule } from './modules/impact-initiatives/impact-initiatives.module';
 import { ImpactInitiativeStoriesModule } from './modules/impact-initiative-stories/impact-initiative-stories.module';
 import { NewsletterSubscribersModule } from './modules/newsletter-subscribers/newsletter-subscribers.module';
+import { HomeBannersModule } from './modules/home-banners/home-banners.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -55,8 +56,9 @@ import { UsersModule } from './modules/users/users.module';
     ImpactInitiativesModule,
     ImpactInitiativeStoriesModule,
     NewsletterSubscribersModule,
+    HomeBannersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
