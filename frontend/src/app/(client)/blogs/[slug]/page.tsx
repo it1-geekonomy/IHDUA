@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: BlogSlugPageProps) {
 
 export default async function BlogSlugPage({ params }: BlogSlugPageProps) {
   const { slug } = await params;
-  const post = BLOG_POSTS.find((p) => p.slug === slug) ?? BLOG_POSTS[0];
+  const post = BLOG_POSTS.find((p) => p.slug === slug);
 
   if (!post) {
     notFound();
