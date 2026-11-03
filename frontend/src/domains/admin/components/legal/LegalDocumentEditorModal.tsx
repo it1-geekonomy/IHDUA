@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ChevronDown, Loader2, Sparkles, X } from "lucide-react";
+import { AdminSelect, type AdminSelectOption } from "@/domains/admin/components/AdminSelect";
 import type { ContentStatus } from "@/domains/admin/lib/api";
 import type { LegalDocumentDto, LegalDocumentItem } from "./types";
 import { TinyMceEditor } from "@/domains/admin/components/TinyMceEditor";
@@ -17,6 +18,12 @@ interface LegalDocumentEditorModalProps {
   onClose: () => void;
   onSave: (dto: LegalDocumentDto) => void;
 }
+
+const MODAL_STATUS_OPTIONS: AdminSelectOption<ContentStatus>[] = [
+  { value: "draft", label: "Draft", dotColor: "bg-amber-500" },
+  { value: "published", label: "Published (Live)", dotColor: "bg-emerald-500" },
+  { value: "archived", label: "Archived", dotColor: "bg-neutral-400" },
+];
 
 export function LegalDocumentEditorModal({
   isOpen,
@@ -137,15 +144,14 @@ export function LegalDocumentEditorModal({
 
             <div className="space-y-1">
               <label className="text-xs font-semibold text-[#0F1C1D]">Status</label>
-              <select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value as ContentStatus })}
-                className="w-full rounded-lg border border-[#D9D3C9] bg-white px-3 py-2 text-xs text-[#0F1C1D] focus:border-[#9739A8] focus:outline-hidden cursor-pointer"
-              >
-                <option value="draft">Draft</option>
-                <option value="published">Published (Live)</option>
-                <option value="archived">Archived</option>
-              </select>
+              <AdminSelect<ContentStatus>
+                value={formData.status || "draft"}
+                onChange={(newStatus) => setFormData({ ...formData, status: newStatus })}
+                options={MODAL_STATUS_OPTIONS}
+                size="md"
+                className="w-full"
+                dropdownClassName="w-full"
+              />
             </div>
           </div>
 
