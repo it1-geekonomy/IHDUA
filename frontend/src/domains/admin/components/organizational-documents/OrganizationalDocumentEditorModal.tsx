@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { FileCheck, Loader2, UploadCloud, X } from "lucide-react";
+import { AdminSelect, type AdminSelectOption } from "@/domains/admin/components/AdminSelect";
 import type {
   ContentStatus,
   OrganizationalDocumentFormValues,
@@ -16,6 +17,12 @@ interface OrganizationalDocumentEditorModalProps {
   onClose: () => void;
   onSave: (values: OrganizationalDocumentFormValues) => void;
 }
+
+const MODAL_STATUS_OPTIONS: AdminSelectOption<ContentStatus>[] = [
+  { value: "draft", label: "Draft", dotColor: "bg-amber-500" },
+  { value: "published", label: "Published (Live Website)", dotColor: "bg-emerald-500" },
+  { value: "archived", label: "Archived", dotColor: "bg-neutral-400" },
+];
 
 function formatBytes(bytes: number) {
   if (bytes === 0) return "0 Bytes";
@@ -149,15 +156,14 @@ export function OrganizationalDocumentEditorModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="text-xs font-semibold text-[#0F1C1D]">Status</label>
-              <select
+              <AdminSelect<ContentStatus>
                 value={status}
-                onChange={(e) => setStatus(e.target.value as ContentStatus)}
-                className="w-full rounded-lg border border-[#D9D3C9] bg-white px-3 py-2 text-xs text-[#0F1C1D] focus:border-[#9739A8] focus:outline-hidden cursor-pointer"
-              >
-                <option value="draft">Draft</option>
-                <option value="published">Published (Live Website)</option>
-                <option value="archived">Archived</option>
-              </select>
+                onChange={setStatus}
+                options={MODAL_STATUS_OPTIONS}
+                size="md"
+                className="w-full"
+                dropdownClassName="w-full"
+              />
             </div>
 
             <div className="space-y-1">
