@@ -18,6 +18,28 @@ export interface GridItem {
 export const FOCUS_AREAS_ID = "focus-areas";
 export const MOBILE_HERO_IMAGE = "/development/mobilelayoutimg.png";
 
+/**
+ * Hero pill images. Just file paths, nothing else is needed.
+ * To add an image: put the file in public/development/ and add one line here.
+ * They alternate between the left and right columns automatically.
+ */
+export const HERO_IMAGES: string[] = [
+  "/development/v1.png",
+  "/development/v2.png",
+  "/development/v3.png",
+  "/development/v4.png",
+  "/development/v5.png",
+  "/development/v6.png",
+  "/development/v7.png",
+  "/development/v8.png",
+  "/development/v9.png",
+  "/development/v10.png",
+  "/development/v11.png",
+  "/development/v12.png",
+  "/development/v13.png",
+  "/development/v14.png",
+];
+
 export const GRID_ITEMS: GridItem[] = [
   {
     image: "/development/rural11.png",
