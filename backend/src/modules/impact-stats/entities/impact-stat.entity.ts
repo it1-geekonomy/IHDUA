@@ -1,26 +1,27 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, Index } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
-import { ImpactIconType } from '../../../common/enums/impact-icon-type.enum';
+import { ImpactCardPosition } from '../../../common/enums/impact-card-position.enum';
 
 @Entity('impact_stats')
 export class ImpactStat extends BaseEntity {
   @ApiProperty({
-    enum: ImpactIconType,
-    example: ImpactIconType.USERS,
-    description: 'Icon identifier representing the metric',
+    enum: ImpactCardPosition,
+    example: ImpactCardPosition.FIRST,
+    description:
+      'Card position and theme on the website (FIRST = purple, SECOND = yellow, THIRD = purple, FOURTH = yellow)',
   })
-  @Index('idx_impact_stats_icon_type')
+  @Index('idx_impact_stats_card_position')
   @Column({
     type: 'enum',
-    enum: ImpactIconType,
-    enumName: 'impact_icon_type',
-    name: 'icon_type',
+    enum: ImpactCardPosition,
+    enumName: 'impact_card_position',
+    name: 'card_position',
   })
-  iconType: ImpactIconType;
+  cardPosition: ImpactCardPosition;
 
   @ApiProperty({
-    example: 'Lives Impacted',
+    example: 'Villages Reached',
     description: 'Name/title of the metric',
     maxLength: 150,
   })
@@ -28,37 +29,15 @@ export class ImpactStat extends BaseEntity {
   metricName: string;
 
   @ApiProperty({
-    example: 50000,
-    description: 'Numeric value of the metric',
+    example: '202+',
+    description:
+      'Formatted string value of the metric (e.g. 202+, 600+, ₹9.14 Cr, 3,487+)',
+    maxLength: 50,
   })
   @Column({
     name: 'metric_value',
-    type: 'numeric',
-    precision: 15,
-    scale: 2,
-    transformer: {
-      to: (value: number) => value,
-      from: (value: string) =>
-        value !== null && value !== undefined ? parseFloat(value) : value,
-    },
+    type: 'varchar',
+    length: 50,
   })
-  metricValue: number;
-
-  @ApiPropertyOptional({
-    example: '+',
-    description: 'Optional prefix for the metric (e.g. +, $)',
-    maxLength: 10,
-    nullable: true,
-  })
-  @Column({ type: 'varchar', length: 10, nullable: true })
-  prefix?: string | null;
-
-  @ApiPropertyOptional({
-    example: 'K+',
-    description: 'Optional suffix for the metric (e.g. +, %, M)',
-    maxLength: 10,
-    nullable: true,
-  })
-  @Column({ type: 'varchar', length: 10, nullable: true })
-  suffix?: string | null;
+  metricValue: string;
 }

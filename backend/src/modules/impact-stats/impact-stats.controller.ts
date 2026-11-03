@@ -39,7 +39,7 @@ export class ImpactStatsController {
   @ApiOperation({
     summary: 'Get all impact stats for public website counters',
     description:
-      'Returns all active impact stats ordered by creation date.',
+      'Returns all active impact stats ordered by card position (first, second, third, fourth) with recently created first within each position.',
   })
   @ApiOkResponse({
     description: 'List of active impact stats',
