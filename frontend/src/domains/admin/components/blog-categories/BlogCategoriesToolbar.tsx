@@ -54,7 +54,7 @@ export function BlogCategoriesToolbar({
             type="text"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search category name or slug..."
+            placeholder="Search category name..."
             className="w-full rounded-lg border border-[#D9D3C9] bg-white pl-8 pr-3 py-1.5 font-figtree text-xs text-[#0F1C1D] placeholder:text-[#8A847A] focus:border-[#9739A8] focus:outline-hidden transition-all"
           />
           {searchTerm && (

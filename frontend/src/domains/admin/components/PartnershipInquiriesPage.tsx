@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle, Check, X } from "lucide-react";
+import Typography from "@/lib/Typography";
 import { usePartnershipInquiries } from "./leads/partnership/usePartnershipInquiries";
 import { PartnershipInquiriesToolbar } from "./leads/partnership/PartnershipInquiriesToolbar";
 import { PartnershipInquiriesTable } from "./leads/partnership/PartnershipInquiriesTable";
@@ -47,16 +48,16 @@ export function PartnershipInquiriesPage() {
       {/* Page Title Header */}
       <div>
         <div className="flex items-center gap-3">
-          <h1 className="font-lora text-2xl font-medium text-[#0F1C1D]">
+          <Typography variant="h4" className="font-lora text-3xl text-[#0F1C1D]">
             Partnership Inquiries
-          </h1>
+          </Typography>
           <span className="rounded-full bg-[#1A0F1C]/5 px-2.5 py-0.5 font-figtree text-xs font-semibold text-[#1A0F1C]">
             {meta.total} {meta.total === 1 ? "inquiry" : "inquiries"}
           </span>
         </div>
-        <p className="mt-1 font-figtree text-xs text-[#5F6C6D]">
+        <Typography variant="body-sm" className="mt-1 font-figtree text-sm text-[#5F6C6D]">
           Review, evaluate, and collaborate with CSR foundations, NGOs, and corporate partners.
-        </p>
+        </Typography>
       </div>
 
       {/* Notifications / Alerts */}
