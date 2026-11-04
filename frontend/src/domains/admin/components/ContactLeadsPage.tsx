@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle, Check, X } from "lucide-react";
+import Typography from "@/lib/Typography";
 import { useContactLeads } from "./leads/contact/useContactLeads";
 import { ContactLeadsToolbar } from "./leads/contact/ContactLeadsToolbar";
 import { ContactLeadsTable } from "./leads/contact/ContactLeadsTable";
@@ -47,16 +48,16 @@ export function ContactLeadsPage() {
       {/* Page Title Header */}
       <div>
         <div className="flex items-center gap-3">
-          <h1 className="font-lora text-2xl font-medium text-[#0F1C1D]">
+          <Typography variant="h4" className="font-lora text-3xl text-[#0F1C1D]">
             Contact Leads
-          </h1>
+          </Typography>
           <span className="rounded-full bg-[#1A0F1C]/5 px-2.5 py-0.5 font-figtree text-xs font-semibold text-[#1A0F1C]">
             {meta.total} {meta.total === 1 ? "lead" : "leads"}
           </span>
         </div>
-        <p className="mt-1 font-figtree text-xs text-[#5F6C6D]">
+        <Typography variant="body-sm" className="mt-1 font-figtree text-sm text-[#5F6C6D]">
           Manage inquiries, messages, and partnership requests submitted via website forms.
-        </p>
+        </Typography>
       </div>
 
       {/* Notifications / Alerts */}
