@@ -2019,3 +2019,169 @@ export async function restoreImpactStat(
     token,
   });
 }
+
+// ---------------------------------------------------------------------------
+// Leadership Members
+// ---------------------------------------------------------------------------
+
+export type LeadershipMemberItem = {
+  id: string;
+  name: string;
+  designation: string;
+  photoUrl: string;
+  sortOrder: number;
+  status: "draft" | "published" | "archived";
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+export type LeadershipMemberQueryParams = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: "draft" | "published" | "archived";
+  includeDeleted?: boolean;
+  onlyDeleted?: boolean;
+};
+
+export type CreateLeadershipMemberInput = {
+  name: string;
+  designation: string;
+  sortOrder?: number;
+  status?: "draft" | "published" | "archived";
+  file: File;
+};
+
+export type UpdateLeadershipMemberInput = {
+  name?: string;
+  designation?: string;
+  sortOrder?: number;
+  status?: "draft" | "published" | "archived";
+  file?: File | null;
+};
+
+export interface PaginatedLeadershipMembersResponse {
+  data: LeadershipMemberItem[];
+  meta: PaginationMeta;
+}
+
+export async function fetchLeadershipMembers(
+  token: string,
+  params: LeadershipMemberQueryParams = {},
+): Promise<PaginatedLeadershipMembersResponse> {
+  const query = new URLSearchParams();
+  if (params.page) query.set("page", String(params.page));
+  if (params.limit) query.set("limit", String(params.limit));
+  if (params.search) query.set("search", params.search);
+  if (params.status) query.set("status", params.status);
+  if (params.includeDeleted) query.set("includeDeleted", "true");
+  if (params.onlyDeleted) query.set("onlyDeleted", "true");
+
+  const qs = query.toString();
+  return apiRequest<PaginatedLeadershipMembersResponse>(
+    `/leadership-members${qs ? `?${qs}` : ""}`,
+    { token },
+  );
+}
+
+export async function fetchDeletedLeadershipMembers(
+  token: string,
+  params: { page?: number; limit?: number; search?: string } = {},
+): Promise<PaginatedLeadershipMembersResponse> {
+  const query = new URLSearchParams();
+  if (params.page) query.set("page", String(params.page));
+  if (params.limit) query.set("limit", String(params.limit));
+  if (params.search) query.set("search", params.search);
+
+  const qs = query.toString();
+  return apiRequest<PaginatedLeadershipMembersResponse>(
+    `/leadership-members/deleted${qs ? `?${qs}` : ""}`,
+    { token },
+  );
+}
+
+export async function fetchPublishedLeadershipMembers(): Promise<
+  LeadershipMemberItem[]
+> {
+  return apiRequest<LeadershipMemberItem[]>("/leadership-members/published", {
+    isPublic: true,
+  });
+}
+
+export async function fetchLeadershipMemberById(
+  token: string,
+  id: string,
+): Promise<LeadershipMemberItem> {
+  return apiRequest<LeadershipMemberItem>(`/leadership-members/${id}`, {
+    token,
+  });
+}
+
+export async function createLeadershipMember(
+  token: string,
+  input: CreateLeadershipMemberInput,
+): Promise<LeadershipMemberItem> {
+  const formData = new FormData();
+  formData.append("name", input.name);
+  formData.append("designation", input.designation);
+  if (input.sortOrder !== undefined) {
+    formData.append("sortOrder", String(input.sortOrder));
+  }
+  if (input.status) {
+    formData.append("status", input.status);
+  }
+  formData.append("photo", input.file);
+
+  return apiRequest<LeadershipMemberItem>("/leadership-members", {
+    method: "POST",
+    token,
+    body: formData,
+  });
+}
+
+export async function updateLeadershipMember(
+  token: string,
+  id: string,
+  input: UpdateLeadershipMemberInput,
+): Promise<LeadershipMemberItem> {
+  const formData = new FormData();
+  if (input.name !== undefined) formData.append("name", input.name);
+  if (input.designation !== undefined)
+    formData.append("designation", input.designation);
+  if (input.sortOrder !== undefined) {
+    formData.append("sortOrder", String(input.sortOrder));
+  }
+  if (input.status) formData.append("status", input.status);
+  if (input.file) formData.append("photo", input.file);
+
+  return apiRequest<LeadershipMemberItem>(`/leadership-members/${id}`, {
+    method: "PATCH",
+    token,
+    body: formData,
+  });
+}
+
+export async function deleteLeadershipMember(
+  token: string,
+  id: string,
+): Promise<void> {
+  return apiRequest<void>(`/leadership-members/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export async function restoreLeadershipMember(
+  token: string,
+  id: string,
+): Promise<LeadershipMemberItem> {
+  return apiRequest<LeadershipMemberItem>(
+    `/leadership-members/${id}/restore`,
+    {
+      method: "PATCH",
+      token,
+    },
+  );
+}
+
