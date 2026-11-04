@@ -14,6 +14,7 @@ interface PhoneInputFieldProps {
   onChange: (value: string) => void;
   error?: string;
   defaultCountryCode?: string;
+  onCountryChange?: (countryCode: string) => void;
   placeholder?: string;
 }
 
@@ -24,6 +25,7 @@ export function PhoneInputField({
   onChange,
   error,
   defaultCountryCode = "IN",
+  onCountryChange,
   placeholder,
 }: PhoneInputFieldProps) {
   const [selectedCountry, setSelectedCountry] = useState<DonationCountry>(
@@ -100,6 +102,7 @@ export function PhoneInputField({
                   type="button"
                   onClick={() => {
                     setSelectedCountry(c);
+                    onCountryChange?.(c.code);
                     setIsOpen(false);
                     setSearch("");
                     if (!value.startsWith(c.dial)) {

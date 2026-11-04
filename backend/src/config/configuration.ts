@@ -31,6 +31,7 @@ export default () => ({
     region: process.env.R2_REGION ?? 'auto',
   },
   email: {
+    // Resend free plan: 100 emails/day. 0 or negative means no limit.
     dailyLimit: parseInt(process.env.RESEND_DAILY_LIMIT ?? '100', 10),
   },
 });

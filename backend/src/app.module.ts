@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { BlogCategoriesModule } from './modules/blog-categories/blog-categories.module';
 import { BlogsAndStoriesModule } from './modules/blogs-and-stories/blogs-and-stories.module';
 import { DonorsModule } from './modules/donors/donors.module';
+import { EmailModule } from './modules/email/email.module';
 import { LeadsContactModule } from './modules/leads-contact/leads-contact.module';
 import { LeadsVolunteerModule } from './modules/leads-volunteer/leads-volunteer.module';
 import { OrganizationalDocumentsModule } from './modules/organizational-documents/organizational-documents.module';
@@ -20,10 +21,12 @@ import { PartnershipInquiriesModule } from './modules/partnership-inquiries/part
 import { MilestonesModule } from './modules/milestones/milestones.module';
 import { LeadershipMembersModule } from './modules/leadership-members/leadership-members.module';
 import { ImpactStatsModule } from './modules/impact-stats/impact-stats.module';
+import { ImpactCategoriesModule } from './modules/impact-categories/impact-categories.module';
+import { ImpactInitiativesModule } from './modules/impact-initiatives/impact-initiatives.module';
+import { ImpactInitiativeStoriesModule } from './modules/impact-initiative-stories/impact-initiative-stories.module';
 import { NewsletterSubscribersModule } from './modules/newsletter-subscribers/newsletter-subscribers.module';
 import { HomeBannersModule } from './modules/home-banners/home-banners.module';
 import { UsersModule } from './modules/users/users.module';
-import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
@@ -51,6 +54,9 @@ import { EmailModule } from './modules/email/email.module';
     BlogsAndStoriesModule,
     LeadershipMembersModule,
     ImpactStatsModule,
+    ImpactCategoriesModule,
+    ImpactInitiativesModule,
+    ImpactInitiativeStoriesModule,
     NewsletterSubscribersModule,
     HomeBannersModule,
   ],

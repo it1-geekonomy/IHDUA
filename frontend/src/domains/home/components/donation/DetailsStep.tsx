@@ -2,10 +2,8 @@
 
 import { Pencil, Loader2, Info, AlertCircle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { INDIAN_STATES } from "@/domains/home/constants/indianStates";
 import {
   FormInput,
-  FormSelect,
   FormTextarea,
   PhoneInputField,
 } from "@/shared/components/form";
@@ -27,9 +25,7 @@ type DetailsStepProps = Pick<
   | "email"
   | "taxId"
   | "address"
-  | "stateName"
   | "city"
-  | "pincode"
   | "message"
   | "termsAccepted"
   | "isPaying"
@@ -43,9 +39,7 @@ type DetailsStepProps = Pick<
   | "setEmail"
   | "setTaxId"
   | "setAddress"
-  | "setStateName"
   | "setCity"
-  | "setPincode"
   | "setMessage"
   | "setTermsAccepted"
   | "setCustomFromInput"
@@ -59,14 +53,14 @@ type DetailsStepProps = Pick<
 export function DetailsStep({
   chosenAmount,
   cause,
+  isIndia,
+  phoneCountryCode,
   fullName,
   mobile,
   email,
   taxId,
   address,
-  stateName,
   city,
-  pincode,
   message,
   termsAccepted,
   isPaying,
@@ -78,9 +72,7 @@ export function DetailsStep({
   setEmail,
   setTaxId,
   setAddress,
-  setStateName,
   setCity,
-  setPincode,
   setMessage,
   setTermsAccepted,
   goBackToAmount,
@@ -155,22 +147,33 @@ export function DetailsStep({
           />
         </div>
 
-        {/* Row 2: Mobile Number & PAN (Text Input, NOT dropdown) */}
+        {/* Row 2: Mobile Number & PAN (PAN only for donations from India) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <PhoneInputField
             label="Mobile Number"
             required
             value={mobile}
             onChange={setMobile}
+            defaultCountryCode={phoneCountryCode}
+            onCountryChange={setPhoneCountryCode}
           />
-          <FormInput
-            label="PAN"
-            value={taxId}
-            onChange={(e) =>
-              setTaxId(e.target.value.replace(/[^a-zA-Z0-9\s]/g, "").toUpperCase())
-            }
-            disabled={isPaying}
-          />
+          {isIndia && (
+            <div>
+              <FormInput
+                label="PAN (for 80G Tax Exemption)"
+                placeholder="e.g. ABCDE1234F"
+                maxLength={10}
+                value={taxId}
+                onChange={(e) =>
+                  setTaxId(e.target.value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase())
+                }
+                disabled={isPaying}
+              />
+              <p className="mt-1 text-[11px] leading-snug text-[#6B7280]">
+                Optional. Add your PAN to receive an 80G receipt and claim tax deduction.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Row 3: Address Line */}
@@ -181,35 +184,14 @@ export function DetailsStep({
           disabled={isPaying}
         />
 
-        {/* Row 4: State, City, PIN Code */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-start">
-          <FormSelect
-            label="State"
-            required
-            placeholder="Select state"
-            value={stateName}
-            options={INDIAN_STATES}
-            onChange={setStateName}
-            direction="up"
-            searchable={true}
-          />
-          <FormInput
-            label="City"
-            required
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            disabled={isPaying}
-          />
-          <FormInput
-            label="PIN Code"
-            required
-            value={pincode}
-            onChange={(e) =>
-              setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))
-            }
-            disabled={isPaying}
-          />
-        </div>
+        {/* Row 4: City */}
+        <FormInput
+          label="City"
+          required
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          disabled={isPaying}
+        />
 
         {/* Row 5: Message (Optional) */}
         <FormTextarea
