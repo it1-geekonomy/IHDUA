@@ -54,12 +54,12 @@ const NOTE = {
 };
 
 /**
- * The 80G declaration, broken into lines as in the design. The registration
- * number and date are the ones printed on the design file.
+ * The 80G declaration, broken into lines as in the design. Registration
+ * number and date are from IHDUA's Form 10AC approval order.
  */
 const NOTE_LINES = [
   'Donation Are Eligible For 50% Deduction From Taxable Income Under Section 80G(5)(Vi) Of The Income',
-  'Tax Act 1961 Unique Registration Number AAATH6254RF20213 Dated 24/09/2021, Subject To',
+  'Tax Act 1961 Unique Registration Number AAATI3426LF20214 Dated 23/03/2022, Subject To',
   'Realization Of Donation.',
 ];
 
