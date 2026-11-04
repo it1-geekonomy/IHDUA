@@ -1265,7 +1265,7 @@ export async function restoreOrganizationalDocument(
 export interface BlogCategoryItem {
   id: string;
   name: string;
-  slug: string;
+  slug?: string;
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;
@@ -1284,7 +1284,7 @@ export interface PaginatedBlogCategoriesResponse {
 
 export interface CreateBlogCategoryInput {
   name: string;
-  slug: string;
+  slug?: string;
 }
 
 export interface UpdateBlogCategoryInput {
