@@ -19,7 +19,6 @@
     "migration:show": "npm run typeorm -- migration:show",
     "seed": "ts-node -r tsconfig-paths/register src/database/seeds/admin.seed.ts",
     "seed:admin": "npm run seed",
-    "seed:impact": "ts-node -r tsconfig-paths/register src/database/seeds/impact.seed.ts",
     "seed:prod": "node dist/database/seeds/admin.seed.js"
   },
   "dependencies": {

@@ -6,12 +6,6 @@ export const ADMIN_NAV_SECTIONS = [
     ],
   },
   {
-    title: "Our Impact",
-    items: [
-      { href: "/admin/our-impact", label: "Our Impact", icon: "impact" as const },
-    ],
-  },
-  {
     title: "Forms & Inquiries",
     items: [
       { href: "/admin/forms/contact", label: "Contact Leads", icon: "contact" as const },
@@ -47,7 +41,6 @@ export const ADMIN_NAV_SECTIONS = [
 
 export const ADMIN_NAV = [
   { href: "/admin/donations", label: "Donations", icon: "donations" as const },
-  { href: "/admin/our-impact", label: "Our Impact", icon: "impact" as const },
   { href: "/admin/forms/contact", label: "Contact Leads", icon: "contact" as const },
   { href: "/admin/forms/volunteer", label: "Volunteer Leads", icon: "volunteer" as const },
   { href: "/admin/forms/partnership", label: "Partnership Inquiries", icon: "partnership" as const },
@@ -65,37 +58,36 @@ export const ADMIN_NAV = [
 export const CONTACT_SUBJECTS = [
   "General Enquiry",
   "Programme Information",
-  "Partnership Opportunity",
   "Donation Enquiry",
-  "Media & Press",
+  "Volunteer Opportunities",
+  "Partnership & Collaboration",
+  "CSR Projects",
+  "Education Programmes",
+  "Healthcare Initiatives",
+  "Women's Empowerment",
   "Other",
 ] as const;
 
 export const VOLUNTEER_AREAS = [
-  "Teaching & Education Support",
-  "Women Empowerment Activities",
+  "Teaching & Education",
   "Healthcare & Medical Camps",
-  "Environmental & Village Projects",
-  "Community Events & Workshops",
-  "Digital & Administrative Support",
+  "Community Outreach",
+  "Women Empowerment",
+  "Agriculture & Sustainability",
+  "Youth Development",
+  "Event Support",
+  "Design & Digital Marketing",
+  "Administration & Operations",
   "Other",
 ] as const;
 
 export const PARTNERSHIP_TYPES = [
-  "Corporate Social Responsibility (CSR)",
+  "CSR Partnership",
   "NGO / Non-Profit Collaboration",
-  "Institutional / Educational Partner",
-  "Government / Public Sector",
-  "Funding / Grant Organization",
-  "Other",
-] as const;
-
-export const DONATION_CATEGORIES = [
-  "General Donation",
-  "Education Support",
-  "Women Empowerment",
-  "Healthcare & Camps",
-  "Village Development",
+  "Academic Partnership",
+  "Corporate Partnership",
+  "Programme Sponsorship",
+  "Infrastructure Development",
   "Other",
 ] as const;
 
@@ -126,4 +118,3 @@ export const ADMIN_COPY = {
   emptyDonations: "No donations recorded yet.",
   loading: "Loading portal…",
 } as const;
-

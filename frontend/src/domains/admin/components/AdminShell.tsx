@@ -18,7 +18,6 @@ import {
   MessageSquare,
   ScrollText,
   Shield,
-  Sparkles,
   Tag,
   Users,
   X,
@@ -41,7 +40,6 @@ const ICONS = {
   privacy: Shield,
   categories: Tag,
   blogs: BookOpen,
-  impact: Sparkles,
 };
 
 const PATH_LABELS: Record<string, string> = {
