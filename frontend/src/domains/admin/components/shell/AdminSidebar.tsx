@@ -19,6 +19,7 @@ import {
   Tag,
   TrendingUp,
   Users,
+  Users2,
   X,
 } from "lucide-react";
 import { ADMIN_NAV_SECTIONS } from "@/domains/admin/constants";
@@ -38,6 +39,7 @@ const ICONS = {
   milestones: Milestone,
   homeBanners: Images,
   impactStats: TrendingUp,
+  leadership: Users2,
   terms: ScrollText,
   privacy: Shield,
   categories: Tag,
