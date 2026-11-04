@@ -30,4 +30,7 @@ export default () => ({
     publicUrl: process.env.R2_PUBLIC_URL ?? '',
     region: process.env.R2_REGION ?? 'auto',
   },
+  email: {
+    dailyLimit: parseInt(process.env.RESEND_DAILY_LIMIT ?? '100', 10),
+  },
 });

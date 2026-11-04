@@ -23,6 +23,7 @@ import { ImpactStatsModule } from './modules/impact-stats/impact-stats.module';
 import { NewsletterSubscribersModule } from './modules/newsletter-subscribers/newsletter-subscribers.module';
 import { HomeBannersModule } from './modules/home-banners/home-banners.module';
 import { UsersModule } from './modules/users/users.module';
+import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { UsersModule } from './modules/users/users.module';
     DatabaseModule,
     StorageModule,
     PaymentsModule,
+    EmailModule,
     AuthModule,
     UsersModule,
     DonorsModule,
