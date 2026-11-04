@@ -10,6 +10,7 @@ import {
   applyDeletedFilter,
   restoreSoftDeleted,
 } from '../../common/utils/soft-delete';
+import { EmailService } from '../email/email.service';
 import { CreatePartnershipInquiryDto } from './dto/create-partnership-inquiry.dto';
 import { UpdatePartnershipInquiryDto } from './dto/update-partnership-inquiry.dto';
 import { PartnershipInquiry } from './entities/partnership-inquiry.entity';
@@ -21,12 +22,23 @@ export class PartnershipInquiriesService {
   constructor(
     @InjectRepository(PartnershipInquiry)
     private readonly repo: Repository<PartnershipInquiry>,
+    private readonly emailService: EmailService,
   ) {}
 
   async create(dto: CreatePartnershipInquiryDto): Promise<PartnershipInquiry> {
     const entity = this.repo.create(dto);
     const saved = await this.repo.save(entity);
     this.logger.log(`Created new partnership inquiry with ID ${saved.id}`);
+
+    try {
+      await this.emailService.sendPartnershipNotification(saved);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      this.logger.error(
+        `Failed to dispatch partnership notification email: ${msg}`,
+      );
+    }
+
     return saved;
   }
 
