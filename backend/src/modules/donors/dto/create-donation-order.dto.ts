@@ -65,23 +65,11 @@ export class CreateDonationOrderDto {
   @IsString()
   address?: string;
 
-  @ApiPropertyOptional({ example: 'Karnataka' })
-  @IsOptional()
-  @IsString()
-  @MaxLength(100)
-  state?: string;
-
   @ApiPropertyOptional({ example: 'Bengaluru' })
   @IsOptional()
   @IsString()
   @MaxLength(100)
   city?: string;
-
-  @ApiPropertyOptional({ example: '560001' })
-  @IsOptional()
-  @IsString()
-  @MaxLength(20)
-  pincode?: string;
 
   @ApiPropertyOptional({ example: 'Supporting rural healthcare' })
   @IsOptional()

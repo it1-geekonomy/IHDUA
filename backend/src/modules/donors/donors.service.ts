@@ -10,6 +10,7 @@ import { Repository } from 'typeorm';
 import { DonationStatus } from '../../common/enums/donation-status.enum';
 import { DonationCategory } from '../../common/enums/donation-category.enum';
 import { RazorpayService } from '../../common/payments/razorpay.service';
+import { DonationEmailQueueService } from './donation-email-queue.service';
 import { Donor } from './entities/donor.entity';
 import {
   CreateDonationOrderDto,
@@ -23,9 +24,7 @@ type OrderNotes = {
   email?: string;
   pan?: string;
   address?: string;
-  state?: string;
   city?: string;
-  pincode?: string;
   message?: string;
   donationCategory?: string;
   amount?: string;
@@ -40,6 +39,7 @@ export class DonorsService {
     @InjectRepository(Donor)
     private readonly donorsRepository: Repository<Donor>,
     private readonly razorpay: RazorpayService,
+    private readonly emailQueue: DonationEmailQueueService,
   ) {}
 
   private assertPaymentSignature(dto: VerifyDonationPaymentDto) {
@@ -78,14 +78,14 @@ export class DonorsService {
     const fullName = dto.fullName.trim();
     const phone = dto.phone.trim();
     const email = dto.email.trim().toLowerCase();
-    const pan = dto.pan?.trim().toUpperCase() || '';
+    const countryCode = dto.countryCode?.trim().toUpperCase() || '';
+    // PAN (and the 80G receipt it triggers) only applies to donations from India
+    const isIndianDonation = (!countryCode || countryCode === 'IN') && currency === 'INR';
+    const pan = isIndianDonation ? dto.pan?.trim().toUpperCase() || '' : '';
     const address = dto.address?.trim() || '';
-    const state = dto.state?.trim() || '';
     const city = dto.city?.trim() || '';
-    const pincode = dto.pincode?.trim() || '';
     const message = dto.message?.trim() || '';
     const donationCat = dto.donationCategory || DonationCategory.GENERAL_DONATION;
-    const countryCode = dto.countryCode?.trim().toUpperCase() || '';
     const countryName = dto.countryName?.trim() || '';
 
     try {
@@ -99,9 +99,7 @@ export class DonorsService {
           email,
           pan,
           address,
-          state,
           city,
-          pincode,
           message,
           donationCategory: donationCat,
           amount: dto.amount,
@@ -182,9 +180,7 @@ export class DonorsService {
       email: notes.email || '',
       pan: notes.pan || null,
       address: notes.address || null,
-      state: notes.state || null,
       city: notes.city || notes.countryName || notes.countryCode || null,
-      pincode: notes.pincode || null,
       message: notes.message || null,
       donationCategory: (notes.donationCategory as DonationCategory) || DonationCategory.GENERAL_DONATION,
       amount: amountMajor,
@@ -193,9 +189,11 @@ export class DonorsService {
       razorpayPaymentId: dto.razorpayPaymentId,
       status: DonationStatus.PAID,
       receiptNumber: this.buildReceiptNumber(donorId),
+      ...DonationEmailQueueService.queuedFields(),
     });
 
     const saved = await this.donorsRepository.save(donor);
+    this.emailQueue.kick();
 
     return {
       donorId: saved.id,

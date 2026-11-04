@@ -2,6 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Column, Entity, Index } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { DonationStatus } from '../../../common/enums/donation-status.enum';
+import { ReceiptEmailStatus } from '../../../common/enums/receipt-email-status.enum';
 
 @Entity('donors')
 export class Donor extends BaseEntity {
@@ -27,17 +28,9 @@ export class Donor extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   address: string | null;
 
-  @ApiPropertyOptional({ example: 'Karnataka' })
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  state: string | null;
-
   @ApiPropertyOptional({ example: 'Bengaluru' })
   @Column({ type: 'varchar', length: 100, nullable: true })
   city: string | null;
-
-  @ApiPropertyOptional({ example: '560001' })
-  @Column({ type: 'varchar', length: 20, nullable: true })
-  pincode: string | null;
 
   @ApiPropertyOptional({ example: 'Supporting rural healthcare' })
   @Column({ type: 'text', nullable: true })
@@ -94,4 +87,34 @@ export class Donor extends BaseEntity {
     default: DonationStatus.PENDING,
   })
   status: DonationStatus;
+
+  @ApiPropertyOptional({ enum: ReceiptEmailStatus, example: ReceiptEmailStatus.SENT })
+  @Index('idx_donors_receipt_email_queue')
+  @Column({
+    name: 'receipt_email_status',
+    type: 'varchar',
+    length: 20,
+    nullable: true,
+  })
+  receiptEmailStatus: ReceiptEmailStatus | null;
+
+  @ApiProperty({ example: 1, default: 0 })
+  @Column({ name: 'receipt_email_attempts', type: 'int', default: 0 })
+  receiptEmailAttempts: number;
+
+  @ApiPropertyOptional({ example: null })
+  @Column({
+    name: 'receipt_email_next_attempt_at',
+    type: 'timestamptz',
+    nullable: true,
+  })
+  receiptEmailNextAttemptAt: Date | null;
+
+  @ApiPropertyOptional({ example: '2026-10-24T10:00:30.000Z' })
+  @Column({ name: 'receipt_email_sent_at', type: 'timestamptz', nullable: true })
+  receiptEmailSentAt: Date | null;
+
+  @ApiPropertyOptional({ example: null })
+  @Column({ name: 'receipt_email_error', type: 'text', nullable: true })
+  receiptEmailError: string | null;
 }
