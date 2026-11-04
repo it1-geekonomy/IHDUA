@@ -36,6 +36,7 @@ export default function MullurSchoolGalleryPage() {
 
       <GallerySection
         heading="Gallery"
+        rows={4}
         images={galleryImages}
       />
 

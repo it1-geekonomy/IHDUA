@@ -1,6 +1,7 @@
 "use client";
 
 import { Search, X } from "lucide-react";
+import { AdminSelect, type AdminSelectOption } from "@/domains/admin/components/AdminSelect";
 import type { BlogCategoryItem, ContentStatus } from "./types";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +18,18 @@ interface BlogsAndStoriesToolbarProps {
   sortOrder: "newest" | "oldest";
   onSortOrderChange: (sort: "newest" | "oldest") => void;
 }
+
+const STATUS_OPTIONS: AdminSelectOption<ContentStatus | "all">[] = [
+  { value: "all", label: "All Statuses" },
+  { value: "published", label: "Published", dotColor: "bg-emerald-500" },
+  { value: "draft", label: "Draft", dotColor: "bg-amber-500" },
+  { value: "archived", label: "Archived", dotColor: "bg-neutral-400" },
+];
+
+const SORT_OPTIONS: AdminSelectOption<"newest" | "oldest">[] = [
+  { value: "newest", label: "Newest First" },
+  { value: "oldest", label: "Oldest First" },
+];
 
 export function BlogsAndStoriesToolbar({
   activeTab,
@@ -86,42 +99,34 @@ export function BlogsAndStoriesToolbar({
           </div>
 
           {/* Category Filter */}
-          <select
+          <AdminSelect<string>
             value={categoryFilter}
-            onChange={(e) => onCategoryFilterChange(e.target.value)}
-            className="rounded-lg border border-[#D9D3C9] bg-white px-3 py-1.5 font-figtree text-xs text-[#5F6C6D] focus:border-[#9739A8] focus:outline-hidden cursor-pointer"
-          >
-            <option value="all">All Categories</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
+            onChange={onCategoryFilterChange}
+            options={[
+              { value: "all", label: "All Categories" },
+              ...categories.map((c) => ({ value: c.id, label: c.name })),
+            ]}
+            searchable={categories.length > 5}
+            dropdownClassName="w-52 right-0 left-auto"
+          />
 
           {/* Status Filter (only active tab) */}
           {activeTab === "active" && (
-            <select
+            <AdminSelect<ContentStatus | "all">
               value={statusFilter}
-              onChange={(e) => onStatusFilterChange(e.target.value as ContentStatus | "all")}
-              className="rounded-lg border border-[#D9D3C9] bg-white px-3 py-1.5 font-figtree text-xs text-[#5F6C6D] focus:border-[#9739A8] focus:outline-hidden cursor-pointer"
-            >
-              <option value="all">All Statuses</option>
-              <option value="published">Published</option>
-              <option value="draft">Draft</option>
-              <option value="archived">Archived</option>
-            </select>
+              onChange={onStatusFilterChange}
+              options={STATUS_OPTIONS}
+              dropdownClassName="w-36 right-0 left-auto"
+            />
           )}
 
           {/* Sort Order */}
-          <select
+          <AdminSelect<"newest" | "oldest">
             value={sortOrder}
-            onChange={(e) => onSortOrderChange(e.target.value as "newest" | "oldest")}
-            className="rounded-lg border border-[#D9D3C9] bg-white px-3 py-1.5 font-figtree text-xs text-[#5F6C6D] focus:border-[#9739A8] focus:outline-hidden cursor-pointer"
-          >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-          </select>
+            onChange={onSortOrderChange}
+            options={SORT_OPTIONS}
+            dropdownClassName="w-36 right-0 left-auto"
+          />
         </div>
       </div>
     </div>

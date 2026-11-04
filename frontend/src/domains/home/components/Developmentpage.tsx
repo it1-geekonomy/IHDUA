@@ -5,15 +5,13 @@ import type { MouseEvent } from "react";
 import {
   FLUID,
   FOCUS_AREAS_ID,
-  type GridItem,
+  HERO_IMAGES,
 } from "@/domains/home/constants/development";
 import { scrollToDonateSection } from "@/domains/home/lib/donation";
 import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 import Typography from "@/lib/Typography";
 import {
   BOTTOM_EDGE,
-  COLUMN_A,
-  COLUMN_B,
   DURATION_A,
   DURATION_B,
   FADE_MASK,
@@ -29,19 +27,25 @@ import {
   WAVE_MASK,
 } from "@/domains/home/constants/heroConstants";
 
+// Alternate the images between the two columns: 1st, 3rd, 5th ... left; 2nd, 4th, 6th ... right
+const IMAGES_A = HERO_IMAGES.filter((_, i) => i % 2 === 0);
+const IMAGES_B = HERO_IMAGES.filter((_, i) => i % 2 === 1);
+
 function MarqueeColumn({
-  items,
+  images,
   reverse = false,
   duration,
   offset = 0,
 }: {
-  items: GridItem[];
+  images: string[];
   reverse?: boolean;
   duration: number;
   offset?: number;
 }) {
-  const times = Math.max(1, Math.ceil(MIN_PILLS_PER_HALF / items.length));
-  const half = Array.from({ length: times }, () => items).flat();
+  if (images.length === 0) return null;
+
+  const times = Math.max(1, Math.ceil(MIN_PILLS_PER_HALF / images.length));
+  const half = Array.from({ length: times }, () => images).flat();
   const loop = [...half, ...half];
 
   return (
@@ -53,13 +57,13 @@ function MarqueeColumn({
           animationDelay: `-${duration * offset}s`,
         }}
       >
-        {loop.map((item, i) => (
-          <li key={i} aria-hidden={i >= items.length} className="pb-3 sm:pb-4">
+        {loop.map((src, i) => (
+          <li key={i} aria-hidden={i >= images.length} className="pb-3 sm:pb-4">
             <div
               className={`relative w-full overflow-hidden rounded-full bg-[#EDE9DC] ${PILL_ASPECT}`}
             >
               <Image
-                src={item.image}
+                src={src}
                 alt=""
                 fill
                 sizes="(min-width: 1024px) 14vw, (min-width: 768px) 16vw, 40vw"
@@ -190,6 +194,9 @@ export default function RuralDevelopmentSection() {
     smoothScrollToId(FOCUS_AREAS_ID);
   };
 
+  // With a single image the right column would be empty, so reuse the left list
+  const columnB = IMAGES_B.length > 0 ? IMAGES_B : IMAGES_A;
+
   return (
     <section
       id="home-top"
@@ -261,8 +268,8 @@ export default function RuralDevelopmentSection() {
           className="hero-marquee mx-auto flex w-full max-w-sm gap-3 sm:gap-4 md:mx-0 md:w-[clamp(14rem,32vw,20rem)] md:max-w-none md:justify-self-end lg:w-[clamp(22rem,27vw,32rem)]"
           style={{ maskImage: FADE_MASK, WebkitMaskImage: FADE_MASK }}
         >
-          <MarqueeColumn items={COLUMN_A} duration={DURATION_A} offset={0} />
-          <MarqueeColumn items={COLUMN_B} reverse duration={DURATION_B} offset={0.35} />
+          <MarqueeColumn images={IMAGES_A} duration={DURATION_A} offset={0} />
+          <MarqueeColumn images={columnB} reverse duration={DURATION_B} offset={0.35} />
         </div>
       </div>
 
