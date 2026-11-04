@@ -28,6 +28,7 @@ export default function AdarshaAcademyGalleryPage() {
 
       <GallerySection
         heading="Gallery"
+        rows={4}
         images={[...ADARSHA_GALLERY]}
       />
 

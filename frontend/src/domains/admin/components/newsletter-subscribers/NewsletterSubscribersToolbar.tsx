@@ -1,6 +1,7 @@
 "use client";
 
 import { Search, X } from "lucide-react";
+import { AdminSelect, type AdminSelectOption } from "@/domains/admin/components/AdminSelect";
 import type { SubscriberStatusFilter } from "./types";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +13,12 @@ interface NewsletterSubscribersToolbarProps {
   statusFilter: SubscriberStatusFilter;
   onStatusFilterChange: (status: SubscriberStatusFilter) => void;
 }
+
+const STATUS_OPTIONS: AdminSelectOption<SubscriberStatusFilter>[] = [
+  { value: "all", label: "All Statuses" },
+  { value: "active", label: "Active Only", dotColor: "bg-emerald-500" },
+  { value: "inactive", label: "Inactive Only", dotColor: "bg-neutral-400" },
+];
 
 export function NewsletterSubscribersToolbar({
   activeTab,
@@ -74,15 +81,12 @@ export function NewsletterSubscribersToolbar({
         </div>
 
         {activeTab === "active" && (
-          <select
+          <AdminSelect<SubscriberStatusFilter>
             value={statusFilter}
-            onChange={(e) => onStatusFilterChange(e.target.value as SubscriberStatusFilter)}
-            className="rounded-lg border border-[#D9D3C9] bg-white px-3 py-1.5 text-xs text-[#5F6C6D] focus:border-[#9739A8] focus:outline-hidden cursor-pointer"
-          >
-            <option value="all">All Statuses</option>
-            <option value="active">Active Only</option>
-            <option value="inactive">Inactive Only</option>
-          </select>
+            onChange={onStatusFilterChange}
+            options={STATUS_OPTIONS}
+            dropdownClassName="w-36 right-0 left-auto"
+          />
         )}
       </div>
     </div>

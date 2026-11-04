@@ -44,15 +44,12 @@ export function FooterMain() {
     }
   };
 
+  // CHANGED: the CTA/donation section is in the shared layout, so it exists
+  // on every page. Scroll to it on the current page, with no navigation.
   const handleDonateClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     markInternalNav();
-    if (isHomePath(pathname)) {
-      void scrollToDonateSection();
-    } else {
-      sessionStorage.setItem("scroll_to_donate", "true");
-      router.push("/");
-    }
+    void scrollToDonateSection();
   };
 
   const handleOurImpactClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -78,17 +75,12 @@ export function FooterMain() {
     }
   };
 
-
   return (
     <div className={`${CONTAINER} pb-2 lg:py-8`}>
       <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 sm:gap-x-8 lg:grid-cols-[minmax(320px,1fr)_auto] lg:items-start lg:gap-x-12 lg:gap-y-0">
         <div className="col-span-2 space-y-2 sm:col-span-3 lg:col-span-1 lg:max-w-md lg:shrink-0">
           <div className="flex justify-center lg:justify-start">
-            <Link
-              href="/"
-              onClick={handleHomeClick}
-              aria-label="IHDUA Home"
-            >
+            <Link href="/" onClick={handleHomeClick} aria-label="IHDUA Home">
               <img
                 src="/idhualogo1.png"
                 alt="IHDUA logo"
@@ -145,16 +137,12 @@ export function FooterMain() {
                     }}
                     className="text-white transition-colors hover:text-[#FFD638]"
                   >
-                    <Typography
-                      variant="body-md"
-                      className="font-regular font-manrope"
-                    >
+                    <Typography variant="body-md" className="font-regular font-manrope">
                       {item.label}
                     </Typography>
                   </Link>
                 </li>
               ))}
-
             </ul>
           </div>
 
@@ -168,10 +156,7 @@ export function FooterMain() {
                     onClick={item.label === "Donate" ? handleDonateClick : handleGetInvolvedClick}
                     className="text-white transition-colors hover:text-[#FFD638]"
                   >
-                    <Typography
-                      variant="body-md"
-                      className="font-regular font-manrope"
-                    >
+                    <Typography variant="body-md" className="font-regular font-manrope">
                       {item.label}
                     </Typography>
                   </Link>
@@ -194,10 +179,7 @@ export function FooterMain() {
                 translate="no"
                 className="notranslate block text-white transition-colors hover:text-[#FFD638]"
               >
-                <Typography
-                  variant="body-md"
-                  className="font-regular font-manrope"
-                >
+                <Typography variant="body-md" className="font-regular font-manrope">
                   {FOOTER_HEADQUARTERS.email}
                 </Typography>
               </a>
@@ -205,10 +187,7 @@ export function FooterMain() {
                 href={FOOTER_HEADQUARTERS.phoneLink}
                 className="block text-white transition-colors hover:text-[#FFD638]"
               >
-                <Typography
-                  variant="body-md"
-                  className="font-regular font-manrope"
-                >
+                <Typography variant="body-md" className="font-regular font-manrope">
                   {FOOTER_HEADQUARTERS.phone}
                 </Typography>
               </a>

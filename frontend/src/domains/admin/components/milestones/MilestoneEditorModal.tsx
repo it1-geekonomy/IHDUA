@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Flag, Loader2, X } from "lucide-react";
+import { AdminSelect, type AdminSelectOption } from "@/domains/admin/components/AdminSelect";
 import type { ContentStatus, MilestoneFormValues, MilestoneItem } from "./types";
 
 interface MilestoneEditorModalProps {
@@ -11,6 +12,12 @@ interface MilestoneEditorModalProps {
   onClose: () => void;
   onSave: (values: MilestoneFormValues) => void;
 }
+
+const MODAL_STATUS_OPTIONS: AdminSelectOption<ContentStatus>[] = [
+  { value: "draft", label: "Draft (Internal only)", dotColor: "bg-amber-500" },
+  { value: "published", label: "Published (Visible on About timeline)", dotColor: "bg-emerald-500" },
+  { value: "archived", label: "Archived", dotColor: "bg-neutral-400" },
+];
 
 export function MilestoneEditorModal({
   isOpen,
@@ -128,15 +135,14 @@ export function MilestoneEditorModal({
               <label className="block text-xs font-semibold text-[#0F1C1D] mb-1.5">
                 Publication Status
               </label>
-              <select
+              <AdminSelect<ContentStatus>
                 value={status}
-                onChange={(e) => setStatus(e.target.value as ContentStatus)}
-                className="w-full rounded-lg border border-[#D9D3C9] bg-white px-3.5 py-2 font-figtree text-xs text-[#0F1C1D] focus:border-[#9739A8] focus:outline-hidden cursor-pointer"
-              >
-                <option value="draft">Draft (Internal only)</option>
-                <option value="published">Published (Visible on About timeline)</option>
-                <option value="archived">Archived</option>
-              </select>
+                onChange={setStatus}
+                options={MODAL_STATUS_OPTIONS}
+                size="md"
+                className="w-full"
+                dropdownClassName="w-full"
+              />
             </div>
           </div>
 

@@ -30,6 +30,9 @@ export const ADMIN_NAV_SECTIONS = [
   {
     title: "Content & Legal",
     items: [
+      { href: "/admin/home-banners", label: "Home Banners", icon: "homeBanners" as const },
+      { href: "/admin/impact-stats", label: "Impact Stats", icon: "impactStats" as const },
+      { href: "/admin/leadership-members", label: "Leadership & Team", icon: "leadership" as const },
       { href: "/admin/organizational-documents", label: "Organizational Documents", icon: "orgDocs" as const },
       { href: "/admin/annual-reports", label: "Annual Reports", icon: "reports" as const },
       { href: "/admin/milestones", label: "Key Milestones", icon: "milestones" as const },
@@ -54,6 +57,9 @@ export const ADMIN_NAV = [
   { href: "/admin/newsletter-subscribers", label: "Newsletter Subscribers", icon: "newsletter" as const },
   { href: "/admin/blog-categories", label: "Blog Categories", icon: "categories" as const },
   { href: "/admin/blogs-and-stories", label: "Blogs & Stories", icon: "blogs" as const },
+  { href: "/admin/home-banners", label: "Home Banners", icon: "homeBanners" as const },
+  { href: "/admin/impact-stats", label: "Impact Stats", icon: "impactStats" as const },
+  { href: "/admin/leadership-members", label: "Leadership & Team", icon: "leadership" as const },
   { href: "/admin/organizational-documents", label: "Organizational Documents", icon: "orgDocs" as const },
   { href: "/admin/annual-reports", label: "Annual Reports", icon: "reports" as const },
   { href: "/admin/milestones", label: "Key Milestones", icon: "milestones" as const },
