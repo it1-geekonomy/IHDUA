@@ -398,7 +398,7 @@ export class EmailService {
     params: FormSubmissionNotificationParams,
   ): Promise<NotificationEmailResult> {
     const recipient =
-      process.env.SUBMISSION_NOTIFICATION_EMAIL || 'chetan89710@gmail.com';
+      process.env.SUBMISSION_NOTIFICATION_EMAIL || '';
 
     if (!this.resend) {
       this.logger.warn(
@@ -456,7 +456,7 @@ export class EmailService {
     );
 
     const recipient =
-      process.env.SUBMISSION_NOTIFICATION_EMAIL || 'chetan89710@gmail.com';
+      process.env.SUBMISSION_NOTIFICATION_EMAIL || '';
 
     const rowsHtml = params.details
       .map((detail) => {
