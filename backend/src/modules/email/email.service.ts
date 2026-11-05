@@ -5,8 +5,6 @@ import type { Donor } from '../donors/entities/donor.entity';
 import { LeadContact } from '../leads-contact/entities/lead-contact.entity';
 import { LeadVolunteer } from '../leads-volunteer/entities/lead-volunteer.entity';
 import { PartnershipInquiry } from '../partnership-inquiries/entities/partnership-inquiry.entity';
-import { DonationCertificateService } from './donation-certificate.service';
-import { DonationReceiptService } from './donation-receipt.service';
 import { currencySymbol } from './pdf-text';
 
 export interface FormSubmissionDetail {
@@ -28,6 +26,11 @@ export type NotificationEmailResult =
   | { status: 'error'; message: string };
 
 export type QuotaScope = 'daily' | 'monthly' | 'rate';
+
+export type DonationPdfs = {
+  certificate: Buffer | null;
+  receipt: Buffer | null;
+};
 
 export type ReceiptEmailResult =
   | { status: 'sent'; id?: string }
@@ -55,10 +58,7 @@ export class EmailService {
   private readonly fromEmail =
     process.env.RESEND_FROM_EMAIL || 'noreply@ihdua.org';
 
-  constructor(
-    private readonly certificates: DonationCertificateService,
-    private readonly receipts: DonationReceiptService,
-  ) {
+  constructor() {
     const apiKey = process.env.RESEND_API_KEY;
     if (!apiKey) {
       this.logger.warn(
@@ -74,7 +74,10 @@ export class EmailService {
   }
 
   /** Thank-you email with the donation certificate, plus the 80G receipt when the donor gave a PAN. */
-  async sendDonationReceipt(donor: Donor): Promise<ReceiptEmailResult> {
+  async sendDonationReceipt(
+    donor: Donor,
+    pdfs: DonationPdfs,
+  ): Promise<ReceiptEmailResult> {
     if (!this.resend) {
       return { status: 'skipped', reason: 'RESEND_API_KEY is missing' };
     }
@@ -88,27 +91,17 @@ export class EmailService {
 
     const receipt = donor.receiptNumber || '—';
     const attachments: { filename: string; content: string }[] = [];
-    try {
-      const [certPdf, receiptPdf] = await Promise.all([
-        this.certificates.buildPdf(donor),
-        donor.pan ? this.receipts.buildPdf(donor) : Promise.resolve(null),
-      ]);
+    if (pdfs.certificate) {
       attachments.push({
         filename: `IHDUA-Donation-Certificate-${receipt}.pdf`,
-        content: certPdf.toString('base64'),
+        content: pdfs.certificate.toString('base64'),
       });
-      if (receiptPdf) {
+      if (pdfs.receipt) {
         attachments.push({
           filename: `IHDUA-Donation-Receipt-${receipt}.pdf`,
-          content: receiptPdf.toString('base64'),
+          content: pdfs.receipt.toString('base64'),
         });
       }
-    } catch (err) {
-      this.logger.error(
-        `Could not build donation PDFs for donor ${donor.id}: ${
-          err instanceof Error ? err.message : 'unknown error'
-        }`,
-      );
     }
 
     const dateLabel = new Date(
