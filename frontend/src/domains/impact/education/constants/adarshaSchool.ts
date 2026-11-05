@@ -2,7 +2,7 @@ export const ADARSHA_HERO = {
   heading: "Adarsha Academy",
   description:
     "Creating opportunities to learn, grow and build brighter futures for rural children and communities.",
-  image: "/Rural Education/Frame 648 (7).png",
+  image: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793853875714-wfp0c-frame-648.webp",
   imageMobile: "/Rural Education/Frame 695.png",
   imageAlt: "Students at Adarsha Academy",
 } as const;
