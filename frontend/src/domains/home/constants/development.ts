@@ -24,20 +24,20 @@ export const MOBILE_HERO_IMAGE = "/development/mobilelayoutimg.png";
  * They alternate between the left and right columns automatically.
  */
 export const HERO_IMAGES: string[] = [
-  "/development/v1.png",
-  "/development/v2.png",
-  "/development/v3.png",
-  "/development/v4.png",
-  "/development/v5.png",
-  "/development/v6.png",
-  "/development/v7.png",
-  "/development/v8.png",
-  "/development/v9.png",
-  "/development/v10.png",
-  "/development/v11.png",
-  "/development/v12.png",
-  "/development/v13.png",
-  "/development/v14.png",
+  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793856752513-o8l5o-rectangle-81-1-.webp",
+   "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793856838017-xvetv-rectangle-88.webp",
+  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793856874412-ok1yu-rectangle-83.webp",
+  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793856907080-cyi0p-rectangle-85.webp",
+   "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793856937584-ylsu8-rectangle-86.webp",
+   "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793856967884-r47iu-rectangle-87.webp",
+  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793856997086-p54c5-rectangle-88-1-.webp",
+   "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793857030862-rdn5v-rectangle-84.webp",
+ "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793857059830-z02se-rectangle-81-1-1-.webp",
+  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793857090444-t878f-rectangle-88-2-.webp",
+  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793857120094-5y21w-rectangle-83-1-.webp",
+  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793857150303-nx8kk-rectangle-85-1-.webp",
+  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793857181124-7v7n4-rectangle-86-1-.webp",
+  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793857209941-cvzns-rectangle-87-1-.webp",
 ];
 
 export const GRID_ITEMS: GridItem[] = [

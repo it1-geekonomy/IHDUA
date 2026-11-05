@@ -10,19 +10,19 @@ const AwarenessGallerySection = () => {
       ]}
       images={[
         {
-          src: "/modelvillage/sustainablevillage1.png",
+          src: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793855083670-yngwd-rectangle-35-1-.webp",
           alt: "Health awareness session with women and children seated on the floor",
         },
         {
-          src: "/modelvillage/sustainablevillage2.png",
+          src: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793855119443-xxlen-rectangle-34-1-.webp",
           alt: "Students in green uniforms attending a session in a classroom",
         },
         {
-          src: "/modelvillage/sustainablevillage3.png",
+          src:  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793855146655-ejch2-rectangle-35-2-.webp",
           alt: "Awareness session held outdoors in front of a school building",
         },
         {
-          src: "/modelvillage/sustainablevillage4.png",
+          src: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793855184197-xhmu6-rectangle-34-2-.webp",
           alt: "Students in blue uniforms seated on the ground at a session",
         },
       ]}
