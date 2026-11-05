@@ -1,14 +1,17 @@
 "use client";
-
+ 
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import Typography, { figmaTypeScale } from "@/lib/Typography";
-import { FIELD_STORIES, type FieldStory } from "@/domains/home/constants/storiesfromfield";
-
+import {
+  useFieldStories,
+  type FieldStoryCard,
+} from "@/domains/home/hooks/useFieldStories";
+ 
 const EASE = [0.22, 1, 0.36, 1] as const;
-
+ 
 /* ---------- Side stories (animate only after a click) ---------- */
 const sideCard: Variants = {
   hidden: {},
@@ -16,7 +19,7 @@ const sideCard: Variants = {
     transition: { delayChildren: 0.25 + i * 0.12, staggerChildren: 0.08 },
   }),
 };
-
+ 
 const thumbWipe: Variants = {
   hidden: { clipPath: "inset(100% 0% 0% 0%)" },
   show: {
@@ -24,12 +27,12 @@ const thumbWipe: Variants = {
     transition: { duration: 0.7, ease: EASE },
   },
 };
-
+ 
 const sideLine: Variants = {
   hidden: { opacity: 0, y: 12 },
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE } },
 };
-
+ 
 /* ---------- Featured copy (runs on every story change) ---------- */
 const copyContainer: Variants = {
   hidden: { opacity: 0 },
@@ -39,7 +42,7 @@ const copyContainer: Variants = {
   },
   exit: { opacity: 0, y: -8, transition: { duration: 0.25, ease: EASE } },
 };
-
+ 
 const copyReveal: Variants = {
   hidden: { opacity: 0, y: 16, clipPath: "inset(0% 0% 100% 0%)" },
   show: {
@@ -49,34 +52,45 @@ const copyReveal: Variants = {
     transition: { duration: 0.55, ease: EASE },
   },
 };
-
+ 
 export default function StoriesFromField() {
-  const [featuredId, setFeaturedId] = useState(FIELD_STORIES[0].id);
+  // null while loading; latest 3 published CMS stories, or the static fallback
+  const stories = useFieldStories(3);
+  const list = useMemo(() => stories ?? [], [stories]);
+ 
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
-
+ 
+  // Until the reader clicks a story, the first one is featured
+  const featuredId = selectedId ?? list[0]?.id;
+ 
   const featured = useMemo(
-    () => FIELD_STORIES.find((s) => s.id === featuredId) ?? FIELD_STORIES[0],
-    [featuredId]
+    () => list.find((s) => s.id === featuredId) ?? list[0],
+    [list, featuredId],
   );
-
+ 
   /** Always only 2 side stories */
   const sideStories = useMemo(
-    () => FIELD_STORIES.filter((s) => s.id !== featuredId).slice(0, 2),
-    [featuredId]
+    () => list.filter((s) => s.id !== featuredId).slice(0, 2),
+    [list, featuredId],
   );
-
-  const selectStory = (story: FieldStory) => {
+ 
+  const selectStory = (story: FieldStoryCard) => {
     if (story.id === featuredId) return;
     setHasInteracted(true);
-    setFeaturedId(story.id);
+    setSelectedId(story.id);
   };
-
+ 
+  // Loading: keep the space so the page doesn't jump when stories arrive
+  if (!featured) {
+    return <section aria-hidden className="min-h-[40rem] w-full bg-[#FAF9F5]" />;
+  }
+ 
   return (
     <section className="w-full bg-[#FAF9F5]">
       <div className="w-full px-6 pt-6 pb-6 lg:pt-8 lg:pb-8 lg:px-10 xl:py-14 2xl:px-40">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
-          {/* Label + heading: centered below sm (640px), left-aligned from sm up */}
           <div className="text-center sm:text-left">
             <div className="flex items-center justify-center gap-3 sm:justify-start">
               <span className="h-px w-8 bg-[#9739A8]" />
@@ -94,7 +108,7 @@ export default function StoriesFromField() {
               Stories From the Field
             </Typography>
           </div>
-
+ 
           <Link
             href="/blogs"
             className={`mx-auto inline-flex w-fit shrink-0 items-center justify-center border border-[#00191B] bg-transparent px-5 py-2.5 ${figmaTypeScale[18]} font-figtree font-semibold transition-opacity hover:opacity-80 sm:mx-0`}
@@ -102,17 +116,8 @@ export default function StoriesFromField() {
             Browse All Stories
           </Link>
         </div>
-
-        {/*
-          < lg: stacked
-          lg–xl: flex row — side stories set height, image stretches to match (aligned)
-          xl+: original grid stretch behavior
-        */}
+ 
         <div className="mt-8 grid grid-cols-1 gap-6 lg:mt-10 lg:grid-cols-12 lg:items-stretch lg:gap-x-5 lg:gap-y-5 xl:gap-x-8 2xl:gap-x-10">
-          {/*
-            lg–xl only wrapper: image + sides share one height
-            xl:contents → wrapper disappears, original grid resumes
-          */}
           <div className="order-1 contents lg:col-span-12 lg:row-start-1 lg:flex lg:items-stretch lg:gap-5 xl:contents">
             {/* Featured image */}
             <div className="lg:w-[58%] lg:shrink-0 xl:w-auto xl:col-span-8 xl:row-start-1">
@@ -120,14 +125,8 @@ export default function StoriesFromField() {
                 href={featured.href}
                 className="group relative block aspect-2/1 w-full overflow-hidden bg-[#E8E6E0] lg:aspect-auto lg:aspect-video xl:aspect-2/1 lg:h-full xl:h-auto cursor-pointer"
               >
-                {/*
-                  Keep every story image mounted and crossfade opacity.
-                  mode="wait" emptied the frame between exit/enter → white flash.
-                  On click: smooth crossfade + the incoming image settles
-                  from a slight zoom.
-                */}
-                {FIELD_STORIES.map((story) => {
-                  const active = story.id === featuredId;
+                {list.map((story, index) => {
+                  const active = story.id === featured.id;
                   return (
                     <motion.div
                       key={story.id}
@@ -138,10 +137,7 @@ export default function StoriesFromField() {
                         scale: active ? 1 : 1.08,
                       }}
                       transition={{
-                        opacity: {
-                          duration: 0.8,
-                          ease: [0.4, 0, 0.2, 1],
-                        },
+                        opacity: { duration: 0.8, ease: [0.4, 0, 0.2, 1] },
                         scale: { duration: 1.4, ease: EASE },
                       }}
                       style={{
@@ -157,14 +153,14 @@ export default function StoriesFromField() {
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
                         sizes="(max-width: 1024px) 100vw, 66vw"
-                        priority={story.id === FIELD_STORIES[0].id}
+                        priority={index === 0}
                       />
                     </motion.div>
                   );
                 })}
               </Link>
             </div>
-
+ 
             {/* Side stories */}
             <div className="order-3 mt-6 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:gap-6 lg:order-none lg:mt-0 lg:w-[42%] lg:flex-col lg:justify-between lg:gap-5 xl:col-span-4 xl:row-start-1 xl:w-auto xl:h-full xl:justify-between">
               {sideStories.map((story, i) => (
@@ -190,7 +186,7 @@ export default function StoriesFromField() {
                       sizes="(max-width: 1024px) 128px, 220px"
                     />
                   </motion.div>
-
+ 
                   <div className="min-w-0 flex-1">
                     <motion.p
                       variants={sideLine}
@@ -215,7 +211,7 @@ export default function StoriesFromField() {
               ))}
             </div>
           </div>
-
+ 
           {/* Featured copy */}
           <div className="relative order-2 lg:col-span-7 xl:col-span-8 lg:row-start-2">
             <AnimatePresence initial={false} mode="popLayout">
@@ -243,7 +239,7 @@ export default function StoriesFromField() {
                     {featured.date}
                   </Typography>
                 </motion.div>
-
+ 
                 <motion.div variants={copyReveal}>
                   <Link href={featured.href} className="group inline-block">
                     <Typography
@@ -254,16 +250,19 @@ export default function StoriesFromField() {
                     </Typography>
                   </Link>
                 </motion.div>
-
-                <motion.div variants={copyReveal}>
-                  <Typography
-                    variant="body-lg"
-                    className="mt-2 max-w-xl font-figtree leading-relaxed text-[#5F6C6D]"
-                  >
-                    {featured.description}
-                  </Typography>
-                </motion.div>
-
+ 
+                {/* Short Summary from the CMS (full text) */}
+                {featured.description && (
+                  <motion.div variants={copyReveal}>
+                    <Typography
+                      variant="body-lg"
+                      className="mt-2 max-w-xl font-figtree leading-relaxed text-[#5F6C6D]"
+                    >
+                      {featured.description}
+                    </Typography>
+                  </motion.div>
+                )}
+ 
                 <motion.div variants={copyReveal}>
                   <Link
                     href={featured.href}

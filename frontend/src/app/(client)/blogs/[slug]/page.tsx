@@ -2,68 +2,68 @@ import { notFound } from "next/navigation";
 import HeroBanner from "@/shared/components/Herobanner";
 import NewsletterSection from "@/shared/components/Newsletter";
 import BlogDetailClient from "@/domains/blogs/components/BlogDetailClient";
-import { BLOG_POSTS, BLOGS_HERO, type BlogPost } from "@/domains/blogs/constants/blogsData";
+import { BLOGS_HERO } from "@/domains/blogs/constants/blogsData";
+import { mapStoryToPost } from "@/domains/blogs/lib/mapStoryToPost";
+import { fetchPublishedStories, fetchStoryBySlug } from "@/domains/home/lib/blogs";
 
 interface BlogSlugPageProps {
   params: Promise<{ slug: string }>;
 }
 
+/** Pre-build known slugs; new stories still work on demand (dynamicParams defaults to true) */
 export async function generateStaticParams() {
-  return BLOG_POSTS.map((post) => ({
-    slug: post.slug,
-  }));
+  try {
+    const stories = await fetchPublishedStories();
+    return stories.filter((s) => s.slug).map((s) => ({ slug: s.slug }));
+  } catch {
+    return []; // backend offline at build time: pages render on first request
+  }
 }
 
 export async function generateMetadata({ params }: BlogSlugPageProps) {
   const { slug } = await params;
-  const post = BLOG_POSTS.find((p) => p.slug === slug);
+  const story = await fetchStoryBySlug(slug).catch(() => null);
 
-  if (!post) {
-    return {
-      title: "Blog Story | IHDUA",
-    };
+  if (!story) {
+    return { title: "Blog Story | IHDUA" };
   }
 
-  const description = post.excerpt || post.leadParagraph || "Read this story from IHDUA.";
-
-  const canonical = post.canonicalUrl || `/blogs/${slug}`;
+  const title = story.metaTitle || `${story.title} | IHDUA`;
+  const description =
+    story.metaDescription || story.shortDescription || "Read this story from IHDUA.";
+  const canonical = `/blogs/${slug}`;
 
   return {
-    title: `${post.title} | IHDUA`,
+    title,
     description,
-    alternates: {
-      canonical,
-    },
+    alternates: { canonical },
     openGraph: {
-      title: `${post.title} | IHDUA`,
+      title,
       description,
       url: canonical,
       type: "article",
-      images: post.image
-        ? [
-            {
-              url: post.image,
-              alt: post.imageAlt || post.title,
-            },
-          ]
+      images: story.blogBanner
+        ? [{ url: story.blogBanner, alt: story.title }]
         : undefined,
     },
     twitter: {
       card: "summary_large_image",
-      title: `${post.title} | IHDUA`,
+      title,
       description,
-      images: post.image ? [post.image] : undefined,
+      images: story.blogBanner ? [story.blogBanner] : undefined,
     },
   };
 }
 
 export default async function BlogSlugPage({ params }: BlogSlugPageProps) {
   const { slug } = await params;
-  const post = BLOG_POSTS.find((p) => p.slug === slug);
+  const story = await fetchStoryBySlug(slug);
 
-  if (!post) {
+  if (!story) {
     notFound();
   }
+
+  const post = mapStoryToPost(story);
 
   return (
     <main className="w-full">

@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import type { MouseEvent } from "react";
+import { useMemo, type MouseEvent } from "react";
 import {
   FLUID,
   FOCUS_AREAS_ID,
-  HERO_IMAGES,
 } from "@/domains/home/constants/development";
 import { scrollToDonateSection } from "@/domains/home/lib/donation";
+import { useHeroBanners } from "@/domains/home/hooks/useHeroBanners";
 import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 import Typography from "@/lib/Typography";
 import {
@@ -26,10 +26,6 @@ import {
   TOP_EDGE,
   WAVE_MASK,
 } from "@/domains/home/constants/heroConstants";
-
-// Alternate the images between the two columns: 1st, 3rd, 5th ... left; 2nd, 4th, 6th ... right
-const IMAGES_A = HERO_IMAGES.filter((_, i) => i % 2 === 0);
-const IMAGES_B = HERO_IMAGES.filter((_, i) => i % 2 === 1);
 
 function MarqueeColumn({
   images,
@@ -189,13 +185,22 @@ function BottomBlend() {
 }
 
 export default function RuralDevelopmentSection() {
+  // null while loading; published CMS banners, or the static fallback
+  const banners = useHeroBanners();
+
+  // Alternate images between the two columns: 1st, 3rd, 5th ... left; 2nd, 4th, 6th ... right
+  const { imagesA, imagesB } = useMemo(() => {
+    const list = banners ?? [];
+    const a = list.filter((_, i) => i % 2 === 0);
+    const b = list.filter((_, i) => i % 2 === 1);
+    // With a single image the right column would be empty, so reuse the left list
+    return { imagesA: a, imagesB: b.length > 0 ? b : a };
+  }, [banners]);
+
   const handleExploreClick = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     smoothScrollToId(FOCUS_AREAS_ID);
   };
-
-  // With a single image the right column would be empty, so reuse the left list
-  const columnB = IMAGES_B.length > 0 ? IMAGES_B : IMAGES_A;
 
   return (
     <section
@@ -268,8 +273,8 @@ export default function RuralDevelopmentSection() {
           className="hero-marquee mx-auto flex w-full max-w-sm gap-3 sm:gap-4 md:mx-0 md:w-[clamp(14rem,32vw,20rem)] md:max-w-none md:justify-self-end lg:w-[clamp(22rem,27vw,32rem)]"
           style={{ maskImage: FADE_MASK, WebkitMaskImage: FADE_MASK }}
         >
-          <MarqueeColumn images={IMAGES_A} duration={DURATION_A} offset={0} />
-          <MarqueeColumn images={columnB} reverse duration={DURATION_B} offset={0.35} />
+          <MarqueeColumn images={imagesA} duration={DURATION_A} offset={0} />
+          <MarqueeColumn images={imagesB} reverse duration={DURATION_B} offset={0.35} />
         </div>
       </div>
 
