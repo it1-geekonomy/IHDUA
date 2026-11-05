@@ -7,11 +7,11 @@ const WomenOpportunitiesSection = () => {
       topDescription="IHDUA’s Skill Development Project provides rural students with training in computer skills, Tally, GST and spoken English, alongside General Duty Assistant (GDA) and other vocational courses. These programmes aim to strengthen practical abilities and improve access to employment opportunities."
       images={[
         {
-          src: "/youth/buildingskills1.png",
+          src: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793854937878-x0jtj-rectangle-35.webp",
           alt: "Women receiving a certificate at a community programme",
         },
         {
-          src: "/youth/buildingskills2.png",
+          src: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793854866964-pb50r-rectangle-34.webp",
           alt: "Women attending a training session in a hall",
         },
       ]}
