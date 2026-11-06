@@ -168,7 +168,11 @@ export class ImpactCategoriesController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update impact category (CMS Admin)' })
+  @ApiOperation({
+    summary: 'Update impact category (CMS Admin)',
+    description:
+      'Layout type cannot change once the category has initiatives.',
+  })
   @ApiOkResponse({ type: ImpactCategory })
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
