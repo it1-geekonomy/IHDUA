@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus, RefreshCw } from "lucide-react";
+import Typography from "@/lib/Typography";
 import { cn } from "@/lib/utils";
 
 interface OrganizationalDocumentsHeaderProps {
@@ -18,13 +19,18 @@ export function OrganizationalDocumentsHeader({
 }: OrganizationalDocumentsHeaderProps) {
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between border-b border-[#E5E0D8] pb-5 font-figtree">
-      <div className="flex items-center gap-3">
-        <h1 className="font-lora text-2xl font-medium text-[#0F1C1D]">
-          Organizational Documents
-        </h1>
-        <span className="rounded-full bg-[#1A0F1C]/5 px-2.5 py-0.5 text-xs font-semibold text-[#1A0F1C]">
-          {total} {total === 1 ? "document" : "documents"}
-        </span>
+      <div>
+        <div className="flex items-center gap-3">
+          <Typography variant="h4" className="font-lora text-3xl text-[#0F1C1D]">
+            Organizational Documents
+          </Typography>
+          <span className="rounded-full bg-[#1A0F1C]/5 px-2.5 py-0.5 text-xs font-semibold text-[#1A0F1C]">
+            {total} {total === 1 ? "document" : "documents"}
+          </span>
+        </div>
+        <Typography variant="body-sm" className="mt-1 font-figtree text-sm text-[#5F6C6D]">
+          Manage 12A, 80G, CSR registration certificates, and institutional legal filings.
+        </Typography>
       </div>
 
       <div className="flex flex-wrap items-center gap-2.5">

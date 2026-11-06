@@ -17,9 +17,7 @@ export type CreateDonationOrderPayload = {
   countryName?: string;
   pan?: string;
   address?: string;
-  state?: string;
   city?: string;
-  pincode?: string;
   message?: string;
   donationCategory?: string;
 };

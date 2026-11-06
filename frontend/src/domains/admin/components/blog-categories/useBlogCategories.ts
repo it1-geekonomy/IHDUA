@@ -129,13 +129,11 @@ export function useBlogCategories() {
       if (editingItem) {
         await updateBlogCategory(token, editingItem.id, {
           name: values.name,
-          slug: values.slug,
         });
         setSuccessMessage(`Category "${values.name}" updated successfully.`);
       } else {
         await createBlogCategory(token, {
           name: values.name,
-          slug: values.slug,
         });
         setSuccessMessage(`Category "${values.name}" created successfully.`);
       }

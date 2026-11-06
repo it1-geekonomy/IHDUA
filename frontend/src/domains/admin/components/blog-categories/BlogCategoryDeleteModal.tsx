@@ -37,9 +37,6 @@ export function BlogCategoryDeleteModal({
 
         <div className="my-4 rounded-lg bg-[#FAF8F4] border border-[#E5E0D8] p-3 text-xs text-[#0F1C1D]">
           <span className="font-semibold block">{item.name}</span>
-          <span className="text-[#5F6C6D] font-mono text-[11px] mt-0.5 block">
-            Slug: /{item.slug}
-          </span>
         </div>
 
         <div className="flex items-center justify-end gap-2">

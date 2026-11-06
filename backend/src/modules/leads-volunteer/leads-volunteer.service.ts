@@ -16,6 +16,7 @@ import {
   applyDeletedFilter,
   restoreSoftDeleted,
 } from '../../common/utils/soft-delete';
+import { EmailService } from '../email/email.service';
 import { CreateLeadVolunteerDto } from './dto/create-lead-volunteer.dto';
 import { UpdateLeadVolunteerDto } from './dto/update-lead-volunteer.dto';
 import { LeadVolunteer } from './entities/lead-volunteer.entity';
@@ -30,6 +31,7 @@ export class LeadsVolunteerService {
     @InjectRepository(LeadVolunteer)
     private readonly repo: Repository<LeadVolunteer>,
     private readonly cdn: CdnService,
+    private readonly emailService: EmailService,
   ) {}
 
   async create(
@@ -46,6 +48,16 @@ export class LeadsVolunteerService {
       const entity = this.repo.create({ ...dto, resumeUrl });
       const saved = await this.repo.save(entity);
       this.logger.log(`Created new volunteer lead inquiry with ID ${saved.id}`);
+
+      try {
+        await this.emailService.sendVolunteerNotification(saved);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        this.logger.error(
+          `Failed to dispatch volunteer notification email: ${msg}`,
+        );
+      }
+
       return saved;
     } catch (err) {
       await this.cdn.delete(resumeUrl);

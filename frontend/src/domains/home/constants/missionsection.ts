@@ -11,7 +11,7 @@ export const PILLARS = [
     title: "Build Skills & Knowledge",
     description:
       "Support learning, training and awareness.",
-    image: "/missionsection/knowledge.png",
+    image: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793853682130-vnx25-rectangle-76.webp",
   },
   {
     number: "03",

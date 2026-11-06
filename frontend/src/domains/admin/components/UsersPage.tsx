@@ -7,6 +7,7 @@ import {
   fetchUsers,
   type AdminUserRow,
 } from "@/domains/admin/lib/api";
+import Typography from "@/lib/Typography";
 
 function formatDate(value: string) {
   return new Date(value).toLocaleString("en-IN", {
@@ -47,10 +48,10 @@ export function UsersPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="font-lora text-3xl text-[#0F1C1D]">{ADMIN_COPY.usersTitle}</h1>
-        <p className="mt-1 font-figtree text-sm text-[#5F6C6D]">
+       <Typography variant="h4"className="font-lora text-3xl text-[#0F1C1D]">{ADMIN_COPY.usersTitle}</Typography>
+        <Typography variant="body-sm" className="mt-1 font-figtree text-sm text-[#5F6C6D]">
           {ADMIN_COPY.usersSubtitle}
-        </p>
+        </Typography>
       </div>
 
       <div className="overflow-hidden rounded-lg border border-[#D7E0E1] bg-white shadow-sm">

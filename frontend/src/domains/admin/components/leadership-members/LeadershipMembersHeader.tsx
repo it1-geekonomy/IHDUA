@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus, RotateCw } from "lucide-react";
+import Typography from "@/lib/Typography";
 
 interface LeadershipMembersHeaderProps {
   total: number;
@@ -19,16 +20,16 @@ export function LeadershipMembersHeader({
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <div className="flex items-center gap-3">
-          <h1 className="font-serif text-2xl font-bold tracking-tight text-[#0F1C1D]">
+          <Typography variant="h4" className="font-lora text-3xl text-[#0F1C1D]">
             Leadership & Team
-          </h1>
+          </Typography>
           <span className="inline-flex items-center rounded-full bg-[#FAF8F4] border border-[#E5E0D8] px-2.5 py-0.5 text-xs font-figtree font-semibold text-[#5F6C6D]">
             {total} {total === 1 ? "member" : "members"}
           </span>
         </div>
-        <p className="mt-1 font-figtree text-xs text-[#5F6C6D]">
+        <Typography variant="body-sm" className="mt-1 font-figtree text-sm text-[#5F6C6D]">
           Manage board trustees, key executives, and leadership members displayed on the website.
-        </p>
+        </Typography>
       </div>
 
       <div className="flex items-center gap-2">
