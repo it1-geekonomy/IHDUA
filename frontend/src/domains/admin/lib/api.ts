@@ -2185,3 +2185,210 @@ export async function restoreLeadershipMember(
   );
 }
 
+// ─────────────────────────────────────────────────────────────
+// Impact Categories & Pages (initiatives)
+// ─────────────────────────────────────────────────────────────
+
+export type ImpactLayoutType =
+  | "education"
+  | "women_empowerment"
+  | "skills_employment"
+  | "model_village"
+  | "health";
+
+export interface ImpactCategoryItem {
+  id: string;
+  name: string;
+  slug: string;
+  layoutType: ImpactLayoutType;
+  displayOrder: number;
+  status: ContentStatus;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}
+
+export type ImpactPageContent = Record<string, unknown>;
+
+export interface ImpactPageItem {
+  id: string;
+  categoryId: string;
+  name: string;
+  slug: string;
+  displayOrder: number;
+  status: ContentStatus;
+  publishedAt?: string | null;
+  heroTitle?: string | null;
+  heroDescription?: string | null;
+  heroImageUrl?: string | null;
+  heroImageMobileUrl?: string | null;
+  heroImageAlt?: string | null;
+  cardImageUrl?: string | null;
+  cardImageAlt?: string | null;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  schemaCode?: string | null;
+  content?: ImpactPageContent | null;
+  category?: ImpactCategoryItem;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}
+
+export interface ImpactPageInput {
+  categoryId: string;
+  name: string;
+  slug: string;
+  displayOrder: number;
+  status: ContentStatus;
+  heroTitle: string;
+  heroDescription: string;
+  heroImageAlt: string;
+  cardImageAlt: string;
+  metaTitle: string;
+  metaDescription: string;
+  schemaCode: string;
+  content: ImpactPageContent;
+  heroImage?: File | null;
+  heroImageMobile?: File | null;
+  cardImage?: File | null;
+}
+
+export interface CreateImpactCategoryInput {
+  name: string;
+  slug: string;
+  layoutType: ImpactLayoutType;
+  displayOrder: number;
+  status: ContentStatus;
+}
+
+type Paginated<T> = { data: T[]; meta: PaginationMeta };
+
+export async function fetchImpactCategories(
+  token: string,
+): Promise<Paginated<ImpactCategoryItem>> {
+  return apiRequest<Paginated<ImpactCategoryItem>>(
+    "/impact-categories?limit=100",
+    { token },
+  );
+}
+
+export async function createImpactCategory(
+  token: string,
+  input: CreateImpactCategoryInput,
+): Promise<ImpactCategoryItem> {
+  return apiRequest<ImpactCategoryItem>("/impact-categories", {
+    method: "POST",
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
+/** The list endpoint has no category filter, so callers filter by categoryId. */
+export async function fetchImpactPages(
+  token: string,
+  deleted = false,
+): Promise<Paginated<ImpactPageItem>> {
+  return apiRequest<Paginated<ImpactPageItem>>(
+    `/impact-initiatives${deleted ? "/deleted" : ""}?limit=100`,
+    { token },
+  );
+}
+
+export async function fetchImpactPageById(
+  token: string,
+  id: string,
+): Promise<ImpactPageItem> {
+  return apiRequest<ImpactPageItem>(`/impact-initiatives/${id}`, { token });
+}
+
+function impactPageFormData(input: ImpactPageInput): FormData {
+  const formData = new FormData();
+  formData.append("categoryId", input.categoryId);
+  formData.append("name", input.name);
+  formData.append("slug", input.slug);
+  formData.append("displayOrder", String(input.displayOrder));
+  formData.append("status", input.status);
+  formData.append("heroTitle", input.heroTitle);
+  formData.append("heroDescription", input.heroDescription);
+  formData.append("heroImageAlt", input.heroImageAlt);
+  formData.append("cardImageAlt", input.cardImageAlt);
+  formData.append("metaTitle", input.metaTitle);
+  formData.append("metaDescription", input.metaDescription);
+  formData.append("schemaCode", input.schemaCode);
+  formData.append("content", JSON.stringify(input.content));
+  if (input.heroImage) formData.append("heroImage", input.heroImage);
+  if (input.heroImageMobile) formData.append("heroImageMobile", input.heroImageMobile);
+  if (input.cardImage) formData.append("cardImage", input.cardImage);
+  return formData;
+}
+
+export async function createImpactPage(
+  token: string,
+  input: ImpactPageInput,
+): Promise<ImpactPageItem> {
+  return apiRequest<ImpactPageItem>("/impact-initiatives", {
+    method: "POST",
+    token,
+    body: impactPageFormData(input),
+  });
+}
+
+export async function updateImpactPage(
+  token: string,
+  id: string,
+  input: ImpactPageInput,
+): Promise<ImpactPageItem> {
+  return apiRequest<ImpactPageItem>(`/impact-initiatives/${id}`, {
+    method: "PATCH",
+    token,
+    body: impactPageFormData(input),
+  });
+}
+
+export async function updateImpactPageStatus(
+  token: string,
+  id: string,
+  status: ContentStatus,
+): Promise<ImpactPageItem> {
+  const formData = new FormData();
+  formData.append("status", status);
+  return apiRequest<ImpactPageItem>(`/impact-initiatives/${id}`, {
+    method: "PATCH",
+    token,
+    body: formData,
+  });
+}
+
+export async function deleteImpactPage(token: string, id: string): Promise<void> {
+  return apiRequest<void>(`/impact-initiatives/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export async function restoreImpactPage(
+  token: string,
+  id: string,
+): Promise<ImpactPageItem> {
+  return apiRequest<ImpactPageItem>(`/impact-initiatives/${id}/restore`, {
+    method: "PATCH",
+    token,
+  });
+}
+
+/** Section images, icons and videos go straight to R2 through the Next.js /api/website-images route. */
+export async function uploadImpactMedia(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch("/api/website-images", { method: "POST", body: formData });
+  const json = (await res.json().catch(() => ({}))) as {
+    uploaded?: { url: string }[];
+    error?: string;
+  };
+  if (!res.ok || !json.uploaded?.[0]?.url) {
+    throw new Error(json.error || "Upload failed.");
+  }
+  return json.uploaded[0].url;
+}
+
