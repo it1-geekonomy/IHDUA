@@ -10,10 +10,11 @@ import {
   Min,
 } from 'class-validator';
 import { ContentStatus } from '../../../common/enums/content-status.enum';
+import { ImpactLayoutType } from '../../../common/enums/impact-layout-type.enum';
 
 export class CreateImpactCategoryDto {
   @ApiProperty({
-    example: 'Rural Development',
+    example: 'Education',
     description: 'Name of the impact category',
     maxLength: 100,
   })
@@ -23,7 +24,7 @@ export class CreateImpactCategoryDto {
   name: string;
 
   @ApiProperty({
-    example: 'rural-development',
+    example: 'education',
     description: 'URL-friendly unique slug',
     maxLength: 150,
   })
@@ -31,6 +32,14 @@ export class CreateImpactCategoryDto {
   @IsNotEmpty()
   @MaxLength(150)
   slug: string;
+
+  @ApiProperty({
+    enum: ImpactLayoutType,
+    example: ImpactLayoutType.EDUCATION,
+    description: 'Page template used by every initiative in this category',
+  })
+  @IsEnum(ImpactLayoutType)
+  layoutType: ImpactLayoutType;
 
   @ApiPropertyOptional({
     example: 1,
@@ -53,4 +62,3 @@ export class CreateImpactCategoryDto {
   @IsEnum(ContentStatus)
   status?: ContentStatus = ContentStatus.PUBLISHED;
 }
-
