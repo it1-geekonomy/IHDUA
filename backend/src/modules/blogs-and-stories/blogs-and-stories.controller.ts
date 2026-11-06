@@ -9,11 +9,11 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -28,8 +28,10 @@ import {
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { CdnFile } from '../../common/storage/cdn.service';
-import { BlogsAndStoriesService } from './blogs-and-stories.service';
+import {
+  BlogAndStoryFiles,
+  BlogsAndStoriesService,
+} from './blogs-and-stories.service';
 import {
   CreateBlogAndStoryMultipartDto,
   UpdateBlogAndStoryMultipartDto,
@@ -51,11 +53,16 @@ export class BlogsAndStoriesController {
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data', 'application/json')
   @ApiBody({ type: CreateBlogAndStoryMultipartDto })
-  @UseInterceptors(FileInterceptor('blogBanner'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'blogBanner', maxCount: 1 },
+      { name: 'video', maxCount: 1 },
+    ]),
+  )
   @ApiOperation({
     summary: 'Create blog or story (CMS / super-admin)',
     description:
-      'Send multipart form fields plus optional image file `blogBanner`. CDN URL is stored on the row.',
+      'Send multipart form fields plus optional files `blogBanner` (image) and `video` (MP4/WebM). CDN URLs are stored on the row.',
   })
   @ApiCreatedResponse({ type: BlogAndStory })
   @ApiUnauthorizedResponse({
@@ -63,9 +70,9 @@ export class BlogsAndStoriesController {
   })
   async create(
     @Body() dto: CreateBlogAndStoryDto,
-    @UploadedFile() file?: CdnFile,
+    @UploadedFiles() files?: BlogAndStoryFiles,
   ) {
-    const data = await this.blogsAndStoriesService.create(dto, file);
+    const data = await this.blogsAndStoriesService.create(dto, files);
     return {
       statusCode: HttpStatus.CREATED,
       data,
@@ -130,7 +137,8 @@ export class BlogsAndStoriesController {
   @Public()
   @Get(['published/slug/:slug', 'slug/:slug'])
   @ApiOperation({
-    summary: 'Get published blog or story by slug with related stories (website)',
+    summary:
+      'Get published blog or story by slug with related stories (website)',
     description:
       'Public detail page. Use slug in the URL, returns story with related stories from the same category.',
   })
@@ -241,11 +249,16 @@ export class BlogsAndStoriesController {
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data', 'application/json')
   @ApiBody({ type: UpdateBlogAndStoryMultipartDto })
-  @UseInterceptors(FileInterceptor('blogBanner'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'blogBanner', maxCount: 1 },
+      { name: 'video', maxCount: 1 },
+    ]),
+  )
   @ApiOperation({
     summary: 'Update blog or story (CMS / super-admin)',
     description:
-      'Optional new `blogBanner` file replaces previous CDN object.',
+      'Optional new `blogBanner` image and `video` files replace previous CDN objects.',
   })
   @ApiOkResponse({ type: BlogAndStory })
   @ApiUnauthorizedResponse({
@@ -254,9 +267,9 @@ export class BlogsAndStoriesController {
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateBlogAndStoryDto,
-    @UploadedFile() file?: CdnFile,
+    @UploadedFiles() files?: BlogAndStoryFiles,
   ) {
-    const data = await this.blogsAndStoriesService.update(id, dto, file);
+    const data = await this.blogsAndStoriesService.update(id, dto, files);
     return {
       statusCode: HttpStatus.OK,
       data,
