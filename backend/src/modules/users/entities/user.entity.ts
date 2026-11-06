@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, Index } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 
 @Entity('users')
@@ -8,7 +8,13 @@ export class User extends BaseEntity {
   @Column({ name: 'full_name', type: 'varchar', length: 255 })
   fullName: string;
 
+  @ApiProperty({ example: 'ADMIN', default: 'ADMIN' })
+  @Index('idx_users_role')
+  @Column({ type: 'varchar', length: 50, default: 'ADMIN' })
+  role: string;
+
   @ApiProperty({ example: 'admin@ihdua.org' })
+  @Index('idx_users_email')
   @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
 

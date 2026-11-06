@@ -43,6 +43,7 @@ async function seed() {
     fullName,
     email,
     passwordHash,
+    role: 'ADMIN',
   });
 
   const saved = await repo.save(user);
@@ -54,6 +55,8 @@ async function seed() {
   console.log(`  fullName: ${saved.fullName}`);
   // eslint-disable-next-line no-console
   console.log(`  email:    ${saved.email}`);
+  // eslint-disable-next-line no-console
+  console.log(`  role:     ${saved.role}`);
   // eslint-disable-next-line no-console
   console.log(`  password: ${password}`);
   // eslint-disable-next-line no-console
