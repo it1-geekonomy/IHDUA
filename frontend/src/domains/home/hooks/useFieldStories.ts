@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FIELD_STORIES } from "@/domains/home/constants/storiesfromfield";
 import {
   fetchBlogCategories,
   fetchPublishedStories,
@@ -20,34 +19,18 @@ export type FieldStoryCard = {
   href: string;
 };
 
-/** Static stories, shown if the API fails or has no usable stories */
-const FALLBACK: FieldStoryCard[] = FIELD_STORIES.map((s) => ({
-  id: String(s.id),
-  category: s.category,
-  date: s.date,
-  title: s.title,
-  description: s.description,
-  image: s.image,
-  href: s.href,
-}));
-
 const storyTime = (b: BlogStory) => new Date(b.blogDate ?? b.createdAt).getTime();
 
-/** Results kept after the first load (per limit), so remounting shows stories instantly with no new calls. */
-const resolved = new Map<number, FieldStoryCard[]>();
-
 /**
- * Returns `null` while loading, then the latest `limit` published stories
- * (or the static fallback).
+ * Returns `null` while loading, then the latest `limit` published stories.
+ * An empty list means nothing is published (or every story is scheduled for
+ * the future) or the API failed. There is no static fallback.
+ * Called once per visit to the Home page.
  */
 export function useFieldStories(limit = 3) {
-  const [stories, setStories] = useState<FieldStoryCard[] | null>(
-    resolved.get(limit) ?? null,
-  );
+  const [stories, setStories] = useState<FieldStoryCard[] | null>(null);
 
   useEffect(() => {
-    if (resolved.has(limit)) return; // already loaded earlier in this session
-
     let cancelled = false;
 
     Promise.all([
@@ -71,7 +54,6 @@ export function useFieldStories(limit = 3) {
               ? byDate
               : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
           })
-          // Latest 3 only
           .slice(0, limit)
           .map<FieldStoryCard>((b) => ({
             id: b.id,
@@ -87,12 +69,10 @@ export function useFieldStories(limit = 3) {
             href: `/blogs/${b.slug}`,
           }));
 
-        const result = cards.length > 0 ? cards : FALLBACK;
-        resolved.set(limit, result);
-        if (!cancelled) setStories(result);
+        if (!cancelled) setStories(cards);
       })
       .catch(() => {
-        if (!cancelled) setStories(FALLBACK);
+        if (!cancelled) setStories([]);
       });
 
     return () => {

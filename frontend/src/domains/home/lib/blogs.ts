@@ -44,8 +44,10 @@ function unwrapList<T>(json: unknown): T[] {
 }
 
 /**
- * Browser only: one shared request per endpoint for the whole page session.
- * Strict Mode double effects, remounts and back/forward navigation reuse it.
+ * Browser only: the request currently in flight, per endpoint.
+ * Strict Mode's second effect run happens before the response arrives, so it
+ * reuses this promise (1 call, not 2). It is cleared as soon as the request
+ * settles, so the next visit always makes a fresh call.
  * (Never used on the server, so server renders always get fresh data.)
  */
 let storiesRequest: Promise<BlogStory[]> | null = null;
@@ -60,18 +62,16 @@ export function fetchPublishedStories(): Promise<BlogStory[]> {
     headers: { accept: "application/json" },
     // On the server, let Next.js cache the response for 60 seconds
     ...(browser ? {} : { next: { revalidate: 60 } }),
-  }).then(async (res) => {
-    if (!res.ok) throw new Error(`Failed to load stories (${res.status})`);
-    return unwrapList<BlogStory>(await res.json());
-  });
-
-  if (browser) {
-    storiesRequest = request;
-    request.catch(() => {
-      storiesRequest = null; // don't cache failures, so the next mount can retry
+  })
+    .then(async (res) => {
+      if (!res.ok) throw new Error(`Failed to load stories (${res.status})`);
+      return unwrapList<BlogStory>(await res.json());
+    })
+    .finally(() => {
+      if (browser) storiesRequest = null;
     });
-  }
 
+  if (browser) storiesRequest = request;
   return request;
 }
 
@@ -83,18 +83,16 @@ export function fetchBlogCategories(): Promise<BlogCategory[]> {
   const request = fetch(`${API_URL}/blog-categories`, {
     headers: { accept: "application/json" },
     ...(browser ? {} : { next: { revalidate: 60 } }),
-  }).then(async (res) => {
-    if (!res.ok) throw new Error(`Failed to load categories (${res.status})`);
-    return unwrapList<BlogCategory>(await res.json());
-  });
-
-  if (browser) {
-    categoriesRequest = request;
-    request.catch(() => {
-      categoriesRequest = null;
+  })
+    .then(async (res) => {
+      if (!res.ok) throw new Error(`Failed to load categories (${res.status})`);
+      return unwrapList<BlogCategory>(await res.json());
+    })
+    .finally(() => {
+      if (browser) categoriesRequest = null;
     });
-  }
 
+  if (browser) categoriesRequest = request;
   return request;
 }
 

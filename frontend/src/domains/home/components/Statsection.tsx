@@ -324,7 +324,7 @@ export default function StatSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion() ?? false;
 
-  // null while loading; then one list of sheets per card (API data or static fallback)
+  // null while loading; then one list of sheets per card (empty lists if nothing is published)
   const slots = useImpactStats();
 
   // Cards flip in the first time the section is on screen
@@ -333,7 +333,7 @@ export default function StatSection() {
   /**
    * The sheet with the longest label across EVERY card and EVERY sheet. Each
    * card renders it invisibly to reserve its height, so all calendars stay the
-   * same size on every screen.
+   * same size on every screen. Null when nothing is published.
    */
   const tallest = useMemo<Sheet | null>(() => {
     if (!slots) return null;
@@ -403,6 +403,18 @@ export default function StatSection() {
       </div>
 
       <div className="mt-10 grid min-h-[10rem] w-full grid-cols-2 justify-items-stretch gap-x-5 gap-y-12 lg:mt-14 lg:grid-cols-4 lg:gap-x-8">
+        {/* Loaded, but nothing is published in the CMS (or the API failed) */}
+        {slots && !tallest && (
+          <div className="col-span-full flex min-h-[10rem] items-center justify-center rounded-lg border border-dashed border-[#D9D4C4] bg-[#FAF9F5] px-6 py-10 text-center">
+            <Typography
+              variant="body-lg"
+              className="max-w-xl font-figtree font-normal leading-relaxed text-[#5F6C6D]"
+            >
+              No impact stats have been published yet. Please add stats from the CMS to show them here.
+            </Typography>
+          </div>
+        )}
+
         {slots &&
           tallest &&
           slots.map((sheets, i) =>

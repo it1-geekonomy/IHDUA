@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { STAT_SETS, type StatValue } from "@/domains/home/constants/stat";
 import {
   CARD_POSITION_INDEX,
   fetchPublicImpactStats,
@@ -15,47 +14,22 @@ export type Sheet = {
 
 export const SLOT_COUNT = 4;
 
-const statToSheet = (stat: StatValue, key: string): Sheet => {
-  const decimals = stat.decimals ?? 0;
-  const formatted = stat.value.toLocaleString("en-IN", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
-  return {
-    id: key,
-    display: `${stat.prefix ?? ""}${formatted}${stat.suffix ?? ""}`,
-    label: stat.label,
-  };
-};
-
-/** Static data, shaped per slot: result[slotIndex] = sheets for that card. */
-const buildFallback = (): Sheet[][] =>
-  Array.from({ length: SLOT_COUNT }, (_, slot) =>
-    STAT_SETS.map((set, step) =>
-      set[slot] ? statToSheet(set[slot], `static-${slot}-${step}`) : null,
-    ).filter((s): s is Sheet => s !== null),
-  );
-
-/** Result kept after the first load, so remounting shows the cards instantly with no new call. */
-let resolvedSlots: Sheet[][] | null = null;
+const emptySlots = (): Sheet[][] => Array.from({ length: SLOT_COUNT }, () => []);
 
 /**
  * Returns `null` while loading, then one sheet list per card slot.
- * Any slot with no API stats (or everything, if the API fails)
- * falls back to the static STAT_SETS data.
+ * A slot with nothing published is an empty list. If the API fails, every
+ * slot is empty. There is no static fallback. Called once per visit.
  */
 export function useImpactStats() {
-  const [slots, setSlots] = useState<Sheet[][] | null>(resolvedSlots);
+  const [slots, setSlots] = useState<Sheet[][] | null>(null);
 
   useEffect(() => {
-    if (resolvedSlots) return; // already loaded earlier in this session
-
     let cancelled = false;
-    const fallback = buildFallback();
 
     fetchPublicImpactStats()
       .then((stats) => {
-        const fromApi: Sheet[][] = Array.from({ length: SLOT_COUNT }, () => []);
+        const fromApi = emptySlots();
 
         for (const s of stats) {
           const slot = CARD_POSITION_INDEX[s.cardPosition];
@@ -67,11 +41,10 @@ export function useImpactStats() {
           });
         }
 
-        resolvedSlots = fromApi.map((sheets, i) => (sheets.length > 0 ? sheets : fallback[i]));
-        if (!cancelled) setSlots(resolvedSlots);
+        if (!cancelled) setSlots(fromApi);
       })
       .catch(() => {
-        if (!cancelled) setSlots(fallback);
+        if (!cancelled) setSlots(emptySlots());
       });
 
     return () => {

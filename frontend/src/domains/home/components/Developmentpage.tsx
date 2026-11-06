@@ -185,7 +185,7 @@ function BottomBlend() {
 }
 
 export default function RuralDevelopmentSection() {
-  // null while loading; published CMS banners, or the static fallback
+  // null while loading; [] when nothing is published or the API failed; otherwise CMS banners
   const banners = useHeroBanners();
 
   // Alternate images between the two columns: 1st, 3rd, 5th ... left; 2nd, 4th, 6th ... right
@@ -196,6 +196,9 @@ export default function RuralDevelopmentSection() {
     // With a single image the right column would be empty, so reuse the left list
     return { imagesA: a, imagesB: b.length > 0 ? b : a };
   }, [banners]);
+
+  // Loaded, but nothing is published in the CMS (or the API failed)
+  const noBanners = banners !== null && banners.length === 0;
 
   const handleExploreClick = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -269,13 +272,24 @@ export default function RuralDevelopmentSection() {
           <WaveRibbon />
         </div>
 
-        <div
-          className="hero-marquee mx-auto flex w-full max-w-sm gap-3 sm:gap-4 md:mx-0 md:w-[clamp(14rem,32vw,20rem)] md:max-w-none md:justify-self-end lg:w-[clamp(22rem,27vw,32rem)]"
-          style={{ maskImage: FADE_MASK, WebkitMaskImage: FADE_MASK }}
-        >
-          <MarqueeColumn images={imagesA} duration={DURATION_A} offset={0} />
-          <MarqueeColumn images={imagesB} reverse duration={DURATION_B} offset={0.35} />
-        </div>
+        {noBanners ? (
+          <div className="mx-auto flex min-h-[14rem] w-full max-w-sm items-center justify-center rounded-2xl border border-dashed border-[#D9D4C4] bg-white/60 px-6 py-10 text-center md:mx-0 md:w-[clamp(14rem,32vw,20rem)] md:max-w-none md:justify-self-end lg:w-[clamp(22rem,27vw,32rem)]">
+            <Typography
+              variant="body-sm"
+              className="max-w-xs font-figtree font-normal leading-relaxed text-[#5F6C6D]"
+            >
+              No banners have been published yet. Please publish banners from the CMS to show them here.
+            </Typography>
+          </div>
+        ) : (
+          <div
+            className="hero-marquee mx-auto flex w-full max-w-sm gap-3 sm:gap-4 md:mx-0 md:w-[clamp(14rem,32vw,20rem)] md:max-w-none md:justify-self-end lg:w-[clamp(22rem,27vw,32rem)]"
+            style={{ maskImage: FADE_MASK, WebkitMaskImage: FADE_MASK }}
+          >
+            <MarqueeColumn images={imagesA} duration={DURATION_A} offset={0} />
+            <MarqueeColumn images={imagesB} reverse duration={DURATION_B} offset={0.35} />
+          </div>
+        )}
       </div>
 
       <BottomBlend />

@@ -12,16 +12,17 @@ export type HomeBanner = {
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 /**
- * One shared request for the whole page session.
- * Strict Mode double effects, remounts and back/forward navigation all reuse it,
- * so /home-banners/published is requested once per full page load.
+ * Request currently in flight. Strict Mode's second effect run happens
+ * before the response arrives, so it reuses this promise (1 call, not 2).
+ * It is cleared as soon as the request settles, so the next visit to
+ * the Home page always makes a fresh call.
  */
-let request: Promise<HomeBanner[]> | null = null;
+let inFlight: Promise<HomeBanner[]> | null = null;
 
 export function fetchPublishedBanners(): Promise<HomeBanner[]> {
-  if (request) return request;
+  if (inFlight) return inFlight;
 
-  request = fetch(`${API_URL}/home-banners/published`, {
+  const request = fetch(`${API_URL}/home-banners/published`, {
     headers: { accept: "application/json" },
   })
     .then(async (res) => {
@@ -30,10 +31,10 @@ export function fetchPublishedBanners(): Promise<HomeBanner[]> {
       // Handles both { statusCode, data: [...] } and a bare array
       return (Array.isArray(json) ? json : (json?.data ?? [])) as HomeBanner[];
     })
-    .catch((err) => {
-      request = null; // don't cache failures, so the next mount can retry
-      throw err;
+    .finally(() => {
+      inFlight = null;
     });
 
+  inFlight = request;
   return request;
 }
