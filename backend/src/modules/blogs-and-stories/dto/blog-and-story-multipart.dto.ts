@@ -4,7 +4,7 @@ import { CreateBlogAndStoryDto } from './create-blog-and-story.dto';
 /** Swagger-only shape so file pickers appear on multipart endpoints. */
 export class CreateBlogAndStoryMultipartDto extends OmitType(
   CreateBlogAndStoryDto,
-  ['blogBanner'] as const,
+  ['blogBanner', 'video'] as const,
 ) {
   @ApiPropertyOptional({
     type: 'string',
@@ -12,6 +12,13 @@ export class CreateBlogAndStoryMultipartDto extends OmitType(
     description: 'Desktop / web banner (WebP, AVIF, JPEG, PNG, max 5MB)',
   })
   blogBanner?: unknown;
+
+  @ApiPropertyOptional({
+    type: 'string',
+    format: 'binary',
+    description: 'Story video (MP4, WebM)',
+  })
+  video?: unknown;
 }
 
 export class UpdateBlogAndStoryMultipartDto extends PartialType(
