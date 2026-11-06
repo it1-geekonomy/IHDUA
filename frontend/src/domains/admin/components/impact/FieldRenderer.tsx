@@ -170,17 +170,15 @@ export function FieldRenderer({
       );
     }
 
-    case "image": {
-      const img = (value as { url?: string; alt?: string }) ?? {};
+    case "image":
       return (
         <div>
           <FieldLabel label={field.label} required={field.required} />
           <div className="rounded-lg border border-[#E5E0D8] bg-[#FAF8F4]/40 p-3">
-            <MediaInput kind="image" url={img.url ?? ""} onChange={(url) => onChange({ ...img, url })} />
+            <MediaInput kind="image" url={(value as string) ?? ""} onChange={onChange} />
           </div>
         </div>
       );
-    }
 
     case "icon":
     case "video":
@@ -300,7 +298,7 @@ export function FieldRenderer({
     }
 
     case "images": {
-      const items = (value as { url: string; alt: string }[]) ?? [];
+      const items = (value as string[]) ?? [];
       const min = field.min ?? 0;
       const max = field.max ?? 40;
       return (
@@ -310,7 +308,7 @@ export function FieldRenderer({
             required={min > 0}
           />
           <div className="grid gap-3 lg:grid-cols-2">
-            {items.map((img, i) => (
+            {items.map((url, i) => (
               <div key={i} className="space-y-2 rounded-lg border border-[#E5E0D8] bg-[#FAF8F4]/40 p-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-bold uppercase tracking-wide text-[#8A847A]">Photo {i + 1}</span>
@@ -324,15 +322,15 @@ export function FieldRenderer({
                 </div>
                 <MediaInput
                   kind="image"
-                  url={img.url}
-                  onChange={(url) => onChange(items.map((x, j) => (j === i ? { ...x, url } : x)))}
+                  url={url}
+                  onChange={(next) => onChange(items.map((x, j) => (j === i ? next : x)))}
                 />
               </div>
             ))}
           </div>
           {items.length < max && (
             <div className="mt-3">
-              <AddButton label="Add photo" onClick={() => onChange([...items, { url: "", alt: "" }])} />
+              <AddButton label="Add photo" onClick={() => onChange([...items, ""])} />
             </div>
           )}
         </div>

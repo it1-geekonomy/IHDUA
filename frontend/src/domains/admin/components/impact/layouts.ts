@@ -4,7 +4,7 @@ export type FieldDef =
   | { kind: "text"; key: string; label: string; placeholder?: string; required?: boolean; help?: string }
   | { kind: "textarea"; key: string; label: string; placeholder?: string; required?: boolean; rows?: number }
   | { kind: "paragraphs"; key: string; label: string; required?: boolean; max?: number }
-  /** Stored as { url, alt } */
+  /** Stored as a URL string */
   | { kind: "image"; key: string; label: string; required?: boolean; help?: string }
   /** Stored as a URL string (SVG/WebP icon) */
   | { kind: "icon"; key: string; label: string; required?: boolean }
@@ -24,7 +24,7 @@ export type FieldDef =
       min?: number;
       max?: number;
     }
-  /** List of { url, alt } */
+  /** List of URL strings */
   | { kind: "images"; key: string; label: string; min?: number; max?: number };
 
 export interface SectionDef {
@@ -466,8 +466,6 @@ type Json = Record<string, unknown>;
 
 export function emptyFieldValue(field: FieldDef): unknown {
   switch (field.kind) {
-    case "image":
-      return { url: "", alt: "" };
     case "button":
       return { label: "", href: "" };
     case "paragraphs":
@@ -479,7 +477,7 @@ export function emptyFieldValue(field: FieldDef): unknown {
     case "list":
       return Array.from({ length: field.min ?? 1 }, () => emptyObject(field.fields));
     case "images":
-      return Array.from({ length: field.min ?? 1 }, () => ({ url: "", alt: "" }));
+      return Array.from({ length: field.min ?? 1 }, () => "");
     default:
       return "";
   }
@@ -519,7 +517,7 @@ function validateFields(fields: FieldDef[], value: Json, path: string, errors: s
     const where = `${path} › ${field.label}`;
     switch (field.kind) {
       case "image":
-        if (field.required && isBlank((v as Json)?.url)) errors.push(`${where}: add an image`);
+        if (field.required && isBlank(v)) errors.push(`${where}: add an image`);
         break;
       case "button": {
         const b = (v as Json) ?? {};
@@ -541,7 +539,7 @@ function validateFields(fields: FieldDef[], value: Json, path: string, errors: s
         break;
       }
       case "images": {
-        const filled = ((v as Json[]) ?? []).filter((img) => !isBlank(img?.url)).length;
+        const filled = ((v as unknown[]) ?? []).filter((url) => !isBlank(url)).length;
         if (field.min && filled < field.min) errors.push(`${where}: add at least ${field.min}`);
         break;
       }

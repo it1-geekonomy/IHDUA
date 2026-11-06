@@ -2,15 +2,20 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { ContentStatus } from '../../../common/enums/content-status.enum';
+import { ImpactLayoutType } from '../../../common/enums/impact-layout-type.enum';
 import { ImpactInitiative } from '../../impact-initiatives/entities/impact-initiative.entity';
 
 /**
  * ImpactCategory entity mapping to impact_categories table (Main navigation categories)
  */
 @Entity('impact_categories')
+@Index('uq_impact_categories_slug', ['slug'], {
+  unique: true,
+  where: '"deleted_at" IS NULL',
+})
 export class ImpactCategory extends BaseEntity {
   @ApiProperty({
-    example: 'Rural Development',
+    example: 'Education',
     description: 'Name of the impact category',
     maxLength: 100,
   })
@@ -18,12 +23,26 @@ export class ImpactCategory extends BaseEntity {
   name: string;
 
   @ApiProperty({
-    example: 'rural-development',
+    example: 'education',
     description: 'URL-friendly unique slug for navigation',
     maxLength: 150,
   })
-  @Column({ type: 'varchar', length: 150, unique: true })
+  @Column({ type: 'varchar', length: 150 })
   slug: string;
+
+  @ApiProperty({
+    enum: ImpactLayoutType,
+    example: ImpactLayoutType.EDUCATION,
+    description:
+      'Page template used by every initiative in this category. Cannot change once initiatives exist.',
+  })
+  @Column({
+    name: 'layout_type',
+    type: 'enum',
+    enum: ImpactLayoutType,
+    enumName: 'impact_layout_type',
+  })
+  layoutType: ImpactLayoutType;
 
   @ApiProperty({
     example: 1,

@@ -2222,12 +2222,8 @@ export interface ImpactPageItem {
   heroDescription?: string | null;
   heroImageUrl?: string | null;
   heroImageMobileUrl?: string | null;
-  heroImageAlt?: string | null;
-  cardImageUrl?: string | null;
-  cardImageAlt?: string | null;
   metaTitle?: string | null;
   metaDescription?: string | null;
-  schemaCode?: string | null;
   content?: ImpactPageContent | null;
   category?: ImpactCategoryItem;
   createdAt: string;
@@ -2243,15 +2239,11 @@ export interface ImpactPageInput {
   status: ContentStatus;
   heroTitle: string;
   heroDescription: string;
-  heroImageAlt: string;
-  cardImageAlt: string;
   metaTitle: string;
   metaDescription: string;
-  schemaCode: string;
   content: ImpactPageContent;
   heroImage?: File | null;
   heroImageMobile?: File | null;
-  cardImage?: File | null;
 }
 
 export interface CreateImpactCategoryInput {
@@ -2311,15 +2303,11 @@ function impactPageFormData(input: ImpactPageInput): FormData {
   formData.append("status", input.status);
   formData.append("heroTitle", input.heroTitle);
   formData.append("heroDescription", input.heroDescription);
-  formData.append("heroImageAlt", input.heroImageAlt);
-  formData.append("cardImageAlt", input.cardImageAlt);
   formData.append("metaTitle", input.metaTitle);
   formData.append("metaDescription", input.metaDescription);
-  formData.append("schemaCode", input.schemaCode);
   formData.append("content", JSON.stringify(input.content));
   if (input.heroImage) formData.append("heroImage", input.heroImage);
   if (input.heroImageMobile) formData.append("heroImageMobile", input.heroImageMobile);
-  if (input.cardImage) formData.append("cardImage", input.cardImage);
   return formData;
 }
 

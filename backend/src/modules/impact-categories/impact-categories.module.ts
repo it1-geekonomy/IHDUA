@@ -11,4 +11,3 @@ import { ImpactCategory } from './entities/impact-category.entity';
   exports: [ImpactCategoriesService],
 })
 export class ImpactCategoriesModule {}
-
