@@ -232,5 +232,4 @@ export class ImpactInitiativesController {
     return {
       statusCode: HttpStatus.OK,
     };
-  }
-}
+  }}

@@ -23,7 +23,9 @@
     "seed:impact": "ts-node -r tsconfig-paths/register src/database/seeds/impact-categories.seed.ts",
     "seed:impact:prod": "node dist/database/seeds/impact-categories.seed.js",
     "seed:all": "npm run seed && npm run seed:impact",
-    "seed:all:prod": "npm run seed:prod && npm run seed:impact:prod"
+    "seed:all:prod": "npm run seed:prod && npm run seed:impact:prod",
+    "cleanup:impact-media": "ts-node -r tsconfig-paths/register src/database/scripts/cleanup-impact-media.ts",
+    "cleanup:impact-media:prod": "node dist/database/scripts/cleanup-impact-media.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1156.0",

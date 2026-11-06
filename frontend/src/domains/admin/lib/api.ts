@@ -2378,10 +2378,11 @@ export async function restoreImpactPage(
   });
 }
 
-/** Section images, icons and videos go straight to R2 through the Next.js /api/website-images route. */
+/** Section images, icons and videos go straight to R2 (website/impact/) through the Next.js /api/website-images route. */
 export async function uploadImpactMedia(file: File): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);
+  formData.append("folder", "impact");
   const res = await fetch("/api/website-images", { method: "POST", body: formData });
   const json = (await res.json().catch(() => ({}))) as {
     uploaded?: { url: string }[];

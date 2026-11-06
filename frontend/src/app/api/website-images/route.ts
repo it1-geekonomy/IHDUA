@@ -9,6 +9,13 @@ import {
 
 const PREFIX = "website/";
 
+// Page-owned media; the backend deletes these when pages drop them, so the shared library must not list or delete them
+const OWNED_FOLDERS: Record<string, string> = {
+  impact: `${PREFIX}impact/`,
+};
+const OWNED_PREFIXES = Object.values(OWNED_FOLDERS);
+const isOwnedKey = (key: string) => OWNED_PREFIXES.some((p) => key.startsWith(p));
+
 const ALLOWED_TYPES: Record<string, string> = {
   webp: "image/webp",
   avif: "image/avif",
@@ -62,7 +69,7 @@ export async function GET() {
         })
       );
       response.Contents?.forEach((obj) => {
-        if (!obj.Key || obj.Key === PREFIX) return;
+        if (!obj.Key || obj.Key === PREFIX || isOwnedKey(obj.Key)) return;
         objects.push({ key: obj.Key, url: `${publicUrl}/${obj.Key}`, size: obj.Size ?? 0 });
       });
       continuationToken = response.IsTruncated ? response.NextContinuationToken : undefined;
@@ -79,10 +86,15 @@ export async function POST(req: NextRequest) {
     const { client, bucket, publicUrl } = getR2();
     const formData = await req.formData();
     const files = formData.getAll("file").filter((f): f is File => f instanceof File);
+    const folder = formData.get("folder");
 
     if (files.length === 0) {
       return NextResponse.json({ error: "At least one file is required" }, { status: 400 });
     }
+    if (folder !== null && (typeof folder !== "string" || !OWNED_FOLDERS[folder])) {
+      return NextResponse.json({ error: `Invalid folder: ${String(folder)}` }, { status: 400 });
+    }
+    const keyPrefix = folder ? OWNED_FOLDERS[folder] : PREFIX;
 
     const allowedMime = Object.values(ALLOWED_TYPES);
     for (const file of files) {
@@ -107,7 +119,7 @@ export async function POST(req: NextRequest) {
           .toLowerCase()
           .replace(/[^a-z0-9._-]+/g, "-")
           .replace(/-+/g, "-");
-        const key = `${PREFIX}${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${safeName}`;
+        const key = `${keyPrefix}${Date.now()}-${Math.random().toString(36).slice(2, 7)}-${safeName}`;
 
         await client.send(
           new PutObjectCommand({
@@ -146,7 +158,7 @@ export async function DELETE(req: NextRequest) {
           ? decodeURIComponent(url.slice(publicUrl.length + 1))
           : "";
       // Only website media may be deleted here; other bucket folders belong to the backend CMS
-      if (!key.startsWith(PREFIX) || key === PREFIX || key.includes("..")) {
+      if (!key.startsWith(PREFIX) || key === PREFIX || key.includes("..") || isOwnedKey(key)) {
         return NextResponse.json({ error: `Invalid URL: ${String(url)}` }, { status: 400 });
       }
       keys.push(key);
