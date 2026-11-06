@@ -24,6 +24,11 @@ import { BlogAndStory } from './entities/blog-and-story.entity';
 
 const CDN_FOLDER = 'blogs';
 
+export interface BlogAndStoryFiles {
+  blogBanner?: CdnFile[];
+  video?: CdnFile[];
+}
+
 @Injectable()
 export class BlogsAndStoriesService {
   constructor(
@@ -36,7 +41,7 @@ export class BlogsAndStoriesService {
 
   async create(
     dto: CreateBlogAndStoryDto,
-    file?: CdnFile,
+    files?: BlogAndStoryFiles | CdnFile,
   ): Promise<BlogAndStory> {
     const slug = dto.slug.trim();
     await this.assertUniqueTitleAndSlug(dto.title, slug);
@@ -45,14 +50,28 @@ export class BlogsAndStoriesService {
       await this.assertCategoryExists(dto.categoryId);
     }
 
+    const bannerFile = Array.isArray((files as BlogAndStoryFiles)?.blogBanner)
+      ? (files as BlogAndStoryFiles)?.blogBanner?.[0]
+      : (files as CdnFile)?.buffer
+        ? (files as CdnFile)
+        : undefined;
+
+    const videoFile = (files as BlogAndStoryFiles)?.video?.[0];
+
     let blogBanner = dto.blogBanner;
-    if (file) {
-      blogBanner = await this.cdn.upload(file, CDN_FOLDER, 'image');
+    if (bannerFile) {
+      blogBanner = await this.cdn.upload(bannerFile, CDN_FOLDER, 'image');
+    }
+
+    let video = dto.video;
+    if (videoFile) {
+      video = await this.cdn.upload(videoFile, CDN_FOLDER, 'video');
     }
 
     const entity = this.repo.create({
       ...dto,
       blogBanner,
+      video,
       slug,
       status: dto.status ?? ContentStatus.DRAFT,
     });
@@ -60,8 +79,11 @@ export class BlogsAndStoriesService {
     try {
       return await this.repo.save(entity);
     } catch (err) {
-      if (file && blogBanner) {
+      if (bannerFile && blogBanner) {
         await this.cdn.delete(blogBanner);
+      }
+      if (videoFile && video) {
+        await this.cdn.delete(video);
       }
       if (this.isUniqueViolation(err)) {
         throw new ConflictException(
@@ -174,7 +196,9 @@ export class BlogsAndStoriesService {
       relatedStories = await this.repo
         .createQueryBuilder('blog')
         .leftJoinAndSelect('blog.category', 'category')
-        .where('blog.categoryId = :categoryId', { categoryId: entity.categoryId })
+        .where('blog.categoryId = :categoryId', {
+          categoryId: entity.categoryId,
+        })
         .andWhere('blog.id != :id', { id: entity.id })
         .andWhere('blog.status = :status', { status: ContentStatus.PUBLISHED })
         .andWhere('blog.deletedAt IS NULL')
@@ -205,7 +229,9 @@ export class BlogsAndStoriesService {
       relatedStories = await this.repo
         .createQueryBuilder('blog')
         .leftJoinAndSelect('blog.category', 'category')
-        .where('blog.categoryId = :categoryId', { categoryId: entity.categoryId })
+        .where('blog.categoryId = :categoryId', {
+          categoryId: entity.categoryId,
+        })
         .andWhere('blog.id != :id', { id: entity.id })
         .andWhere('blog.status = :status', { status: ContentStatus.PUBLISHED })
         .andWhere('blog.deletedAt IS NULL')
@@ -233,7 +259,7 @@ export class BlogsAndStoriesService {
   async update(
     id: string,
     dto: UpdateBlogAndStoryDto,
-    file?: CdnFile,
+    files?: BlogAndStoryFiles | CdnFile,
   ): Promise<BlogAndStory> {
     const entity = await this.findOne(id);
     const newSlug = dto.slug ? dto.slug.trim() : entity.slug;
@@ -247,18 +273,49 @@ export class BlogsAndStoriesService {
       }
     }
 
-    if (file) {
+    const bannerFile = Array.isArray((files as BlogAndStoryFiles)?.blogBanner)
+      ? (files as BlogAndStoryFiles)?.blogBanner?.[0]
+      : (files as CdnFile)?.buffer
+        ? (files as CdnFile)
+        : undefined;
+
+    const videoFile = (files as BlogAndStoryFiles)?.video?.[0];
+
+    if (bannerFile) {
       entity.blogBanner =
-        (await this.cdn.replace(entity.blogBanner, file, CDN_FOLDER, 'image')) ??
-        entity.blogBanner;
+        (await this.cdn.replace(
+          entity.blogBanner,
+          bannerFile,
+          CDN_FOLDER,
+          'image',
+        )) ?? entity.blogBanner;
     } else if (dto.blogBanner !== undefined) {
-      entity.blogBanner = dto.blogBanner;
+      if (!dto.blogBanner && entity.blogBanner) {
+        await this.cdn.delete(entity.blogBanner);
+      }
+      entity.blogBanner = dto.blogBanner || null;
+    }
+
+    if (videoFile) {
+      entity.video =
+        (await this.cdn.replace(
+          entity.video,
+          videoFile,
+          CDN_FOLDER,
+          'video',
+        )) ?? entity.video;
+    } else if (dto.video !== undefined) {
+      if (!dto.video && entity.video) {
+        await this.cdn.delete(entity.video);
+      }
+      entity.video = dto.video || null;
     }
 
     Object.assign(entity, {
       ...dto,
       slug: newSlug,
       blogBanner: entity.blogBanner,
+      video: entity.video,
     });
 
     try {
