@@ -88,6 +88,21 @@ export class Donor extends BaseEntity {
   })
   status: DonationStatus;
 
+  @ApiPropertyOptional({
+    example:
+      'https://pub-88ceae84120e4b1b949fe39c82f1cb5f.r2.dev/donations/certificates/3f1c…-ihdua-donation-certificate.pdf',
+  })
+  @Column({ name: 'certificate_url', type: 'text', nullable: true })
+  certificateUrl: string | null;
+
+  @ApiPropertyOptional({
+    description: '80G receipt; only for Indian donations with a PAN',
+    example:
+      'https://pub-88ceae84120e4b1b949fe39c82f1cb5f.r2.dev/donations/receipts/9a2b…-ihdua-donation-receipt.pdf',
+  })
+  @Column({ name: 'receipt_url', type: 'text', nullable: true })
+  receiptUrl: string | null;
+
   @ApiPropertyOptional({ enum: ReceiptEmailStatus, example: ReceiptEmailStatus.SENT })
   @Index('idx_donors_receipt_email_queue')
   @Column({

@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { LessThan, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { ReceiptEmailStatus } from '../../common/enums/receipt-email-status.enum';
 import { EmailService, QuotaScope } from '../email/email.service';
+import { DonationDocumentsService } from './donation-documents.service';
 import { Donor } from './entities/donor.entity';
 
 const FIRST_RUN_DELAY_MS = 30_000;
@@ -66,6 +67,7 @@ export class DonationEmailQueueService
     @InjectRepository(Donor)
     private readonly repo: Repository<Donor>,
     private readonly email: EmailService,
+    private readonly documents: DonationDocumentsService,
     private readonly config: ConfigService,
   ) {}
 
@@ -160,7 +162,8 @@ export class DonationEmailQueueService
     );
     if (!claimed.affected) return true;
 
-    const result = await this.email.sendDonationReceipt(donor);
+    const pdfs = await this.documents.prepare(donor);
+    const result = await this.email.sendDonationReceipt(donor, pdfs);
     const attempts = (donor.receiptEmailAttempts ?? 0) + 1;
 
     switch (result.status) {
