@@ -26,6 +26,22 @@ import { validateLayoutContent } from './impact-layout-sections';
 
 const CDN_FOLDER = 'impact-initiatives';
 
+/** List rows only; page content and SEO come from the single-page endpoints. */
+const LIST_COLUMNS: (keyof ImpactInitiative)[] = [
+  'id',
+  'categoryId',
+  'name',
+  'slug',
+  'displayOrder',
+  'status',
+  'publishedAt',
+  'heroTitle',
+  'heroImageUrl',
+  'createdAt',
+  'updatedAt',
+  'deletedAt',
+];
+
 export interface ImpactInitiativeFiles {
   heroImage?: CdnFile[];
   heroImageMobile?: CdnFile[];
@@ -104,6 +120,7 @@ export class ImpactInitiativesService {
   async findPublished(categoryId?: string): Promise<ImpactInitiative[]> {
     const qb = this.repo
       .createQueryBuilder('entity')
+      .select(LIST_COLUMNS.map((column) => `entity.${column}`))
       .innerJoinAndSelect(
         'entity.category',
         'category',
@@ -174,11 +191,17 @@ export class ImpactInitiativesService {
 
     const qb = this.repo
       .createQueryBuilder('entity')
-      .leftJoinAndSelect('entity.category', 'category')
+      .select(LIST_COLUMNS.map((column) => `entity.${column}`))
       .orderBy('entity.displayOrder', 'ASC')
       .addOrderBy('entity.createdAt', 'DESC');
 
     applyDeletedFilter(qb, query);
+
+    if (query.categoryId) {
+      qb.andWhere('entity.categoryId = :categoryId', {
+        categoryId: query.categoryId,
+      });
+    }
 
     if (query.status) {
       qb.andWhere('entity.status = :status', { status: query.status });

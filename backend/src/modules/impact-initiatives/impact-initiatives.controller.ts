@@ -56,7 +56,7 @@ export class ImpactInitiativesController {
   @ApiOperation({
     summary: 'Get all published impact initiatives (Public Website)',
     description:
-      'Returns all active and published impact initiatives ordered by display_order ASC.',
+      'Returns published impact initiatives (list fields and category, no page content) ordered by display_order ASC. Use GET /impact-initiatives/slug/{slug} for a full page.',
   })
   @ApiOkResponse({
     description: 'List of published impact initiatives',
@@ -142,7 +142,7 @@ export class ImpactInitiativesController {
   @ApiOperation({
     summary: 'List all impact initiatives with pagination & filters (CMS Admin)',
     description:
-      'Supports pagination, search, status filter, and deleted filter. Requires Bearer token.',
+      'Supports pagination, search, category, status and deleted filters. Returns list fields only (no content or SEO); use GET /impact-initiatives/{id} for the full page. Requires Bearer token.',
   })
   @ApiOkResponse({ description: 'Paginated CMS list' })
   @ApiUnauthorizedResponse({
