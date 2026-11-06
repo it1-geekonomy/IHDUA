@@ -29,6 +29,13 @@ export class BlogAndStory extends SeoContentEntity {
   @Column({ name: 'blog_banner', type: 'text', nullable: true })
   blogBanner: string | null;
 
+  @ApiPropertyOptional({
+    example: 'https://cdn.ihdua.org/blogs/video.mp4',
+    nullable: true,
+  })
+  @Column({ name: 'video', type: 'text', nullable: true })
+  video: string | null;
+
   @ApiPropertyOptional({ example: '2026-10-27', nullable: true })
   @Index('idx_blogs_blog_date')
   @Column({ name: 'blog_date', type: 'date', nullable: true })

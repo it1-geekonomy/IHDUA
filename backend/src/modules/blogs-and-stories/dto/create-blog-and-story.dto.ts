@@ -8,6 +8,7 @@ import {
   IsString,
   IsUUID,
   MaxLength,
+  ValidateIf,
 } from 'class-validator';
 import { SeoFieldsDto } from '../../../common/dto/seo-fields.dto';
 import { ContentStatus } from '../../../common/enums/content-status.enum';
@@ -48,10 +49,24 @@ export class CreateBlogAndStoryDto extends SeoFieldsDto {
   @ApiPropertyOptional({
     example: 'https://cdn.ihdua.org/blogs/banner.jpg',
     description: 'URL or path to blog banner image',
+    nullable: true,
   })
   @IsOptional()
+  @Transform(({ value }) => (value === '' ? null : value))
+  @ValidateIf((_, value) => value !== null && value !== undefined)
   @IsString()
-  blogBanner?: string;
+  blogBanner?: string | null;
+
+  @ApiPropertyOptional({
+    example: 'https://cdn.ihdua.org/blogs/video.mp4',
+    description: 'URL or path to blog video',
+    nullable: true,
+  })
+  @IsOptional()
+  @Transform(({ value }) => (value === '' ? null : value))
+  @ValidateIf((_, value) => value !== null && value !== undefined)
+  @IsString()
+  video?: string | null;
 
   @ApiPropertyOptional({
     example: '2026-10-27',
