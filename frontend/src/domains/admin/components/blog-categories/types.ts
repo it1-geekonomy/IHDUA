@@ -7,6 +7,5 @@ export type { BlogCategoryItem, PaginationMeta };
 
 export interface BlogCategoryFormValues {
   name: string;
-  slug: string;
 }
 

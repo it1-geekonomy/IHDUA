@@ -37,7 +37,7 @@ export const DONATION_COPY = {
   paymentSuccess: "Thank you! Your donation was successful.",
   paymentFailed: "Payment could not be completed. Please try again.",
   fillRequired: "Please enter your name, mobile number, and email to continue.",
-  invalidTaxId: "Enter a valid PAN (10 characters) or Aadhaar (12 digits).",
+  invalidTaxId: "Enter a valid 10-character PAN (e.g. ABCDE1234F), or leave it blank.",
   invalidPhone: "Enter a valid mobile number for the selected country.",
   bgImage: "/CTAsection/ctabg-img.png",
 } as const;

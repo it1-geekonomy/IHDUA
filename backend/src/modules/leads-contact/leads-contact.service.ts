@@ -10,6 +10,7 @@ import {
   applyDeletedFilter,
   restoreSoftDeleted,
 } from '../../common/utils/soft-delete';
+import { EmailService } from '../email/email.service';
 import { CreateLeadContactDto } from './dto/create-lead-contact.dto';
 import { UpdateLeadContactDto } from './dto/update-lead-contact.dto';
 import { LeadContact } from './entities/lead-contact.entity';
@@ -21,12 +22,21 @@ export class LeadsContactService {
   constructor(
     @InjectRepository(LeadContact)
     private readonly repo: Repository<LeadContact>,
+    private readonly emailService: EmailService,
   ) {}
 
   async create(dto: CreateLeadContactDto): Promise<LeadContact> {
     const entity = this.repo.create(dto);
     const saved = await this.repo.save(entity);
     this.logger.log(`Created new contact lead inquiry with ID ${saved.id}`);
+
+    try {
+      await this.emailService.sendContactNotification(saved);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      this.logger.error(`Failed to dispatch contact notification email: ${msg}`);
+    }
+
     return saved;
   }
 

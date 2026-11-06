@@ -47,9 +47,7 @@ export type DonationReceipt = {
 function isValidTaxId(value: string) {
   const trimmed = value.trim().toUpperCase();
   if (!trimmed) return true;
-  const pan = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
-  const aadhaar = /^\d{12}$/;
-  return pan.test(trimmed) || aadhaar.test(trimmed.replace(/\s/g, ""));
+  return /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(trimmed);
 }
 
 function isValidPhone(localNumber: string, countryCode: string) {
@@ -80,9 +78,7 @@ export function useDonationForm() {
   const [email, setEmail] = useState("");
   const [taxId, setTaxId] = useState("");
   const [address, setAddress] = useState("");
-  const [stateName, setStateName] = useState("");
   const [city, setCity] = useState("");
-  const [pincode, setPincode] = useState("");
   const [message, setMessage] = useState("");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [successReceipt, setSuccessReceipt] = useState<DonationReceipt | null>(null);
@@ -94,7 +90,8 @@ export function useDonationForm() {
   const currencyMeta = useMemo(() => getCurrencyMeta(currency), [currency]);
   const country = useMemo(() => getCountryByCode(countryCode), [countryCode]);
   const phoneCountry = useMemo(() => getCountryByCode(phoneCountryCode), [phoneCountryCode]);
-  const isIndia = phoneCountryCode === "IN";
+  // PAN (80G receipt) applies only to donations made from India
+  const isIndia = countryCode === "IN";
 
   const presets = useMemo(
     () =>
@@ -122,22 +119,23 @@ export function useDonationForm() {
     setEditingAmount(false);
   }, []);
 
-  const setCountryCode = useCallback((code: string) => {
-    const next = getCountryByCode(code);
-    setCountryCodeState(next.code);
-    setCurrency(next.currency);
-  }, [setCurrency]);
-
-  const setPhoneCountryCodeCallback = useCallback((code: string) => {
+  const applyCountry = useCallback((code: string) => {
+    setCountryCodeState(code);
     setPhoneCountryCode(code);
     if (code !== "IN") setTaxId("");
   }, []);
+
+  const setCountryCode = useCallback((code: string) => {
+    const next = getCountryByCode(code);
+    applyCountry(next.code);
+    setCurrency(next.currency);
+  }, [applyCountry, setCurrency]);
 
   const applyExternalAmount = useCallback((amount: string, extCountryCode?: string) => {
     // External CTAs can optionally specify country, else fallback to India
     const nextCode = extCountryCode || "IN";
     const nextCountry = getCountryByCode(nextCode);
-    setCountryCodeState(nextCountry.code);
+    applyCountry(nextCountry.code);
     setCurrencyState(nextCountry.currency);
 
     const digits = normalizeAmountDigits(toAmountDigits(amount));
@@ -154,7 +152,7 @@ export function useDonationForm() {
     }
     setEditingAmount(false);
     setStep(2);
-  }, []);
+  }, [applyCountry]);
 
   useEffect(() => {
     const onCheckout = (event: Event) => {
@@ -246,17 +244,18 @@ export function useDonationForm() {
       : "";
     const amount = amountDigitsFromDisplay(chosenAmount);
     const dial = phoneCountry.dial === "+" ? "+" : phoneCountry.dial;
-    const fullPhone = `${dial}${localPhone.replace(/\D/g, "")}`.slice(0, 20);
+    // Picking a country in the phone field pre-fills its dial code into the input
+    const dialDigits = dial.replace(/\D/g, "");
+    const typedDigits = localPhone.replace(/\D/g, "");
+    const nationalDigits =
+      localPhone.startsWith("+") && dialDigits && typedDigits.startsWith(dialDigits)
+        ? typedDigits.slice(dialDigits.length)
+        : typedDigits;
+    const fullPhone = `${dial}${nationalDigits}`.slice(0, 20);
 
     if (!name || !localPhone || !mail || !amount) {
       setStatusTone("error");
       setStatusMessage(DONATION_COPY.fillRequired);
-      return;
-    }
-
-    if (!stateName.trim()) {
-      setStatusTone("error");
-      setStatusMessage("Please select your state.");
       return;
     }
 
@@ -266,19 +265,13 @@ export function useDonationForm() {
       return;
     }
 
-    if (!pincode.trim()) {
-      setStatusTone("error");
-      setStatusMessage("Please enter your PIN code.");
-      return;
-    }
-
     if (!termsAccepted) {
       setStatusTone("error");
       setStatusMessage("Please agree to the Terms & Conditions to continue.");
       return;
     }
 
-    if (!isValidPhone(localPhone, phoneCountryCode)) {
+    if (!isValidPhone(nationalDigits, phoneCountryCode)) {
       setStatusTone("error");
       setStatusMessage(DONATION_COPY.invalidPhone);
       return;
@@ -307,9 +300,7 @@ export function useDonationForm() {
         countryName: country.name,
         ...(panOrAadhaar ? { pan: panOrAadhaar } : {}),
         ...(address.trim() ? { address: address.trim() } : {}),
-        state: stateName.trim(),
         city: city.trim(),
-        pincode: pincode.trim(),
         ...(message.trim() ? { message: message.trim() } : {}),
         donationCategory: cause,
       });
@@ -357,9 +348,7 @@ export function useDonationForm() {
             setEmail("");
             setTaxId("");
             setAddress("");
-            setStateName("");
             setCity("");
-            setPincode("");
             setMessage("");
             setTermsAccepted(false);
           } catch (error) {
@@ -412,9 +401,7 @@ export function useDonationForm() {
     email,
     taxId,
     address,
-    stateName,
     city,
-    pincode,
     message,
     termsAccepted,
     isPaying,
@@ -423,15 +410,13 @@ export function useDonationForm() {
     showLargeAmountHint: currency === "INR" && usingCustom && isCroreOrAbove(customDigits),
     setCurrency,
     setCountryCode,
-    setPhoneCountryCode: setPhoneCountryCodeCallback,
+    setPhoneCountryCode,
     setFullName,
     setMobile,
     setEmail,
     setTaxId,
     setAddress,
-    setStateName,
     setCity,
-    setPincode,
     setMessage,
     setTermsAccepted,
     setUsingCustom,

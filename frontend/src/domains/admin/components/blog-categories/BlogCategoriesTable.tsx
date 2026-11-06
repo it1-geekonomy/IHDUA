@@ -81,7 +81,6 @@ export function BlogCategoriesTable({
           <thead className="border-b border-[#E5E0D8] bg-[#FAF8F4] text-[11px] font-bold uppercase tracking-wider text-[#5F6C6D]">
             <tr>
               <th className="py-3 px-4">Category Name</th>
-              <th className="py-3 px-4">Slug</th>
               <th className="py-3 px-4">Created At</th>
               <th className="py-3 px-4 text-right">Actions</th>
             </tr>
@@ -102,13 +101,6 @@ export function BlogCategoriesTable({
                       {item.name}
                     </span>
                   </div>
-                </td>
-
-                {/* Slug */}
-                <td className="py-3.5 px-4">
-                  <span className="inline-flex items-center rounded-md bg-[#FAF8F4] px-2 py-1 font-mono text-[11px] text-[#5F6C6D] border border-[#E5E0D8]">
-                    /{item.slug}
-                  </span>
                 </td>
 
                 {/* Created Date */}
