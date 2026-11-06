@@ -23,8 +23,25 @@ import { ImpactInitiativeQueryDto } from './dto/impact-initiative-query.dto';
 import { UpdateImpactInitiativeDto } from './dto/update-impact-initiative.dto';
 import { ImpactInitiative } from './entities/impact-initiative.entity';
 import { validateLayoutContent } from './impact-layout-sections';
+import { collectImpactMediaUrls } from './impact-media';
 
 const CDN_FOLDER = 'impact-initiatives';
+
+/** List rows only; page content and SEO come from the single-page endpoints. */
+const LIST_COLUMNS: (keyof ImpactInitiative)[] = [
+  'id',
+  'categoryId',
+  'name',
+  'slug',
+  'displayOrder',
+  'status',
+  'publishedAt',
+  'heroTitle',
+  'heroImageUrl',
+  'createdAt',
+  'updatedAt',
+  'deletedAt',
+];
 
 export interface ImpactInitiativeFiles {
   heroImage?: CdnFile[];
@@ -104,6 +121,7 @@ export class ImpactInitiativesService {
   async findPublished(categoryId?: string): Promise<ImpactInitiative[]> {
     const qb = this.repo
       .createQueryBuilder('entity')
+      .select(LIST_COLUMNS.map((column) => `entity.${column}`))
       .innerJoinAndSelect(
         'entity.category',
         'category',
@@ -174,11 +192,17 @@ export class ImpactInitiativesService {
 
     const qb = this.repo
       .createQueryBuilder('entity')
-      .leftJoinAndSelect('entity.category', 'category')
+      .select(LIST_COLUMNS.map((column) => `entity.${column}`))
       .orderBy('entity.displayOrder', 'ASC')
       .addOrderBy('entity.createdAt', 'DESC');
 
     applyDeletedFilter(qb, query);
+
+    if (query.categoryId) {
+      qb.andWhere('entity.categoryId = :categoryId', {
+        categoryId: query.categoryId,
+      });
+    }
 
     if (query.status) {
       qb.andWhere('entity.status = :status', { status: query.status });
@@ -259,6 +283,8 @@ export class ImpactInitiativesService {
 
     await this.assertUniqueNameAndSlug(newName, newSlug, targetCategoryId, id);
 
+    const previousMedia = collectImpactMediaUrls(entity.content, this.cdn.baseUrl);
+
     Object.assign(entity, {
       ...dto,
       name: newName,
@@ -285,6 +311,12 @@ export class ImpactInitiativesService {
     try {
       const saved = await this.repo.save(entity);
       this.logger.log(`Updated impact initiative with ID ${id}`);
+      if (dto.content !== undefined) {
+        const currentMedia = collectImpactMediaUrls(saved.content, this.cdn.baseUrl);
+        await this.deleteUnreferencedMedia(
+          [...previousMedia].filter((url) => !currentMedia.has(url)),
+        );
+      }
       return saved;
     } catch (err) {
       if (this.isUniqueViolation(err)) {
@@ -303,7 +335,38 @@ export class ImpactInitiativesService {
   }
 
   async restore(id: string): Promise<ImpactInitiative> {
+    const entity = await this.repo.findOne({ where: { id }, withDeleted: true });
+    if (entity?.deletedAt) {
+      const category = await this.categoryRepo.findOne({
+        where: { id: entity.categoryId },
+      });
+      if (!category) {
+        throw new BadRequestException(
+          'Cannot restore this initiative because its impact category is deleted. Restore the category first.',
+        );
+      }
+    }
     return restoreSoftDeleted(this.repo, id, 'Impact initiative');
+  }
+
+  /**
+   * Deletes section media from R2 unless some initiative (including ones in
+   * Recently deleted, which may be restored) still references the URL.
+   * Failures are logged, never thrown: the database change has already happened.
+   */
+  private async deleteUnreferencedMedia(urls: string[]): Promise<void> {
+    for (const url of urls) {
+      try {
+        const stillUsed = await this.repo
+          .createQueryBuilder('initiative')
+          .withDeleted()
+          .where('strpos(initiative.content::text, :url) > 0', { url })
+          .getExists();
+        if (!stillUsed) await this.cdn.delete(url);
+      } catch (err) {
+        this.logger.warn(`Could not clean up CDN file ${url}: ${String(err)}`);
+      }
+    }
   }
 
   private async assertCategoryValidForInitiative(
