@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AnimatePresence,
   motion,
   useInView,
   useReducedMotion,
 } from "framer-motion";
-import { STATS, STAT_SETS, type StatValue } from "@/domains/home/constants/stat";
+import { useImpactStats, type Sheet } from "@/domains/home/hooks/useImpactStats";
 import Typography from "@/lib/Typography";
 import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 
@@ -37,27 +37,10 @@ const STEP_COOLDOWN_MS = 900;
 /** Visual order in the 2-column mobile grid; reset with `lg:order-none`. */
 const MOBILE_ORDER = ["order-1", "order-2", "order-4", "order-3"];
 
-const formatValue = (stat: StatValue) => {
-  const decimals = stat.decimals ?? 0;
-  return stat.value.toLocaleString("en-IN", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
-};
-
-/**
- * The sheet with the longest label across EVERY card and EVERY step. Each card
- * renders it invisibly to reserve its height, so all calendars are identical in
- * size on every screen (all cards share the same width, so they wrap the same).
- */
-const TALLEST_STAT: StatValue = STAT_SETS.flat().reduce((a, b) =>
-  b.label.length > a.label.length ? b : a,
-);
-
 /* ------------------------------ Calendar page ----------------------------- */
 
 /** The printed face of one calendar sheet: number, divider, label. */
-function PageFace({ stat }: { stat: StatValue }) {
+function PageFace({ sheet }: { sheet: Sheet }) {
   return (
     <div className="flex h-full flex-col items-center px-3 pb-4 pt-5 lg:px-4">
       <span
@@ -67,16 +50,14 @@ function PageFace({ stat }: { stat: StatValue }) {
           color: DARK,
         }}
       >
-        {stat.prefix}
-        {formatValue(stat)}
-        {stat.suffix}
+        {sheet.display}
       </span>
       <span className="my-3 h-px w-full bg-[#ECE8DC] lg:my-4" />
       <Typography
         variant="body-sm"
         className="!mb-0 text-center font-figtree font-bold leading-snug text-[#3B3B3B]"
       >
-        {stat.label}
+        {sheet.label}
       </Typography>
     </div>
   );
@@ -131,24 +112,27 @@ const pageVariants = {
 /* -------------------------------- Calendar -------------------------------- */
 
 /**
- * One calendar card. Each card owns its position in STAT_SETS, so wheel-scrolling
- * over a card flips only that card. Click / tap / Enter flips to the next sheet
- * (touch devices have no hover + wheel).
+ * One calendar card. Each card owns its list of sheets (one per stat created
+ * for this slot in the CMS), so wheel-scrolling over a card flips only that
+ * card. Click / tap / Enter flips to the next sheet (touch devices have no
+ * hover + wheel).
  */
 function CalendarCard({
-  slot,
+  sheets,
   slotIndex,
+  tallest,
   zero,
   instant,
   className = "",
 }: {
-  slot: (typeof STATS)[number];
+  sheets: Sheet[];
   slotIndex: number;
+  tallest: Sheet;
   zero: boolean;
   instant: boolean;
   className?: string;
 }) {
-  const steps = STAT_SETS.length;
+  const steps = sheets.length;
   const ref = useRef<HTMLDivElement>(null);
   const [view, setView] = useState<{ index: number; dir: 1 | -1 }>({
     index: 0,
@@ -166,7 +150,7 @@ function CalendarCard({
   // Needs a non-passive native listener so preventDefault can hold the page still
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || steps <= 1) return; // single sheet: nothing to flip, let the page scroll
 
     const onWheel = (e: WheelEvent) => {
       if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return; // ignore sideways scroll
@@ -193,6 +177,7 @@ function CalendarCard({
   }, [steps]);
 
   const handleNext = () => {
+    if (steps <= 1) return;
     const now = performance.now();
     if (now < lockUntil.current) return;
     lockUntil.current = now + FLIP_SECONDS * 1000;
@@ -201,7 +186,7 @@ function CalendarCard({
     flipTo(next, 1);
   };
 
-  const stat = STAT_SETS[view.index][slotIndex];
+  const sheet = sheets[view.index] ?? sheets[0];
   const custom: FlipCustom = { dir: view.dir, instant };
 
   const band = BAND_COLORS[slotIndex % BAND_COLORS.length];
@@ -221,7 +206,11 @@ function CalendarCard({
       <motion.div
         role="button"
         tabIndex={0}
-        aria-label={`${stat.prefix ?? ""}${formatValue(stat)}${stat.suffix ?? ""} ${stat.label}. Press to flip to the next figure.`}
+        aria-label={
+          steps > 1
+            ? `${sheet.display} ${sheet.label}. Press to flip to the next figure.`
+            : `${sheet.display} ${sheet.label}`
+        }
         onClick={handleNext}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -287,7 +276,7 @@ function CalendarCard({
         >
           {/* Invisible sizer holds the card's height */}
           <div aria-hidden className="invisible rounded-b-xl">
-            <PageFace stat={TALLEST_STAT} />
+            <PageFace sheet={tallest} />
           </div>
 
           <AnimatePresence initial={false} custom={custom}>
@@ -319,7 +308,7 @@ function CalendarCard({
                 animate={{ rotateX: hovered && !instant ? PEEK_ANGLE : 0 }}
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
               >
-                <PageFace stat={stat} />
+                <PageFace sheet={sheet} />
               </motion.div>
             </motion.div>
           </AnimatePresence>
@@ -335,8 +324,23 @@ export default function StatSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion() ?? false;
 
+  // null while loading; then one list of sheets per card (empty lists if nothing is published)
+  const slots = useImpactStats();
+
   // Cards flip in the first time the section is on screen
   const inView = useInView(sectionRef, { once: true, amount: 0.35 });
+
+  /**
+   * The sheet with the longest label across EVERY card and EVERY sheet. Each
+   * card renders it invisibly to reserve its height, so all calendars stay the
+   * same size on every screen. Null when nothing is published.
+   */
+  const tallest = useMemo<Sheet | null>(() => {
+    if (!slots) return null;
+    const all = slots.flat();
+    if (all.length === 0) return null;
+    return all.reduce((a, b) => (b.label.length > a.label.length ? b : a));
+  }, [slots]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -398,17 +402,34 @@ export default function StatSection() {
         </Typography>
       </div>
 
-      <div className="mt-10 grid w-full grid-cols-2 justify-items-stretch gap-x-5 gap-y-12 lg:mt-14 lg:grid-cols-4 lg:gap-x-8">
-        {STATS.map((slot, i) => (
-          <CalendarCard
-            key={slot.label}
-            slot={slot}
-            slotIndex={i}
-            zero={!inView}
-            instant={reduceMotion}
-            className={`${MOBILE_ORDER[i] ?? ""} lg:order-none`}
-          />
-        ))}
+      <div className="mt-10 grid min-h-[10rem] w-full grid-cols-2 justify-items-stretch gap-x-5 gap-y-12 lg:mt-14 lg:grid-cols-4 lg:gap-x-8">
+        {/* Loaded, but nothing is published in the CMS (or the API failed) */}
+        {slots && !tallest && (
+          <div className="col-span-full flex min-h-[10rem] items-center justify-center rounded-lg border border-dashed border-[#D9D4C4] bg-[#FAF9F5] px-6 py-10 text-center">
+            <Typography
+              variant="body-lg"
+              className="max-w-xl font-figtree font-normal leading-relaxed text-[#5F6C6D]"
+            >
+              No impact stats have been published yet. Please add stats from the CMS to show them here.
+            </Typography>
+          </div>
+        )}
+
+        {slots &&
+          tallest &&
+          slots.map((sheets, i) =>
+            sheets.length > 0 ? (
+              <CalendarCard
+                key={i}
+                sheets={sheets}
+                slotIndex={i}
+                tallest={tallest}
+                zero={!inView}
+                instant={reduceMotion}
+                className={`${MOBILE_ORDER[i] ?? ""} lg:order-none`}
+              />
+            ) : null,
+          )}
       </div>
     </section>
   );

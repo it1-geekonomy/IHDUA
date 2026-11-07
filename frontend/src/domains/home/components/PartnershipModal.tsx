@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback, type FormEvent } from "react";
+import { useState, useCallback, useRef, useEffect, type FormEvent } from "react";
 import { PARTNERSHIP_TYPES } from "@/domains/home/constants/partnershipOptions";
+import { submitPartnershipInquiry } from "@/domains/home/lib/partnershipInquiries";
 import { ModalShell, ModalSuccess } from "@/shared/components/modal";
 import {
   FormInput,
@@ -35,14 +36,21 @@ const INITIAL_FORM_STATE: PartnershipFormData = {
 export default function PartnershipModal({ isOpen, onClose }: PartnershipModalProps) {
   const [formData, setFormData] = useState<PartnershipFormData>(INITIAL_FORM_STATE);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  // Cancels an in-flight request if the modal is closed or unmounted
+  const abortRef = useRef<AbortController | null>(null);
+  useEffect(() => () => abortRef.current?.abort(), []);
+
   const handleClose = useCallback(() => {
+    abortRef.current?.abort();
     onClose();
     setTimeout(() => {
       setFormData(INITIAL_FORM_STATE);
       setErrors({});
+      setSubmitError("");
       setIsSubmitted(false);
       setIsSubmitting(false);
     }, 250);
@@ -56,6 +64,7 @@ export default function PartnershipModal({ isOpen, onClose }: PartnershipModalPr
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
+    if (submitError) setSubmitError("");
   };
 
   const validate = (): Record<string, string> => {
@@ -73,8 +82,10 @@ export default function PartnershipModal({ isOpen, onClose }: PartnershipModalPr
     return errs;
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -82,12 +93,34 @@ export default function PartnershipModal({ isOpen, onClose }: PartnershipModalPr
     }
 
     setErrors({});
+    setSubmitError("");
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    try {
+      await submitPartnershipInquiry(
+        {
+          yourName: formData.yourName,
+          orgName: formData.orgName,
+          phone: formData.phone,
+          partnershipType: formData.partnershipType,
+          proposal: formData.proposal,
+        },
+        controller.signal,
+      );
       setIsSubmitted(true);
-    }, 1000);
+    } catch (err) {
+      if ((err as Error)?.name === "AbortError") return;
+      setSubmitError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Unable to send your enquiry. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -159,6 +192,12 @@ export default function PartnershipModal({ isOpen, onClose }: PartnershipModalPr
             value={formData.proposal}
             onChange={(e) => updateField("proposal", e.target.value)}
           />
+
+          {submitError && (
+            <p role="alert" className="rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {submitError}
+            </p>
+          )}
 
           <SubmitButton label="Send Partnership Enquiry" isSubmitting={isSubmitting} />
         </form>

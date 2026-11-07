@@ -1,12 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image"; // use <img> if you're not on Next.js
 import Typography from "@/lib/Typography";
-import {
-  fetchPublishedAnnualReports,
-  fetchPublishedOrganizationalDocuments,
-} from "@/domains/admin/lib/api";
+import { useDocumentItems } from "@/domains/about/hooks/useDocumentItems";
 import {
   DOCUMENT_GROUPS,
   DOCUMENT_THEMES,
@@ -19,11 +16,21 @@ import {
 } from "@/domains/about/constants/ourdocuments";
 
 type OurDocumentsProps = {
-  groups?: DocumentGroup[]; // pass CMS data here
+  /** Card metadata only (title, description, variant). Items always come from the CMS. */
+  groups?: DocumentGroup[];
 };
 
+/** Shown inside a card when nothing is published for it in the CMS */
+const EMPTY_MESSAGES: Record<string, string> = {
+  organizational:
+    "No organizational documents have been published yet. Please publish documents from the CMS to show them here.",
+  annual:
+    "No annual reports have been published yet. Please publish reports from the CMS to show them here.",
+};
+const DEFAULT_EMPTY_MESSAGE =
+  "Nothing has been published yet. Please publish from the CMS to show it here.";
+
 // Only this group gets the view-only eye + custom icons.
-// Change to match your data (e.g. group.id or group.variant of Organizational Documents).
 const isViewOnlyGroup = (group: DocumentGroup) =>
   group.title.toLowerCase().includes("organizational");
 
@@ -86,108 +93,122 @@ function DocumentCard({ group }: { group: DocumentGroup }) {
         </div>
       </div>
 
+      {/* Nothing published in the CMS (or the request failed): show a message */}
+      {group.items.length === 0 && (
+        <div className="mt-[clamp(16px,2vw,24px)] flex flex-1 items-center justify-center rounded-lg border border-dashed border-[#D9D4C4] bg-white/60 px-6 py-10 text-center">
+          <Typography
+            variant="body-sm"
+            className="max-w-sm font-figtree font-normal leading-relaxed text-[#5F6C6D]"
+          >
+            {EMPTY_MESSAGES[group.variant] ?? DEFAULT_EMPTY_MESSAGE}
+          </Typography>
+        </div>
+      )}
+
       {/* PDF list */}
-      <ul className="mt-[clamp(16px,2vw,24px)] flex flex-col gap-[clamp(8px,1vw,12px)]">
-        {visibleItems.map((doc) =>
-          viewOnly ? (
-            /* ---------- Organizational Documents: view only ---------- */
-            <li
-              key={doc.id}
-              onClick={() => openPdf(doc.url)}
-              className="flex cursor-pointer items-center gap-[clamp(8px,1.2vw,16px)] bg-white p-[clamp(8px,1vw,12px)]"
-            >
-              {/* Document icon in tinted square */}
-              <div
-                className={`flex h-[clamp(32px,3.2vw,44px)] w-[clamp(32px,3.2vw,44px)] shrink-0 items-center justify-center rounded-md ${theme.headerIconBg}`}
+      {group.items.length > 0 && (
+        <ul className="mt-[clamp(16px,2vw,24px)] flex flex-col gap-[clamp(8px,1vw,12px)]">
+          {visibleItems.map((doc) =>
+            viewOnly ? (
+              /* ---------- Organizational Documents: view only ---------- */
+              <li
+                key={doc.id}
+                onClick={() => openPdf(doc.url)}
+                className="flex cursor-pointer items-center gap-[clamp(8px,1.2vw,16px)] bg-white p-[clamp(8px,1vw,12px)]"
               >
-                <Image
-                  src={getDocIcon(doc.title)}
-                  alt=""
-                  width={24}
-                  height={24}
-                  className="h-[clamp(16px,1.6vw,24px)] w-[clamp(16px,1.6vw,24px)] object-contain"
-                />
-              </div>
+                {/* Document icon in tinted square */}
+                <div
+                  className={`flex h-[clamp(32px,3.2vw,44px)] w-[clamp(32px,3.2vw,44px)] shrink-0 items-center justify-center rounded-md ${theme.headerIconBg}`}
+                >
+                  <Image
+                    src={getDocIcon(doc.title)}
+                    alt=""
+                    width={24}
+                    height={24}
+                    className="h-[clamp(16px,1.6vw,24px)] w-[clamp(16px,1.6vw,24px)] object-contain"
+                  />
+                </div>
 
-              <Typography
-                variant="body-sm"
-                className="min-w-0 flex-1 break-words font-figtree font-medium text-[length:clamp(12px,1.1vw,14px)] leading-[1.4] text-[#212121]"
-              >
-                {doc.title}
-              </Typography>
+                <Typography
+                  variant="body-sm"
+                  className="min-w-0 flex-1 break-words font-figtree font-medium text-[length:clamp(12px,1.1vw,14px)] leading-[1.4] text-[#212121]"
+                >
+                  {doc.title}
+                </Typography>
 
-              {/* View button (eye) */}
-              <button
-                type="button"
-                aria-label={`View ${doc.title}`}
-                onClick={(e) => {
-                  e.stopPropagation(); // avoid double-open from the row click
-                  openPdf(doc.url);
+                {/* View button (eye) */}
+                <button
+                  type="button"
+                  aria-label={`View ${doc.title}`}
+                  onClick={(e) => {
+                    e.stopPropagation(); // avoid double-open from the row click
+                    openPdf(doc.url);
+                  }}
+                  className="flex h-[clamp(30px,3vw,40px)] w-[clamp(30px,3vw,40px)] shrink-0 items-center justify-center rounded-md transition-opacity hover:opacity-70"
+                >
+                  <Image
+                    src={EYE_ICON}
+                    alt=""
+                    width={24}
+                    height={24}
+                    className="h-[clamp(18px,1.8vw,24px)] w-[clamp(18px,1.8vw,24px)] object-contain"
+                  />
+                </button>
+              </li>
+            ) : (
+              /* ---------- Other groups (Annual Reports) ---------- */
+              <li
+                key={doc.id}
+                role="button"
+                tabIndex={0}
+                aria-label={`Preview ${doc.title}`}
+                onClick={() => openPdf(doc.url)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openPdf(doc.url);
+                  }
                 }}
-                className="flex h-[clamp(30px,3vw,40px)] w-[clamp(30px,3vw,40px)] shrink-0 items-center justify-center rounded-md transition-opacity hover:opacity-70"
+                className="flex cursor-pointer items-center gap-[clamp(8px,1.2vw,16px)] bg-white p-[clamp(8px,1vw,12px)]"
               >
                 <Image
-                  src={EYE_ICON}
+                  src={PDF_ICON}
                   alt=""
-                  width={24}
-                  height={24}
-                  className="h-[clamp(18px,1.8vw,24px)] w-[clamp(18px,1.8vw,24px)] object-contain"
+                  width={32}
+                  height={32}
+                  className="h-[clamp(24px,2.4vw,32px)] w-[clamp(24px,2.4vw,32px)] shrink-0"
                 />
-              </button>
-            </li>
-          ) : (
-            /* ---------- Other groups (Annual Reports): original ---------- */
-            <li
-              key={doc.id}
-              role="button"
-              tabIndex={0}
-              aria-label={`Preview ${doc.title}`}
-              onClick={() => openPdf(doc.url)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  openPdf(doc.url);
-                }
-              }}
-              className="flex cursor-pointer items-center gap-[clamp(8px,1.2vw,16px)] bg-white p-[clamp(8px,1vw,12px)]"
-            >
-              <Image
-                src={PDF_ICON}
-                alt=""
-                width={32}
-                height={32}
-                className="h-[clamp(24px,2.4vw,32px)] w-[clamp(24px,2.4vw,32px)] shrink-0"
-              />
 
-              <Typography
-                variant="body-sm"
-                className="min-w-0 flex-1 break-words font-figtree font-medium text-[length:clamp(12px,1.1vw,14px)] leading-[1.4] text-[#212121]"
-              >
-                {doc.title}
-              </Typography>
+                <Typography
+                  variant="body-sm"
+                  className="min-w-0 flex-1 break-words font-figtree font-medium text-[length:clamp(12px,1.1vw,14px)] leading-[1.4] text-[#212121]"
+                >
+                  {doc.title}
+                </Typography>
 
-              <a
-                href={doc.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                download
-                aria-label={`Download ${doc.title}`}
-                onClick={(e) => e.stopPropagation()} // download only, don't open preview
-                onKeyDown={(e) => e.stopPropagation()}
-                className={`flex h-[clamp(30px,3vw,40px)] w-[clamp(30px,3vw,40px)] shrink-0 items-center justify-center rounded-md transition-opacity hover:opacity-80 ${theme.button}`}
-              >
-                <Image
-                  src={theme.buttonIcon}
-                  alt=""
-                  width={20}
-                  height={20}
-                  className="h-[clamp(14px,1.4vw,20px)] w-[clamp(14px,1.4vw,20px)]"
-                />
-              </a>
-            </li>
-          )
-        )}
-      </ul>
+                <a
+                  href={doc.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  aria-label={`Download ${doc.title}`}
+                  onClick={(e) => e.stopPropagation()} // download only, don't open preview
+                  onKeyDown={(e) => e.stopPropagation()}
+                  className={`flex h-[clamp(30px,3vw,40px)] w-[clamp(30px,3vw,40px)] shrink-0 items-center justify-center rounded-md transition-opacity hover:opacity-80 ${theme.button}`}
+                >
+                  <Image
+                    src={theme.buttonIcon}
+                    alt=""
+                    width={20}
+                    height={20}
+                    className="h-[clamp(14px,1.4vw,20px)] w-[clamp(14px,1.4vw,20px)]"
+                  />
+                </a>
+              </li>
+            ),
+          )}
+        </ul>
+      )}
 
       {/* Pagination: only when this card has more PDFs than one page */}
       {totalPages > 1 && (
@@ -221,60 +242,16 @@ function DocumentCard({ group }: { group: DocumentGroup }) {
 }
 
 export default function OurDocuments({ groups = DOCUMENT_GROUPS }: OurDocumentsProps) {
-  const [effectiveGroups, setEffectiveGroups] = useState<DocumentGroup[]>(groups);
+  // null while loading; then published items per group (empty list if none)
+  const items = useDocumentItems();
 
-  useEffect(() => {
-    let isMounted = true;
-
-    Promise.allSettled([
-      fetchPublishedOrganizationalDocuments(),
-      fetchPublishedAnnualReports(),
-    ]).then(([orgResult, annualResult]) => {
-      if (!isMounted) return;
-
-      setEffectiveGroups((prev) =>
-        prev.map((g) => {
-          if (
-            g.variant === "organizational" &&
-            orgResult.status === "fulfilled" &&
-            Array.isArray(orgResult.value) &&
-            orgResult.value.length > 0
-          ) {
-            return {
-              ...g,
-              items: orgResult.value.map((doc) => ({
-                id: doc.id,
-                title: doc.title,
-                url: doc.fileUrl,
-              })),
-            };
-          }
-
-          if (
-            g.variant === "annual" &&
-            annualResult.status === "fulfilled" &&
-            Array.isArray(annualResult.value) &&
-            annualResult.value.length > 0
-          ) {
-            return {
-              ...g,
-              items: annualResult.value.map((report) => ({
-                id: report.id,
-                title: report.title,
-                url: report.fileUrl,
-              })),
-            };
-          }
-
-          return g;
-        }),
-      );
-    });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  // Static groups supply only title/description/theme; items come from the CMS
+  const effectiveGroups: DocumentGroup[] | null = items
+    ? groups.map((g) => ({
+        ...g,
+        items: (items as Record<string, DocumentGroup["items"]>)[g.variant] ?? [],
+      }))
+    : null;
 
   return (
     <section className="w-full px-6 pt-6 pb-6 lg:px-10 lg:pt-8 lg:pb-8 xl:pt-16 xl:pb-16 2xl:px-40">
@@ -307,9 +284,9 @@ export default function OurDocuments({ groups = DOCUMENT_GROUPS }: OurDocumentsP
         </Typography>
       </div>
 
-      {/* Cards: stacked below lg, side by side from lg */}
-      <div className="mt-[clamp(24px,4vw,56px)] grid grid-cols-1 items-stretch gap-[clamp(16px,2vw,24px)] lg:grid-cols-2">
-        {effectiveGroups.map((group) => (
+      {/* Cards: stacked below lg, side by side from lg. Empty while loading so no static docs flash. */}
+      <div className="mt-[clamp(24px,4vw,56px)] grid min-h-[12rem] grid-cols-1 items-stretch gap-[clamp(16px,2vw,24px)] lg:grid-cols-2">
+        {effectiveGroups?.map((group) => (
           <DocumentCard key={group.id} group={group} />
         ))}
       </div>

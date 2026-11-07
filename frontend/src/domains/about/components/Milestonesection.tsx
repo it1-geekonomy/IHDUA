@@ -5,11 +5,11 @@ import { useCallback,useEffect,useRef,useState,
 } from "react";
 import Typography from "@/lib/Typography";
 import { cn } from "@/lib/utils";
-import { DEFAULT_MILESTONES,DESKTOP_QUERY,FLUID_TOKENS,FRAME_MS,GESTURE_GAP_MS,M_STEP_MS,PROGRESS_SMOOTHING,REDUCED_MOTION_QUERY,SCROLL_PER_STEP,SETTLE_EPSILON,START_DELAY_MS,
+import { DESKTOP_QUERY,FLUID_TOKENS,FRAME_MS,GESTURE_GAP_MS,M_STEP_MS,PROGRESS_SMOOTHING,REDUCED_MOTION_QUERY,SCROLL_PER_STEP,SETTLE_EPSILON,START_DELAY_MS,
   type Milestone,
   type RevealKind,
 } from "@/domains/about/constants/milestone";
-import { fetchMilestonesYearWise } from "@/domains/admin/lib/api";
+import { useMilestones } from "@/domains/about/hooks/useMilestones";
 import { MilestoneListDesktop } from "./KeyMilestonesDesktop";
 import { MilestoneListMobile } from "./KeyMilestonesMobile";
 
@@ -17,9 +17,13 @@ export type { Milestone };
 export interface KeyMilestonesProps {
   label?: string;
   heading?: string;
-  milestones?: readonly Milestone[];
+  /** Shown when no milestone is published in the CMS */
+  emptyMessage?: string;
   className?: string;
 }
+
+const DEFAULT_EMPTY_MESSAGE =
+  "No milestones have been published yet. Please publish milestones from the CMS to show them here.";
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
@@ -234,45 +238,35 @@ function useSequentialReveal(count: number) {
 export default function KeyMilestones({
   label = "Our Journey",
   heading = "Key Milestones",
-  milestones: initialMilestones = DEFAULT_MILESTONES,
+  emptyMessage = DEFAULT_EMPTY_MESSAGE,
   className,
 }: KeyMilestonesProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  const [milestones, setMilestones] = useState<readonly Milestone[]>(initialMilestones);
+  // null while loading, [] when nothing is published, otherwise the CMS milestones
+  const milestones = useMilestones();
 
-  useEffect(() => {
-    fetchMilestonesYearWise()
-      .then((items) => {
-        if (Array.isArray(items) && items.length > 0) {
-          setMilestones(items.map((m) => ({ year: m.year, description: m.description })));
-        }
-      })
-      .catch(() => {
-        // Fallback to default milestones
-      });
-  }, []);
+  const count = milestones?.length ?? 0;
 
-  const count = milestones.length;
-
+  // Hooks must run on every render, so they stay above the early returns below
   useScrollCapture(sectionRef, viewportRef, trackRef, count);
   const { revealed, setRowVisible } = useSequentialReveal(count);
 
+  // Still loading: render nothing, so the message doesn't flash before the data arrives
+  if (milestones === null) return null;
+
   const style = { ...FLUID_TOKENS, "--count": count } as CSSProperties;
 
-  return (
-    <section
-      ref={sectionRef}
-      aria-label={heading}
-      style={style}
-      className={cn(
-        "w-full bg-[var(--bg)] px-[var(--section-px)] py-[var(--section-py)] max-md:py-8 md:max-lg:py-10 lg:py-[calc(var(--section-py)*0.6)]",
-        "[--visible:1.7] sm:[--visible:2.7] md:[--visible:3.4] lg:[--visible:5] xl:[--visible:6] 2xl:[--visible:7]",
-        className,
-      )}
-    >
+  const sectionClass = cn(
+    "w-full bg-[var(--bg)] px-[var(--section-px)] py-[var(--section-py)] max-md:py-8 md:max-lg:py-10 lg:py-[calc(var(--section-py)*0.6)]",
+    "[--visible:1.7] sm:[--visible:2.7] md:[--visible:3.4] lg:[--visible:5] xl:[--visible:6] 2xl:[--visible:7]",
+    className,
+  );
+
+  const header = (
+    <>
       <Typography
         variant="caption"
         className="flex w-fit items-center gap-[var(--label-gap)] font-figtree font-bold uppercase tracking-[0.08em] text-[#9739A8]"
@@ -288,6 +282,29 @@ export default function KeyMilestones({
       >
         {heading}
       </Typography>
+    </>
+  );
+
+  // Loaded, but nothing is published in the CMS (or the API failed): show a message
+  if (count === 0) {
+    return (
+      <section aria-label={heading} style={style} className={sectionClass}>
+        {header}
+        <div className="mt-[var(--timeline-mt)] max-md:mt-6 flex min-h-[10rem] items-center justify-center rounded-lg border border-dashed border-[#D9D4C4] bg-white/60 px-6 py-10 text-center">
+          <Typography
+            variant="body-lg"
+            className="max-w-xl font-figtree font-normal leading-relaxed text-[#5F6C6D]"
+          >
+            {emptyMessage}
+          </Typography>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section ref={sectionRef} aria-label={heading} style={style} className={sectionClass}>
+      {header}
 
       <div
         ref={viewportRef}
