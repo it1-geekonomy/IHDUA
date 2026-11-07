@@ -13,15 +13,27 @@ interface SectionCardProps {
   section: SectionDef;
   value: unknown;
   onChange: (next: unknown) => void;
+  /** Number of successful saves of this page so far */
+  saveCount: number;
 }
 
-export function SectionCard({ index, section, value, onChange }: SectionCardProps) {
+export function SectionCard({ index, section, value, onChange, saveCount }: SectionCardProps) {
   const [open, setOpen] = useState(index < 2);
+  // Content of a switched-off section, kept until the next save so switching it back on restores it.
+  // After a save the backend has removed its media, so a stash from an older save is ignored.
+  const [stash, setStash] = useState<{ value: unknown; saveCount: number } | null>(null);
+  const hiddenValue = stash?.saveCount === saveCount ? stash.value : null;
   const enabled = value !== null && value !== undefined;
 
   const toggleEnabled = () => {
-    onChange(enabled ? null : emptyObject(section.fields));
-    if (!enabled) setOpen(true);
+    if (enabled) {
+      setStash({ value, saveCount });
+      onChange(null);
+    } else {
+      onChange(hiddenValue ?? emptyObject(section.fields));
+      setStash(null);
+      setOpen(true);
+    }
   };
 
   return (
@@ -83,7 +95,9 @@ export function SectionCard({ index, section, value, onChange }: SectionCardProp
         <div className="border-t border-[#E5E0D8] px-5 py-5">
           {!enabled ? (
             <p className="text-xs text-[#8A847A]">
-              This section is hidden on the page. Switch it on to add content.
+              {hiddenValue
+                ? "This section is hidden. Switch it back on to restore what you entered; saving while it is off removes its content."
+                : "This section is hidden on the page. Switch it on to add content."}
             </p>
           ) : section.repeatable ? (
             <RepeatableBlocks section={section} blocks={value as Json[]} onChange={onChange} />

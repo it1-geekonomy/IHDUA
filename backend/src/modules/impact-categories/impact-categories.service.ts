@@ -19,6 +19,7 @@ import {
 import { ImpactInitiative } from '../impact-initiatives/entities/impact-initiative.entity';
 import { CreateImpactCategoryDto } from './dto/create-impact-category.dto';
 import { ImpactCategoryQueryDto } from './dto/impact-category-query.dto';
+import { ImpactNavigationCategoryDto } from './dto/impact-navigation.dto';
 import { UpdateImpactCategoryDto } from './dto/update-impact-category.dto';
 import { ImpactCategory } from './entities/impact-category.entity';
 
@@ -72,6 +73,44 @@ export class ImpactCategoriesService {
         name: 'ASC',
       },
     });
+  }
+
+  /**
+   * Public endpoint helper: Our Impact menu — published categories with their
+   * published initiatives (name and slug only), both in display order.
+   */
+  async findNavigation(): Promise<ImpactNavigationCategoryDto[]> {
+    const categories = await this.repo
+      .createQueryBuilder('category')
+      .select([
+        'category.id',
+        'category.name',
+        'category.slug',
+        'category.layoutType',
+      ])
+      .leftJoin(
+        'category.initiatives',
+        'initiative',
+        'initiative.status = :status',
+        { status: ContentStatus.PUBLISHED },
+      )
+      .addSelect(['initiative.id', 'initiative.name', 'initiative.slug'])
+      .where('category.status = :status', { status: ContentStatus.PUBLISHED })
+      .orderBy('category.displayOrder', 'ASC')
+      .addOrderBy('category.name', 'ASC')
+      .addOrderBy('initiative.displayOrder', 'ASC')
+      .addOrderBy('initiative.name', 'ASC')
+      .getMany();
+
+    return categories.map((category) => ({
+      name: category.name,
+      slug: category.slug,
+      layoutType: category.layoutType,
+      pages: (category.initiatives ?? []).map(({ name, slug }) => ({
+        name,
+        slug,
+      })),
+    }));
   }
 
   /**

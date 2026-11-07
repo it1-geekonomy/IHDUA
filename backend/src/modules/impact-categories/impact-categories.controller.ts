@@ -25,6 +25,7 @@ import { Public } from '../../common/decorators/public.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateImpactCategoryDto } from './dto/create-impact-category.dto';
 import { ImpactCategoryQueryDto } from './dto/impact-category-query.dto';
+import { ImpactNavigationCategoryDto } from './dto/impact-navigation.dto';
 import { UpdateImpactCategoryDto } from './dto/update-impact-category.dto';
 import { ImpactCategory } from './entities/impact-category.entity';
 import { ImpactCategoriesService } from './impact-categories.service';
@@ -47,6 +48,25 @@ export class ImpactCategoriesController {
   })
   async getPublic() {
     const data = await this.service.findPublished();
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
+  }
+
+  @Public()
+  @Get('navigation')
+  @ApiOperation({
+    summary: 'Our Impact menu (Public Website Navigation)',
+    description:
+      'Published categories with their published initiatives (name and slug only), both ordered by display_order. One call builds the whole Our Impact dropdown.',
+  })
+  @ApiOkResponse({
+    description: 'Categories with their pages',
+    type: [ImpactNavigationCategoryDto],
+  })
+  async getNavigation() {
+    const data = await this.service.findNavigation();
     return {
       statusCode: HttpStatus.OK,
       data,
