@@ -22,6 +22,16 @@ export const ADMIN_NAV_SECTIONS = [
     ],
   },
   {
+    title: "Our Impact",
+    items: [
+      { href: "/admin/impact/education", label: "Education", icon: "impactEducation" as const },
+      { href: "/admin/impact/women-empowerment", label: "Women Empowerment", icon: "impactWomen" as const },
+      { href: "/admin/impact/skills-and-employment", label: "Skills & Employment", icon: "impactSkills" as const },
+      { href: "/admin/impact/model-village", label: "Model Village", icon: "impactVillage" as const },
+      { href: "/admin/impact/health", label: "Health", icon: "impactHealth" as const },
+    ],
+  },
+  {
     title: "Content & Legal",
     items: [
       { href: "/admin/home-banners", label: "Home Banners", icon: "homeBanners" as const },

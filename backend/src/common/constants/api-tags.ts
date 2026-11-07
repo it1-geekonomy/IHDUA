@@ -17,7 +17,6 @@ export const ApiTagsConst = {
   IMPACT_STATS: 'impact-stats',
   IMPACT_CATEGORIES: 'impact-categories',
   IMPACT_INITIATIVES: 'impact-initiatives',
-  IMPACT_INITIATIVE_STORIES: 'impact-initiative-stories',
   NEWSLETTER_SUBSCRIBERS: 'newsletter-subscribers',
   HOME_BANNERS: 'home-banners',
 } as const;

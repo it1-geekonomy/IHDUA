@@ -51,8 +51,16 @@ export function BlogAndStoryPreviewModal({
 
         {/* Modal Body: Article Content */}
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6">
-          {/* Banner */}
-          {item.blogBanner && (
+          {/* Media: Video or Image */}
+          {item.video ? (
+            <div className="w-full overflow-hidden rounded-xl border border-[#E5E0D8] bg-black">
+              <video
+                src={item.video}
+                controls
+                className="max-h-96 w-full object-contain"
+              />
+            </div>
+          ) : item.blogBanner ? (
             <div className="w-full overflow-hidden rounded-xl border border-[#E5E0D8] bg-[#FAF8F4]">
               <img
                 src={item.blogBanner}
@@ -60,7 +68,7 @@ export function BlogAndStoryPreviewModal({
                 className="h-64 sm:h-80 w-full object-cover"
               />
             </div>
-          )}
+          ) : null}
 
           {/* Meta Tags / Category / Date */}
           <div className="flex flex-wrap items-center gap-3">

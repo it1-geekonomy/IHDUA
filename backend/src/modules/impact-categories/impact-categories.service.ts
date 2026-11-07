@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   Logger,
@@ -15,6 +16,7 @@ import {
   applyDeletedFilter,
   restoreSoftDeleted,
 } from '../../common/utils/soft-delete';
+import { ImpactInitiative } from '../impact-initiatives/entities/impact-initiative.entity';
 import { CreateImpactCategoryDto } from './dto/create-impact-category.dto';
 import { ImpactCategoryQueryDto } from './dto/impact-category-query.dto';
 import { UpdateImpactCategoryDto } from './dto/update-impact-category.dto';
@@ -150,6 +152,10 @@ export class ImpactCategoriesService {
 
     await this.assertUniqueNameAndSlug(newName, newSlug, id);
 
+    if (dto.layoutType && dto.layoutType !== entity.layoutType) {
+      await this.assertNoInitiatives(entity);
+    }
+
     Object.assign(entity, {
       ...dto,
       name: newName,
@@ -172,12 +178,35 @@ export class ImpactCategoriesService {
 
   async remove(id: string): Promise<void> {
     const entity = await this.findOne(id);
+
+    const activePages = await this.repo.manager.count(ImpactInitiative, {
+      where: { categoryId: entity.id },
+    });
+    if (activePages > 0) {
+      throw new ConflictException(
+        `Cannot delete "${entity.name}" because it still has ${activePages} initiative(s). Delete or move them first.`,
+      );
+    }
+
     await this.repo.softRemove(entity);
     this.logger.log(`Soft-deleted impact category with ID ${id}`);
   }
 
   async restore(id: string): Promise<ImpactCategory> {
     return restoreSoftDeleted(this.repo, id, 'Impact category');
+  }
+
+  private async assertNoInitiatives(category: ImpactCategory): Promise<void> {
+    const count = await this.repo.manager.count(ImpactInitiative, {
+      where: { categoryId: category.id },
+      withDeleted: true,
+    });
+
+    if (count > 0) {
+      throw new BadRequestException(
+        `Cannot change the layout of "${category.name}" because it already has ${count} initiative(s) built on the "${category.layoutType}" layout.`,
+      );
+    }
   }
 
   private async assertUniqueNameAndSlug(

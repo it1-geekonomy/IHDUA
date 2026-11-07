@@ -10,10 +10,15 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
@@ -24,10 +29,22 @@ import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateImpactInitiativeDto } from './dto/create-impact-initiative.dto';
+import {
+  CreateImpactInitiativeMultipartDto,
+  UpdateImpactInitiativeMultipartDto,
+} from './dto/impact-initiative-multipart.dto';
 import { ImpactInitiativeQueryDto } from './dto/impact-initiative-query.dto';
 import { UpdateImpactInitiativeDto } from './dto/update-impact-initiative.dto';
 import { ImpactInitiative } from './entities/impact-initiative.entity';
-import { ImpactInitiativesService } from './impact-initiatives.service';
+import {
+  ImpactInitiativeFiles,
+  ImpactInitiativesService,
+} from './impact-initiatives.service';
+
+const IMAGE_FIELDS = FileFieldsInterceptor([
+  { name: 'heroImage', maxCount: 1 },
+  { name: 'heroImageMobile', maxCount: 1 },
+]);
 
 @ApiTags(ApiTagsConst.IMPACT_INITIATIVES)
 @Controller('impact-initiatives')
@@ -39,7 +56,7 @@ export class ImpactInitiativesController {
   @ApiOperation({
     summary: 'Get all published impact initiatives (Public Website)',
     description:
-      'Returns all active and published impact initiatives ordered by display_order ASC.',
+      'Returns published impact initiatives (list fields and category, no page content) ordered by display_order ASC. Use GET /impact-initiatives/slug/{slug} for a full page.',
   })
   @ApiOkResponse({
     description: 'List of published impact initiatives',
@@ -74,8 +91,13 @@ export class ImpactInitiativesController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: CreateImpactInitiativeMultipartDto })
+  @UseInterceptors(IMAGE_FIELDS)
   @ApiOperation({
     summary: 'Create new impact initiative (CMS Admin)',
+    description:
+      'Uploads the hero images (desktop and mobile) to Cloudflare R2 and creates the record. Requires Bearer token.',
   })
   @ApiCreatedResponse({
     description: 'Impact initiative created successfully',
@@ -84,8 +106,11 @@ export class ImpactInitiativesController {
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
-  async create(@Body() dto: CreateImpactInitiativeDto) {
-    const data = await this.service.create(dto);
+  async create(
+    @Body() dto: CreateImpactInitiativeDto,
+    @UploadedFiles() files?: ImpactInitiativeFiles,
+  ) {
+    const data = await this.service.create(dto, files);
     return {
       statusCode: HttpStatus.CREATED,
       data,
@@ -117,7 +142,7 @@ export class ImpactInitiativesController {
   @ApiOperation({
     summary: 'List all impact initiatives with pagination & filters (CMS Admin)',
     description:
-      'Supports pagination, search, status filter, and deleted filter. Requires Bearer token.',
+      'Supports pagination, search, category, status and deleted filters. Returns list fields only (no content or SEO); use GET /impact-initiatives/{id} for the full page. Requires Bearer token.',
   })
   @ApiOkResponse({ description: 'Paginated CMS list' })
   @ApiUnauthorizedResponse({
@@ -168,7 +193,14 @@ export class ImpactInitiativesController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update impact initiative (CMS Admin)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UpdateImpactInitiativeMultipartDto })
+  @UseInterceptors(IMAGE_FIELDS)
+  @ApiOperation({
+    summary: 'Update impact initiative (CMS Admin)',
+    description:
+      'Updates metadata. Uploaded images replace the old CDN images. Cannot move to a category with a different layout type.',
+  })
   @ApiOkResponse({ type: ImpactInitiative })
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
@@ -176,8 +208,9 @@ export class ImpactInitiativesController {
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateImpactInitiativeDto,
+    @UploadedFiles() files?: ImpactInitiativeFiles,
   ) {
-    const data = await this.service.update(id, dto);
+    const data = await this.service.update(id, dto, files);
     return {
       statusCode: HttpStatus.OK,
       data,
@@ -199,5 +232,4 @@ export class ImpactInitiativesController {
     return {
       statusCode: HttpStatus.OK,
     };
-  }
-}
+  }}

@@ -78,10 +78,30 @@ function validateField(field: FieldName, values: FormValues, country: DonationCo
   }
 }
 
-// Replace with your real API call
-async function sendMessage(payload: Record<string, string>): Promise<void> {
-  console.log(payload);
-  await new Promise((resolve) => setTimeout(resolve, 800));
+interface ContactPayload {
+  name: string;
+  email: string;
+  mobile: string;
+  subject: string;
+  message: string;
+}
+
+async function sendMessage(payload: ContactPayload): Promise<void> {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
+    "http://localhost:6061/api";
+  const res = await fetch(`${baseUrl}/leads-contact`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    throw new Error(errorData?.message || "Failed to submit message");
+  }
 }
 
 // ===== Helpers =====
@@ -369,9 +389,7 @@ export default function ContactForm() {
       await sendMessage({
         name: values.name.trim(),
         email: values.email.trim(),
-        countryCode: country.code,
-        dialCode: country.dial,
-        mobile: values.phone,
+        mobile: `${country.dial}${values.phone.trim()}`,
         subject: values.subject,
         message: values.message.trim(),
       });

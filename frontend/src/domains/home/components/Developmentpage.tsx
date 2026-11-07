@@ -66,6 +66,7 @@ function MarqueeColumn({
                 src={src}
                 alt=""
                 fill
+                priority={i === 0}
                 sizes="(min-width: 1024px) 14vw, (min-width: 768px) 16vw, 40vw"
                 className="object-cover"
               />

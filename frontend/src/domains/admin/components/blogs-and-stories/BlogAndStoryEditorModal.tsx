@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Loader2, Sparkles, X } from "lucide-react";
 import { TinyMceEditor } from "@/domains/admin/components/TinyMceEditor";
 import { AdminSelect, type AdminSelectOption } from "@/domains/admin/components/AdminSelect";
-import { BlogBannerUploader } from "./BlogBannerUploader";
+import { BlogBannerUploader, type BlogMediaType } from "./BlogBannerUploader";
 import { BlogSeoAccordion } from "./BlogSeoAccordion";
 import type {
   BlogAndStoryFormValues,
@@ -59,10 +59,15 @@ export function BlogAndStoryEditorModal({
   const [shortDescription, setShortDescription] = useState("");
   const [content, setContent] = useState("");
 
-  // Banner image states
+  // Media (Image or Video) states
+  const [mediaType, setMediaType] = useState<BlogMediaType>("image");
   const [file, setFile] = useState<File | null>(null);
   const [blogBannerUrl, setBlogBannerUrl] = useState("");
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
 
   // SEO fields
   const [metaTitle, setMetaTitle] = useState("");
@@ -91,9 +96,22 @@ export function BlogAndStoryEditorModal({
       setStatus(editingItem.status);
       setShortDescription(editingItem.shortDescription || "");
       setContent(editingItem.content || "");
+
+      // Determine initial media type from existing item
+      if (editingItem.video && !editingItem.blogBanner) {
+        setMediaType("video");
+      } else {
+        setMediaType("image");
+      }
+
       setBlogBannerUrl(editingItem.blogBanner || "");
-      setPreviewUrl(editingItem.blogBanner || null);
+      setImagePreviewUrl(editingItem.blogBanner || null);
       setFile(null);
+
+      setVideoUrl(editingItem.video || "");
+      setVideoPreviewUrl(editingItem.video || null);
+      setVideoFile(null);
+
       setMetaTitle(editingItem.metaTitle || "");
       setMetaDescription(editingItem.metaDescription || "");
       setSchemaCode(editingItem.schemaCode || "");
@@ -106,9 +124,13 @@ export function BlogAndStoryEditorModal({
       setStatus("draft");
       setShortDescription("");
       setContent("");
+      setMediaType("image");
       setBlogBannerUrl("");
-      setPreviewUrl(null);
+      setImagePreviewUrl(null);
       setFile(null);
+      setVideoUrl("");
+      setVideoPreviewUrl(null);
+      setVideoFile(null);
       setMetaTitle("");
       setMetaDescription("");
       setSchemaCode("");
@@ -126,9 +148,9 @@ export function BlogAndStoryEditorModal({
     if (errors.title) setErrors((prev) => ({ ...prev, title: undefined }));
   };
 
-  const handleFileSelect = (selectedFile: File) => {
+  const handleImageSelect = (selectedFile: File) => {
     if (!selectedFile.type.startsWith("image/")) {
-      setErrors((prev) => ({ ...prev, banner: "Please select an image file." }));
+      setErrors((prev) => ({ ...prev, banner: "Please select an image file (WebP, AVIF, JPEG, PNG)." }));
       return;
     }
     if (selectedFile.size > 5 * 1024 * 1024) {
@@ -136,14 +158,31 @@ export function BlogAndStoryEditorModal({
       return;
     }
     setFile(selectedFile);
-    setPreviewUrl(URL.createObjectURL(selectedFile));
+    setImagePreviewUrl(URL.createObjectURL(selectedFile));
     setErrors((prev) => ({ ...prev, banner: undefined }));
   };
 
-  const handleRemoveBanner = () => {
-    setFile(null);
-    setPreviewUrl(null);
-    setBlogBannerUrl("");
+  const handleVideoSelect = (selectedFile: File) => {
+    if (!selectedFile.type.startsWith("video/")) {
+      setErrors((prev) => ({ ...prev, banner: "Please select a video file (MP4, WebM)." }));
+      return;
+    }
+    setVideoFile(selectedFile);
+    setVideoPreviewUrl(URL.createObjectURL(selectedFile));
+    setErrors((prev) => ({ ...prev, banner: undefined }));
+  };
+
+  const handleRemoveMedia = () => {
+    if (mediaType === "image") {
+      setFile(null);
+      setImagePreviewUrl(null);
+      setBlogBannerUrl("");
+    } else {
+      setVideoFile(null);
+      setVideoPreviewUrl(null);
+      setVideoUrl("");
+    }
+    setErrors((prev) => ({ ...prev, banner: undefined }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -165,8 +204,11 @@ export function BlogAndStoryEditorModal({
         shortDescription: shortDescription.trim(),
         content: content.trim(),
         status,
+        mediaType,
         file,
         blogBannerUrl,
+        videoFile,
+        videoUrl,
         metaTitle: metaTitle.trim(),
         metaDescription: metaDescription.trim(),
         schemaCode: schemaCode.trim(),
@@ -189,7 +231,7 @@ export function BlogAndStoryEditorModal({
               </h2>
               <p className="text-xs text-[#5F6C6D]">
                 {editingItem
-                  ? "Update content, category assignment, banner image, and SEO."
+                  ? "Update content, category assignment, video or image, and SEO."
                   : "Draft or publish a new story, field report, or news article."}
               </p>
             </div>
@@ -315,13 +357,19 @@ export function BlogAndStoryEditorModal({
             </div>
           </div>
 
-          {/* Banner Image Uploader Component */}
+          {/* Video or Image Uploader Component */}
           <BlogBannerUploader
-            previewUrl={previewUrl}
+            mediaType={mediaType}
+            onMediaTypeChange={(t) => {
+              setMediaType(t);
+              setErrors((prev) => ({ ...prev, banner: undefined }));
+            }}
+            imagePreviewUrl={imagePreviewUrl}
+            videoPreviewUrl={videoPreviewUrl}
             error={errors.banner}
-            isEditing={Boolean(editingItem)}
-            onFileSelect={handleFileSelect}
-            onRemoveBanner={handleRemoveBanner}
+            onImageSelect={handleImageSelect}
+            onVideoSelect={handleVideoSelect}
+            onRemoveMedia={handleRemoveMedia}
           />
 
           {/* Short Description */}
