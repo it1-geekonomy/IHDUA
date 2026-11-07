@@ -17,6 +17,7 @@ import {
   Pencil,
   Tag,
   Trash2,
+  Video,
 } from "lucide-react";
 import type { BlogAndStoryItem, ContentStatus, PaginationMeta } from "./types";
 import { cn } from "@/lib/utils";
@@ -147,6 +148,16 @@ export function BlogsAndStoriesTable({
                             alt={item.title}
                             className="h-full w-full object-cover"
                           />
+                        ) : item.video ? (
+                          <div className="relative h-full w-full bg-neutral-900 flex items-center justify-center">
+                            <video
+                              src={item.video}
+                              className="h-full w-full object-cover opacity-60"
+                              muted
+                              preload="metadata"
+                            />
+                            <Video className="absolute h-4 w-4 text-white drop-shadow-sm" />
+                          </div>
                         ) : (
                           <div className="flex h-full w-full items-center justify-center text-[#8A847A]">
                             <ImageIcon className="h-5 w-5" />

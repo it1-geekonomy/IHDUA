@@ -7,7 +7,7 @@ dotenv.config();
 
 /**
  * Super-admin seeder — idempotent.
- * Run: npm run seed
+ * Run: npm run seed:admin (or npm run seed for all seeders)
  *
  * Env (optional overrides):
  *   ADMIN_FULL_NAME
