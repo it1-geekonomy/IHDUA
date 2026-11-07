@@ -18,7 +18,11 @@ export const metadata: Metadata = {
 // app/layout.tsx
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${figtree.variable} ${lora.variable} ${manrope.variable}`}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${figtree.variable} ${lora.variable} ${manrope.variable}`}
+    >
       <head>
         <link rel="preconnect" href="https://translate.google.com" />
         <link rel="preconnect" href="https://translate.googleapis.com" />
