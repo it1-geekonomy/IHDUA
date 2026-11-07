@@ -8,6 +8,7 @@ import {
   hex,
   istParts,
   loadTemplate,
+  readAsset,
   splitRuns,
   titleCase,
   wrapWords,
@@ -61,6 +62,13 @@ const COLUMNS = [
 ];
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+const SIGNATURE = {
+  x: 330,
+  y: 355,
+  width: 880,
+  height: 331,
+};
 
 @Injectable()
 export class DonationCertificateService {
@@ -132,6 +140,15 @@ export class DonationCertificateService {
         align: 'center',
         color: hex(VALUE.color),
       });
+    });
+
+    const stampBytes = readAsset('certificates', 'signature-stamp.png');
+    const stamp = await pdf.embedPng(stampBytes);
+    page.drawImage(stamp, {
+      x: SIGNATURE.x,
+      y: SIGNATURE.y,
+      width: SIGNATURE.width,
+      height: SIGNATURE.height,
     });
 
     return Buffer.from(await pdf.save());

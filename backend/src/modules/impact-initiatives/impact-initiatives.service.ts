@@ -12,6 +12,7 @@ import {
   buildPaginatedResult,
   PaginatedResult,
 } from '../../common/interfaces/paginated.interface';
+import { CdnFile, CdnService } from '../../common/storage/cdn.service';
 import {
   applyDeletedFilter,
   restoreSoftDeleted,
@@ -21,6 +22,38 @@ import { CreateImpactInitiativeDto } from './dto/create-impact-initiative.dto';
 import { ImpactInitiativeQueryDto } from './dto/impact-initiative-query.dto';
 import { UpdateImpactInitiativeDto } from './dto/update-impact-initiative.dto';
 import { ImpactInitiative } from './entities/impact-initiative.entity';
+import { validateLayoutContent } from './impact-layout-sections';
+import { collectImpactMediaUrls } from './impact-media';
+
+const CDN_FOLDER = 'impact-initiatives';
+
+/** List rows only; page content and SEO come from the single-page endpoints. */
+const LIST_COLUMNS: (keyof ImpactInitiative)[] = [
+  'id',
+  'categoryId',
+  'name',
+  'slug',
+  'displayOrder',
+  'status',
+  'publishedAt',
+  'heroTitle',
+  'heroImageUrl',
+  'createdAt',
+  'updatedAt',
+  'deletedAt',
+];
+
+export interface ImpactInitiativeFiles {
+  heroImage?: CdnFile[];
+  heroImageMobile?: CdnFile[];
+}
+
+type ImageUrlField = 'heroImageUrl' | 'heroImageMobileUrl';
+
+const IMAGE_FIELD_MAP: Record<keyof ImpactInitiativeFiles, ImageUrlField> = {
+  heroImage: 'heroImageUrl',
+  heroImageMobile: 'heroImageMobileUrl',
+};
 
 @Injectable()
 export class ImpactInitiativesService {
@@ -31,29 +64,48 @@ export class ImpactInitiativesService {
     private readonly repo: Repository<ImpactInitiative>,
     @InjectRepository(ImpactCategory)
     private readonly categoryRepo: Repository<ImpactCategory>,
+    private readonly cdn: CdnService,
   ) {}
 
-  async create(dto: CreateImpactInitiativeDto): Promise<ImpactInitiative> {
-    await this.assertCategoryValidForInitiative(dto.categoryId);
+  async create(
+    dto: CreateImpactInitiativeDto,
+    files?: ImpactInitiativeFiles,
+  ): Promise<ImpactInitiative> {
+    const category = await this.assertCategoryValidForInitiative(dto.categoryId);
+    if (dto.content !== undefined) {
+      this.assertContentFitsLayout(category, dto.content);
+    }
 
     const slug = dto.slug.trim().toLowerCase();
     const name = dto.name.trim();
 
     await this.assertUniqueNameAndSlug(name, slug, dto.categoryId);
 
+    const status = dto.status ?? ContentStatus.PUBLISHED;
     const entity = this.repo.create({
       ...dto,
       name,
       slug,
       displayOrder: dto.displayOrder ?? 1,
-      status: dto.status ?? ContentStatus.PUBLISHED,
+      status,
+      publishedAt: status === ContentStatus.PUBLISHED ? new Date() : null,
     });
+
+    const uploadedUrls: string[] = [];
+    for (const [fileField, urlField] of Object.entries(IMAGE_FIELD_MAP)) {
+      const file = files?.[fileField as keyof ImpactInitiativeFiles]?.[0];
+      if (file) {
+        entity[urlField] = await this.cdn.upload(file, CDN_FOLDER, 'image');
+        uploadedUrls.push(entity[urlField] as string);
+      }
+    }
 
     try {
       const saved = await this.repo.save(entity);
       this.logger.log(`Created impact initiative "${saved.name}" with ID ${saved.id}`);
       return saved;
     } catch (err) {
+      await Promise.all(uploadedUrls.map((url) => this.cdn.delete(url)));
       if (this.isUniqueViolation(err)) {
         throw new ConflictException(
           'An impact initiative with this name or slug already exists.',
@@ -69,6 +121,7 @@ export class ImpactInitiativesService {
   async findPublished(categoryId?: string): Promise<ImpactInitiative[]> {
     const qb = this.repo
       .createQueryBuilder('entity')
+      .select(LIST_COLUMNS.map((column) => `entity.${column}`))
       .innerJoinAndSelect(
         'entity.category',
         'category',
@@ -98,11 +151,8 @@ export class ImpactInitiativesService {
         'category.status = :catStatus',
         { catStatus: ContentStatus.PUBLISHED },
       )
-      .leftJoinAndSelect('entity.stories', 'stories')
       .where('entity.slug = :slug', { slug: slug.trim().toLowerCase() })
       .andWhere('entity.status = :status', { status: ContentStatus.PUBLISHED })
-      .orderBy('stories.displayOrder', 'ASC')
-      .addOrderBy('stories.createdAt', 'DESC')
       .getOne();
 
     if (!entity) {
@@ -142,11 +192,17 @@ export class ImpactInitiativesService {
 
     const qb = this.repo
       .createQueryBuilder('entity')
-      .leftJoinAndSelect('entity.category', 'category')
+      .select(LIST_COLUMNS.map((column) => `entity.${column}`))
       .orderBy('entity.displayOrder', 'ASC')
       .addOrderBy('entity.createdAt', 'DESC');
 
     applyDeletedFilter(qb, query);
+
+    if (query.categoryId) {
+      qb.andWhere('entity.categoryId = :categoryId', {
+        categoryId: query.categoryId,
+      });
+    }
 
     if (query.status) {
       qb.andWhere('entity.status = :status', { status: query.status });
@@ -191,15 +247,35 @@ export class ImpactInitiativesService {
   async update(
     id: string,
     dto: UpdateImpactInitiativeDto,
+    files?: ImpactInitiativeFiles,
   ): Promise<ImpactInitiative> {
     const entity = await this.findOne(id);
 
     const targetCategoryId = dto.categoryId ?? entity.categoryId;
+    let targetCategory: ImpactCategory | undefined;
 
     if (dto.categoryId && dto.categoryId !== entity.categoryId) {
-      await this.assertCategoryValidForInitiative(dto.categoryId);
+      targetCategory = await this.assertCategoryValidForInitiative(dto.categoryId);
+      if (
+        entity.category &&
+        targetCategory.layoutType !== entity.category.layoutType
+      ) {
+        throw new BadRequestException(
+          `Cannot move initiative to "${targetCategory.name}" because it uses the "${targetCategory.layoutType}" layout, not "${entity.category.layoutType}". Create a new initiative instead.`,
+        );
+      }
     } else if (dto.status === ContentStatus.PUBLISHED) {
       await this.assertCategoryValidForInitiative(targetCategoryId);
+    }
+
+    if (dto.content !== undefined) {
+      const layoutCategory = targetCategory ?? entity.category;
+      if (!layoutCategory) {
+        throw new NotFoundException(
+          `Impact category not found for id "${targetCategoryId}".`,
+        );
+      }
+      this.assertContentFitsLayout(layoutCategory, dto.content);
     }
 
     const newSlug = dto.slug ? dto.slug.trim().toLowerCase() : entity.slug;
@@ -207,15 +283,40 @@ export class ImpactInitiativesService {
 
     await this.assertUniqueNameAndSlug(newName, newSlug, targetCategoryId, id);
 
+    const previousMedia = collectImpactMediaUrls(entity.content, this.cdn.baseUrl);
+
     Object.assign(entity, {
       ...dto,
       name: newName,
       slug: newSlug,
     });
 
+    if (targetCategory) {
+      entity.category = targetCategory;
+    }
+
+    if (entity.status === ContentStatus.PUBLISHED && !entity.publishedAt) {
+      entity.publishedAt = new Date();
+    }
+
+    for (const [fileField, urlField] of Object.entries(IMAGE_FIELD_MAP)) {
+      const file = files?.[fileField as keyof ImpactInitiativeFiles]?.[0];
+      if (file) {
+        entity[urlField] =
+          (await this.cdn.replace(entity[urlField], file, CDN_FOLDER, 'image')) ??
+          entity[urlField];
+      }
+    }
+
     try {
       const saved = await this.repo.save(entity);
       this.logger.log(`Updated impact initiative with ID ${id}`);
+      if (dto.content !== undefined) {
+        const currentMedia = collectImpactMediaUrls(saved.content, this.cdn.baseUrl);
+        await this.deleteUnreferencedMedia(
+          [...previousMedia].filter((url) => !currentMedia.has(url)),
+        );
+      }
       return saved;
     } catch (err) {
       if (this.isUniqueViolation(err)) {
@@ -234,7 +335,38 @@ export class ImpactInitiativesService {
   }
 
   async restore(id: string): Promise<ImpactInitiative> {
+    const entity = await this.repo.findOne({ where: { id }, withDeleted: true });
+    if (entity?.deletedAt) {
+      const category = await this.categoryRepo.findOne({
+        where: { id: entity.categoryId },
+      });
+      if (!category) {
+        throw new BadRequestException(
+          'Cannot restore this initiative because its impact category is deleted. Restore the category first.',
+        );
+      }
+    }
     return restoreSoftDeleted(this.repo, id, 'Impact initiative');
+  }
+
+  /**
+   * Deletes section media from R2 unless some initiative (including ones in
+   * Recently deleted, which may be restored) still references the URL.
+   * Failures are logged, never thrown: the database change has already happened.
+   */
+  private async deleteUnreferencedMedia(urls: string[]): Promise<void> {
+    for (const url of urls) {
+      try {
+        const stillUsed = await this.repo
+          .createQueryBuilder('initiative')
+          .withDeleted()
+          .where('strpos(initiative.content::text, :url) > 0', { url })
+          .getExists();
+        if (!stillUsed) await this.cdn.delete(url);
+      } catch (err) {
+        this.logger.warn(`Could not clean up CDN file ${url}: ${String(err)}`);
+      }
+    }
   }
 
   private async assertCategoryValidForInitiative(
@@ -257,6 +389,18 @@ export class ImpactInitiativesService {
     }
 
     return category;
+  }
+
+  private assertContentFitsLayout(
+    category: ImpactCategory,
+    content: unknown,
+  ): void {
+    const errors = validateLayoutContent(category.layoutType, content);
+    if (errors.length) {
+      throw new BadRequestException(
+        `Content does not match the "${category.name}" layout: ${errors.join('; ')}.`,
+      );
+    }
   }
 
   private async assertUniqueNameAndSlug(

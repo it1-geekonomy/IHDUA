@@ -44,20 +44,29 @@ export type AdminUserRow = {
   updatedAt: string;
 };
 
+export type DonationStatus = "pending" | "paid" | "failed" | "refunded";
+
 export type AdminDonationRow = {
   id: string;
   fullName: string;
   phone: string | null;
   email: string | null;
-  city: string | null;
   pan: string | null;
+  address?: string | null;
+  city: string | null;
   message: string | null;
   amount: string;
   currency: string;
+  donationCategory?: string;
   receiptNumber: string | null;
   razorpayPaymentId: string | null;
   razorpayOrderId: string | null;
-  status: "pending" | "success" | "failed";
+  status: "pending" | "paid" | "failed" | "refunded" | "success";
+  certificateUrl?: string | null;
+  receiptUrl?: string | null;
+  receiptEmailStatus?: string | null;
+  receiptEmailAttempts?: number;
+  receiptEmailSentAt?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -277,6 +286,18 @@ export async function fetchUsers(token: string): Promise<AdminUserRow[]> {
  */
 export async function fetchDonations(token: string): Promise<AdminDonationRow[]> {
   return apiRequest<AdminDonationRow[]>("/donors", {
+    token,
+  });
+}
+
+/**
+ * Fetches single donation details by id (admin).
+ */
+export async function fetchDonationById(
+  token: string,
+  id: string,
+): Promise<AdminDonationRow> {
+  return apiRequest<AdminDonationRow>(`/donors/${id}`, {
     token,
   });
 }
@@ -1388,6 +1409,7 @@ export interface BlogAndStoryItem {
   categoryId: string | null;
   category?: BlogCategoryItem | null;
   blogBanner: string | null;
+  video: string | null;
   blogDate: string | null;
   content: string | null;
   shortDescription: string | null;
@@ -1420,6 +1442,8 @@ export interface CreateBlogAndStoryInput {
   categoryId?: string | null;
   file?: File | null;
   blogBanner?: string | null;
+  videoFile?: File | null;
+  video?: string | null;
   blogDate?: string | null;
   content?: string | null;
   shortDescription?: string | null;
@@ -1435,6 +1459,8 @@ export interface UpdateBlogAndStoryInput {
   categoryId?: string | null;
   file?: File | null;
   blogBanner?: string | null;
+  videoFile?: File | null;
+  video?: string | null;
   blogDate?: string | null;
   content?: string | null;
   shortDescription?: string | null;
@@ -1552,6 +1578,11 @@ export async function createBlogAndStory(
   } else if (input.blogBanner) {
     formData.append("blogBanner", input.blogBanner);
   }
+  if (input.videoFile) {
+    formData.append("video", input.videoFile);
+  } else if (input.video) {
+    formData.append("video", input.video);
+  }
 
   return apiRequest<BlogAndStoryItem>("/blogs-and-stories", {
     method: "POST",
@@ -1596,6 +1627,11 @@ export async function updateBlogAndStory(
     formData.append("blogBanner", input.file);
   } else if (input.blogBanner !== undefined) {
     formData.append("blogBanner", input.blogBanner || "");
+  }
+  if (input.videoFile) {
+    formData.append("video", input.videoFile);
+  } else if (input.video !== undefined) {
+    formData.append("video", input.video || "");
   }
 
   return apiRequest<BlogAndStoryItem>(`/blogs-and-stories/${id}`, {
@@ -2183,5 +2219,214 @@ export async function restoreLeadershipMember(
       token,
     },
   );
+}
+
+// ─────────────────────────────────────────────────────────────
+// Impact Categories & Pages (initiatives)
+// ─────────────────────────────────────────────────────────────
+
+export type ImpactLayoutType =
+  | "education"
+  | "women_empowerment"
+  | "skills_employment"
+  | "model_village"
+  | "health";
+
+export interface ImpactCategoryItem {
+  id: string;
+  name: string;
+  slug: string;
+  layoutType: ImpactLayoutType;
+  displayOrder: number;
+  status: ContentStatus;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}
+
+export type ImpactPageContent = Record<string, unknown>;
+
+export interface ImpactPageItem {
+  id: string;
+  categoryId: string;
+  name: string;
+  slug: string;
+  displayOrder: number;
+  status: ContentStatus;
+  publishedAt?: string | null;
+  heroTitle?: string | null;
+  heroDescription?: string | null;
+  heroImageUrl?: string | null;
+  heroImageMobileUrl?: string | null;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  content?: ImpactPageContent | null;
+  category?: ImpactCategoryItem;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}
+
+export interface ImpactPageInput {
+  categoryId: string;
+  name: string;
+  slug: string;
+  displayOrder: number;
+  status: ContentStatus;
+  heroTitle: string;
+  heroDescription: string;
+  metaTitle: string;
+  metaDescription: string;
+  content: ImpactPageContent;
+  heroImage?: File | null;
+  heroImageMobile?: File | null;
+}
+
+export interface CreateImpactCategoryInput {
+  name: string;
+  slug: string;
+  layoutType: ImpactLayoutType;
+  displayOrder: number;
+  status: ContentStatus;
+}
+
+type Paginated<T> = { data: T[]; meta: PaginationMeta };
+
+export async function fetchImpactCategories(
+  token: string,
+): Promise<Paginated<ImpactCategoryItem>> {
+  return apiRequest<Paginated<ImpactCategoryItem>>(
+    "/impact-categories?limit=10",
+    { token },
+  );
+}
+
+export async function createImpactCategory(
+  token: string,
+  input: CreateImpactCategoryInput,
+): Promise<ImpactCategoryItem> {
+  return apiRequest<ImpactCategoryItem>("/impact-categories", {
+    method: "POST",
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
+/** List rows only (no content or SEO); open a page with fetchImpactPageById for the full record. */
+export const IMPACT_PAGES_PER_PAGE = 10;
+
+export async function fetchImpactPages(
+  token: string,
+  { categoryId, deleted = false, page = 1, search = "" }: {
+    categoryId: string;
+    deleted?: boolean;
+    page?: number;
+    search?: string;
+  },
+): Promise<Paginated<ImpactPageItem>> {
+  const params = new URLSearchParams({
+    categoryId,
+    page: String(page),
+    limit: String(IMPACT_PAGES_PER_PAGE),
+  });
+  if (search.trim()) params.set("search", search.trim());
+  return apiRequest<Paginated<ImpactPageItem>>(
+    `/impact-initiatives${deleted ? "/deleted" : ""}?${params}`,
+    { token },
+  );
+}
+
+export async function fetchImpactPageById(
+  token: string,
+  id: string,
+): Promise<ImpactPageItem> {
+  return apiRequest<ImpactPageItem>(`/impact-initiatives/${id}`, { token });
+}
+
+function impactPageFormData(input: ImpactPageInput): FormData {
+  const formData = new FormData();
+  formData.append("categoryId", input.categoryId);
+  formData.append("name", input.name);
+  formData.append("slug", input.slug);
+  formData.append("displayOrder", String(input.displayOrder));
+  formData.append("status", input.status);
+  formData.append("heroTitle", input.heroTitle);
+  formData.append("heroDescription", input.heroDescription);
+  formData.append("metaTitle", input.metaTitle);
+  formData.append("metaDescription", input.metaDescription);
+  formData.append("content", JSON.stringify(input.content));
+  if (input.heroImage) formData.append("heroImage", input.heroImage);
+  if (input.heroImageMobile) formData.append("heroImageMobile", input.heroImageMobile);
+  return formData;
+}
+
+export async function createImpactPage(
+  token: string,
+  input: ImpactPageInput,
+): Promise<ImpactPageItem> {
+  return apiRequest<ImpactPageItem>("/impact-initiatives", {
+    method: "POST",
+    token,
+    body: impactPageFormData(input),
+  });
+}
+
+export async function updateImpactPage(
+  token: string,
+  id: string,
+  input: ImpactPageInput,
+): Promise<ImpactPageItem> {
+  return apiRequest<ImpactPageItem>(`/impact-initiatives/${id}`, {
+    method: "PATCH",
+    token,
+    body: impactPageFormData(input),
+  });
+}
+
+export async function updateImpactPageStatus(
+  token: string,
+  id: string,
+  status: ContentStatus,
+): Promise<ImpactPageItem> {
+  const formData = new FormData();
+  formData.append("status", status);
+  return apiRequest<ImpactPageItem>(`/impact-initiatives/${id}`, {
+    method: "PATCH",
+    token,
+    body: formData,
+  });
+}
+
+export async function deleteImpactPage(token: string, id: string): Promise<void> {
+  return apiRequest<void>(`/impact-initiatives/${id}`, {
+    method: "DELETE",
+    token,
+  });
+}
+
+export async function restoreImpactPage(
+  token: string,
+  id: string,
+): Promise<ImpactPageItem> {
+  return apiRequest<ImpactPageItem>(`/impact-initiatives/${id}/restore`, {
+    method: "PATCH",
+    token,
+  });
+}
+
+/** Section images, icons and videos go straight to R2 (website/impact/) through the Next.js /api/website-images route. */
+export async function uploadImpactMedia(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", "impact");
+  const res = await fetch("/api/website-images", { method: "POST", body: formData });
+  const json = (await res.json().catch(() => ({}))) as {
+    uploaded?: { url: string }[];
+    error?: string;
+  };
+  if (!res.ok || !json.uploaded?.[0]?.url) {
+    throw new Error(json.error || "Upload failed.");
+  }
+  return json.uploaded[0].url;
 }
 

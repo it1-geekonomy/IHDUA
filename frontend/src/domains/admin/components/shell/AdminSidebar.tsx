@@ -3,14 +3,19 @@
 import Link from "next/link";
 import {
   BookOpen,
+  Briefcase,
   ChevronLeft,
   FileCheck,
   FileText,
+  GraduationCap,
   HandCoins,
   Handshake,
   HeartHandshake,
+  HeartPulse,
+  House,
   Images,
   LogOut,
+  Sparkles,
   Mail,
   MessageSquare,
   Milestone,
@@ -44,6 +49,11 @@ const ICONS = {
   privacy: Shield,
   categories: Tag,
   blogs: BookOpen,
+  impactEducation: GraduationCap,
+  impactWomen: Sparkles,
+  impactSkills: Briefcase,
+  impactVillage: House,
+  impactHealth: HeartPulse,
 };
 
 interface AdminSidebarProps {
@@ -172,6 +182,7 @@ export function AdminSidebar({
                 const Icon = (item.icon && ICONS[item.icon as keyof typeof ICONS]) || FileText;
                 const active =
                   pathname === item.href ||
+                  pathname.startsWith(`${item.href}/`) ||
                   (item.href === "/admin/forms/contact" && pathname === "/admin/forms");
 
                 return (

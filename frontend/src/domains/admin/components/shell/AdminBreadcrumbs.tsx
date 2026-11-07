@@ -22,7 +22,16 @@ const PATH_LABELS: Record<string, string> = {
   milestones: "Key Milestones",
   "terms-and-conditions": "Terms & Conditions",
   "privacy-policy": "Privacy Policy",
+  impact: "Our Impact",
+  education: "Education",
+  "women-empowerment": "Women Empowerment",
+  "skills-and-employment": "Skills & Employment",
+  "model-village": "Model Village",
+  health: "Health",
+  new: "New Page",
 };
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 interface AdminBreadcrumbsProps {
   pathname: string;
@@ -30,13 +39,11 @@ interface AdminBreadcrumbsProps {
 
 export function AdminBreadcrumbs({ pathname }: AdminBreadcrumbsProps) {
   const segments = pathname.split("/").filter(Boolean);
-  let accumulatedPath = "";
-
   const breadcrumbs = segments.map((seg, index) => {
-    accumulatedPath += `/${seg}`;
+    const accumulatedPath = `/${segments.slice(0, index + 1).join("/")}`;
     const label =
       PATH_LABELS[seg] ||
-      seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, " ");
+      (UUID.test(seg) ? "Edit Page" : seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, " "));
     const isLast = index === segments.length - 1;
     const href = accumulatedPath === "/admin" ? "/admin/donations" : accumulatedPath;
     return { href, label, isLast };

@@ -15,13 +15,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  GraduationCap,
-  Heart,
-  MapPin,
-  MessageSquare,
   RotateCcw,
   Send,
-  Users,
   X,
   ChevronRight,
   ExternalLink,
@@ -47,29 +42,29 @@ type ChatMessage = {
 
 const STORAGE_KEY = "ihdua-chat-v1";
 const TEASER_KEY = "ihdua-chat-teaser-dismissed";
-const GREETING = "Hello, and welcome to IHDUA.\nHow can I help you today?";
+const GREETING = "Namaste! Welcome to IHDUA.\nHow can I help you today?";
 const MAX_MESSAGE_LENGTH = 1000;
 
-const SUGGESTIONS = [
+const WELCOME_SUGGESTIONS = [
   {
-    label: "What education programs do you run?",
-    icon: GraduationCap,
-    iconClass: "text-[#9739A8]",
+    id: "support",
+    label: "How can I support IHDUA?",
+    icon: "❤️",
   },
   {
-    label: "How does IHDUA empower women?",
-    icon: Users,
-    iconClass: "text-[#E8893A]",
+    id: "programmes",
+    label: "What programmes do you run?",
+    icon: "🧰",
   },
   {
-    label: "How can I donate with 80G tax benefit?",
-    icon: Heart,
-    iconClass: "fill-[#E5383B] text-[#E5383B]",
+    id: "partner",
+    label: "How can I partner with IHDUA?",
+    icon: "🌾",
   },
   {
-    label: "Where is the IHDUA office located?",
-    icon: MapPin,
-    iconClass: "text-[#2E9E4F]",
+    id: "location",
+    label: "Where can I find you?",
+    icon: "📍",
   },
 ];
 
@@ -238,17 +233,20 @@ function FormattedText({ text }: { text: string }) {
 function TypingIndicator() {
   return (
     <div className="flex items-center gap-2.5">
-      <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#9739A8]/10">
+      <div className="relative size-7 shrink-0 rounded-full overflow-hidden">
         <Image
-          src="/IHDUAFavicon.png"
-          alt="IHDUA"
-          width={18}
-          height={18}
-          className="size-4.5 object-contain"
+          src="/chatbot/chatbot-icon.png"
+          alt="Ai Assistant"
+          width={28}
+          height={28}
+          className="size-full object-cover"
         />
       </div>
-      <div className="flex items-end gap-1.5 pt-2" aria-label="IHDUA is typing">
-        {[5, 7, 5].map((dot, i) => (
+      <div
+        className="flex items-center gap-1.5 rounded-2xl rounded-tl-xs border border-[#E5DDF3] bg-white px-3.5 py-2.5 shadow-xs"
+        aria-label="Ai Assistant is typing"
+      >
+        {[4, 6, 4].map((dot, i) => (
           <motion.span
             key={i}
             className="rounded-full bg-[#9739A8]"
@@ -271,7 +269,7 @@ export function ChatbotWidget() {
   const [showTeaser, setShowTeaser] = useState(false);
 
   const listRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const restoredRef = useRef(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -337,19 +335,11 @@ export function ChatbotWidget() {
     }
   }, []);
 
-  const resizeInput = () => {
-    const el = inputRef.current;
-    if (!el) return;
-    el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
-  };
-
   async function sendQuestion(question: string) {
     const trimmed = question.trim();
     if (!trimmed || loading) return;
 
     setInput("");
-    requestAnimationFrame(resizeInput);
     dismissTeaser();
 
     const now = Date.now();
@@ -450,7 +440,7 @@ export function ChatbotWidget() {
     void sendQuestion(input);
   }
 
-  function onInputKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+  function onInputKeyDown(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
       e.preventDefault();
       void sendQuestion(input);
@@ -475,56 +465,73 @@ export function ChatbotWidget() {
             role="dialog"
             aria-modal="false"
             aria-label="IHDUA AI Assistant"
-            initial={{ opacity: 0, y: 20, scale: 0.96 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 360, damping: 28 }}
             style={{ transformOrigin: "bottom right" }}
-            className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-[#FAF7FB] sm:inset-auto sm:right-6 sm:bottom-[130px] sm:h-[min(560px,calc(100dvh-10rem))] sm:w-[370px] sm:rounded-2xl sm:border sm:border-[#E5DDF3] sm:shadow-2xl"
+            className="fixed inset-x-3 bottom-3 top-auto z-50 flex h-[min(600px,calc(100dvh-2rem))] flex-col overflow-hidden rounded-[28px] border border-black/5 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)] sm:inset-auto sm:right-6 sm:bottom-[90px] sm:h-[min(600px,calc(100dvh-7rem))] sm:w-[380px]"
           >
-            {/* ────── Minimal Header ────── */}
-            <div className="flex shrink-0 items-center justify-between border-b border-[#E5DDF3] bg-white px-4 py-3">
-              <div className="flex items-center gap-2.5">
-                <div className="flex size-8.5 items-center justify-center rounded-full bg-[#9739A8]/10">
+            {/* ────── Gradient Header ────── */}
+            <div className="flex shrink-0 items-center justify-between bg-gradient-to-r from-[#B250B5] via-[#DE9FD7] to-[#FCE7D5] px-5 py-3.5 select-none">
+              {/* Left: Avatar + Title + Online */}
+              <div className="flex items-center gap-3">
+                <div className="relative size-10 shrink-0 rounded-full overflow-hidden shadow-xs ring-2 ring-white/50">
                   <Image
-                    src="/chatbot/chatbot-icon.svg"
-                    alt="IHDUA"
-                    width={22}
-                    height={22}
-                    className="size-5 object-contain"
+                    src="/chatbot/chatbot-icon.png"
+                    alt="Ai Assistant"
+                    width={40}
+                    height={40}
+                    priority
+                    className="size-full object-cover"
                   />
                 </div>
-                <div className="leading-tight">
-                  <p className="font-figtree text-sm font-bold text-[#00191B]">
-                    Ask IHDUA
+                <div className="flex flex-col leading-tight">
+                  <p className="font-figtree text-[15px] font-bold text-[#1A1A1A]">
+                    Ai Assistant
                   </p>
-                  <p className="flex items-center gap-1 font-figtree text-xs text-[#5F6C6D]">
-                    <span className="size-1.5 rounded-full bg-emerald-500" />
+                  <p className="flex items-center gap-1.5 font-figtree text-xs font-medium text-[#1A1A1A]">
+                    <span className="size-2 rounded-full bg-[#34A853] shadow-xs" />
                     Online
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1">
-                {!isEmpty ? (
+              {/* Right: Reset + IHDUA Logo + Close */}
+              <div className="flex items-center gap-3">
+                {!isEmpty && (
                   <button
                     type="button"
                     onClick={resetChat}
                     title="New conversation"
                     aria-label="Reset chat"
-                    className="flex size-8 items-center justify-center rounded-full text-[#5F6C6D] transition hover:bg-[#FAF7FB] hover:text-[#00191B]"
+                    className="flex size-7 items-center justify-center rounded-full text-[#1A1A1A]/70 hover:bg-black/10 hover:text-[#1A1A1A] transition-colors cursor-pointer"
                   >
-                    <RotateCcw className="size-4" />
+                    <RotateCcw className="size-3.5" />
                   </button>
-                ) : null}
+                )}
+                <div className="flex items-center gap-1.5">
+                  <div className="relative size-6 shrink-0 rounded-full overflow-hidden">
+                    <Image
+                      src="/ihdua-round.png"
+                      alt="IHDUA"
+                      width={24}
+                      height={24}
+                      className="size-full object-contain"
+                    />
+                  </div>
+                  <span className="font-figtree text-xs font-bold tracking-wider text-[#1A1A1A]">
+                    IHDUA
+                  </span>
+                </div>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
                   title="Close chat"
                   aria-label="Close chat"
-                  className="flex size-8 items-center justify-center rounded-full text-[#5F6C6D] transition hover:bg-[#FAF7FB] hover:text-[#00191B]"
+                  className="flex size-7 items-center justify-center rounded-full text-[#1A1A1A] hover:bg-black/10 transition-colors cursor-pointer ml-0.5"
                 >
-                  <X className="size-4.5" strokeWidth={2} />
+                  <X className="size-5" strokeWidth={2.2} />
                 </button>
               </div>
             </div>
@@ -533,53 +540,60 @@ export function ChatbotWidget() {
             <div
               ref={listRef}
               onClick={onMessageLinkClick}
-              className={`flex-1 space-y-3.5 overflow-y-auto px-4 [scrollbar-width:thin] ${
-                isEmpty ? "flex flex-col justify-center py-4" : "py-4"
+              className={`flex-1 overflow-y-auto px-5 [scrollbar-width:thin] ${
+                isEmpty ? "flex flex-col justify-center py-6" : "space-y-3.5 py-4"
               }`}
             >
               {isEmpty ? (
-                /* ─── Empty State: Minimalist & Clean ─── */
+                /* ─── Empty State matching design mockup ─── */
                 <motion.div
-                  initial={{ opacity: 0, y: 6 }}
+                  initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex flex-col items-center text-center"
                 >
-                  <div className="flex size-14 items-center justify-center rounded-2xl bg-[#9739A8]/10 mb-3">
-                    <Image
-                      src="/chatbot/chatbot-icon.svg"
-                      alt="IHDUA"
-                      width={36}
-                      height={36}
-                      className="size-8 object-contain"
-                    />
+                  {/* Centered Large Chatbot Icon */}
+                  <div className="relative flex size-20 items-center justify-center rounded-full p-1.5 bg-[#F5EAF5] shadow-xs mb-3">
+                    <div className="size-16 rounded-full overflow-hidden">
+                      <Image
+                        src="/chatbot/chatbot-icon.png"
+                        alt="Ai Assistant"
+                        width={64}
+                        height={64}
+                        priority
+                        className="size-full object-cover"
+                      />
+                    </div>
                   </div>
 
-                  <h3 className="font-figtree text-base font-bold text-[#00191B]">
-                    Hey! How can we help you? 👋
+                  {/* Serif Italic Greeting Heading */}
+                  <h3 className="font-lora italic text-[22px] font-medium text-[#1A1A1A] leading-snug mb-6">
+                    Namaste! How can we help you? 👋
                   </h3>
-                  <p className="mt-1 text-xs text-[#5F6C6D] max-w-[240px]">
-                    Ask anything about our rural programs, schools, donations, and impact.
-                  </p>
 
-                  <div className="mt-4 flex w-full flex-col gap-2">
-                    {SUGGESTIONS.map(({ label, icon: Icon, iconClass }) => (
+                  {/* 4 Quick Suggestion Pills */}
+                  <div className="w-full space-y-2.5">
+                    {WELCOME_SUGGESTIONS.map((item) => (
                       <button
-                        key={label}
+                        key={item.id}
                         type="button"
-                        onClick={() => void sendQuestion(label)}
-                        className="group flex w-full items-center gap-2.5 rounded-xl border border-[#E5DDF3] bg-white px-3.5 py-2.5 text-left transition hover:border-[#9739A8] hover:bg-[#FAF7FB]"
+                        onClick={() => void sendQuestion(item.label)}
+                        className="group flex w-full items-center justify-between rounded-full bg-[#FAF5FA] hover:bg-[#F3EBF3] px-5 py-3.5 transition-all text-left cursor-pointer border border-transparent hover:border-[#9739A8]/20 shadow-2xs"
                       >
-                        <Icon className={`size-4 shrink-0 ${iconClass}`} />
-                        <span className="flex-1 font-figtree text-xs font-medium text-[#00191B]">
-                          {label}
-                        </span>
-                        <ChevronRight className="size-3.5 text-[#8A9596] transition group-hover:translate-x-0.5 group-hover:text-[#9739A8]" />
+                        <div className="flex items-center gap-3 min-w-0">
+                          <span className="text-base shrink-0 select-none">
+                            {item.icon}
+                          </span>
+                          <span className="font-figtree text-sm font-medium text-[#1A1A1A] truncate">
+                            {item.label}
+                          </span>
+                        </div>
+                        <ChevronRight className="size-4 shrink-0 text-[#1A1A1A] transition-transform group-hover:translate-x-0.5" />
                       </button>
                     ))}
                   </div>
                 </motion.div>
               ) : (
-                /* ─── Conversation Stream ─── */
+                /* ─── Active Conversation Stream ─── */
                 messages.map((msg) => {
                   const isUser = msg.role === "user";
 
@@ -588,21 +602,21 @@ export function ChatbotWidget() {
                       key={msg.id}
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`flex items-start gap-2 ${
+                      className={`flex items-start gap-2.5 ${
                         isUser ? "justify-end" : "justify-start"
                       }`}
                     >
-                      {!isUser ? (
-                        <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#9739A8]/10 mt-1">
+                      {!isUser && (
+                        <div className="relative size-7 shrink-0 rounded-full overflow-hidden mt-0.5">
                           <Image
-                            src="/chatbot/chatbot-icon.svg"
-                            alt="IHDUA"
-                            width={18}
-                            height={18}
-                            className="size-4 object-contain"
+                            src="/chatbot/chatbot-icon.png"
+                            alt="Ai Assistant"
+                            width={28}
+                            height={28}
+                            className="size-full object-cover"
                           />
                         </div>
-                      ) : null}
+                      )}
 
                       <div
                         className={`flex max-w-[84%] flex-col ${
@@ -612,8 +626,8 @@ export function ChatbotWidget() {
                         <div
                           className={`font-figtree text-sm leading-relaxed ${
                             isUser
-                              ? "rounded-2xl rounded-br-sm bg-[#9739A8] text-white px-3.5 py-2.5"
-                              : "rounded-2xl rounded-tl-sm border border-[#E5DDF3] bg-white text-[#00191B] p-3.5 shadow-sm"
+                              ? "rounded-2xl rounded-br-xs bg-[#9739A8] text-white px-4 py-2.5 shadow-xs"
+                              : "rounded-2xl rounded-tl-xs border border-[#E5DDF3] bg-white text-[#1A1A1A] p-3.5 shadow-xs"
                           }`}
                         >
                           <FormattedText text={msg.text} />
@@ -650,32 +664,29 @@ export function ChatbotWidget() {
               {loading ? <TypingIndicator /> : null}
             </div>
 
-            {/* ────── Minimal Input Composer ────── */}
-            <div className="shrink-0 border-t border-[#E5DDF3] bg-white p-3">
+            {/* ────── Input Composer ────── */}
+            <div className="shrink-0 bg-white p-4 pt-2">
               <form
                 onSubmit={onSubmit}
-                className="flex items-center gap-2 rounded-full border border-[#E5DDF3] bg-[#FAF7FB] py-1 pl-4 pr-1.5 transition focus-within:border-[#9739A8] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#9739A8]/20"
+                className="flex items-center gap-2 rounded-full border border-neutral-200/90 bg-white py-1.5 pl-5 pr-1.5 transition-all focus-within:border-[#9739A8] focus-within:ring-2 focus-within:ring-[#9739A8]/15 shadow-2xs"
               >
-                <textarea
+                <input
                   ref={inputRef}
-                  rows={1}
+                  type="text"
                   value={input}
-                  onChange={(e) => {
-                    setInput(e.target.value);
-                    resizeInput();
-                  }}
+                  onChange={(e) => setInput(e.target.value)}
                   onKeyDown={onInputKeyDown}
                   maxLength={MAX_MESSAGE_LENGTH}
                   placeholder="Type your message..."
-                  className="max-h-[100px] min-w-0 flex-1 resize-none bg-transparent py-1.5 font-figtree text-sm text-[#00191B] outline-none placeholder:text-[#8A9596]"
+                  className="min-w-0 flex-1 bg-transparent py-1.5 font-figtree text-sm text-[#1A1A1A] outline-none placeholder:text-neutral-400"
                 />
                 <button
                   type="submit"
                   disabled={loading || !input.trim()}
                   aria-label="Send message"
-                  className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#9739A8] text-white transition hover:bg-[#832B92] disabled:opacity-40"
+                  className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#F6C343] hover:bg-[#EBB533] text-[#1A1A1A] shadow-xs transition-all disabled:opacity-40 disabled:hover:bg-[#F6C343] cursor-pointer"
                 >
-                  <Send className="size-3.5" />
+                  <Send className="size-4.5 -rotate-12 translate-x-0.5 fill-[#1A1A1A] text-[#1A1A1A]" />
                 </button>
               </form>
             </div>
@@ -683,8 +694,8 @@ export function ChatbotWidget() {
         ) : null}
       </AnimatePresence>
 
-      {/* ──────────────────────── Clean Floating Launcher ──────────────────────── */}
-      <div className="fixed bottom-14 right-4 z-50 flex flex-col items-end gap-2.5 sm:bottom-16 sm:right-6">
+      {/* ──────────────────────── Floating Launcher ──────────────────────── */}
+      <div className="fixed bottom-6 right-4 z-50 flex flex-col items-end gap-2.5 sm:bottom-6 sm:right-6">
         {/* Subtle Teaser */}
         <AnimatePresence>
           {showTeaser && !open ? (
@@ -698,15 +709,15 @@ export function ChatbotWidget() {
               <button
                 type="button"
                 onClick={toggle}
-                className="text-xs font-figtree font-medium text-[#00191B] hover:text-[#9739A8]"
+                className="text-xs font-figtree font-medium text-[#00191B] hover:text-[#9739A8] cursor-pointer"
               >
-                How can <span className="font-bold text-[#9739A8]">IHDUA</span> help?
+                How can <span className="font-bold text-[#9739A8]">IHDUA</span> help? 👋
               </button>
               <button
                 type="button"
                 onClick={dismissTeaser}
                 aria-label="Dismiss teaser"
-                className="text-[#8A9596] hover:text-[#00191B]"
+                className="text-[#8A9596] hover:text-[#00191B] cursor-pointer"
               >
                 <X className="size-3" />
               </button>
@@ -714,35 +725,30 @@ export function ChatbotWidget() {
           ) : null}
         </AnimatePresence>
 
-        {/* Clean Launcher Icon */}
+        {/* Floating Launcher Button */}
         <motion.button
           type="button"
           onClick={toggle}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.06 }}
+          whileTap={{ scale: 0.94 }}
           aria-label={open ? "Close chat" : "Open IHDUA AI Assistant"}
-          className="relative flex size-14 items-center justify-center rounded-full bg-[#9739A8] text-white shadow-xl shadow-[#9739A8]/30 transition focus:outline-none"
+          className="relative flex size-14 sm:size-16 items-center justify-center rounded-full shadow-2xl transition focus:outline-none cursor-pointer"
         >
-          {!open ? (
-            <motion.span
-              aria-hidden
-              className="absolute inset-1 rounded-full border border-[#FFD638]"
-              initial={{ scale: 1, opacity: 0 }}
-              animate={{ scale: [1, 1.35], opacity: [0.6, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
-            />
-          ) : null}
-
           {open ? (
-            <X className="size-6 text-white" strokeWidth={2} />
+            <div className="flex size-full items-center justify-center rounded-full bg-[#9739A8] text-white shadow-lg">
+              <X className="size-6 text-white" strokeWidth={2.5} />
+            </div>
           ) : (
-            <Image
-              src="/chatbot/chatbot-icon.svg"
-              alt="IHDUA Chatbot"
-              width={32}
-              height={32}
-              className="size-8 object-contain"
-            />
+            <div className="relative size-full rounded-full overflow-hidden shadow-lg shadow-purple-950/20">
+              <Image
+                src="/chatbot/chatbot-icon.png"
+                alt="IHDUA AI Assistant"
+                width={64}
+                height={64}
+                priority
+                className="size-full object-cover"
+              />
+            </div>
           )}
         </motion.button>
       </div>

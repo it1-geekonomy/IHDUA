@@ -15,8 +15,11 @@ export interface BlogAndStoryFormValues {
   shortDescription: string;
   content: string;
   status: ContentStatus;
+  mediaType: "image" | "video";
   file: File | null;
   blogBannerUrl: string;
+  videoFile: File | null;
+  videoUrl: string;
   metaTitle: string;
   metaDescription: string;
   schemaCode: string;

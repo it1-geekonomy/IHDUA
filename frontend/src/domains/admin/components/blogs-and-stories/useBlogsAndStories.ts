@@ -167,6 +167,8 @@ export function useBlogsAndStories() {
     setActionLoading(true);
     setError(null);
     try {
+      const isImage = values.mediaType === "image";
+
       if (editingItem) {
         await updateBlogAndStory(token, editingItem.id, {
           title: values.title,
@@ -176,8 +178,14 @@ export function useBlogsAndStories() {
           shortDescription: values.shortDescription || null,
           content: values.content || null,
           status: values.status,
-          file: values.file || undefined,
-          blogBanner: values.file ? undefined : values.blogBannerUrl || undefined,
+          file: isImage ? (values.file || undefined) : undefined,
+          blogBanner: isImage
+            ? (values.file ? undefined : (values.blogBannerUrl || ""))
+            : "",
+          videoFile: !isImage ? (values.videoFile || undefined) : undefined,
+          video: !isImage
+            ? (values.videoFile ? undefined : (values.videoUrl || ""))
+            : "",
           metaTitle: values.metaTitle || null,
           metaDescription: values.metaDescription || null,
           schemaCode: values.schemaCode || null,
@@ -192,8 +200,14 @@ export function useBlogsAndStories() {
           shortDescription: values.shortDescription || null,
           content: values.content || null,
           status: values.status,
-          file: values.file,
-          blogBanner: values.file ? undefined : values.blogBannerUrl || undefined,
+          file: isImage ? (values.file || null) : null,
+          blogBanner: isImage
+            ? (values.file ? undefined : (values.blogBannerUrl || null))
+            : null,
+          videoFile: !isImage ? (values.videoFile || null) : null,
+          video: !isImage
+            ? (values.videoFile ? undefined : (values.videoUrl || null))
+            : null,
           metaTitle: values.metaTitle || null,
           metaDescription: values.metaDescription || null,
           schemaCode: values.schemaCode || null,

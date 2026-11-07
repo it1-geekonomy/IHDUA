@@ -17,9 +17,14 @@
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
     "migration:show": "npm run typeorm -- migration:show",
-    "seed": "ts-node -r tsconfig-paths/register src/database/seeds/admin.seed.ts",
-    "seed:admin": "npm run seed",
-    "seed:prod": "node dist/database/seeds/admin.seed.js"
+    "seed": "npm run seed:admin && npm run seed:impact",
+    "seed:prod": "npm run seed:admin:prod && npm run seed:impact:prod",
+    "seed:admin": "ts-node -r tsconfig-paths/register src/database/seeds/admin.seed.ts",
+    "seed:admin:prod": "node dist/database/seeds/admin.seed.js",
+    "seed:impact": "ts-node -r tsconfig-paths/register src/database/seeds/impact-categories.seed.ts",
+    "seed:impact:prod": "node dist/database/seeds/impact-categories.seed.js",
+    "cleanup:impact-media": "ts-node -r tsconfig-paths/register src/database/scripts/cleanup-impact-media.ts",
+    "cleanup:impact-media:prod": "node dist/database/scripts/cleanup-impact-media.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1156.0",
