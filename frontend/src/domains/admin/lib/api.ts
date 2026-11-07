@@ -2260,7 +2260,7 @@ export async function fetchImpactCategories(
   token: string,
 ): Promise<Paginated<ImpactCategoryItem>> {
   return apiRequest<Paginated<ImpactCategoryItem>>(
-    "/impact-categories?limit=100",
+    "/impact-categories?limit=10",
     { token },
   );
 }
@@ -2276,13 +2276,26 @@ export async function createImpactCategory(
   });
 }
 
-/** The list endpoint has no category filter, so callers filter by categoryId. */
+/** List rows only (no content or SEO); open a page with fetchImpactPageById for the full record. */
+export const IMPACT_PAGES_PER_PAGE = 10;
+
 export async function fetchImpactPages(
   token: string,
-  deleted = false,
+  { categoryId, deleted = false, page = 1, search = "" }: {
+    categoryId: string;
+    deleted?: boolean;
+    page?: number;
+    search?: string;
+  },
 ): Promise<Paginated<ImpactPageItem>> {
+  const params = new URLSearchParams({
+    categoryId,
+    page: String(page),
+    limit: String(IMPACT_PAGES_PER_PAGE),
+  });
+  if (search.trim()) params.set("search", search.trim());
   return apiRequest<Paginated<ImpactPageItem>>(
-    `/impact-initiatives${deleted ? "/deleted" : ""}?limit=100`,
+    `/impact-initiatives${deleted ? "/deleted" : ""}?${params}`,
     { token },
   );
 }
@@ -2365,10 +2378,11 @@ export async function restoreImpactPage(
   });
 }
 
-/** Section images, icons and videos go straight to R2 through the Next.js /api/website-images route. */
+/** Section images, icons and videos go straight to R2 (website/impact/) through the Next.js /api/website-images route. */
 export async function uploadImpactMedia(file: File): Promise<string> {
   const formData = new FormData();
   formData.append("file", file);
+  formData.append("folder", "impact");
   const res = await fetch("/api/website-images", { method: "POST", body: formData });
   const json = (await res.json().catch(() => ({}))) as {
     uploaded?: { url: string }[];

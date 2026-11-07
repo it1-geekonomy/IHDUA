@@ -27,7 +27,7 @@ export const openApiSpec = {
         summary: "List all website images and videos",
         responses: {
           "200": {
-            description: "Every file under website/ in the R2 bucket",
+            description: "Every file under website/ in the R2 bucket, except page-owned media in website/impact/",
             content: {
               "application/json": {
                 schema: {
@@ -57,6 +57,12 @@ export const openApiSpec = {
                     type: "array",
                     items: { type: "string", format: "binary" },
                     description: "One or more image or video files to upload",
+                  },
+                  folder: {
+                    type: "string",
+                    enum: ["impact"],
+                    description:
+                      "Optional. 'impact' stores the files under website/impact/ for Our Impact pages; the backend deletes them once no page uses them.",
                   },
                 },
               },
@@ -88,7 +94,7 @@ export const openApiSpec = {
         tags: ["Website Images"],
         summary: "Delete website image(s)",
         description:
-          "Pass a single 'url' or an array of 'urls' (as returned by upload or list). Only files under website/ can be deleted.",
+          "Pass a single 'url' or an array of 'urls' (as returned by upload or list). Only files under website/ can be deleted, except page-owned media in website/impact/.",
         requestBody: {
           required: true,
           content: {

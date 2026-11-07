@@ -102,6 +102,11 @@ export class CdnService {
     return `${this.publicUrl}/${key}`;
   }
 
+  /** Public base URL of the bucket, without a trailing slash. */
+  get baseUrl(): string {
+    return this.publicUrl;
+  }
+
   async delete(url?: string | null): Promise<void> {
     if (!url || !this.publicUrl || !url.startsWith(this.publicUrl)) return;
     this.assertConfigured();

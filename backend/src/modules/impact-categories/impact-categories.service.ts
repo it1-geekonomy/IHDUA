@@ -178,6 +178,16 @@ export class ImpactCategoriesService {
 
   async remove(id: string): Promise<void> {
     const entity = await this.findOne(id);
+
+    const activePages = await this.repo.manager.count(ImpactInitiative, {
+      where: { categoryId: entity.id },
+    });
+    if (activePages > 0) {
+      throw new ConflictException(
+        `Cannot delete "${entity.name}" because it still has ${activePages} initiative(s). Delete or move them first.`,
+      );
+    }
+
     await this.repo.softRemove(entity);
     this.logger.log(`Soft-deleted impact category with ID ${id}`);
   }
