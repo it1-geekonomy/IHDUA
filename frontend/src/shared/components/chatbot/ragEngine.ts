@@ -105,6 +105,41 @@ export function queryKnowledgeBase(userQuery: string): ChatResponse {
     };
   }
 
+  // 3b. Compliance & Sensitive Information Guardrails
+  if (/\b(pan card number|pan number|what is your pan|full pan|show pan)\b/i.test(trimmed)) {
+    return {
+      reply:
+        "**IHDUA Registration & PAN Status:**\n\nIHDUA is a registered public charitable trust with verified PAN, Section 12A/12AB registration (URN: `AAATI3426LE20216`), and Section 80G approval (URN: `AAATI3426LF20214`).\n\nIn accordance with administrative compliance and data security policies, complete tax identification details are printed on official **80G donation receipts** and **Form 10BE certificates** issued directly to donors for tax filing.",
+      sources: ["IHDUA Compliance & Legal Records"],
+      actions: [
+        { label: "Donate Online (80G)", href: "/#donate", action: "donate" },
+        { label: "Contact Us", href: "/contact", action: "navigate" },
+      ],
+      suggestedFollowUps: [
+        "How do I receive my 80G donation receipt?",
+        "What assessment years are covered under 80G?",
+        "Can international donors contribute under FCRA?",
+      ],
+    };
+  }
+
+  if (/\b(fcra bank account|fcra account number|designated sbi account|sbi account number|bank account number|bank details for foreign)\b/i.test(trimmed)) {
+    return {
+      reply:
+        "**FCRA Foreign Contribution Guidelines:**\n\nIHDUA is officially registered under the **Foreign Contribution (Regulation) Act, 2010** (FCRA Registration No: `094590127`) for Educational and Social causes, valid through 31 March 2028.\n\nUnder FCRA regulations and banking security protocols, designated wire transfer details for international remittances are provided directly by our finance department to verified donors. Please contact our team at **info@ihdua.org** or via the [Contact Page](/contact) to receive official international remittance instructions.",
+      sources: ["IHDUA FCRA Compliance Guidelines"],
+      actions: [
+        { label: "Contact Finance Team", href: "/contact", action: "navigate" },
+        { label: "Donate Online", href: "/#donate", action: "donate" },
+      ],
+      suggestedFollowUps: [
+        "What is IHDUA's FCRA registration number?",
+        "Can US citizens donate with 501(c)(3) tax benefits?",
+        "What charitable projects do foreign grants support?",
+      ],
+    };
+  }
+
   // 4. Extract tokens and bigrams for RAG retrieval
   const queryTokens = tokenize(userQuery);
   const queryBigrams = extractBigrams(userQuery);
@@ -113,8 +148,9 @@ export function queryKnowledgeBase(userQuery: string): ChatResponse {
     "ihdua", "academy", "vidyashale", "adarsha", "krs", "school", "education", "student", "teacher",
     "women", "shg", "federation", "microfinance", "credit", "loan", "stitching", "garment",
     "tailor", "sewing", "health", "camp", "medical", "checkup", "clinic", "cancer", "model village",
-    "green cover", "tree", "plant", "donate", "donation", "80g", "tax", "volunteer", "intern",
-    "contact", "office", "mysore", "chicago", "rural", "ngo", "programs", "impact", "empowerment",
+    "green cover", "tree", "plant", "donate", "donation", "80g", "12a", "fcra", "form 10be", "trust deed",
+    "charitable", "objective", "volunteer", "intern", "contact", "office", "mysore", "chicago", "rural",
+    "ngo", "programs", "impact", "empowerment", "farmer", "farmers", "millet", "turmeric", "fodder", "youth",
     "ajaikumar", "founder", "chairperson", "trustee", "leadership", "shanthamma", "story", "stories", "blog", "blogs"
   ];
   const hasDomainWord = domainWords.some((w) => trimmed.includes(w));

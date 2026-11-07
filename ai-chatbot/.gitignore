@@ -15,6 +15,9 @@ ENV/
 .env.local
 .env.*.local
 
+# Internal sensitive documents and raw scans
+knowledge/docs/
+
 # Logs & scratch
 *.log
 scratch/
