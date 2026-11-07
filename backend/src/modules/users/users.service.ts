@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
+import { UserRole } from '../../common/enums/user-role.enum';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -42,11 +43,20 @@ export class UsersService {
       throw new BadRequestException('Password is required');
     }
 
+    const rawRole = input.role
+      ? input.role.trim().toUpperCase()
+      : UserRole.ADMIN;
+    if (!Object.values(UserRole).includes(rawRole as UserRole)) {
+      throw new BadRequestException(
+        `Invalid role "${input.role}". Allowed roles: ${Object.values(UserRole).join(', ')}`,
+      );
+    }
+
     const user = this.usersRepository.create({
       fullName: input.fullName.trim(),
       email,
       passwordHash,
-      role: input.role ? input.role.trim().toUpperCase() : 'ADMIN',
+      role: rawRole,
     });
 
     const saved = await this.usersRepository.save(user);
@@ -99,7 +109,13 @@ export class UsersService {
     }
 
     if (dto.role) {
-      user.role = dto.role.trim().toUpperCase();
+      const rawRole = dto.role.trim().toUpperCase();
+      if (!Object.values(UserRole).includes(rawRole as UserRole)) {
+        throw new BadRequestException(
+          `Invalid role "${dto.role}". Allowed roles: ${Object.values(UserRole).join(', ')}`,
+        );
+      }
+      user.role = rawRole;
     }
 
     if (dto.password) {
