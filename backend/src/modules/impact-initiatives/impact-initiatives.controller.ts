@@ -29,6 +29,11 @@ import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateImpactInitiativeDto } from './dto/create-impact-initiative.dto';
+import { ImpactInitiativeCardDto } from './dto/impact-initiative-card.dto';
+import {
+  PublicImpactInitiativeListItemDto,
+  PublicImpactInitiativePageDto,
+} from './dto/public-impact-initiative.dto';
 import {
   CreateImpactInitiativeMultipartDto,
   UpdateImpactInitiativeMultipartDto,
@@ -44,6 +49,7 @@ import {
 const IMAGE_FIELDS = FileFieldsInterceptor([
   { name: 'heroImage', maxCount: 1 },
   { name: 'heroImageMobile', maxCount: 1 },
+  { name: 'cardImage', maxCount: 1 },
 ]);
 
 @ApiTags(ApiTagsConst.IMPACT_INITIATIVES)
@@ -56,11 +62,11 @@ export class ImpactInitiativesController {
   @ApiOperation({
     summary: 'Get all published impact initiatives (Public Website)',
     description:
-      'Returns published impact initiatives (list fields and category, no page content) ordered by display_order ASC. Use GET /impact-initiatives/slug/{slug} for a full page.',
+      'Returns published impact initiatives of published categories (name, slug, banner title and image, category), ordered by category then initiative display_order. Use GET /impact-initiatives/slug/{slug} for a full page.',
   })
   @ApiOkResponse({
     description: 'List of published impact initiatives',
-    type: [ImpactInitiative],
+    type: [PublicImpactInitiativeListItemDto],
   })
   async getPublic() {
     const data = await this.service.findPublished();
@@ -71,14 +77,34 @@ export class ImpactInitiativesController {
   }
 
   @Public()
+  @Get('cards/:categorySlug')
+  @ApiOperation({
+    summary: 'Landing page cards for one category (Public Website)',
+    description:
+      'Published initiatives of a published category in display order, as cards. title and imageUrl are ready to show (cardTitle or else name, cardImageUrl or else heroImageUrl); the raw values are included too. Each card links to /{slug}.',
+  })
+  @ApiOkResponse({
+    description: 'Cards for the category landing page',
+    type: [ImpactInitiativeCardDto],
+  })
+  async getCards(@Param('categorySlug') categorySlug: string) {
+    const data = await this.service.findCardsByCategorySlug(categorySlug);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
+  }
+
+  @Public()
   @Get('slug/:slug')
   @ApiOperation({
     summary: 'Get published impact initiative by unique slug (Public Website)',
-    description: 'Returns published initiative details by slug.',
+    description:
+      'Returns everything needed to render the page: SEO, banner, content sections and the category layout.',
   })
   @ApiOkResponse({
-    description: 'Impact initiative details',
-    type: ImpactInitiative,
+    description: 'Impact initiative page',
+    type: PublicImpactInitiativePageDto,
   })
   async getBySlug(@Param('slug') slug: string) {
     const data = await this.service.findBySlug(slug);
@@ -97,7 +123,7 @@ export class ImpactInitiativesController {
   @ApiOperation({
     summary: 'Create new impact initiative (CMS Admin)',
     description:
-      'Uploads the hero images (desktop and mobile) to Cloudflare R2 and creates the record. Requires Bearer token.',
+      'Uploads the hero images (desktop and mobile) and the landing page card image to Cloudflare R2 and creates the record. Requires Bearer token.',
   })
   @ApiCreatedResponse({
     description: 'Impact initiative created successfully',
@@ -140,7 +166,8 @@ export class ImpactInitiativesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'List all impact initiatives with pagination & filters (CMS Admin)',
+    summary:
+      'List all impact initiatives with pagination & filters (CMS Admin)',
     description:
       'Supports pagination, search, category, status and deleted filters. Returns list fields only (no content or SEO); use GET /impact-initiatives/{id} for the full page. Requires Bearer token.',
   })
@@ -232,4 +259,5 @@ export class ImpactInitiativesController {
     return {
       statusCode: HttpStatus.OK,
     };
-  }}
+  }
+}

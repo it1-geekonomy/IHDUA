@@ -58,6 +58,8 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
   const [heroDescription, setHeroDescription] = useState("");
   const [heroImage, setHeroImage] = useState<File | null>(null);
   const [heroImageMobile, setHeroImageMobile] = useState<File | null>(null);
+  const [cardTitle, setCardTitle] = useState("");
+  const [cardImage, setCardImage] = useState<File | null>(null);
   const [metaTitle, setMetaTitle] = useState("");
   const [metaDescription, setMetaDescription] = useState("");
   const [saveCount, setSaveCount] = useState(0);
@@ -79,6 +81,7 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
         setStatus(p.status);
         setHeroTitle(p.heroTitle ?? "");
         setHeroDescription(p.heroDescription ?? "");
+        setCardTitle(p.cardTitle ?? "");
         setMetaTitle(p.metaTitle ?? "");
         setMetaDescription(p.metaDescription ?? "");
         setContent(mergeContent(def.sections, p.content));
@@ -143,11 +146,13 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
       status,
       heroTitle: heroTitle.trim(),
       heroDescription: heroDescription.trim(),
+      cardTitle: cardTitle.trim(),
       metaTitle: metaTitle.trim(),
       metaDescription: metaDescription.trim(),
       content,
       heroImage,
       heroImageMobile,
+      cardImage,
     };
     try {
       if (page) {
@@ -156,6 +161,7 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
         setSaveCount((n) => n + 1);
         setHeroImage(null);
         setHeroImageMobile(null);
+        setCardImage(null);
         setSaved(true);
       } else {
         await createImpactPage(token, input);
@@ -374,6 +380,33 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
             onMetaDescriptionChange={setMetaDescription}
             showSchemaCode={false}
           />
+
+          <section className={card}>
+            <h3 className="mb-1 text-sm font-semibold text-[#0F1C1D]">{def.name} page card</h3>
+            <p className="mb-4 text-[11px] text-[#5F6C6D]">
+              Shown on the /{def.slug} page. Leave empty to use the page name and banner desktop image.
+            </p>
+            <div className="space-y-4">
+              <div>
+                <FieldLabel label="Card title" />
+                <input
+                  value={cardTitle}
+                  onChange={(e) => setCardTitle(e.target.value)}
+                  placeholder={name.trim() || def.examples.pageName}
+                  maxLength={200}
+                  className={inputClass}
+                />
+              </div>
+              <BannerImageField
+                label="Card image"
+                hint="Recommended 800×600, max 5 MB"
+                currentUrl={page?.cardImageUrl}
+                file={cardImage}
+                onFileChange={setCardImage}
+                aspect="aspect-[4/3]"
+              />
+            </div>
+          </section>
         </aside>
       </div>
     </div>
