@@ -34,6 +34,8 @@ TEMPLATES = {
             fitz.Rect(2535, 3095, 3390, 3260),
             fitz.Rect(3440, 3095, 4670, 3260),
             fitz.Rect(4715, 3095, 5650, 3260),
+            # right-side signature stamp (purple area) — drawn in code on left only
+            fitz.Rect(5950, 3700, 6510, 4150),
         ],
     ),
     "receipt-base.pdf": (
@@ -45,6 +47,8 @@ TEMPLATES = {
             *[fitz.Rect(700, top, 1135, top + 52) for top in (519, 592, 665, 738, 811, 884, 957)],
             # 80G note body: drawn by the service so the wording can be corrected in code
             fitz.Rect(140, 1128, 1135, 1232),
+            # signature stamp — drawn in code at bottom-left
+            fitz.Rect(0, 1430, 480, 1756),
         ],
     ),
 }
