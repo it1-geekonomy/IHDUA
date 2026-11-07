@@ -65,6 +65,18 @@ export async function POST(req: NextRequest) {
           if (rawAnswer.toLowerCase().includes("stitching")) {
             actions.push({ label: "Stitching Unit", href: "/stitching-unit", action: "navigate" as const });
           }
+          if (rawAnswer.toLowerCase().includes("farmer")) {
+            actions.push({ label: "Farmers Support", href: "/farmers", action: "navigate" as const });
+          }
+          if (rawAnswer.toLowerCase().includes("youth")) {
+            actions.push({ label: "Youth Programs", href: "/youth", action: "navigate" as const });
+          }
+          if (rawAnswer.toLowerCase().includes("green cover") || rawAnswer.toLowerCase().includes("village")) {
+            actions.push({ label: "Model Village", href: "/model-village", action: "navigate" as const });
+          }
+          if (rawAnswer.toLowerCase().includes("medical") || rawAnswer.toLowerCase().includes("health camp")) {
+            actions.push({ label: "Health Camps", href: "/health-camps", action: "navigate" as const });
+          }
           if (rawAnswer.toLowerCase().includes("contact") || rawAnswer.toLowerCase().includes("mysore")) {
             actions.push({ label: "Contact Us", href: "/contact", action: "navigate" as const });
           }

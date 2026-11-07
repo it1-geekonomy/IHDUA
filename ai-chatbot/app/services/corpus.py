@@ -174,6 +174,101 @@ def _static_documents() -> list[dict]:
                 "Directions: Google Maps navigation is available on the Contact page."
             ),
         },
+        {
+            "table": "static",
+            "source_id": "farmers-sustainable-agriculture",
+            "title": "Farmer Empowerment & Sustainable Agriculture",
+            "url": "/farmers",
+            "category": "Farmers",
+            "content": (
+                "Title: Farmer Empowerment & Sustainable Agriculture\nCategory: Farmers\nWebsite: /farmers\n\n"
+                "IHDUA supports rural smallholder farmers through practical training and sustainable agricultural practices:\n"
+                "• 48+ Farmers completed intensive Soil Health training and soil fertility management.\n"
+                "• 32+ Farmers participated in Turmeric Cultivation awareness sessions.\n"
+                "• 15 Farmers adopted Foxtail Millet as a drought-resilient alternative crop.\n"
+                "• 3,290+ Farmers received high-yield Green Maize Fodder for livestock and dairy support.\n"
+                "• 43 Farmer Self-Help Groups (SHGs) supported with vermicomposting, bio-fertilizers, and water conservation."
+            ),
+        },
+        {
+            "table": "static",
+            "source_id": "youth-empowerment-skills",
+            "title": "Youth Empowerment, Digital Literacy & Vocational Skills",
+            "url": "/youth",
+            "category": "Youth",
+            "content": (
+                "Title: Youth Skills & Opportunities\nCategory: Youth\nWebsite: /youth\n\n"
+                "IHDUA’s Skill Development Project equips rural students and youth with marketable vocational capabilities:\n"
+                "• 514+ Rural youth completed Computer Training courses (MS Office, digital communication, typing).\n"
+                "• 265+ (267+) Certified as General Duty Nursing Care Assistants (GDA) placed in regional healthcare clinics.\n"
+                "• 2,161+ (2,174+) Total participants trained in tailoring and garment production.\n"
+                "• 3,290+ Total participants recorded across IHDUA's diverse skill development initiatives.\n"
+                "• Provides career mentorship, digital literacy, and job readiness."
+            ),
+        },
+        {
+            "table": "static",
+            "source_id": "health-awareness-nutrition",
+            "title": "Health Awareness, Nutrition, Anaemia & Hygiene",
+            "url": "/health-awareness",
+            "category": "Healthcare",
+            "content": (
+                "Title: Health Awareness & Nutrition\nCategory: Healthcare\nWebsite: /health-awareness\n\n"
+                "IHDUA conducts grassroots preventive healthcare and awareness sessions across rural communities:\n"
+                "• 160 Reproductive and child health education sessions conducted.\n"
+                "• 855 Rural women reached in nutrition and anaemia prevention workshops.\n"
+                "• 988 Women engaged through maternal hygiene and sanitary awareness campaigns.\n"
+                "• 34+ Frontline Anganwadi workers trained in community nutrition monitoring and hygiene best practices."
+            ),
+        },
+        {
+            "table": "static",
+            "source_id": "rejuvenation-of-villages-model",
+            "title": "Rejuvenation of Villages & Rural Infrastructure",
+            "url": "/rejuvenation-of-villages",
+            "category": "Environment",
+            "content": (
+                "Title: Rejuvenation of Villages\nCategory: Environment\nWebsite: /rejuvenation-of-villages\n\n"
+                "IHDUA's Model Village infrastructure initiatives transform village living standards:\n"
+                "• 16+ Solar street lights installed along dark rural lanes for safety and evening study.\n"
+                "• 14+ People benefited from household toilet construction to eliminate open defecation.\n"
+                "• 48 Farmers trained in soil health management and organic composting.\n"
+                "• 81+ Cattle supported through green fodder distribution programs.\n"
+                "• Village community hall upgrades, drinking water purification, and sanitation."
+            ),
+        },
+        {
+            "table": "static",
+            "source_id": "increase-green-cover-agroforestry",
+            "title": "Increase the Green Cover & Afforestation",
+            "url": "/increase-the-green-cover",
+            "category": "Environment",
+            "content": (
+                "Title: Increase the Green Cover\nCategory: Environment\nWebsite: /increase-the-green-cover\n\n"
+                "IHDUA actively counters ecological degradation through community agroforestry and tree plantation:\n"
+                "• 5 Fruit saplings distributed per family to boost household nutrition and green canopy.\n"
+                "• 16 Community leaders participated in Model Village ecological exposure visits.\n"
+                "• 18 Participants from neighboring villages attended exposure visits on sustainable agriculture.\n"
+                "• 32 Farmers reached through sunflower cultivation awareness programs.\n"
+                "• Native neem, peepal, and fruit-bearing trees planted across school perimeters and roadsides."
+            ),
+        },
+        {
+            "table": "static",
+            "source_id": "transparency-governance-documents",
+            "title": "Transparency, Governance & Legal Registrations (80G, FCRA)",
+            "url": "/about",
+            "category": "Governance",
+            "content": (
+                "Title: Transparency & Governance\nCategory: Governance\nWebsite: /about\n\n"
+                "IHDUA adheres to the highest standards of governance, compliance, and public transparency:\n"
+                "• Private Trust Certificate (India) registered under Indian Trusts Act.\n"
+                "• Section 80G Certificate: Valid tax exemption for Indian donors (50% deduction).\n"
+                "• FCRA Certificate: Authorized by Ministry of Home Affairs to receive foreign grants & donations.\n"
+                "• USA Chapter: 501(c)(3) registered tax-exempt entity in Chicago, Illinois.\n"
+                "• Published Annual Reports and audited balance sheets accessible to partners and the public."
+            ),
+        },
     ]
 
 
@@ -187,10 +282,20 @@ def load_knowledge_files() -> list[dict]:
         "donations_80g_tax": ("/#donate", "Donation"),
         "education_schools": ("/education", "Education"),
         "healthcare_camps": ("/health-camps", "Healthcare"),
+        "health_awareness_nutrition": ("/health-awareness", "Healthcare"),
         "model_village_green_cover": ("/model-village", "Environment"),
+        "model_village_rejuvenation": ("/rejuvenation-of-villages", "Environment"),
+        "rejuvenation_of_villages": ("/rejuvenation-of-villages", "Environment"),
+        "increase_the_green_cover": ("/increase-the-green-cover", "Environment"),
         "offices_contact": ("/contact", "Contact"),
         "skills_stitching_unit": ("/stitching-unit", "Skills"),
+        "skills_and_employment": ("/skills-and-employment", "Skills"),
+        "farmers_sustainable_agriculture": ("/farmers", "Farmers"),
+        "youth_skills_opportunities": ("/youth", "Youth"),
         "women_shg_microfinance": ("/women-empowerment", "Women"),
+        "transparency_and_governance": ("/about", "Governance"),
+        "legal_certifications_12a_80g_fcra": ("/about", "Governance"),
+        "trust_deed_charitable_objectives": ("/about", "About"),
     }
 
     docs: list[dict] = []
