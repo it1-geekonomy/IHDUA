@@ -11,6 +11,7 @@ import {
   istParts,
   loadTemplate,
   measure,
+  readAsset,
   splitRuns,
   titleCase,
   wrapWords,
@@ -62,6 +63,13 @@ const NOTE_LINES = [
   'Tax Act 1961 Unique Registration Number AAATI3426LF20214 Dated 23/03/2022, Subject To',
   'Realization Of Donation.',
 ];
+
+const SIGNATURE = {
+  x: 105,
+  y: 232,
+  width: 175,
+  height: 66,
+};
 
 function numberToWords(num: number, currency: string): string {
   const currencyName = currency.toUpperCase() === 'INR' ? 'rupees' : currency;
@@ -152,6 +160,15 @@ export class DonationReceiptService {
         baseline: NOTE.baselines[i],
         color: hex(NOTE.color),
       });
+    });
+
+    const stampBytes = readAsset('certificates', 'signature-stamp.png');
+    const stamp = await pdf.embedPng(stampBytes);
+    page.drawImage(stamp, {
+      x: SIGNATURE.x,
+      y: SIGNATURE.y,
+      width: SIGNATURE.width,
+      height: SIGNATURE.height,
     });
 
     return Buffer.from(await pdf.save());

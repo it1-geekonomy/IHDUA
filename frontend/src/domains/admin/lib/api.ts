@@ -44,20 +44,29 @@ export type AdminUserRow = {
   updatedAt: string;
 };
 
+export type DonationStatus = "pending" | "paid" | "failed" | "refunded";
+
 export type AdminDonationRow = {
   id: string;
   fullName: string;
   phone: string | null;
   email: string | null;
-  city: string | null;
   pan: string | null;
+  address?: string | null;
+  city: string | null;
   message: string | null;
   amount: string;
   currency: string;
+  donationCategory?: string;
   receiptNumber: string | null;
   razorpayPaymentId: string | null;
   razorpayOrderId: string | null;
-  status: "pending" | "success" | "failed";
+  status: "pending" | "paid" | "failed" | "refunded" | "success";
+  certificateUrl?: string | null;
+  receiptUrl?: string | null;
+  receiptEmailStatus?: string | null;
+  receiptEmailAttempts?: number;
+  receiptEmailSentAt?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -277,6 +286,18 @@ export async function fetchUsers(token: string): Promise<AdminUserRow[]> {
  */
 export async function fetchDonations(token: string): Promise<AdminDonationRow[]> {
   return apiRequest<AdminDonationRow[]>("/donors", {
+    token,
+  });
+}
+
+/**
+ * Fetches single donation details by id (admin).
+ */
+export async function fetchDonationById(
+  token: string,
+  id: string,
+): Promise<AdminDonationRow> {
+  return apiRequest<AdminDonationRow>(`/donors/${id}`, {
     token,
   });
 }
@@ -1388,6 +1409,7 @@ export interface BlogAndStoryItem {
   categoryId: string | null;
   category?: BlogCategoryItem | null;
   blogBanner: string | null;
+  video: string | null;
   blogDate: string | null;
   content: string | null;
   shortDescription: string | null;
@@ -1420,6 +1442,8 @@ export interface CreateBlogAndStoryInput {
   categoryId?: string | null;
   file?: File | null;
   blogBanner?: string | null;
+  videoFile?: File | null;
+  video?: string | null;
   blogDate?: string | null;
   content?: string | null;
   shortDescription?: string | null;
@@ -1435,6 +1459,8 @@ export interface UpdateBlogAndStoryInput {
   categoryId?: string | null;
   file?: File | null;
   blogBanner?: string | null;
+  videoFile?: File | null;
+  video?: string | null;
   blogDate?: string | null;
   content?: string | null;
   shortDescription?: string | null;
@@ -1552,6 +1578,11 @@ export async function createBlogAndStory(
   } else if (input.blogBanner) {
     formData.append("blogBanner", input.blogBanner);
   }
+  if (input.videoFile) {
+    formData.append("video", input.videoFile);
+  } else if (input.video) {
+    formData.append("video", input.video);
+  }
 
   return apiRequest<BlogAndStoryItem>("/blogs-and-stories", {
     method: "POST",
@@ -1596,6 +1627,11 @@ export async function updateBlogAndStory(
     formData.append("blogBanner", input.file);
   } else if (input.blogBanner !== undefined) {
     formData.append("blogBanner", input.blogBanner || "");
+  }
+  if (input.videoFile) {
+    formData.append("video", input.videoFile);
+  } else if (input.video !== undefined) {
+    formData.append("video", input.video || "");
   }
 
   return apiRequest<BlogAndStoryItem>(`/blogs-and-stories/${id}`, {
