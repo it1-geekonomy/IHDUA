@@ -2258,6 +2258,9 @@ export interface ImpactPageItem {
   heroDescription?: string | null;
   heroImageUrl?: string | null;
   heroImageMobileUrl?: string | null;
+  /** Landing page card; the website falls back to name and heroImageUrl when empty */
+  cardTitle?: string | null;
+  cardImageUrl?: string | null;
   metaTitle?: string | null;
   metaDescription?: string | null;
   content?: ImpactPageContent | null;
@@ -2275,11 +2278,13 @@ export interface ImpactPageInput {
   status: ContentStatus;
   heroTitle: string;
   heroDescription: string;
+  cardTitle: string;
   metaTitle: string;
   metaDescription: string;
   content: ImpactPageContent;
   heroImage?: File | null;
   heroImageMobile?: File | null;
+  cardImage?: File | null;
 }
 
 export interface CreateImpactCategoryInput {
@@ -2352,11 +2357,13 @@ function impactPageFormData(input: ImpactPageInput): FormData {
   formData.append("status", input.status);
   formData.append("heroTitle", input.heroTitle);
   formData.append("heroDescription", input.heroDescription);
+  formData.append("cardTitle", input.cardTitle);
   formData.append("metaTitle", input.metaTitle);
   formData.append("metaDescription", input.metaDescription);
   formData.append("content", JSON.stringify(input.content));
   if (input.heroImage) formData.append("heroImage", input.heroImage);
   if (input.heroImageMobile) formData.append("heroImageMobile", input.heroImageMobile);
+  if (input.cardImage) formData.append("cardImage", input.cardImage);
   return formData;
 }
 

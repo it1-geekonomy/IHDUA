@@ -20,6 +20,7 @@ import { ImpactInitiative } from '../impact-initiatives/entities/impact-initiati
 import { CreateImpactCategoryDto } from './dto/create-impact-category.dto';
 import { ImpactCategoryQueryDto } from './dto/impact-category-query.dto';
 import { ImpactNavigationCategoryDto } from './dto/impact-navigation.dto';
+import { PublicImpactCategoryDto } from './dto/public-impact-category.dto';
 import { UpdateImpactCategoryDto } from './dto/update-impact-category.dto';
 import { ImpactCategory } from './entities/impact-category.entity';
 
@@ -65,14 +66,16 @@ export class ImpactCategoriesService {
   /**
    * Public endpoint helper: Get all active/published categories for website navigation
    */
-  async findPublished(): Promise<ImpactCategory[]> {
-    return this.repo.find({
+  async findPublished(): Promise<PublicImpactCategoryDto[]> {
+    const rows = await this.repo.find({
+      select: ['id', 'name', 'slug', 'layoutType'],
       where: { status: ContentStatus.PUBLISHED },
       order: {
         displayOrder: 'ASC',
         name: 'ASC',
       },
     });
+    return rows.map((row) => PublicImpactCategoryDto.from(row));
   }
 
   /**
@@ -116,8 +119,9 @@ export class ImpactCategoriesService {
   /**
    * Public endpoint helper: Find published category by slug
    */
-  async findBySlug(slug: string): Promise<ImpactCategory> {
+  async findBySlug(slug: string): Promise<PublicImpactCategoryDto> {
     const entity = await this.repo.findOne({
+      select: ['id', 'name', 'slug', 'layoutType'],
       where: {
         slug: slug.trim().toLowerCase(),
         status: ContentStatus.PUBLISHED,
@@ -130,7 +134,7 @@ export class ImpactCategoriesService {
       );
     }
 
-    return entity;
+    return PublicImpactCategoryDto.from(entity);
   }
 
   async findAll(

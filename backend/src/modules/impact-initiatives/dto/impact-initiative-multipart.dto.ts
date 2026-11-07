@@ -15,6 +15,14 @@ export class CreateImpactInitiativeMultipartDto extends CreateImpactInitiativeDt
     description: 'Hero image (mobile) file (JPEG, PNG, WebP, AVIF max 5MB)',
   })
   heroImageMobile?: any;
+
+  @ApiPropertyOptional({
+    type: 'string',
+    format: 'binary',
+    description:
+      'Landing page card image file (JPEG, PNG, WebP, AVIF max 5MB). Falls back to the hero image when never set.',
+  })
+  cardImage?: any;
 }
 
 export class UpdateImpactInitiativeMultipartDto extends PartialType(
