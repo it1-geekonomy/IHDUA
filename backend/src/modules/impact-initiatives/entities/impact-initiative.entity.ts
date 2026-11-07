@@ -127,6 +127,30 @@ export class ImpactInitiative extends BaseEntity {
   heroImageMobileUrl?: string | null;
 
   @ApiPropertyOptional({
+    example: 'Adarsha Academy KRS',
+    description:
+      'Title on the category landing page card. When empty, the website uses name.',
+    nullable: true,
+    maxLength: 200,
+  })
+  @Column({ name: 'card_title', type: 'varchar', length: 200, nullable: true })
+  cardTitle?: string | null;
+
+  @ApiPropertyOptional({
+    example: 'https://cdn.example.com/impact-initiatives/card.webp',
+    description:
+      'Image on the category landing page card. When empty, the website uses heroImageUrl.',
+    nullable: true,
+  })
+  @Column({
+    name: 'card_image_url',
+    type: 'varchar',
+    length: 500,
+    nullable: true,
+  })
+  cardImageUrl?: string | null;
+
+  @ApiPropertyOptional({
     type: 'object',
     additionalProperties: true,
     nullable: true,

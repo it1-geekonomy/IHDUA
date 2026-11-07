@@ -86,6 +86,17 @@ export class CreateImpactInitiativeDto extends OmitType(SeoFieldsDto, [
   heroDescription?: string;
 
   @ApiPropertyOptional({
+    example: 'Adarsha Academy KRS',
+    description:
+      'Title on the category landing page card. Leave empty to use name.',
+    maxLength: 200,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  cardTitle?: string;
+
+  @ApiPropertyOptional({
     type: 'string',
     description:
       'Page sections as a JSON string (multipart). Must match the category layout; see the content field on ImpactInitiative.',

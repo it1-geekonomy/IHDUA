@@ -26,6 +26,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateImpactCategoryDto } from './dto/create-impact-category.dto';
 import { ImpactCategoryQueryDto } from './dto/impact-category-query.dto';
 import { ImpactNavigationCategoryDto } from './dto/impact-navigation.dto';
+import { PublicImpactCategoryDto } from './dto/public-impact-category.dto';
 import { UpdateImpactCategoryDto } from './dto/update-impact-category.dto';
 import { ImpactCategory } from './entities/impact-category.entity';
 import { ImpactCategoriesService } from './impact-categories.service';
@@ -44,7 +45,7 @@ export class ImpactCategoriesController {
   })
   @ApiOkResponse({
     description: 'List of published impact categories',
-    type: [ImpactCategory],
+    type: [PublicImpactCategoryDto],
   })
   async getPublic() {
     const data = await this.service.findPublished();
@@ -81,7 +82,7 @@ export class ImpactCategoriesController {
   })
   @ApiOkResponse({
     description: 'Impact category details',
-    type: ImpactCategory,
+    type: PublicImpactCategoryDto,
   })
   async getBySlug(@Param('slug') slug: string) {
     const data = await this.service.findBySlug(slug);
