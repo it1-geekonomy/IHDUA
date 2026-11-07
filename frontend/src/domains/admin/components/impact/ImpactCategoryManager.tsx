@@ -265,8 +265,8 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#E5E0D8] bg-[#FAF8F4]">
-                        {p.heroImageUrl ? (
-                          <img src={p.heroImageUrl} alt="" className="h-full w-full object-cover" />
+                        {p.cardImageUrl || p.heroImageUrl ? (
+                          <img src={(p.cardImageUrl || p.heroImageUrl)!} alt="" className="h-full w-full object-cover" />
                         ) : (
                           <FileText className="h-4 w-4 text-[#B5AEA3]" />
                         )}
