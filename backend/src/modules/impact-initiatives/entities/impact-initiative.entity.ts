@@ -162,7 +162,11 @@ export class ImpactInitiative extends BaseEntity {
         heading: 'Adarsha Academy',
         description: 'A rural school near the Krishnarajasagara Dam.',
         highlights: [
-          { iconUrl: 'https://cdn.example.com/website/mission.svg', heading: 'Mission', description: '…' },
+          {
+            iconUrl: 'https://cdn.example.com/website/mission.svg',
+            heading: 'Mission',
+            description: '…',
+          },
         ],
       },
       statsStrip: null,

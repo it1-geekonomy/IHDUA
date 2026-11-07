@@ -4,4 +4,3 @@ import { CreateImpactCategoryDto } from './create-impact-category.dto';
 export class UpdateImpactCategoryDto extends PartialType(
   CreateImpactCategoryDto,
 ) {}
-

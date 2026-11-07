@@ -16,4 +16,3 @@ import { ImpactInitiativesService } from './impact-initiatives.service';
   exports: [ImpactInitiativesService],
 })
 export class ImpactInitiativesModule {}
-

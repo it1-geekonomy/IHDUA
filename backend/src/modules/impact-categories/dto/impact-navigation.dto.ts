@@ -10,6 +10,9 @@ export class ImpactNavigationPageDto {
     description: 'Website URL is /{slug}',
   })
   slug: string;
+
+  @ApiProperty({ example: 1, description: 'Display order within the category' })
+  displayOrder: number;
 }
 
 export class ImpactNavigationCategoryDto {
@@ -22,9 +25,13 @@ export class ImpactNavigationCategoryDto {
   @ApiProperty({ enum: ImpactLayoutType, example: ImpactLayoutType.EDUCATION })
   layoutType: ImpactLayoutType;
 
+  @ApiProperty({ example: 1, description: 'Display order set in the CMS' })
+  displayOrder: number;
+
   @ApiProperty({
     type: [ImpactNavigationPageDto],
-    description: 'Published pages in display order; empty when none are published',
+    description:
+      'Published pages in display order; empty when none are published',
   })
   pages: ImpactNavigationPageDto[];
 }

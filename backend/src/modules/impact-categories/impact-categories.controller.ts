@@ -191,8 +191,7 @@ export class ImpactCategoriesController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Update impact category (CMS Admin)',
-    description:
-      'Layout type cannot change once the category has initiatives.',
+    description: 'Layout type cannot change once the category has initiatives.',
   })
   @ApiOkResponse({ type: ImpactCategory })
   @ApiUnauthorizedResponse({
@@ -214,10 +213,10 @@ export class ImpactCategoriesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
-      summary: 'Soft-delete impact category (CMS Admin)',
-      description:
-        'Fails with 409 while the category still has initiatives that are not deleted.',
-    })
+    summary: 'Soft-delete impact category (CMS Admin)',
+    description:
+      'Fails with 409 while the category still has initiatives that are not deleted.',
+  })
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
@@ -228,4 +227,3 @@ export class ImpactCategoriesController {
     };
   }
 }
-
