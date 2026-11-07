@@ -25,6 +25,8 @@ import { Public } from '../../common/decorators/public.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateImpactCategoryDto } from './dto/create-impact-category.dto';
 import { ImpactCategoryQueryDto } from './dto/impact-category-query.dto';
+import { ImpactNavigationCategoryDto } from './dto/impact-navigation.dto';
+import { PublicImpactCategoryDto } from './dto/public-impact-category.dto';
 import { UpdateImpactCategoryDto } from './dto/update-impact-category.dto';
 import { ImpactCategory } from './entities/impact-category.entity';
 import { ImpactCategoriesService } from './impact-categories.service';
@@ -43,10 +45,29 @@ export class ImpactCategoriesController {
   })
   @ApiOkResponse({
     description: 'List of published impact categories',
-    type: [ImpactCategory],
+    type: [PublicImpactCategoryDto],
   })
   async getPublic() {
     const data = await this.service.findPublished();
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+    };
+  }
+
+  @Public()
+  @Get('navigation')
+  @ApiOperation({
+    summary: 'Our Impact menu (Public Website Navigation)',
+    description:
+      'Published categories with their published initiatives (name and slug only), both ordered by display_order. One call builds the whole Our Impact dropdown.',
+  })
+  @ApiOkResponse({
+    description: 'Categories with their pages',
+    type: [ImpactNavigationCategoryDto],
+  })
+  async getNavigation() {
+    const data = await this.service.findNavigation();
     return {
       statusCode: HttpStatus.OK,
       data,
@@ -61,7 +82,7 @@ export class ImpactCategoriesController {
   })
   @ApiOkResponse({
     description: 'Impact category details',
-    type: ImpactCategory,
+    type: PublicImpactCategoryDto,
   })
   async getBySlug(@Param('slug') slug: string) {
     const data = await this.service.findBySlug(slug);
@@ -170,8 +191,7 @@ export class ImpactCategoriesController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Update impact category (CMS Admin)',
-    description:
-      'Layout type cannot change once the category has initiatives.',
+    description: 'Layout type cannot change once the category has initiatives.',
   })
   @ApiOkResponse({ type: ImpactCategory })
   @ApiUnauthorizedResponse({
@@ -193,10 +213,10 @@ export class ImpactCategoriesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
-      summary: 'Soft-delete impact category (CMS Admin)',
-      description:
-        'Fails with 409 while the category still has initiatives that are not deleted.',
-    })
+    summary: 'Soft-delete impact category (CMS Admin)',
+    description:
+      'Fails with 409 while the category still has initiatives that are not deleted.',
+  })
   @ApiUnauthorizedResponse({
     description: 'Missing, invalid, or expired bearer token',
   })
@@ -207,4 +227,3 @@ export class ImpactCategoriesController {
     };
   }
 }
-

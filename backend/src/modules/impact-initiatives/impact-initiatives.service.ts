@@ -19,6 +19,11 @@ import {
 } from '../../common/utils/soft-delete';
 import { ImpactCategory } from '../impact-categories/entities/impact-category.entity';
 import { CreateImpactInitiativeDto } from './dto/create-impact-initiative.dto';
+import { ImpactInitiativeCardDto } from './dto/impact-initiative-card.dto';
+import {
+  PublicImpactInitiativeListItemDto,
+  PublicImpactInitiativePageDto,
+} from './dto/public-impact-initiative.dto';
 import { ImpactInitiativeQueryDto } from './dto/impact-initiative-query.dto';
 import { UpdateImpactInitiativeDto } from './dto/update-impact-initiative.dto';
 import { ImpactInitiative } from './entities/impact-initiative.entity';
@@ -38,6 +43,8 @@ const LIST_COLUMNS: (keyof ImpactInitiative)[] = [
   'publishedAt',
   'heroTitle',
   'heroImageUrl',
+  'cardTitle',
+  'cardImageUrl',
   'createdAt',
   'updatedAt',
   'deletedAt',
@@ -46,13 +53,15 @@ const LIST_COLUMNS: (keyof ImpactInitiative)[] = [
 export interface ImpactInitiativeFiles {
   heroImage?: CdnFile[];
   heroImageMobile?: CdnFile[];
+  cardImage?: CdnFile[];
 }
 
-type ImageUrlField = 'heroImageUrl' | 'heroImageMobileUrl';
+type ImageUrlField = 'heroImageUrl' | 'heroImageMobileUrl' | 'cardImageUrl';
 
 const IMAGE_FIELD_MAP: Record<keyof ImpactInitiativeFiles, ImageUrlField> = {
   heroImage: 'heroImageUrl',
   heroImageMobile: 'heroImageMobileUrl',
+  cardImage: 'cardImageUrl',
 };
 
 @Injectable()
@@ -71,7 +80,9 @@ export class ImpactInitiativesService {
     dto: CreateImpactInitiativeDto,
     files?: ImpactInitiativeFiles,
   ): Promise<ImpactInitiative> {
-    const category = await this.assertCategoryValidForInitiative(dto.categoryId);
+    const category = await this.assertCategoryValidForInitiative(
+      dto.categoryId,
+    );
     if (dto.content !== undefined) {
       this.assertContentFitsLayout(category, dto.content);
     }
@@ -102,7 +113,9 @@ export class ImpactInitiativesService {
 
     try {
       const saved = await this.repo.save(entity);
-      this.logger.log(`Created impact initiative "${saved.name}" with ID ${saved.id}`);
+      this.logger.log(
+        `Created impact initiative "${saved.name}" with ID ${saved.id}`,
+      );
       return saved;
     } catch (err) {
       await Promise.all(uploadedUrls.map((url) => this.cdn.delete(url)));
@@ -118,39 +131,71 @@ export class ImpactInitiativesService {
   /**
    * Public endpoint helper: Get all active/published initiatives whose category is also published
    */
-  async findPublished(categoryId?: string): Promise<ImpactInitiative[]> {
-    const qb = this.repo
+  async findPublished(): Promise<PublicImpactInitiativeListItemDto[]> {
+    const rows = await this.repo
       .createQueryBuilder('entity')
-      .select(LIST_COLUMNS.map((column) => `entity.${column}`))
-      .innerJoinAndSelect(
+      .select([
+        'entity.id',
+        'entity.name',
+        'entity.slug',
+        'entity.heroTitle',
+        'entity.heroImageUrl',
+        'entity.displayOrder',
+      ])
+      .innerJoin(
         'entity.category',
         'category',
         'category.status = :catStatus',
         { catStatus: ContentStatus.PUBLISHED },
       )
+      .addSelect([
+        'category.id',
+        'category.name',
+        'category.slug',
+        'category.layoutType',
+        'category.displayOrder',
+      ])
       .where('entity.status = :status', { status: ContentStatus.PUBLISHED })
-      .orderBy('entity.displayOrder', 'ASC')
-      .addOrderBy('entity.name', 'ASC');
+      .orderBy('category.displayOrder', 'ASC')
+      .addOrderBy('entity.displayOrder', 'ASC')
+      .addOrderBy('entity.name', 'ASC')
+      .getMany();
 
-    if (categoryId) {
-      qb.andWhere('entity.categoryId = :categoryId', { categoryId });
-    }
-
-    return qb.getMany();
+    return rows.map((row) => PublicImpactInitiativeListItemDto.from(row));
   }
 
   /**
    * Public endpoint helper: Find published initiative by unique slug (category must also be published)
    */
-  async findBySlug(slug: string): Promise<ImpactInitiative> {
+  async findBySlug(slug: string): Promise<PublicImpactInitiativePageDto> {
     const entity = await this.repo
       .createQueryBuilder('entity')
-      .innerJoinAndSelect(
+      .select([
+        'entity.id',
+        'entity.name',
+        'entity.slug',
+        'entity.metaTitle',
+        'entity.metaDescription',
+        'entity.heroTitle',
+        'entity.heroDescription',
+        'entity.heroImageUrl',
+        'entity.heroImageMobileUrl',
+        'entity.content',
+        'entity.publishedAt',
+      ])
+      .innerJoin(
         'entity.category',
         'category',
         'category.status = :catStatus',
         { catStatus: ContentStatus.PUBLISHED },
       )
+      .addSelect([
+        'category.id',
+        'category.name',
+        'category.slug',
+        'category.layoutType',
+        'category.displayOrder',
+      ])
       .where('entity.slug = :slug', { slug: slug.trim().toLowerCase() })
       .andWhere('entity.status = :status', { status: ContentStatus.PUBLISHED })
       .getOne();
@@ -161,13 +206,16 @@ export class ImpactInitiativesService {
       );
     }
 
-    return entity;
+    return PublicImpactInitiativePageDto.from(entity);
   }
 
   /**
-   * Public endpoint helper: Find published initiatives for a given category slug
+   * Public endpoint helper: landing page cards for one published category,
+   * with the card title and image fallbacks already applied.
    */
-  async findByCategorySlug(categorySlug: string): Promise<ImpactInitiative[]> {
+  async findCardsByCategorySlug(
+    categorySlug: string,
+  ): Promise<ImpactInitiativeCardDto[]> {
     const category = await this.categoryRepo.findOne({
       where: {
         slug: categorySlug.trim().toLowerCase(),
@@ -181,7 +229,34 @@ export class ImpactInitiativesService {
       );
     }
 
-    return this.findPublished(category.id);
+    const rows = await this.repo.find({
+      select: [
+        'name',
+        'slug',
+        'displayOrder',
+        'cardTitle',
+        'cardImageUrl',
+        'heroImageUrl',
+      ],
+      where: { categoryId: category.id, status: ContentStatus.PUBLISHED },
+      order: { displayOrder: 'ASC', name: 'ASC' },
+    });
+
+    return rows.map((row) => {
+      const cardTitle = row.cardTitle?.trim() || null;
+      const cardImageUrl = row.cardImageUrl || null;
+      const heroImageUrl = row.heroImageUrl || null;
+      return {
+        title: cardTitle ?? row.name,
+        imageUrl: cardImageUrl ?? heroImageUrl,
+        slug: row.slug,
+        displayOrder: row.displayOrder,
+        cardTitle,
+        cardImageUrl,
+        name: row.name,
+        heroImageUrl,
+      };
+    });
   }
 
   async findAll(
@@ -209,10 +284,9 @@ export class ImpactInitiativesService {
     }
 
     if (query.search) {
-      qb.andWhere(
-        '(entity.name ILIKE :search OR entity.slug ILIKE :search)',
-        { search: `%${query.search}%` },
-      );
+      qb.andWhere('(entity.name ILIKE :search OR entity.slug ILIKE :search)', {
+        search: `%${query.search}%`,
+      });
     }
 
     const [data, total] = await qb
@@ -255,7 +329,9 @@ export class ImpactInitiativesService {
     let targetCategory: ImpactCategory | undefined;
 
     if (dto.categoryId && dto.categoryId !== entity.categoryId) {
-      targetCategory = await this.assertCategoryValidForInitiative(dto.categoryId);
+      targetCategory = await this.assertCategoryValidForInitiative(
+        dto.categoryId,
+      );
       if (
         entity.category &&
         targetCategory.layoutType !== entity.category.layoutType
@@ -283,7 +359,10 @@ export class ImpactInitiativesService {
 
     await this.assertUniqueNameAndSlug(newName, newSlug, targetCategoryId, id);
 
-    const previousMedia = collectImpactMediaUrls(entity.content, this.cdn.baseUrl);
+    const previousMedia = collectImpactMediaUrls(
+      entity.content,
+      this.cdn.baseUrl,
+    );
 
     Object.assign(entity, {
       ...dto,
@@ -303,8 +382,12 @@ export class ImpactInitiativesService {
       const file = files?.[fileField as keyof ImpactInitiativeFiles]?.[0];
       if (file) {
         entity[urlField] =
-          (await this.cdn.replace(entity[urlField], file, CDN_FOLDER, 'image')) ??
-          entity[urlField];
+          (await this.cdn.replace(
+            entity[urlField],
+            file,
+            CDN_FOLDER,
+            'image',
+          )) ?? entity[urlField];
       }
     }
 
@@ -312,7 +395,10 @@ export class ImpactInitiativesService {
       const saved = await this.repo.save(entity);
       this.logger.log(`Updated impact initiative with ID ${id}`);
       if (dto.content !== undefined) {
-        const currentMedia = collectImpactMediaUrls(saved.content, this.cdn.baseUrl);
+        const currentMedia = collectImpactMediaUrls(
+          saved.content,
+          this.cdn.baseUrl,
+        );
         await this.deleteUnreferencedMedia(
           [...previousMedia].filter((url) => !currentMedia.has(url)),
         );
@@ -335,7 +421,10 @@ export class ImpactInitiativesService {
   }
 
   async restore(id: string): Promise<ImpactInitiative> {
-    const entity = await this.repo.findOne({ where: { id }, withDeleted: true });
+    const entity = await this.repo.findOne({
+      where: { id },
+      withDeleted: true,
+    });
     if (entity?.deletedAt) {
       const category = await this.categoryRepo.findOne({
         where: { id: entity.categoryId },

@@ -19,6 +19,8 @@ import {
 import { ImpactInitiative } from '../impact-initiatives/entities/impact-initiative.entity';
 import { CreateImpactCategoryDto } from './dto/create-impact-category.dto';
 import { ImpactCategoryQueryDto } from './dto/impact-category-query.dto';
+import { ImpactNavigationCategoryDto } from './dto/impact-navigation.dto';
+import { PublicImpactCategoryDto } from './dto/public-impact-category.dto';
 import { UpdateImpactCategoryDto } from './dto/update-impact-category.dto';
 import { ImpactCategory } from './entities/impact-category.entity';
 
@@ -64,21 +66,68 @@ export class ImpactCategoriesService {
   /**
    * Public endpoint helper: Get all active/published categories for website navigation
    */
-  async findPublished(): Promise<ImpactCategory[]> {
-    return this.repo.find({
+  async findPublished(): Promise<PublicImpactCategoryDto[]> {
+    const rows = await this.repo.find({
+      select: ['id', 'name', 'slug', 'layoutType', 'displayOrder'],
       where: { status: ContentStatus.PUBLISHED },
       order: {
         displayOrder: 'ASC',
         name: 'ASC',
       },
     });
+    return rows.map((row) => PublicImpactCategoryDto.from(row));
+  }
+
+  /**
+   * Public endpoint helper: Our Impact menu — published categories with their
+   * published initiatives (name and slug only), both in display order.
+   */
+  async findNavigation(): Promise<ImpactNavigationCategoryDto[]> {
+    const categories = await this.repo
+      .createQueryBuilder('category')
+      .select([
+        'category.id',
+        'category.name',
+        'category.slug',
+        'category.layoutType',
+        'category.displayOrder',
+      ])
+      .leftJoin(
+        'category.initiatives',
+        'initiative',
+        'initiative.status = :status',
+        { status: ContentStatus.PUBLISHED },
+      )
+      .addSelect([
+        'initiative.id',
+        'initiative.name',
+        'initiative.slug',
+        'initiative.displayOrder',
+      ])
+      .where('category.status = :status', { status: ContentStatus.PUBLISHED })
+      .orderBy('category.displayOrder', 'ASC')
+      .addOrderBy('category.name', 'ASC')
+      .addOrderBy('initiative.displayOrder', 'ASC')
+      .addOrderBy('initiative.name', 'ASC')
+      .getMany();
+
+    return categories.map((category) => ({
+      name: category.name,
+      slug: category.slug,
+      layoutType: category.layoutType,
+      displayOrder: category.displayOrder,
+      pages: (category.initiatives ?? []).map(
+        ({ name, slug, displayOrder }) => ({ name, slug, displayOrder }),
+      ),
+    }));
   }
 
   /**
    * Public endpoint helper: Find published category by slug
    */
-  async findBySlug(slug: string): Promise<ImpactCategory> {
+  async findBySlug(slug: string): Promise<PublicImpactCategoryDto> {
     const entity = await this.repo.findOne({
+      select: ['id', 'name', 'slug', 'layoutType', 'displayOrder'],
       where: {
         slug: slug.trim().toLowerCase(),
         status: ContentStatus.PUBLISHED,
@@ -91,7 +140,7 @@ export class ImpactCategoriesService {
       );
     }
 
-    return entity;
+    return PublicImpactCategoryDto.from(entity);
   }
 
   async findAll(
