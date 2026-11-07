@@ -8,8 +8,9 @@ interface BlogSeoAccordionProps {
   onMetaTitleChange: (val: string) => void;
   metaDescription: string;
   onMetaDescriptionChange: (val: string) => void;
-  schemaCode: string;
-  onSchemaCodeChange: (val: string) => void;
+  schemaCode?: string;
+  onSchemaCodeChange?: (val: string) => void;
+  showSchemaCode?: boolean;
 }
 
 export function BlogSeoAccordion({
@@ -17,8 +18,9 @@ export function BlogSeoAccordion({
   onMetaTitleChange,
   metaDescription,
   onMetaDescriptionChange,
-  schemaCode,
+  schemaCode = "",
   onSchemaCodeChange,
+  showSchemaCode = true,
 }: BlogSeoAccordionProps) {
   const [showSeo, setShowSeo] = useState(
     Boolean(metaTitle || metaDescription || schemaCode),
@@ -67,18 +69,20 @@ export function BlogSeoAccordion({
             />
           </div>
 
-          <div>
-            <label className="block text-[11px] font-semibold text-[#0F1C1D] mb-1">
-              JSON-LD Structured Schema (Optional)
-            </label>
-            <textarea
-              rows={3}
-              value={schemaCode}
-              onChange={(e) => onSchemaCodeChange(e.target.value)}
-              placeholder='<script type="application/ld+json">{ ... }</script>'
-              className="w-full rounded-lg border border-[#D9D3C9] bg-white p-3 font-mono text-[11px] text-[#0F1C1D] placeholder:text-[#8A847A] focus:border-[#9739A8] focus:outline-hidden"
-            />
-          </div>
+          {showSchemaCode && (
+            <div>
+              <label className="block text-[11px] font-semibold text-[#0F1C1D] mb-1">
+                JSON-LD Structured Schema (Optional)
+              </label>
+              <textarea
+                rows={3}
+                value={schemaCode}
+                onChange={(e) => onSchemaCodeChange?.(e.target.value)}
+                placeholder='<script type="application/ld+json">{ ... }</script>'
+                className="w-full rounded-lg border border-[#D9D3C9] bg-white p-3 font-mono text-[11px] text-[#0F1C1D] placeholder:text-[#8A847A] focus:border-[#9739A8] focus:outline-hidden"
+              />
+            </div>
+          )}
         </div>
       )}
     </div>
