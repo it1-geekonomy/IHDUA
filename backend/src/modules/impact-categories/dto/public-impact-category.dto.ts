@@ -13,11 +13,15 @@ export class PublicImpactCategoryDto {
   @ApiProperty({ enum: ImpactLayoutType, example: ImpactLayoutType.EDUCATION })
   layoutType: ImpactLayoutType;
 
+  @ApiProperty({ example: 1, description: 'Display order set in the CMS' })
+  displayOrder: number;
+
   static from(category: ImpactCategory): PublicImpactCategoryDto {
     return {
       name: category.name,
       slug: category.slug,
       layoutType: category.layoutType,
+      displayOrder: category.displayOrder,
     };
   }
 }

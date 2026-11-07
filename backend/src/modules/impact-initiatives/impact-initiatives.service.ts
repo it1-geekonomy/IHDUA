@@ -140,6 +140,7 @@ export class ImpactInitiativesService {
         'entity.slug',
         'entity.heroTitle',
         'entity.heroImageUrl',
+        'entity.displayOrder',
       ])
       .innerJoin(
         'entity.category',
@@ -152,6 +153,7 @@ export class ImpactInitiativesService {
         'category.name',
         'category.slug',
         'category.layoutType',
+        'category.displayOrder',
       ])
       .where('entity.status = :status', { status: ContentStatus.PUBLISHED })
       .orderBy('category.displayOrder', 'ASC')
@@ -192,6 +194,7 @@ export class ImpactInitiativesService {
         'category.name',
         'category.slug',
         'category.layoutType',
+        'category.displayOrder',
       ])
       .where('entity.slug = :slug', { slug: slug.trim().toLowerCase() })
       .andWhere('entity.status = :status', { status: ContentStatus.PUBLISHED })
@@ -227,7 +230,14 @@ export class ImpactInitiativesService {
     }
 
     const rows = await this.repo.find({
-      select: ['name', 'slug', 'cardTitle', 'cardImageUrl', 'heroImageUrl'],
+      select: [
+        'name',
+        'slug',
+        'displayOrder',
+        'cardTitle',
+        'cardImageUrl',
+        'heroImageUrl',
+      ],
       where: { categoryId: category.id, status: ContentStatus.PUBLISHED },
       order: { displayOrder: 'ASC', name: 'ASC' },
     });
@@ -240,6 +250,7 @@ export class ImpactInitiativesService {
         title: cardTitle ?? row.name,
         imageUrl: cardImageUrl ?? heroImageUrl,
         slug: row.slug,
+        displayOrder: row.displayOrder,
         cardTitle,
         cardImageUrl,
         name: row.name,

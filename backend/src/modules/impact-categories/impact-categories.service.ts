@@ -68,7 +68,7 @@ export class ImpactCategoriesService {
    */
   async findPublished(): Promise<PublicImpactCategoryDto[]> {
     const rows = await this.repo.find({
-      select: ['id', 'name', 'slug', 'layoutType'],
+      select: ['id', 'name', 'slug', 'layoutType', 'displayOrder'],
       where: { status: ContentStatus.PUBLISHED },
       order: {
         displayOrder: 'ASC',
@@ -90,6 +90,7 @@ export class ImpactCategoriesService {
         'category.name',
         'category.slug',
         'category.layoutType',
+        'category.displayOrder',
       ])
       .leftJoin(
         'category.initiatives',
@@ -97,7 +98,12 @@ export class ImpactCategoriesService {
         'initiative.status = :status',
         { status: ContentStatus.PUBLISHED },
       )
-      .addSelect(['initiative.id', 'initiative.name', 'initiative.slug'])
+      .addSelect([
+        'initiative.id',
+        'initiative.name',
+        'initiative.slug',
+        'initiative.displayOrder',
+      ])
       .where('category.status = :status', { status: ContentStatus.PUBLISHED })
       .orderBy('category.displayOrder', 'ASC')
       .addOrderBy('category.name', 'ASC')
@@ -109,10 +115,10 @@ export class ImpactCategoriesService {
       name: category.name,
       slug: category.slug,
       layoutType: category.layoutType,
-      pages: (category.initiatives ?? []).map(({ name, slug }) => ({
-        name,
-        slug,
-      })),
+      displayOrder: category.displayOrder,
+      pages: (category.initiatives ?? []).map(
+        ({ name, slug, displayOrder }) => ({ name, slug, displayOrder }),
+      ),
     }));
   }
 
@@ -121,7 +127,7 @@ export class ImpactCategoriesService {
    */
   async findBySlug(slug: string): Promise<PublicImpactCategoryDto> {
     const entity = await this.repo.findOne({
-      select: ['id', 'name', 'slug', 'layoutType'],
+      select: ['id', 'name', 'slug', 'layoutType', 'displayOrder'],
       where: {
         slug: slug.trim().toLowerCase(),
         status: ContentStatus.PUBLISHED,
