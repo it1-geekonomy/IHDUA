@@ -60,6 +60,7 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
   const [heroImageMobile, setHeroImageMobile] = useState<File | null>(null);
   const [metaTitle, setMetaTitle] = useState("");
   const [metaDescription, setMetaDescription] = useState("");
+  const [saveCount, setSaveCount] = useState(0);
   const [content, setContent] = useState<Record<string, unknown>>(() =>
     def ? mergeContent(def.sections, null) : {},
   );
@@ -152,6 +153,7 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
       if (page) {
         const updated = await updateImpactPage(token, page.id, input);
         setPage(updated);
+        setSaveCount((n) => n + 1);
         setHeroImage(null);
         setHeroImageMobile(null);
         setSaved(true);
@@ -332,6 +334,7 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
               section={section}
               value={content[section.key]}
               onChange={(next) => setContent((c) => ({ ...c, [section.key]: next }))}
+              saveCount={saveCount}
             />
           ))}
         </div>
