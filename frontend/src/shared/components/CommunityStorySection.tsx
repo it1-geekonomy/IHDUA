@@ -50,7 +50,7 @@ export default function CommunityStorySection({
                 <div>
                   {/* Headline: pure variant="h1" token */}
                   <Typography
-                    variant="h1"
+                    variant="h2"
                     as="h2"
                     className="font-lora font-normal text-[#00191B] text-left leading-tight"
                   >
