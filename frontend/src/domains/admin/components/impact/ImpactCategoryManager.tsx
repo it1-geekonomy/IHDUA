@@ -1,11 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   AlertCircle,
   Check,
+  ChevronLeft,
+  ChevronRight,
   ExternalLink,
   FileText,
   Loader2,
@@ -23,6 +25,8 @@ import { AdminSelect, type AdminSelectOption } from "@/domains/admin/components/
 import {
   deleteImpactPage,
   fetchImpactPages,
+  IMPACT_PAGES_PER_PAGE,
+  type PaginationMeta,
   restoreImpactPage,
   updateImpactPageStatus,
   type ContentStatus,
@@ -51,7 +55,10 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
 
   const [tab, setTab] = useState<"active" | "deleted">("active");
   const [pages, setPages] = useState<ImpactPageItem[]>([]);
+  const [meta, setMeta] = useState<PaginationMeta>({ total: 0, page: 1, limit: IMPACT_PAGES_PER_PAGE, totalPages: 1 });
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -70,30 +77,39 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
     return () => clearTimeout(t);
   }, [success]);
 
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setQuery(search);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [search]);
+
   const load = useCallback(async () => {
     if (!token || !category) return;
     try {
-      const res = await fetchImpactPages(token, tab === "deleted");
-      setPages(
-        res.data
-          .filter((p) => p.categoryId === category.id)
-          .sort((a, b) => a.displayOrder - b.displayOrder),
-      );
+      const res = await fetchImpactPages(token, {
+        categoryId: category.id,
+        deleted: tab === "deleted",
+        page,
+        search: query,
+      });
+      if (!res.data.length && page > 1) {
+        setPage(page - 1);
+        return;
+      }
+      setPages(res.data);
+      setMeta(res.meta);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load pages.");
     } finally {
       setLoading(false);
     }
-  }, [token, category, tab]);
+  }, [token, category, tab, page, query]);
 
   useEffect(() => {
     void load();
   }, [load]);
-
-  const visible = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return q ? pages.filter((p) => p.name.toLowerCase().includes(q) || p.slug.includes(q)) : pages;
-  }, [pages, search]);
 
   if (!def) return <p className="text-sm text-[#5F6C6D]">Unknown impact category.</p>;
 
@@ -134,7 +150,7 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
               {def.name}
             </Typography>
             <span className="rounded-full bg-[#1A0F1C]/5 px-2.5 py-0.5 font-figtree font-semibold text-[#1A0F1C]">
-              {pages.length} {pages.length === 1 ? "page" : "pages"}
+              {meta.total} {meta.total === 1 ? "page" : "pages"}
             </span>
           </div>
           <Typography variant="body-sm" className="mt-1 font-figtree text-[#5F6C6D]">
@@ -188,6 +204,7 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
                 if (t === tab) return;
                 setLoading(true);
                 setPages([]);
+                setPage(1);
                 setTab(t);
               }}
               className={cn(
@@ -229,10 +246,10 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
                   <Loader2 className="mx-auto h-4 w-4 animate-spin" />
                 </td>
               </tr>
-            ) : visible.length === 0 ? (
+            ) : pages.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-5 py-12 text-center text-[#8A847A]">
-                  {tab === "deleted" ? "Nothing in recently deleted." : (
+                  {query.trim() ? "No pages match your search." : tab === "deleted" ? "Nothing in recently deleted." : (
                     <span>
                       No {def.name} pages yet.{" "}
                       <Link href={newHref} className="font-semibold text-[#9739A8] underline">
@@ -243,7 +260,7 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
                 </td>
               </tr>
             ) : (
-              visible.map((p) => (
+              pages.map((p) => (
                 <tr key={p.id} className="hover:bg-[#FAF8F4]/60">
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">
@@ -334,6 +351,35 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
             )}
           </tbody>
         </table>
+
+        {meta.totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-[#E5E0D8] bg-[#FAF8F4] px-4 py-3">
+            <p className="font-figtree text-xs text-[#5F6C6D]">
+              Showing Page <span className="font-semibold text-[#0F1C1D]">{meta.page}</span> of{" "}
+              <span className="font-semibold text-[#0F1C1D]">{meta.totalPages}</span> ({meta.total} total)
+            </p>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setPage(meta.page - 1)}
+                disabled={meta.page <= 1 || loading}
+                className="inline-flex h-7 items-center gap-1 rounded-lg border border-[#D9D3C9] bg-white px-2 text-xs font-medium text-[#5F6C6D] hover:text-[#00191B] disabled:opacity-40 transition-colors cursor-pointer"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+                <span>Prev</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPage(meta.page + 1)}
+                disabled={meta.page >= meta.totalPages || loading}
+                className="inline-flex h-7 items-center gap-1 rounded-lg border border-[#D9D3C9] bg-white px-2 text-xs font-medium text-[#5F6C6D] hover:text-[#00191B] disabled:opacity-40 transition-colors cursor-pointer"
+              >
+                <span>Next</span>
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {deleteTarget && (

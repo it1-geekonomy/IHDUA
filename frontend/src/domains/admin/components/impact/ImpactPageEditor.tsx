@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowLeft, Check, ExternalLink, Loader2, X } from "lucide-react";
+import { AlertCircle, ArrowLeft, Check, ExternalLink, Eye, Loader2, X } from "lucide-react";
 import Typography from "@/lib/Typography";
 import { AdminSelect, type AdminSelectOption } from "@/domains/admin/components/AdminSelect";
 import { BlogSeoAccordion } from "@/domains/admin/components/blogs-and-stories/BlogSeoAccordion";
@@ -18,6 +18,7 @@ import { BannerImageField } from "./BannerImageField";
 import { FieldLabel, inputClass } from "./FieldRenderer";
 import { mergeContent, validateContent } from "./layouts";
 import { SectionCard } from "./SectionCard";
+import { ImpactPagePreview } from "./ImpactPagePreview";
 import { useImpactCategory } from "./useImpactCategory";
 import { CategoryNotSetUp } from "./CategoryNotSetUp";
 
@@ -46,6 +47,7 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
   const [error, setError] = useState<string | null>(null);
   const [problems, setProblems] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
 
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -169,6 +171,14 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
 
   return (
     <div className="space-y-6 pb-24">
+      {previewing && (
+        <ImpactPagePreview
+          data={{ layoutType: def.layoutType, slug, heroTitle, heroDescription, content }}
+          heroImage={heroImage ?? page?.heroImageUrl}
+          heroImageMobile={heroImageMobile ?? page?.heroImageMobileUrl}
+          onClose={() => setPreviewing(false)}
+        />
+      )}
       <div className="flex flex-col gap-4 border-b border-[#E5E0D8] pb-5 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <Link
@@ -195,6 +205,13 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
               <ExternalLink className="h-3.5 w-3.5" /> View on website
             </a>
           )}
+          <button
+            type="button"
+            onClick={() => setPreviewing(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[#D9D3C9] bg-white px-3.5 py-1.5 text-xs font-semibold text-[#5F6C6D] hover:text-[#00191B] cursor-pointer"
+          >
+            <Eye className="h-3.5 w-3.5" /> Preview
+          </button>
           <button
             type="button"
             onClick={handleSave}
