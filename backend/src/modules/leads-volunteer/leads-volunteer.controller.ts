@@ -26,6 +26,8 @@ import {
 } from '@nestjs/swagger';
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../common/enums/user-role.enum';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CdnFile } from '../../common/storage/cdn.service';
@@ -39,6 +41,7 @@ import { LeadVolunteer } from './entities/lead-volunteer.entity';
 import { LeadsVolunteerService } from './leads-volunteer.service';
 
 @ApiTags(ApiTagsConst.LEADS_VOLUNTEER)
+@Roles(UserRole.ADMIN)
 @Controller('leads-volunteer')
 export class LeadsVolunteerController {
   constructor(private readonly service: LeadsVolunteerService) {}

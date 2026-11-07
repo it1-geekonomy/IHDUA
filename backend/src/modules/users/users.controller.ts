@@ -19,6 +19,8 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { ApiTagsConst } from '../../common/constants/api-tags';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../common/enums/user-role.enum';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -27,6 +29,7 @@ import { UsersService } from './users.service';
 
 @ApiTags(ApiTagsConst.USERS)
 @ApiBearerAuth()
+@Roles(UserRole.ADMIN)
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
