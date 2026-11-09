@@ -2,7 +2,7 @@
 
 import type { MouseEvent } from "react";
 import Link from "next/link";
-import { NAV_LINKS } from "@/shared/constants/navbar";
+import { NAV_LINKS, type NavLink } from "@/shared/constants/navbar";
 import Typography from "@/lib/Typography";
 import { cn } from "@/lib/utils";
 import { DesktopDropdown } from "./DesktopDropdown";
@@ -12,12 +12,13 @@ import { NAV_ACTIVE, NAV_IDLE } from "./navStyles";
 type DesktopNavProps = {
   pathname: string;
   onHomeClick: (e: MouseEvent<HTMLAnchorElement>) => void;
+  links?: NavLink[];
 };
 
-export function DesktopNav({ pathname, onHomeClick }: DesktopNavProps) {
+export function DesktopNav({ pathname, onHomeClick, links = NAV_LINKS }: DesktopNavProps) {
   return (
     <ul className="hidden items-center gap-8 xl:flex xl:gap-10">
-      {NAV_LINKS.map((link) => {
+      {links.map((link) => {
         if (link.children?.length) {
           return <DesktopDropdown key={link.label} link={link} pathname={pathname} />;
         }

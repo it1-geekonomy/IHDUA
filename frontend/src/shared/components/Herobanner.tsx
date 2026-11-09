@@ -58,16 +58,16 @@ export default function HeroBanner({
         )}
       >
       
-        <div className="w-full max-w-[85%] sm:max-w-[70%] md:w-fit md:min-w-[24rem] md:max-w-full lg:min-w-[28rem] xl:min-w-[32rem]">
+        <div className="w-full max-w-[95%] sm:max-w-[85%] md:w-fit md:min-w-[24rem] md:max-w-full lg:min-w-[28rem] xl:min-w-[32rem]">
           <Typography
             variant="h4"
-            className="whitespace-nowrap font-lora font-normal tracking-[0.03em] text-white md:hidden"
+            className="font-lora font-normal tracking-[0.03em] text-white md:hidden leading-tight"
           >
             {heading}
           </Typography>
           <Typography
             variant="h1"
-            className="hidden whitespace-nowrap font-lora font-normal tracking-[0.03em] text-white md:block"
+            className="hidden font-lora font-normal tracking-[0.03em] text-white md:block leading-tight"
           >
             {heading}
           </Typography>

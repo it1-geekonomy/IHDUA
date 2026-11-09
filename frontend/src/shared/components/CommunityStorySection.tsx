@@ -23,10 +23,15 @@ export default function CommunityStorySection({
   imageAlt = ADARSHA_STORIES.story2.imageAlt,
   featureCard = ADARSHA_STORIES.story2.featureCard,
 }: CommunityStorySectionProps = {}) {
-  const finalIcon = featureCard.icon ?? ADARSHA_STORIES.story2.featureCard.icon;
+  const finalIcon =
+    featureCard?.icon || ADARSHA_STORIES.story2.featureCard.icon;
+  const cardTitle =
+    featureCard?.title || ADARSHA_STORIES.story2.featureCard.title;
+  const cardDesc =
+    featureCard?.description || ADARSHA_STORIES.story2.featureCard.description;
 
   return (
-    <section className="w-full bg-white">
+    <section className="w-full bg-white pb-6 lg:pb-10">
       <div className="w-full pt-6 lg:pt-8 xl:pt-14">
         {/* Section container: generous padding like Figma (120px) to make the section bigger */}
         <div className="w-full bg-[#F3EEF9] py-12 lg:py-20 xl:py-24">
@@ -37,7 +42,7 @@ export default function CommunityStorySection({
                 <div className="relative w-full aspect-[762/451] overflow-hidden rounded-[4px] shadow-sm">
                   <Image
                     src={image}
-                    alt={imageAlt}
+                    alt={imageAlt || title}
                     fill
                     sizes="(min-width: 1280px) 48vw, (min-width: 1024px) 50vw, 100vw"
                     className="object-cover"
@@ -48,7 +53,7 @@ export default function CommunityStorySection({
               {/* Right Content: 6 columns, perfectly responsive between top and bottom of image */}
               <div className="order-1 flex w-full flex-col justify-between items-start lg:order-2 lg:col-span-6">
                 <div>
-                  {/* Headline: pure variant="h1" token */}
+                  {/* Headline: pure variant="h2" token */}
                   <Typography
                     variant="h2"
                     as="h2"
@@ -77,7 +82,7 @@ export default function CommunityStorySection({
                   <div className="flex h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 shrink-0 items-center justify-center rounded-full bg-[#E6DAF5]">
                     <Image
                       src={finalIcon}
-                      alt={featureCard.title}
+                      alt={cardTitle}
                       width={64}
                       height={64}
                       className="h-8 w-8 sm:h-10 sm:w-10 lg:h-14 lg:w-14 object-contain"
@@ -89,13 +94,13 @@ export default function CommunityStorySection({
                       variant="body-xl"
                       className="font-figtree font-bold text-[#734E9F] text-left"
                     >
-                      {featureCard.title}
+                      {cardTitle}
                     </Typography>
                     <Typography
                       variant="body-xl"
                       className="font-figtree font-normal text-[#5F6C6D] text-left mt-1"
                     >
-                      {featureCard.description}
+                      {cardDesc}
                     </Typography>
                   </div>
                 </div>

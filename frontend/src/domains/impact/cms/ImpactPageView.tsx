@@ -45,8 +45,17 @@ const obj = (v: unknown): Json | null =>
 const str = (v: unknown, fallback = "") => (typeof v === "string" && v.trim() ? v.trim() : fallback);
 const img = (v: unknown) => str(v, PLACEHOLDER_IMAGE);
 const list = (v: unknown): Json[] => (Array.isArray(v) ? v.map(obj).filter((x): x is Json => x !== null) : []);
-const paras = (v: unknown): string[] =>
-  Array.isArray(v) ? v.filter((p): p is string => typeof p === "string" && p.trim() !== "") : [];
+const paras = (v: unknown): string[] => {
+  if (Array.isArray(v)) {
+    return v
+      .filter((p): p is string => typeof p === "string" && p.trim() !== "")
+      .flatMap((p) => p.split(/\r?\n+/).map((s) => s.trim()).filter(Boolean));
+  }
+  if (typeof v === "string" && v.trim() !== "") {
+    return v.split(/\r?\n+/).map((s) => s.trim()).filter(Boolean);
+  }
+  return [];
+};
 const photos = (v: unknown, alt: string) =>
   (Array.isArray(v) ? v : []).map((url, i) => ({ src: img(url), alt: `${alt} ${i + 1}` }));
 const button = (v: unknown) => {

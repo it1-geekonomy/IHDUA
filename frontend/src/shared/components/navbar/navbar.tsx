@@ -462,10 +462,12 @@ export function MobileMenu({
   open,
   pathname,
   onNavigate,
+  links = NAV_LINKS,
 }: {
   open: boolean;
   pathname: string;
   onNavigate: (e: MouseEvent<HTMLAnchorElement>, href: string) => void;
+  links?: NavLink[];
 }) {
   return (
     <div
@@ -487,7 +489,7 @@ export function MobileMenu({
         <div className="min-h-0 overflow-hidden rounded-2xl bg-[#1A0F1C]/85 shadow-[0_30px_70px_-20px_rgba(0,0,0,.75)] ring-1 ring-white/10 backdrop-blur-2xl">
           <div className="max-h-[calc(100dvh-110px)] overflow-y-auto overscroll-contain px-5 py-2 sm:px-7">
             <ul className="flex flex-col">
-              {NAV_LINKS.map((link, i) => (
+              {links.map((link, i) => (
                 <MobileItem
                   key={`${link.label}-${link.href ?? ""}`}
                   link={link}
@@ -503,7 +505,7 @@ export function MobileMenu({
               href={CONTACT_HREF}
               onClick={(e) => onNavigate(e, CONTACT_HREF)}
               style={{
-                transitionDelay: open ? `${160 + NAV_LINKS.length * 45}ms` : "0ms",
+                transitionDelay: open ? `${160 + links.length * 45}ms` : "0ms",
               }}
               className={cn(
                 "my-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#FFD638] px-6 py-3.5 text-[#1A0F1C] transition-all duration-500 sm:hidden",
