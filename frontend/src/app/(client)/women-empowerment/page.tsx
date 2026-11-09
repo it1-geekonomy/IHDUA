@@ -5,6 +5,7 @@ import ImageCardsSection, {
 } from "@/shared/components/Imagecardsection";
 import CommunityHealthBanner from "@/shared/components/CommunityHealthBanner";
 import Typography from "@/lib/Typography";
+import { fetchImpactCategoryCards } from "@/shared/lib/impactApi";
 
 export const metadata: Metadata = {
   title: "Women Empowerment | IHDUA",
@@ -12,24 +13,22 @@ export const metadata: Metadata = {
     "IHDUA supports rural women through Self-Help Groups, microfinance and vocational training so they can build skills, confidence and economic independence.",
 };
 
-const WOMEN_ITEMS: ImageCardItem[] = [
-  {
-    image: "/womenempowerment/self-help.png",
-    imageAlt: "Women participating in a Self-Help Group meeting",
-    title: "Self-Help Group & Federation",
-    href: "/self-help-group-federation",
-    theme: "amber",
-  },
-  {
-    image: "/womenempowerment/microfinance.png",
-    imageAlt: "Women at an IHDUA microfinance meeting",
-    title: "Microfinance Initiative",
-    href: "/micro-finance-initiatives",
-    theme: "purple",
-  },
-];
+export const dynamic = "force-dynamic";
 
-export default function WomenEmpowermentPage() {
+export default async function WomenEmpowermentPage() {
+  const apiCards = await fetchImpactCategoryCards("women-empowerment");
+
+  const items: ImageCardItem[] =
+    apiCards && apiCards.length > 0
+      ? apiCards.map((card, idx) => ({
+          title: card.title || card.name,
+          image: card.imageUrl || "",
+          imageAlt: card.title || card.name,
+          href: card.slug.startsWith("/") ? card.slug : `/${card.slug}`,
+          theme: idx % 2 === 0 ? "amber" : "purple",
+        }))
+      : [];
+
   return (
     <>
       <HeroBanner
@@ -43,7 +42,8 @@ export default function WomenEmpowermentPage() {
         label="WOMEN EMPOWERMENT"
         heading={["Supporting Women to", "Lead and Grow"]}
         description="We create opportunities for women to strengthen their skills, participate in economic activities and enhance their decision-making power. Through initiatives such as microfinance and vocational training, IHDUA supports women in becoming equal stakeholders in their households and communities."
-        items={WOMEN_ITEMS}
+        items={items}
+        categorySlug="women-empowerment"
       />
       <section className="w-full">
         <div className="w-full px-6 pt-10 lg:px-10 lg:pt-14 xl:pt-16 2xl:px-40">

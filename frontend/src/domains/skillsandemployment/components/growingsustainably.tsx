@@ -1,42 +1,30 @@
 import ImageCardsSection, {
   type ImageCardItem,
 } from "@/shared/components/Imagecardsection";
+import { fetchImpactCategoryCards } from "@/shared/lib/impactApi";
 
-const EDUCATION_ITEMS: ImageCardItem[] = [
-  {
-    image: "/Skillsandemployment/Women.png",
-    imageAlt: "Women",
-    title: "Women",
-    href: "/women",
-  },
-  {
-    image: "/Skillsandemployment/Youth.png",
-    imageAlt: "Youth",
-    title: "Youth",
-    href: "/youth",
-  },
-  {
-    image: "/Skillsandemployment/Farmers.png",
-    imageAlt: "Farmers",
-    title: "Farmers",
-    href: "/farmers",
-  },
-  {
-    image: "/Skillsandemployment/StitchingUnit.png",
-    imageAlt: "Stitching Unit",
-    title: "Stitching Unit",
-    href: "/stitching-unit",
-  },
-];
+export default async function GrowingSustainably() {
+  const apiCards = await fetchImpactCategoryCards("skills-and-employment");
 
-export default function GrowingSustainably() {
+  const items: ImageCardItem[] =
+    apiCards && apiCards.length > 0
+      ? apiCards.map((card, idx) => ({
+          title: card.title || card.name,
+          image: card.imageUrl || "",
+          imageAlt: card.title || card.name,
+          href: card.slug.startsWith("/") ? card.slug : `/${card.slug}`,
+          theme: (idx % 2 === 0 ? "purple" : "amber") as ImageCardItem["theme"],
+        }))
+      : [];
+
   return (
     <ImageCardsSection
       label="ORGANIC FARMING"
-       heading={["Growing Sustainably.", "Farming for the Future"]}
+      heading={["Growing Sustainably.", "Farming for the Future"]}
       description="IHDUA promotes organic farming practices that support sustainable agriculture, healthier soil and environmentally responsible cultivation.
 Through organic farming initiatives and training, the programme encourages practical approaches to sustainable cultivation and better farming practices."
-      items={EDUCATION_ITEMS}
+      items={items}
+      categorySlug="skills-and-employment"
     />
   );
 }

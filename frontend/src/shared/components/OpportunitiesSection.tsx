@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import Typography from "@/lib/Typography";
 
 export interface OpportunitiesButton {
@@ -39,48 +40,25 @@ const OpportunitiesSection = ({
 }: OpportunitiesSectionProps) => {
   return (
     <section className="w-full bg-white">
-      <div className="w-full px-6 pt-6 lg:px-10 lg:pt-8 xl:pt-14 2xl:px-40">
-        {/* Below lg: heading, image, text stacked.
-            lg: heading spans full width, then text left and image right.
-            xl and up: heading above the text, image on the right spanning both rows. */}
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_40%] lg:gap-x-8 lg:gap-y-5 xl:grid-cols-[minmax(0,1fr)_32%] xl:gap-x-12 2xl:grid-cols-[minmax(0,1fr)_28%]">
-          {/* Heading: full width below xl (including lg).
-              Yellow line is hidden below 640px. */}
-          <div className="flex w-full justify-center lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:justify-start xl:col-span-1 xl:self-end">
-            <div className="w-full border-l-0 border-[#FFD638] pl-0 sm:w-auto sm:border-l-4 sm:pl-4 lg:w-full xl:w-auto">
+      <div className="w-full px-6 pt-6 lg:px-10 lg:pt-10 xl:pt-14 2xl:px-40">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-14">
+          {/* Left Text: 7 columns */}
+          <div className="order-1 flex w-full flex-col items-start lg:col-span-7">
+            <div className="border-l-4 border-[#FFD638] pl-3.5 sm:pl-4 mb-4">
               <Typography
-                variant="h3"
-                className="w-full font-lora text-center font-normal text-[#00191B] lg:text-left"
+                variant="h2"
+                className="w-full font-lora font-normal text-[#00191B] text-left leading-tight"
               >
                 {heading}
               </Typography>
             </div>
-          </div>
 
-          {/* Image: never cropped.
-              Below 640px: full width.
-              sm to lg: centered and smaller.
-              lg: right of the text.
-              xl and up: slightly larger column, centered vertically in its cell. */}
-          <div className="flex w-full items-center justify-center lg:col-start-2 lg:row-start-2 lg:justify-end lg:self-stretch xl:row-span-2 xl:row-start-1 xl:justify-end xl:self-center">
-            <Image
-              src={image}
-              alt={imageAlt}
-              width={0}
-              height={0}
-              sizes="(min-width: 1536px) 28vw, (min-width: 1280px) 32vw, (min-width: 1024px) 40vw, (min-width: 768px) 50vw, (min-width: 640px) 60vw, 100vw"
-              className="block h-auto w-full sm:w-3/5 md:w-1/2 lg:w-full"
-            />
-          </div>
-
-          {/* Description + optional button */}
-          <div className="flex w-full flex-col gap-4 lg:col-start-1 lg:row-start-2 lg:self-start">
-            <div className="flex w-full flex-col gap-3 lg:gap-4">
+            <div className="flex flex-col gap-4 mt-2">
               {descriptions.map((para, index) => (
                 <Typography
                   key={index}
                   variant="body-lg"
-                  className="w-full font-figtree font-normal text-[#5F6C6D] text-center lg:text-left"
+                  className="w-full font-figtree font-normal text-[#5F6C6D] text-left leading-relaxed"
                 >
                   {para}
                 </Typography>
@@ -88,11 +66,11 @@ const OpportunitiesSection = ({
             </div>
 
             {button?.label && (
-              <a
+              <Link
                 href={button.href ?? "#"}
                 target={button.external ? "_blank" : undefined}
                 rel={button.external ? "noopener noreferrer" : undefined}
-                className="inline-flex w-fit items-center gap-1.5 self-center bg-[#FFD638] px-3 py-1.5 text-[#000000] transition-[filter] duration-200 hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:gap-2 sm:px-4 sm:py-2 lg:self-start lg:px-5 lg:py-2.5"
+                className="group mt-6 inline-flex w-fit items-center gap-1.5 self-start bg-[#FFD638] px-4 py-2 text-[#000000] transition-[filter] duration-200 hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:gap-2 sm:px-5 sm:py-2.5"
               >
                 <Typography
                   variant="body-sm"
@@ -101,8 +79,21 @@ const OpportunitiesSection = ({
                   {button.label}
                 </Typography>
                 <ArrowUpRight />
-              </a>
+              </Link>
             )}
+          </div>
+
+          {/* Right Image: 5 columns, matching Story 2 */}
+          <div className="order-2 flex w-full lg:col-span-5">
+            <div className="relative w-full max-w-lg sm:max-w-xl lg:max-w-none mx-auto aspect-[16/10] sm:aspect-[16/9] lg:aspect-[4/3] overflow-hidden rounded-md shadow-sm">
+              <Image
+                src={image}
+                alt={imageAlt || heading}
+                fill
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                className="object-cover"
+              />
+            </div>
           </div>
         </div>
       </div>

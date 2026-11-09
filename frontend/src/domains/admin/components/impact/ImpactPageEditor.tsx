@@ -53,7 +53,7 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
   const [displayOrder, setDisplayOrder] = useState(1);
-  const [status, setStatus] = useState<ContentStatus>("draft");
+  const [status, setStatus] = useState<ContentStatus>("published");
   const [heroTitle, setHeroTitle] = useState("");
   const [heroDescription, setHeroDescription] = useState("");
   const [heroImage, setHeroImage] = useState<File | null>(null);
@@ -127,6 +127,9 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
     const issues: string[] = [];
     if (!name.trim()) issues.push("Page name: required");
     if (!slug.trim()) issues.push("URL slug: required");
+    if (slug.trim() === categorySlug) {
+      issues.push(`URL slug cannot be '${categorySlug}' (that is reserved for the category landing page). Please use a unique slug like '${def.examples.slug}'.`);
+    }
     if (!heroTitle.trim()) issues.push("Banner › Title: required");
     if (!heroImage && !page?.heroImageUrl) issues.push("Banner › Desktop image: required");
     issues.push(...validateContent(def.sections, content));
