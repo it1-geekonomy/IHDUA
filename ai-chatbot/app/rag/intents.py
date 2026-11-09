@@ -69,8 +69,11 @@ def detect_intents(text: str) -> set[str]:
     if any(k in lower for k in ("model village", "green cover", "tree", "plant", "afforestation", "rejuvenation", "sanitation", "solar")):
         intents.add("model_village")
 
-    if any(k in lower for k in ("youth", "farmer", "farmers", "agriculture", "nursing", "gda", "computer")):
+    if any(k in lower for k in ("youth", "farmer", "farmers", "agriculture", "nursing", "gda", "computer", "skills", "vocational", "assistant", "general duty")):
         intents.add("skills")
+
+    if any(k in lower for k in ("12a", "12ab", "80g", "fcra", "pan", "trust deed", "certificate", "certificates", "download", "registration", "form 10ac", "form 10be")):
+        intents.add("governance")
 
     if any(k in lower for k in ("contact", "address", "phone", "email", "office", "location", "reach", "hours", "mysore", "chicago")):
         intents.add("contact")
@@ -88,9 +91,9 @@ def detect_intents(text: str) -> set[str]:
 
 
 _OFF_TOPIC_RE = re.compile(
-    r"\b(pm of india|prime minister|narendra modi|president of india|chief minister|"
+    r"\b(pm\s*(of|os|is)?\s*india|who\s+is\s+pm|prime minister|narendra modi|president of india|chief minister|"
     r"capital of|weather|crypto|bitcoin|cricket|ipl|bollywood|"
-    r"movie|actor|actress|politics|election|stock market)\b",
+    r"movie|actor|actress|politics|election|stock market|tell me a joke|write code)\b",
     re.I,
 )
 

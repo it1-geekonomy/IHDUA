@@ -113,8 +113,17 @@ export class DonationReceiptService {
 
     const amount = Number(donor.amount || 0);
     const amountLabel = `${currencySymbol(donor.currency || 'INR')}${amount.toFixed(2)}`;
-    const { day, month, year, time } = istParts(donor.createdAt ?? new Date());
-    const date = `${year}-${month}-${day}`;
+    const { day, month, year } = istParts(donor.createdAt ?? new Date());
+    const date = `${day}-${month}-${year}`;
+    const time = new Date(donor.createdAt ?? Date.now()).toLocaleTimeString(
+      'en-US',
+      {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: 'Asia/Kolkata',
+      },
+    );
     const name = donor.fullName?.trim() || 'Donor';
 
     const intro: Run[][] = [

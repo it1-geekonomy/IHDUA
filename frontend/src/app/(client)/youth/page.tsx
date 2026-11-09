@@ -1,21 +1,44 @@
-import Bannersection from "@/domains/youth/components/bannersection";
-import YouthSkills from "@/domains/youth/components/youthskills";
-import WhyYouthskillsmatters from "@/domains/youth/components/whyYouthskill";
-import BuildingSkills from "@/domains/youth/components/buildingskills";
-import Skillstogether from "@/domains/youth/components/SkillsTogetherSection";
-import Impactwemake from "@/domains/youth/components/impactwemake";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { fetchImpactInitiativePage } from "@/shared/lib/impactApi";
+import { ImpactPageView } from "@/domains/impact/cms/ImpactPageView";
 import NewsletterSection from "@/shared/components/Newsletter";
 
-export default function OurTeamPage() {
+export const dynamic = "force-dynamic";
+
+const SLUG = "youth";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await fetchImpactInitiativePage(SLUG);
+  if (!page) return {};
+  return {
+    title: page.metaTitle || `${page.heroTitle || page.name} | IHDUA`,
+    description: page.metaDescription || page.heroDescription || undefined,
+  };
+}
+
+export default async function YouthPage() {
+  const pageData = await fetchImpactInitiativePage(SLUG);
+
+  if (!pageData) {
+    notFound();
+  }
+
   return (
-    <> 
-      <Bannersection />
-      <YouthSkills />
-      <WhyYouthskillsmatters />
-      <BuildingSkills />
-      <Skillstogether />
-      <Impactwemake />
+    <main className="w-full">
+      <ImpactPageView
+        data={{
+          layoutType: pageData.category.layoutType as any,
+          slug: pageData.slug,
+          heroTitle: pageData.heroTitle || pageData.name,
+          heroDescription: pageData.heroDescription || "",
+          heroImage: pageData.heroImageUrl || "",
+          heroImageMobile:
+            pageData.heroImageMobileUrl || pageData.heroImageUrl || "",
+          content: pageData.content || {},
+        }}
+      />
       <NewsletterSection />
-    </>
+    </main>
   );
 }

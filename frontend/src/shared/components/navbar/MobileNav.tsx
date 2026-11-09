@@ -2,7 +2,7 @@
 
 import type { MouseEvent } from "react";
 import Link from "next/link";
-import { NAV_LINKS } from "@/shared/constants/navbar";
+import { NAV_LINKS, type NavLink } from "@/shared/constants/navbar";
 import { cn } from "@/lib/utils";
 import { MobileNavItem } from "./MobileNavItem";
 
@@ -10,9 +10,10 @@ type MobileNavProps = {
   open: boolean;
   pathname: string;
   onNavigate: (e: MouseEvent<HTMLAnchorElement>, href: string) => void;
+  links?: NavLink[];
 };
 
-export function MobileNav({ open, pathname, onNavigate }: MobileNavProps) {
+export function MobileNav({ open, pathname, onNavigate, links = NAV_LINKS }: MobileNavProps) {
   return (
     <div
       className={cn(
@@ -24,7 +25,7 @@ export function MobileNav({ open, pathname, onNavigate }: MobileNavProps) {
       <div className="overflow-hidden">
         <div className="max-h-[min(78vh,640px)] overflow-y-auto overscroll-contain bg-[#9739A8] px-5 pb-6 pt-2 sm:px-6">
           <ul className="flex flex-col">
-            {NAV_LINKS.map((link) => (
+            {links.map((link) => (
               <MobileNavItem
                 key={`${link.label}-${link.href ?? ""}`}
                 link={link}

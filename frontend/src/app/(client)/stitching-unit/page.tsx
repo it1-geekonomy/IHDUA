@@ -1,22 +1,44 @@
-import BannerSection from "@/domains/StitchingUnit/components/bannersection";
-import WomenEmpowerment from "@/domains/StitchingUnit/components/womenempowerment";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { fetchImpactInitiativePage } from "@/shared/lib/impactApi";
+import { ImpactPageView } from "@/domains/impact/cms/ImpactPageView";
 import NewsletterSection from "@/shared/components/Newsletter";
-import PracticalSkills from "@/domains/StitchingUnit/components/practicalskills"
-import ForgingSection from "@/domains/StitchingUnit/components/forgingpaths"
-import ImpactWeMake from "@/domains/StitchingUnit/components/impactwemake";
-import GallerySingleRow from "@/domains/StitchingUnit/components/gallerysinglerow";
 
-export default function StitchingUnitPage() {
+export const dynamic = "force-dynamic";
+
+const SLUG = "stitching-unit";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await fetchImpactInitiativePage(SLUG);
+  if (!page) return {};
+  return {
+    title: page.metaTitle || `${page.heroTitle || page.name} | IHDUA`,
+    description: page.metaDescription || page.heroDescription || undefined,
+  };
+}
+
+export default async function StitchingUnitPage() {
+  const pageData = await fetchImpactInitiativePage(SLUG);
+
+  if (!pageData) {
+    notFound();
+  }
+
   return (
-    <>
-    <BannerSection />
-    <WomenEmpowerment />
-    <PracticalSkills />
-    <ForgingSection />
-    <ImpactWeMake />
-    <GallerySingleRow />
-    <NewsletterSection />
-      
-    </>
+    <main className="w-full">
+      <ImpactPageView
+        data={{
+          layoutType: pageData.category.layoutType as any,
+          slug: pageData.slug,
+          heroTitle: pageData.heroTitle || pageData.name,
+          heroDescription: pageData.heroDescription || "",
+          heroImage: pageData.heroImageUrl || "",
+          heroImageMobile:
+            pageData.heroImageMobileUrl || pageData.heroImageUrl || "",
+          content: pageData.content || {},
+        }}
+      />
+      <NewsletterSection />
+    </main>
   );
 }

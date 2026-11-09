@@ -30,6 +30,10 @@ def hybrid_retrieve(
         keywords.extend(["women", "shg", "federation"])
     if "stitching" in intents:
         keywords.extend(["stitching", "tailoring", "garment"])
+    if "skills" in intents:
+        keywords.extend(["gda", "nursing", "computer", "youth", "skills", "vocational"])
+    if "governance" in intents:
+        keywords.extend(["12a", "80g", "fcra", "trust deed", "certificate", "documents"])
     if "donate" in intents:
         keywords.extend(["donate", "80g", "tax", "exemption"])
     if "health" in intents:

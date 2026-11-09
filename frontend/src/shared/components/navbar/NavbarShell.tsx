@@ -9,6 +9,8 @@ import Typography from "@/lib/Typography";
 import { isHomePath } from "@/shared/lib/path";
 import { smoothScrollToTop } from "@/shared/lib/smoothScroll";
 import { markClientNav } from "@/shared/lib/navState";
+import { NAV_LINKS, type NavLink } from "@/shared/constants/navbar";
+import { fetchImpactNavigation, mergeImpactNavigation } from "@/shared/lib/impactApi";
 import {
   CONTACT_HREF,
   MenuToggle,
@@ -23,9 +25,23 @@ const EASE = "ease-[cubic-bezier(.22,1,.36,1)]";
 
 export default function NavbarShell() {
   const [isOpen, setIsOpen] = useState(false);
+  const [navLinks, setNavLinks] = useState<NavLink[]>(NAV_LINKS);
   const pathname = usePathname();
   const barRef = useRef<HTMLSpanElement>(null);
   const { hidden, setHidden } = useNavbarScroll(isOpen, barRef);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchImpactNavigation()
+      .then((categories) => {
+        if (!isMounted) return;
+        setNavLinks(mergeImpactNavigation(NAV_LINKS, categories || []));
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, [pathname, isOpen]);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -110,7 +126,11 @@ export default function NavbarShell() {
               />
             </Link>
 
-            <DesktopNav pathname={pathname} onHomeClick={handleHomeClick} />
+            <DesktopNav
+              pathname={pathname}
+              onHomeClick={handleHomeClick}
+              links={navLinks}
+            />
 
             <div className="flex shrink-0 items-center gap-1 sm:gap-3">
               <Link
@@ -132,7 +152,12 @@ export default function NavbarShell() {
         </div>
 
         {/* mobile dropdown card hangs under the bar (inside header so it moves with it) */}
-        <MobileMenu open={isOpen} pathname={pathname} onNavigate={handleMobileLinkClick} />
+        <MobileMenu
+          open={isOpen}
+          pathname={pathname}
+          onNavigate={handleMobileLinkClick}
+          links={navLinks}
+        />
       </header>
     </>
   );
