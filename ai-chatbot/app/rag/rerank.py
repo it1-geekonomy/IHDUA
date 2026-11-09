@@ -22,6 +22,10 @@ def rerank(hits: list[dict], intents: set[str]) -> list[dict]:
             bonus += 0.15
         if "stitching" in intents and any(k in title or k in content for k in ("stitching", "garment", "tailor")):
             bonus += 0.20
+        if "skills" in intents and any(k in title or k in content for k in ("gda", "nursing", "computer", "youth", "skills", "vocational", "trainee", "assistant")):
+            bonus += 0.25
+        if "governance" in intents and any(k in title or k in content for k in ("12a", "80g", "fcra", "urn", "trust deed", "certificate", "charitable")):
+            bonus += 0.25
         if "donate" in intents and any(k in title or k in content for k in ("donate", "80g", "tax", "contribution")):
             bonus += 0.20
         if "health" in intents and any(k in title or k in content for k in ("health", "camp", "medical")):
