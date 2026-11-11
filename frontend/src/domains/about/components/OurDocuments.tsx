@@ -22,7 +22,7 @@ type OurDocumentsProps = {
   groups?: DocumentGroup[]; // pass CMS data here
 };
 
-// Only this group gets the view-only eye + custom icons.
+// Only this group gets the view-only eye + custom icon.
 // Change to match your data (e.g. group.id or group.variant of Organizational Documents).
 const isViewOnlyGroup = (group: DocumentGroup) =>
   group.title.toLowerCase().includes("organizational");
@@ -30,21 +30,82 @@ const isViewOnlyGroup = (group: DocumentGroup) =>
 // Icons (files live in /public/aboutus/)
 const EYE_ICON = "/aboutus/eye.png";
 
-// Pick an icon per organizational document by title; falls back to the generic PDF icon
-const getDocIcon = (title: string) => {
-  const t = title.toLowerCase();
-  if (t.includes("private trust")) return "/aboutus/private.png";
-  if (t.includes("80g")) return "/aboutus/80G.png";
-  if (t.includes("fcra")) return "/aboutus/fcar.png"; // file name as you gave it
-  return PDF_ICON;
-};
+// Every Organizational Document (including newly uploaded PDFs) uses this same icon
+const ORG_DOC_ICON = "/aboutus/80G.png";
 
 // Open the PDF preview in a new tab
 const openPdf = (url: string) => window.open(url, "_blank", "noopener,noreferrer");
 
+/**
+ * Real file download.
+ * The HTML `download` attribute is ignored for files hosted on another domain
+ * (S3, Cloudinary, API server...), so the browser just opens the PDF instead.
+ * Here we fetch the file, turn it into a blob and save it ourselves.
+ *   1) same-origin file  -> fetch it directly
+ *   2) other domain      -> go straight to our /api/download proxy
+ *                           (no failed CORS request in the Network tab)
+ *   3) last resort: open the PDF in a new tab
+ */
+const downloadPdf = async (url: string, title: string) => {
+  const safeName = title.replace(/[\\/:*?"<>|]+/g, "").trim() || "document";
+  const filename = /\.pdf$/i.test(safeName) ? safeName : `${safeName}.pdf`;
+
+  const save = (blob: Blob) => {
+    const pdfBlob =
+      blob.type === "application/pdf"
+        ? blob
+        : new Blob([blob], { type: "application/pdf" });
+    const objectUrl = URL.createObjectURL(pdfBlob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 2000);
+  };
+
+  // Files on another domain can't be fetched from the browser (CORS), so only
+  // try a direct fetch when the file is on our own site.
+  let sameOrigin = false;
+  try {
+    sameOrigin = new URL(url, window.location.href).origin === window.location.origin;
+  } catch {
+    sameOrigin = false;
+  }
+
+  if (sameOrigin) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Direct download failed");
+      save(await res.blob());
+      return;
+    } catch (err) {
+      console.warn("[download] direct fetch failed, trying /api/download", err);
+    }
+  }
+
+  try {
+    const res = await fetch(
+      `/api/download?url=${encodeURIComponent(url)}&name=${encodeURIComponent(filename)}`,
+    );
+    if (!res.ok) throw new Error("Proxy download failed");
+    save(await res.blob());
+    return;
+  } catch (err) {
+    console.error(
+      "[download] /api/download failed. Make sure app/api/download/route.ts exists. Opening preview instead.",
+      err,
+    );
+  }
+
+  openPdf(url);
+};
+
 function DocumentCard({ group }: { group: DocumentGroup }) {
   const theme = DOCUMENT_THEMES[group.variant];
   const [page, setPage] = useState(1);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const viewOnly = isViewOnlyGroup(group);
 
   const totalPages = Math.max(1, Math.ceil(group.items.length / DOCUMENTS_PAGE_SIZE));
@@ -96,12 +157,12 @@ function DocumentCard({ group }: { group: DocumentGroup }) {
               onClick={() => openPdf(doc.url)}
               className="flex cursor-pointer items-center gap-[clamp(8px,1.2vw,16px)] bg-white p-[clamp(8px,1vw,12px)]"
             >
-              {/* Document icon in tinted square */}
+              {/* Same document icon for every organizational PDF */}
               <div
                 className={`flex h-[clamp(32px,3.2vw,44px)] w-[clamp(32px,3.2vw,44px)] shrink-0 items-center justify-center rounded-md ${theme.headerIconBg}`}
               >
                 <Image
-                  src={getDocIcon(doc.title)}
+                  src={ORG_DOC_ICON}
                   alt=""
                   width={24}
                   height={24}
@@ -166,24 +227,33 @@ function DocumentCard({ group }: { group: DocumentGroup }) {
                 {doc.title}
               </Typography>
 
-              <a
-                href={doc.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                download
+              <button
+                type="button"
                 aria-label={`Download ${doc.title}`}
-                onClick={(e) => e.stopPropagation()} // download only, don't open preview
+                disabled={downloadingId === String(doc.id)}
+                onClick={async (e) => {
+                  e.stopPropagation(); // download only, don't open preview
+                  if (downloadingId) return;
+                  setDownloadingId(String(doc.id));
+                  try {
+                    await downloadPdf(doc.url, doc.title);
+                  } finally {
+                    setDownloadingId(null);
+                  }
+                }}
                 onKeyDown={(e) => e.stopPropagation()}
-                className={`flex h-[clamp(30px,3vw,40px)] w-[clamp(30px,3vw,40px)] shrink-0 items-center justify-center rounded-md transition-opacity hover:opacity-80 ${theme.button}`}
+                className={`flex h-[clamp(30px,3vw,40px)] w-[clamp(30px,3vw,40px)] shrink-0 cursor-pointer items-center justify-center rounded-md transition-opacity hover:opacity-80 disabled:cursor-wait disabled:opacity-50 ${theme.button}`}
               >
                 <Image
                   src={theme.buttonIcon}
                   alt=""
                   width={20}
                   height={20}
-                  className="h-[clamp(14px,1.4vw,20px)] w-[clamp(14px,1.4vw,20px)]"
+                  className={`h-[clamp(14px,1.4vw,20px)] w-[clamp(14px,1.4vw,20px)] ${
+                    downloadingId === String(doc.id) ? "animate-pulse" : ""
+                  }`}
                 />
-              </a>
+              </button>
             </li>
           )
         )}
