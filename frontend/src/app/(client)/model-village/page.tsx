@@ -3,6 +3,8 @@ import Villagedevelopment from "@/domains/modelvillage/components/villagedevelop
 import SupportVillage from "@/domains/modelvillage/components/supportvillage";
 import Modelvillagestat from "@/domains/modelvillage/components/modelvillagestat";
 
+export const dynamic = "force-dynamic";
+
 export default function OurTeamPage() {
   return (
     <>

@@ -35,7 +35,9 @@ export interface KnowledgeDocument {
     | "model_village"
     | "donation"
     | "contact"
-    | "governance";
+    | "governance"
+    | "farmers"
+    | "youth";
   keywords: string[];
   summary: string;
   content: string;

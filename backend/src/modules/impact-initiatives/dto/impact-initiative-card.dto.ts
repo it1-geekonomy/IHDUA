@@ -23,6 +23,12 @@ export class ImpactInitiativeCardDto {
   slug: string;
 
   @ApiProperty({
+    example: 1,
+    description: 'Display order set in the CMS; cards are already sorted by it',
+  })
+  displayOrder: number;
+
+  @ApiProperty({
     example: 'Vinayaka Jnana Vidyashale',
     nullable: true,
     description: 'Card title set in the CMS (null when empty)',

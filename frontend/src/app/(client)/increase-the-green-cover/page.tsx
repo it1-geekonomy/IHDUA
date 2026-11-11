@@ -1,20 +1,44 @@
-import BannerSection from "@/domains/IncreaseTheGreenCover/components/bannersection";
-import Greenvillage from "@/domains/IncreaseTheGreenCover/components/greenvillage";
-import Whygreencovermatters from"@/domains/IncreaseTheGreenCover/components/whygreencovermatters";
-import SustainablePractices from "@/domains/IncreaseTheGreenCover/components/sustainable practices";
-import Impactstats from "@/domains/IncreaseTheGreenCover/components/impactstats";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { fetchImpactInitiativePage } from "@/shared/lib/impactApi";
+import { ImpactPageView } from "@/domains/impact/cms/ImpactPageView";
 import NewsletterSection from "@/shared/components/Newsletter";
 
-export default function OurTeamPage() {
+export const dynamic = "force-dynamic";
+
+const SLUG = "increase-the-green-cover";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await fetchImpactInitiativePage(SLUG);
+  if (!page) return {};
+  return {
+    title: page.metaTitle || `${page.heroTitle || page.name} | IHDUA`,
+    description: page.metaDescription || page.heroDescription || undefined,
+  };
+}
+
+export default async function IncreaseTheGreenCoverPage() {
+  const pageData = await fetchImpactInitiativePage(SLUG);
+
+  if (!pageData) {
+    notFound();
+  }
+
   return (
-    <> 
-    <BannerSection />
-    <Greenvillage />
-    <Whygreencovermatters />
-    <SustainablePractices/>
-    <Impactstats />
-    <NewsletterSection />
-      
-    </>
+    <main className="w-full">
+      <ImpactPageView
+        data={{
+          layoutType: pageData.category.layoutType as any,
+          slug: pageData.slug,
+          heroTitle: pageData.heroTitle || pageData.name,
+          heroDescription: pageData.heroDescription || "",
+          heroImage: pageData.heroImageUrl || "",
+          heroImageMobile:
+            pageData.heroImageMobileUrl || pageData.heroImageUrl || "",
+          content: pageData.content || {},
+        }}
+      />
+      <NewsletterSection />
+    </main>
   );
 }

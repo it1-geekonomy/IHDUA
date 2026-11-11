@@ -166,7 +166,8 @@ export class ImpactInitiativesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
-    summary: 'List all impact initiatives with pagination & filters (CMS Admin)',
+    summary:
+      'List all impact initiatives with pagination & filters (CMS Admin)',
     description:
       'Supports pagination, search, category, status and deleted filters. Returns list fields only (no content or SEO); use GET /impact-initiatives/{id} for the full page. Requires Bearer token.',
   })
@@ -258,4 +259,5 @@ export class ImpactInitiativesController {
     return {
       statusCode: HttpStatus.OK,
     };
-  }}
+  }
+}

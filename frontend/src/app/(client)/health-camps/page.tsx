@@ -1,20 +1,44 @@
-import BannerSection from "@/domains/healthcamps/components/bannersection";
-import Healthiercommunities from "@/domains/healthcamps/components/healthiercommunities";
-import Supportingcommunities from"@/domains/healthcamps/components/supportingcommunities";
-import AwarenessGallery from "@/domains/healthcamps/components/AwarenessGallerySection";
-import Impactstats from "@/domains/healthcamps/components/ImpactStatsSection";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { fetchImpactInitiativePage } from "@/shared/lib/impactApi";
+import { ImpactPageView } from "@/domains/impact/cms/ImpactPageView";
 import NewsletterSection from "@/shared/components/Newsletter";
 
-export default function OurTeamPage() {
+export const dynamic = "force-dynamic";
+
+const SLUG = "health-camps";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const page = await fetchImpactInitiativePage(SLUG);
+  if (!page) return {};
+  return {
+    title: page.metaTitle || `${page.heroTitle || page.name} | IHDUA`,
+    description: page.metaDescription || page.heroDescription || undefined,
+  };
+}
+
+export default async function HealthCampsPage() {
+  const pageData = await fetchImpactInitiativePage(SLUG);
+
+  if (!pageData) {
+    notFound();
+  }
+
   return (
-    <> 
-    <BannerSection />
-    <Healthiercommunities />
-    <Supportingcommunities />
-    <AwarenessGallery />
-    <Impactstats />
-    <NewsletterSection />
-      
-    </>
+    <main className="w-full">
+      <ImpactPageView
+        data={{
+          layoutType: pageData.category.layoutType as any,
+          slug: pageData.slug,
+          heroTitle: pageData.heroTitle || pageData.name,
+          heroDescription: pageData.heroDescription || "",
+          heroImage: pageData.heroImageUrl || "",
+          heroImageMobile:
+            pageData.heroImageMobileUrl || pageData.heroImageUrl || "",
+          content: pageData.content || {},
+        }}
+      />
+      <NewsletterSection />
+    </main>
   );
 }

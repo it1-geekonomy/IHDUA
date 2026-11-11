@@ -100,7 +100,8 @@ export class CreateImpactInitiativeDto extends OmitType(SeoFieldsDto, [
     type: 'string',
     description:
       'Page sections as a JSON string (multipart). Must match the category layout; see the content field on ImpactInitiative.',
-    example: '{"intro":{"eyebrow":"EDUCATION","heading":"Adarsha Academy","highlights":[]},"statsStrip":null}',
+    example:
+      '{"intro":{"eyebrow":"EDUCATION","heading":"Adarsha Academy","highlights":[]},"statsStrip":null}',
   })
   @IsOptional()
   @Transform(({ value }) => parseJsonField(value))

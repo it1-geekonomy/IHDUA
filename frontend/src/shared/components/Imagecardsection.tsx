@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
@@ -15,6 +18,7 @@ import {
   THEME_ORDER,
   type CardTheme,
 } from "@/shared/constants/imagecard";
+import { fetchImpactCategoryCards } from "@/shared/lib/impactApi";
 
 export interface ImageCardItem {
   image: string;
@@ -23,12 +27,14 @@ export interface ImageCardItem {
   href?: string;
   theme?: CardTheme;
 }
+
 interface ImageCardsSectionProps {
   label: string;
   heading: string | string[];
   description: string;
   items: ImageCardItem[];
   className?: string;
+  categorySlug?: string;
 }
 
 function SectionLabel({ children }: { children: string }) {
@@ -48,13 +54,19 @@ function SectionLabel({ children }: { children: string }) {
 
 function ImageCard({ item, index }: { item: ImageCardItem; index: number }) {
   const theme = THEMES[item.theme ?? THEME_ORDER[index % THEME_ORDER.length]];
+  const fallbackImg =
+    index % 2 === 0
+      ? "/Rural Education/Rectangle 44.png"
+      : "/Rural Education/Rectangle 44 (1).png";
+  const imageSrc =
+    item.image && item.image.trim() !== "" ? item.image : fallbackImg;
 
   const content = (
     <>
-      <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden sm:aspect-[4/3]">
+      <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden sm:aspect-[4/3] bg-neutral-100">
         <Image
-          src={item.image}
-          alt={item.imageAlt}
+          src={imageSrc}
+          alt={item.imageAlt || item.title}
           fill
           sizes="(min-width: 80rem) 22vw, (min-width: 64rem) 25vw, (min-width: 48rem) 40vw, 100vw"
           className="object-cover object-center"
@@ -98,9 +110,45 @@ export default function ImageCardsSection({
   label,
   heading,
   description,
-  items,
+  items = [],
   className = "",
+  categorySlug,
 }: ImageCardsSectionProps) {
+  const [cards, setCards] = useState<ImageCardItem[]>(items);
+
+  useEffect(() => {
+    setCards(items);
+  }, [items]);
+
+  useEffect(() => {
+    if (!categorySlug) return;
+    let isMounted = true;
+
+    fetchImpactCategoryCards(categorySlug)
+      .then((apiCards) => {
+        if (!isMounted) return;
+        if (apiCards && Array.isArray(apiCards) && apiCards.length > 0) {
+          const dynamicItems: ImageCardItem[] = apiCards.map((card, idx) => ({
+            title: card.title || card.name,
+            image: card.imageUrl || "",
+            imageAlt: card.title || card.name,
+            href: card.slug.startsWith("/") ? card.slug : `/${card.slug}`,
+            theme: (idx % 2 === 0 ? "purple" : "amber") as CardTheme,
+          }));
+          setCards(dynamicItems);
+        } else {
+          setCards([]);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setCards([]);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [categorySlug]);
+
   const headingLines = Array.isArray(heading) ? heading : [heading];
 
   return (
@@ -134,27 +182,16 @@ export default function ImageCardsSection({
 
           <Typography
             variant="body-lg"
-            className="text-center font-figtree text-[#5F6C6D] lg:text-left"
+            className="font-figtree font-normal text-[#5F6C6D] text-center lg:text-left"
           >
             {description}
           </Typography>
         </div>
 
-        {/* Cards */}
-        {items.length <= 2 ? (
-          <div
-            className={`mx-auto grid w-full min-w-0 max-w-[22rem] grid-cols-1 sm:max-w-xl sm:grid-cols-2 lg:col-span-2 lg:max-w-none ${GRID_GAP}`}
-          >
-            {items.map((item, i) => (
-              <ImageCard key={`${item.title}-${i}`} item={item} index={i} />
-            ))}
-          </div>
-        ) : (
-          <div
-            className={`mx-auto grid w-full min-w-0 max-w-[22rem] grid-cols-1 sm:max-w-xl sm:grid-cols-2 md:max-w-none md:grid-cols-3 lg:contents ${GRID_GAP}`}
-          >
-            {items.map((item, i) => (
-              <ImageCard key={`${item.title}-${i}`} item={item} index={i} />
+        {cards.length > 0 && (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:col-span-2">
+            {cards.map((item, index) => (
+              <ImageCard key={item.href || index} item={item} index={index} />
             ))}
           </div>
         )}

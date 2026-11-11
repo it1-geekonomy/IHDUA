@@ -4,6 +4,8 @@ import BannerSection from "@/domains/skillsandemployment/components/bannersectio
 import GrowingSustainably from "@/domains/skillsandemployment/components/growingsustainably";
 import NewsletterSection from "@/shared/components/Newsletter";
 
+export const dynamic = "force-dynamic";
+
 export default function OurTeamPage() {
   return (
     <>

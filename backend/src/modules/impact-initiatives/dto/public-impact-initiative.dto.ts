@@ -19,6 +19,9 @@ export class PublicImpactInitiativeListItemDto {
   @ApiPropertyOptional({ nullable: true })
   heroImageUrl: string | null;
 
+  @ApiProperty({ example: 1, description: 'Display order within the category' })
+  displayOrder: number;
+
   @ApiProperty({ type: PublicImpactCategoryDto })
   category: PublicImpactCategoryDto;
 
@@ -28,6 +31,7 @@ export class PublicImpactInitiativeListItemDto {
       slug: entity.slug,
       heroTitle: entity.heroTitle ?? null,
       heroImageUrl: entity.heroImageUrl ?? null,
+      displayOrder: entity.displayOrder,
       category: PublicImpactCategoryDto.from(entity.category!),
     };
   }

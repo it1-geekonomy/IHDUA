@@ -227,18 +227,19 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-[#E5E0D8] bg-white shadow-2xs">
-        <table className="w-full text-left font-figtree text-xs">
-          <thead className="border-b border-[#E5E0D8] bg-[#FAF8F4] text-[11px] uppercase tracking-wide text-[#8A847A]">
-            <tr>
-              <th className="px-5 py-3 font-semibold">Page</th>
-              <th className="px-5 py-3 font-semibold">URL</th>
-              <th className="px-5 py-3 font-semibold">Order</th>
-              <th className="px-5 py-3 font-semibold">Status</th>
-              <th className="px-5 py-3 font-semibold">Updated</th>
-              <th className="px-5 py-3 text-right font-semibold">Actions</th>
-            </tr>
-          </thead>
+      <div className="rounded-2xl border border-[#E5E0D8] bg-white shadow-2xs overflow-visible">
+        <div className="overflow-x-auto overflow-y-visible min-h-[260px]">
+          <table className="w-full text-left font-figtree text-xs">
+            <thead className="border-b border-[#E5E0D8] bg-[#FAF8F4] text-[11px] uppercase tracking-wide text-[#8A847A]">
+              <tr>
+                <th className="px-5 py-3 font-semibold rounded-tl-2xl">Page</th>
+                <th className="px-5 py-3 font-semibold">URL</th>
+                <th className="px-5 py-3 font-semibold">Order</th>
+                <th className="px-5 py-3 font-semibold">Status</th>
+                <th className="px-5 py-3 font-semibold">Updated</th>
+                <th className="px-5 py-3 text-right font-semibold rounded-tr-2xl">Actions</th>
+              </tr>
+            </thead>
           <tbody className="divide-y divide-[#F0EBE3]">
             {loading && !pages.length ? (
               <tr>
@@ -289,6 +290,7 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
                         }
                         options={STATUS_OPTIONS}
                         disabled={busyId === p.id}
+                        dropdownClassName="w-48 z-[100] shadow-2xl"
                       />
                     ) : (
                       <span className={cn("rounded-full border px-2 py-0.5 text-[11px] font-semibold capitalize", STATUS_STYLES[p.status])}>
@@ -351,6 +353,7 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
             )}
           </tbody>
         </table>
+        </div>
 
         {meta.totalPages > 1 && (
           <div className="flex items-center justify-between border-t border-[#E5E0D8] bg-[#FAF8F4] px-4 py-3">

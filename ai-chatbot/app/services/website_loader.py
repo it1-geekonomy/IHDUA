@@ -222,5 +222,175 @@ def load_website_documents() -> list[dict]:
         except Exception as e:
             log.warning("Failed parsing milestone.ts: %s", e)
 
+    # 7. Load Mission, Vision & Values and Who We Are
+    about_whoweare = frontend / "src/domains/about/constants/whoweare.ts"
+    about_mvv = frontend / "src/domains/about/constants/missionvisionvalues.ts"
+    if about_whoweare.exists() or about_mvv.exists():
+        try:
+            about_content = [
+                "Title: Who We Are, Mission, Vision and Values - IHDUA",
+                "Category: About",
+                "Website URL: /about\n",
+                "Mission: To empower rural communities through sustainable and inclusive development initiatives.",
+                "Vision: A just and equitable society where every individual has the opportunity to live a healthy, dignified and productive life.",
+                "Values: Compassion, Integrity, Inclusivity, Sustainability, Community Ownership, Accountability.\n",
+                "Approach: Community participation, local ownership and long-term impact across education, skill development, women's empowerment, sustainable livelihoods and community development.",
+            ]
+            docs.append(
+                {
+                    "table": "website_data",
+                    "source_id": "about/whoweare-mission",
+                    "title": "Who We Are, Mission, Vision & Values",
+                    "url": "/about",
+                    "category": "About",
+                    "content": "\n".join(about_content),
+                }
+            )
+        except Exception as e:
+            log.warning("Failed parsing about constants: %s", e)
+
+    # 8. Load Farmers and Sustainable Agriculture
+    docs.append(
+        {
+            "table": "website_data",
+            "source_id": "farmers/sustainable-farming",
+            "title": "Farmer Empowerment & Sustainable Agriculture Initiatives",
+            "url": "/farmers",
+            "category": "Farmers",
+            "content": (
+                "Title: Farmer Empowerment & Sustainable Agriculture\n"
+                "Category: Farmers\n"
+                "Website URL: /farmers\n\n"
+                "Overview: IHDUA supports rural farmers through agricultural initiatives, practical training and sustainable farming practices that strengthen rural livelihoods.\n"
+                "Focus Areas: Sustainable agriculture, soil health, crop cultivation and livestock care.\n"
+                "Impact Achievements:\n"
+                "• 48+ Farmers completed Soil Health training and soil fertility management.\n"
+                "• 32+ Farmers participated in Turmeric Cultivation awareness.\n"
+                "• 15 Farmers adopted Foxtail Millet as an eco-resilient crop.\n"
+                "• 3,290+ Farmers received high-yield green maize fodder for cattle nutrition.\n"
+                "• 43 Farmer SHGs supported with organic inputs and market linkages."
+            ),
+        }
+    )
+
+    # 9. Load Youth Empowerment & Vocational Opportunities
+    docs.append(
+        {
+            "table": "website_data",
+            "source_id": "youth/skills-opportunities",
+            "title": "Youth Empowerment, Vocational Skills & Career Opportunities",
+            "url": "/youth",
+            "category": "Youth",
+            "content": (
+                "Title: Youth Skills & Opportunities\n"
+                "Category: Youth\n"
+                "Website URL: /youth\n\n"
+                "Overview: IHDUA supports rural youth through skill development and vocational training to build practical skills and future employment opportunities.\n"
+                "Key Training Programmes & Numbers:\n"
+                "• 514+ Computer course participants (MS Office, digital literacy, communications).\n"
+                "• 265+ (267+) General Duty Assistant (GDA) nursing care participants placed in healthcare.\n"
+                "• 2,161+ (2,174+) Tailoring training participants.\n"
+                "• 3,290+ Total skill development participants recorded across all programs."
+            ),
+        }
+    )
+
+    # 10. Load Health Awareness & Medical Camps
+    docs.append(
+        {
+            "table": "website_data",
+            "source_id": "health/awareness-initiatives",
+            "title": "Healthcare Awareness, Nutrition, Anaemia & Camps",
+            "url": "/health-awareness",
+            "category": "Healthcare",
+            "content": (
+                "Title: Healthcare Awareness & Medical Camps\n"
+                "Category: Healthcare\n"
+                "Website URL: /health-awareness\n\n"
+                "Overview: IHDUA's health awareness programmes have covered nutrition, hygiene, anaemia and reproductive health for women, schoolchildren and Anganwadi workers.\n"
+                "Recorded Impact:\n"
+                "• 160 Reproductive and child health educational sessions.\n"
+                "• 855 Women reached in nutrition & anaemia prevention sessions.\n"
+                "• 988 Women reached through maternal and adolescent hygiene sessions.\n"
+                "• 34+ Frontline Anganwadi workers trained.\n"
+                "• 28 Free rural medical camps conducted with 3,487+ beneficiaries treated."
+            ),
+        }
+    )
+
+    # 11. Load Increase The Green Cover & Rejuvenation of Villages (Model Village)
+    docs.append(
+        {
+            "table": "website_data",
+            "source_id": "modelvillage/green-cover-rejuvenation",
+            "title": "Model Village, Rejuvenation & Increase the Green Cover",
+            "url": "/model-village",
+            "category": "Environment",
+            "content": (
+                "Title: Model Village & Environmental Rejuvenation\n"
+                "Category: Environment\n"
+                "Website URL: /model-village\n\n"
+                "The Model Village project implements Gram Swaraj principles for self-reliant rural settlements:\n"
+                "Rejuvenation of Villages (/rejuvenation-of-villages):\n"
+                "• 16+ Solar street lights installed for night safety.\n"
+                "• 14+ People benefited from sanitation toilet construction.\n"
+                "• 48 Soil health training participants.\n"
+                "• 81+ Cattle supported by green fodder distribution.\n\n"
+                "Increase the Green Cover (/increase-the-green-cover):\n"
+                "• 5 Fruit saplings distributed per family.\n"
+                "• 16 Community leaders participated in Model Village exposure visits.\n"
+                "• 18 Participants from other villages engaged in exposure visits.\n"
+                "• 32 Farmers reached through sunflower cultivation awareness."
+            ),
+        }
+    )
+
+    # 12. Load Governance, Documents & Legal Registrations
+    docs.append(
+        {
+            "table": "website_data",
+            "source_id": "about/transparency-documents",
+            "title": "Governance, Transparency & Official Registrations (80G, FCRA)",
+            "url": "/about",
+            "category": "Governance",
+            "content": (
+                "Title: Transparency & Documents - IHDUA\n"
+                "Category: Governance\n"
+                "Website URL: /about\n\n"
+                "Key Registrations & Compliance:\n"
+                "• Private Trust Certificate (India): Officially registered under the Indian Trusts Act.\n"
+                "• 80G Certificate: Donors receive 50% income tax deduction under Section 80G.\n"
+                "• FCRA Certificate: Authorized by Ministry of Home Affairs for foreign funding.\n"
+                "• US 501(c)(3) tax exemption status through IHDUA Chicago chapter.\n"
+                "• Published Annual Reports detailing operational and audited financial statements."
+            ),
+        }
+    )
+
+    # 13. Load Volunteer and Partnership Avenues
+    docs.append(
+        {
+            "table": "website_data",
+            "source_id": "getinvolved/volunteer-partnerships",
+            "title": "Get Involved: Volunteering & Corporate CSR Partnerships",
+            "url": "/contact",
+            "category": "Get Involved",
+            "content": (
+                "Title: Volunteering & Partnerships with IHDUA\n"
+                "Category: Get Involved\n"
+                "Website URL: /contact\n\n"
+                "Volunteer Opportunities:\n"
+                "• Teaching & Education at Vinayaka Jnana Vidyashale or Adarsha Academy KRS\n"
+                "• Healthcare & Medical Camps\n"
+                "• Community Outreach and Women Empowerment\n"
+                "• Agriculture, Youth Development, and Digital Marketing\n\n"
+                "Partnership Options:\n"
+                "• Corporate CSR Partnerships (registered under MCA guidelines)\n"
+                "• NGO / Non-Profit Collaboration & Academic Partnerships\n"
+                "• Programme Sponsorship & Rural Infrastructure Development"
+            ),
+        }
+    )
+
     log.info("Loaded %d rich website documents directly from frontend source data", len(docs))
     return docs

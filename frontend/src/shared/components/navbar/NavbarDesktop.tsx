@@ -214,7 +214,7 @@ function DesktopDropdown({
         role="menu"
         className={cn(
           "absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3 transition-[visibility] duration-300",
-          nestedMode ? "w-[min(900px,94vw)]" : "w-[min(640px,94vw)]",
+          nestedMode ? "w-[min(900px,94vw)]" : "w-[min(740px,94vw)]",
           open ? "visible" : "invisible pointer-events-none",
         )}
       >
@@ -247,13 +247,13 @@ function DesktopDropdown({
 
                   const rowInner = (
                     <>
-                      <span className="text-xs font-bold tabular-nums text-[#FFD638]/70">
+                      <span className="text-xs font-bold tabular-nums text-[#FFD638]/70 shrink-0">
                         {String(i + 1).padStart(2, "0")}
                       </span>
                       <Typography
                         variant="body-lg"
                         className={cn(
-                          "flex-1 font-manrope font-semibold transition-colors duration-300",
+                          "flex-1 min-w-0 truncate font-manrope font-semibold transition-colors duration-300",
                           lit ? YELLOW : "text-white group-hover:text-[#FFD638]",
                         )}
                       >
@@ -261,7 +261,7 @@ function DesktopDropdown({
                       </Typography>
                       <Arrow
                         className={cn(
-                          "transition-all duration-300",
+                          "shrink-0 transition-all duration-300",
                           on ? "opacity-100" : "opacity-0",
                         )}
                       />
@@ -372,7 +372,7 @@ function DesktopDropdown({
                               <Typography
                                 variant="body-lg"
                                 className={cn(
-                                  "font-manrope font-medium transition-colors duration-300",
+                                  "flex-1 min-w-0 font-manrope font-medium transition-colors duration-300",
                                   lit ? YELLOW : "text-white/90 group-hover:text-[#FFD638]",
                                 )}
                               >
@@ -399,7 +399,7 @@ function DesktopDropdown({
               >
                 {link.label}
               </p>
-              <ul className="grid grid-cols-2 auto-rows-fr gap-3">
+              <ul className="grid grid-cols-1 sm:grid-cols-2 auto-rows-fr gap-3">
                 {kids.map((child, i) => {
                   const a = popIn(i, 120);
                   const lit = isNavLinkActive(pathname, child);
@@ -416,25 +416,25 @@ function DesktopDropdown({
                           href={child.href}
                           onClick={close}
                           className={cn(
-                            "group flex h-full items-center gap-4 whitespace-nowrap rounded-2xl bg-white/5 p-4 ring-1 ring-white/5 transition-colors duration-300 hover:bg-white/10 hover:text-[#FFD638] hover:ring-[#FFD638]/40",
+                            "group flex h-full items-center gap-3.5 rounded-2xl bg-white/5 p-3.5 sm:p-4 ring-1 ring-white/5 transition-colors duration-300 hover:bg-white/10 hover:text-[#FFD638] hover:ring-[#FFD638]/40",
                             lit ? YELLOW : "text-white",
                           )}
                         >
-                          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#9739A8]/40 text-sm font-bold text-[#FFD638]">
+                          <span className="flex h-10 w-10 shrink-0 aspect-square items-center justify-center rounded-xl bg-[#9739A8]/40 text-sm font-bold tabular-nums text-[#FFD638]">
                             {String(i + 1).padStart(2, "0")}
                           </span>
-                          <span className="flex-1">
+                          <span className="flex-1 min-w-0">
                             <Typography
                               variant="body-lg"
                               className={cn(
-                                "font-manrope font-semibold transition-colors duration-300",
+                                "font-manrope font-semibold transition-colors duration-300 leading-snug",
                                 lit ? YELLOW : "text-white group-hover:text-[#FFD638]",
                               )}
                             >
                               {child.label}
                             </Typography>
                           </span>
-                          <Arrow className="opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                          <Arrow className="shrink-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                         </Link>
                       )}
                     </li>
@@ -453,13 +453,15 @@ function DesktopDropdown({
 export function DesktopNav({
   pathname,
   onHomeClick,
+  links = NAV_LINKS,
 }: {
   pathname: string;
   onHomeClick: (e: MouseEvent<HTMLAnchorElement>) => void;
+  links?: NavLink[];
 }) {
   return (
     <ul className="mx-auto hidden h-full items-center lg:flex">
-      {NAV_LINKS.map((link) => {
+      {links.map((link) => {
         if (link.children?.length) {
           return <DesktopDropdown key={link.label} link={link} pathname={pathname} />;
         }

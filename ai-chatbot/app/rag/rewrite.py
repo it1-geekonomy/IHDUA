@@ -32,6 +32,10 @@ def build_multi_queries(query: str, intents: set[str]) -> list[str]:
         queries.append("Self-help groups SHG federation microfinance women empowerment loans")
     if "stitching" in intents:
         queries.append("Stitching unit garment tailoring vocational training women")
+    if "skills" in intents:
+        queries.append("Youth skills computer training General Duty Assistant GDA nursing care vocational")
+    if "governance" in intents:
+        queries.append("12A 80G FCRA registration certificate URN AY 2022-23 to AY 2026-27 Form 10AC Form 10BE Trust Deed")
     if "health" in intents:
         queries.append("Free medical camps healthcare doctor awareness diagnostics")
     if "donate" in intents:

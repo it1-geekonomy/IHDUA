@@ -1,29 +1,29 @@
 import ImageCardsSection, {
   type ImageCardItem,
-} from "@/shared/components/Imagecardsection"; // adjust to where you saved the file
+} from "@/shared/components/Imagecardsection";
+import { fetchImpactCategoryCards } from "@/shared/lib/impactApi";
 
-const EDUCATION_ITEMS: ImageCardItem[] = [
-  {
-    image: "/modelvillage/villageD1.png",
-    imageAlt: "Rejuvenation of villages",
-    title: "Rejuvenation of villages",
-    href: "/rejuvenation-of-villages",
-  },
-  {
-    image: "/modelvillage/villageD2.png",
-    imageAlt: "Increase the green cover",
-    title: "Increase the green cover",
-    href: "/increase-the-green-cover"
-  },
-];
+export default async function VillageDevelopmentSection() {
+  const apiCards = await fetchImpactCategoryCards("model-village");
 
-export default function EducationSection() {
+  const items: ImageCardItem[] =
+    apiCards && apiCards.length > 0
+      ? apiCards.map((card, idx) => ({
+          title: card.title || card.name,
+          image: card.imageUrl || "",
+          imageAlt: card.title || card.name,
+          href: card.slug.startsWith("/") ? card.slug : `/${card.slug}`,
+          theme: (idx % 2 === 0 ? "purple" : "amber") as ImageCardItem["theme"],
+        }))
+      : [];
+
   return (
     <ImageCardsSection
       label="VILLAGE DEVELOPMENT"
-       heading={["Building Stronger", "Rural Communities"]}
+      heading={["Building Stronger", "Rural Communities"]}
       description="IHDUA’s Model Village project focuses on Chikkahundi village in Gundlupet taluk. It aims to support holistic village development through sustainable agriculture, organic farming and eco-friendly activities."
-      items={EDUCATION_ITEMS}
+      items={items}
+      categorySlug="model-village"
     />
   );
 }
