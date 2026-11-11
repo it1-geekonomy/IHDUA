@@ -4,6 +4,7 @@ import Footer from "@/shared/components/footer";
 import CTAsection from "@/shared/components/CTAsection";
 import { DonationPopupShell } from "@/shared/components/DonationPopupShell";
 import { ChatbotWidget } from "@/shared/components/chatbot";
+import PageTransition from "@/shared/components/pagetransition";
 
 interface ClientLayoutProps {
   children: ReactNode;
@@ -14,6 +15,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     <div className="flex min-h-screen flex-col">
       <Navbar />
       <main className="flex-1">{children}</main>
+      <PageTransition />
       <CTAsection />
       <Footer />
       <DonationPopupShell />

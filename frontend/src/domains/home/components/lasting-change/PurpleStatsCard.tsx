@@ -7,15 +7,40 @@ import { LASTING_CHANGE } from "@/domains/home/constants/lastingchange";
 const TARGET = LASTING_CHANGE.purpleCard.statValue;
 const SUFFIX = LASTING_CHANGE.purpleCard.statSuffix;
 
-const CHART_POINTS = [
-  { x: 52, y: 68, year: "2024", value: 42 },
-  { x: 160, y: 40, year: "2025", value: 98 },
-  { x: 268, y: 12, year: "2026", value: 158 },
-] as const;
-
+const CHART_TOP = 12;
 const CHART_BASELINE = 84;
-const CHART_PATH =
-  "M 12 78 C 28 76, 38 72, 52 68 C 92 56, 120 48, 160 40 C 210 28, 236 18, 268 12";
+
+// Cumulative villages reached. Last value must equal TARGET (202).
+// Replace 48 and 120 with your actual numbers.
+const CHART_DATA = [
+  { x: 52, year: "2024", value: 48 },
+  { x: 160, year: "2025", value: 120 },
+  { x: 268, year: "2026", value: TARGET },
+];
+
+const yFor = (value: number) =>
+  CHART_BASELINE - (value / TARGET) * (CHART_BASELINE - CHART_TOP);
+
+const CHART_POINTS = CHART_DATA.map((d) => ({ ...d, y: yFor(d.value) }));
+
+// Smooth curve through the points (Catmull-Rom -> cubic Bezier)
+const buildPath = (pts: { x: number; y: number }[]) => {
+  let d = `M ${pts[0].x} ${pts[0].y}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] ?? pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[i + 2] ?? p2;
+    const c1x = p1.x + (p2.x - p0.x) / 6;
+    const c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6;
+    const c2y = p2.y - (p3.y - p1.y) / 6;
+    d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2.x} ${p2.y}`;
+  }
+  return d;
+};
+
+const CHART_PATH = buildPath([{ x: 12, y: 78 }, ...CHART_POINTS]);
 const PATH_LEN = 400;
 
 type PurpleStatsCardProps = {
@@ -150,7 +175,7 @@ export function PurpleStatsCard({
             className="h-auto w-full"
             fill="none"
             role="img"
-            aria-label="Community trust trend from 2024 to 2026"
+            aria-label="Villages reached trend from 2024 to 2026"
           >
             <line
               x1="12"

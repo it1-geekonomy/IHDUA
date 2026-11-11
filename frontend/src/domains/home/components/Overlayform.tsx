@@ -57,7 +57,7 @@ function OverlayAmountSection({ form, rise, delay }: OverlayAmountProps) {
         <Typography
           id="overlayform-title"
           variant="h4"
-          className="font-regular font-lora leading-[1.2] text-[#00191B] text-[18px] sm:text-[20px]"
+          className="font-regular font-lora leading-[1.2] text-[#00191B] text-[22px] sm:text-[26px]"
         >
           Strengthening Rural Lives, Building Better Futures
         </Typography>
@@ -92,6 +92,9 @@ function OverlayAmountSection({ form, rise, delay }: OverlayAmountProps) {
               ) : (
                 <span className="block">{item.title}</span>
               )}
+            </span>
+            <span className="hidden font-figtree text-[11px] leading-[1.35] text-[#5F6C6D] lg:block xl:text-[12px]">
+              {item.description}
             </span>
           </div>
         ))}
@@ -133,9 +136,8 @@ export default function Overlayform({ onClose }: OverlayformProps) {
 
   return (
     <div
-      className={`fixed inset-0 z-[100] flex items-center justify-center overflow-hidden overscroll-none bg-black/60 backdrop-blur-sm transition-opacity duration-500 ease-out motion-reduce:transition-none ${
-        exiting ? "opacity-0" : "opacity-100"
-      }`}
+      className={`fixed inset-0 z-[100] flex items-center justify-center overflow-hidden overscroll-none bg-black/60 backdrop-blur-sm transition-opacity duration-500 ease-out motion-reduce:transition-none ${exiting ? "opacity-0" : "opacity-100"
+        }`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="overlayform-title"
@@ -164,9 +166,11 @@ export default function Overlayform({ onClose }: OverlayformProps) {
           className={`
             overlayform-card-in
             relative flex w-[min(380px,calc(100vw-2rem))] shrink-0 flex-col
+            max-h-[calc(100dvh-1rem)] lg:max-h-[calc(100dvh-2rem)]
+            [@media(max-width:1023px)_and_(max-height:800px)]:h-[calc(100dvh-1rem)]
             rounded-xl bg-white shadow-2xl overflow-hidden
             transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none
-            lg:h-auto lg:w-[min(840px,calc(100vw-4rem))] lg:flex-row lg:overflow-hidden lg:rounded-none
+            lg:w-[min(840px,calc(100vw-4rem))] lg:rounded-none
             xl:w-[min(900px,calc(100vw-5rem))]
             2xl:w-[min(960px,calc(100vw-6rem))]
           `}
@@ -184,39 +188,55 @@ export default function Overlayform({ onClose }: OverlayformProps) {
           </button>
 
           {intro && <IntroCurtains />}
-
-          {/* Image */}
-          <div className="relative h-32 min-h-24 w-full shrink-0 overflow-hidden lg:h-auto lg:min-h-0 lg:w-[38%] lg:shrink-0 lg:self-stretch xl:w-[40%] 2xl:w-[42%]">
-            <div className="overlayform-img-in absolute inset-0">
-              <Image
-                src="/overlayform/mobileimg1.png"
-                alt="Family supported by IHDUA"
-                fill
-                className="object-cover object-center lg:hidden"
-                priority
-                sizes="380px"
-              />
-              <Image
-                src="/overlayform/formimg.png"
-                alt="Family supported by IHDUA"
-                fill
-                className="hidden object-cover object-center lg:block"
-                priority
-                sizes="(min-width: 1536px) 42vw, 40vw"
-              />
+          
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain lg:flex-row">
+            {/* Image */}
+            <div
+              className="
+                relative w-full shrink-0 overflow-hidden h-36
+                [@media(max-width:1023px)_and_(max-height:800px)]:h-auto
+                [@media(max-width:1023px)_and_(max-height:800px)]:min-h-[clamp(64px,14dvh,110px)]
+                [@media(max-width:1023px)_and_(max-height:800px)]:flex-1
+                [@media(max-width:1023px)_and_(max-height:800px)]:shrink
+                lg:h-auto lg:min-h-0 lg:w-[38%] lg:flex-none lg:self-stretch
+                xl:w-[40%] 2xl:w-[42%]
+              "
+            >
+              <div className="overlayform-img-in absolute inset-0">
+                <Image
+                  src="/overlayform/mobileimg1.png"
+                  alt="Family supported by IHDUA"
+                  fill
+                  className="object-cover object-center lg:hidden"
+                  priority
+                  sizes="380px"
+                />
+                <Image
+                  src="/overlayform/formimg.png"
+                  alt="Family supported by IHDUA"
+                  fill
+                  className="hidden object-cover object-center lg:block"
+                  priority
+                  sizes="(min-width: 1536px) 42vw, 40vw"
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Form: completely non-scrollable and compact */}
-          <div
-            className="
-              flex w-full flex-col justify-between bg-[#F6F2EC] px-4 py-3.5 sm:px-5 sm:py-4 overflow-hidden
-              lg:w-[62%] lg:px-6 lg:py-4.5
-              xl:w-[60%] xl:px-7 xl:py-5
-              2xl:w-[58%] 2xl:px-8 2xl:py-5
-            "
-          >
-            <OverlayAmountSection form={form} rise={rise} delay={delay} />
+            {/* Form: never shrinks, so it is always fully visible */}
+            <div
+              className="
+                flex w-full shrink-0 flex-col gap-1 bg-[#F6F2EC] px-4 py-3
+                [@media(min-height:641px)_and_(max-height:720px)]:[zoom:0.93]
+                [@media(min-height:561px)_and_(max-height:640px)]:[zoom:0.85]
+                [@media(min-height:501px)_and_(max-height:560px)]:[zoom:0.75]
+                [@media(max-height:500px)]:[zoom:0.68]
+                lg:w-[62%] lg:px-6 lg:py-4
+                xl:w-[60%] xl:px-7 xl:py-5
+                2xl:w-[58%] 2xl:px-8 2xl:py-5
+              "
+            >
+              <OverlayAmountSection form={form} rise={rise} delay={delay} />
+            </div>
           </div>
         </div>
       )}
