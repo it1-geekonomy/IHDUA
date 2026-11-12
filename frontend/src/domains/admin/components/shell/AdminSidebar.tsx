@@ -84,7 +84,7 @@ export function AdminSidebar({
   return (
     <aside
       className={cn(
-        "fixed inset-y-0 left-0 z-40 flex flex-col bg-[#1A0F1C] text-white shadow-2xl transition-all duration-300 ease-in-out lg:static lg:relative lg:z-auto lg:shadow-xl",
+        "fixed inset-y-0 left-0 z-40 flex flex-col bg-[#1A0F1C] text-white shadow-2xl transition-all duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:shrink-0 lg:z-30 lg:shadow-xl",
         mobileNavOpen ? "translate-x-0 w-72" : "-translate-x-full w-72",
         !isMobile && (sidebarCollapsed ? "lg:translate-x-0 lg:w-[72px]" : "lg:translate-x-0 lg:w-64"),
       )}
@@ -111,7 +111,7 @@ export function AdminSidebar({
       {/* Inner container */}
       <div
         className={cn(
-          "flex h-full w-full flex-1 flex-col transition-all duration-300",
+          "flex h-full min-h-0 w-full flex-1 flex-col transition-all duration-300",
           isCollapsed ? "w-[72px] overflow-visible" : "w-full max-w-full overflow-hidden",
         )}
       >
@@ -166,7 +166,7 @@ export function AdminSidebar({
         {/* Navigation Links */}
         <nav
           className={cn(
-            "flex flex-1 flex-col overflow-y-auto overflow-x-hidden",
+            "flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-contain",
             isCollapsed ? "gap-2.5 p-2.5" : "gap-4 p-4",
           )}
         >

@@ -72,7 +72,7 @@ export default async function BlogSlugPage({ params }: BlogSlugPageProps) {
   const { slug } = await params;
 
   const [story, published, categories] = await Promise.all([
-    fetchStoryBySlug(slug),
+    fetchStoryBySlug(slug).catch(() => null),
     // The list and categories are optional here: a failure must not break the page
     fetchPublishedStories().catch(() => [] as BlogStory[]),
     fetchBlogCategories().catch(() => [] as BlogCategory[]),
