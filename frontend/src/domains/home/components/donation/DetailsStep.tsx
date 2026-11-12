@@ -1,7 +1,8 @@
 "use client";
 
-import { Pencil, Loader2, Info, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Pencil, Loader2, Info, AlertCircle, CheckCircle2, Repeat } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DONATION_COPY } from "@/shared/constants/donation";
 import {
   FormInput,
   FormTextarea,
@@ -33,6 +34,11 @@ type DetailsStepProps = Pick<
   | "statusTone"
   | "showLargeAmountHint"
   | "cause"
+  | "recurring"
+  | "frequency"
+  | "frequencies"
+  | "setFrequency"
+  | "recurringAvailable"
   | "setPhoneCountryCode"
   | "setFullName"
   | "setMobile"
@@ -53,6 +59,11 @@ type DetailsStepProps = Pick<
 export function DetailsStep({
   chosenAmount,
   cause,
+  recurring,
+  frequency,
+  frequencies,
+  setFrequency,
+  recurringAvailable,
   isIndia,
   phoneCountryCode,
   fullName,
@@ -94,16 +105,16 @@ export function DetailsStep({
       </div>
 
       {/* Donation Amount Summary Box */}
-      <div className="mt-5 rounded-md border border-[#F3EBDD] bg-[#FDFBF7] p-4 flex items-center justify-between">
-        <div>
-          <span className="block text-xs font-medium text-[#5F6C6D]">
-            Donation Amount
-          </span>
-          <span className="block text-2xl font-bold text-[#111827] mt-0.5">
+      <div className="mt-3 rounded-md border border-[#F3EBDD] bg-[#FDFBF7] px-3 py-2 flex items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="text-lg font-bold leading-none text-[#111827]">
             {chosenAmount}
           </span>
+          {recurring && (
+            <span className="text-xs font-medium text-[#5F6C6D]">{recurring.every}</span>
+          )}
           {cause && (
-            <span className="mt-1 inline-block rounded-full bg-[#9739A8]/10 px-2.5 py-0.5 text-[11px] font-semibold text-[#9739A8]">
+            <span className="truncate rounded-full bg-[#9739A8]/10 px-2 py-0.5 text-[11px] font-semibold text-[#9739A8]">
               {cause}
             </span>
           )}
@@ -112,11 +123,58 @@ export function DetailsStep({
           type="button"
           onClick={goBackToAmount}
           disabled={isPaying}
-          className="flex items-center gap-1.5 text-xs sm:text-[13px] font-semibold text-[#9739A8] hover:opacity-80 transition-opacity cursor-pointer disabled:opacity-50"
+          className="flex shrink-0 items-center gap-1 text-xs font-semibold text-[#9739A8] hover:opacity-80 transition-opacity cursor-pointer disabled:opacity-50"
         >
-          <span>Edit Donation Amount</span>
-          <Pencil className="w-3.5 h-3.5" />
+          <span>Edit</span>
+          <Pencil className="w-3 h-3" />
         </button>
+      </div>
+
+      {/* Donation Frequency */}
+      <div className="mt-3">
+        <span className="block text-[13px] font-semibold text-[#111827]">
+          {DONATION_COPY.chooseFrequency}
+        </span>
+        <div className="mt-1.5 grid grid-cols-4 gap-1.5 sm:gap-2">
+          {frequencies.map((item) => {
+            const active = frequency === item.id;
+            const unavailable = !recurringAvailable && item.id !== "once";
+            return (
+              <button
+                key={item.id}
+                type="button"
+                aria-pressed={active}
+                disabled={unavailable || isPaying}
+                title={unavailable ? DONATION_COPY.recurringIndiaOnly : undefined}
+                onClick={() => setFrequency(item.id)}
+                className={cn(
+                  "rounded-md border py-1.5 px-1 text-center text-[12.5px] sm:text-[13px] font-semibold whitespace-nowrap transition-all disabled:cursor-not-allowed disabled:opacity-40",
+                  active
+                    ? "border-[#9739A8] bg-[#9739A8] text-white shadow-sm"
+                    : "border-[#9739A8]/40 bg-transparent text-[#9739A8] enabled:hover:bg-[#9739A8]/10 cursor-pointer",
+                )}
+              >
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+        {!recurringAvailable && (
+          <p className="mt-1.5 text-[11px] text-[#6B7280]">
+            {DONATION_COPY.recurringIndiaOnly}
+          </p>
+        )}
+        {recurring && (
+          <div className="mt-2 flex items-start gap-2 rounded-md border border-[#9739A8]/25 bg-[#FAF5FC] px-3 py-2">
+            <Repeat className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#9739A8]" />
+            <p className="text-[12px] leading-snug text-[#4B5563]">
+              <span className="font-semibold text-[#9739A8]">
+                {DONATION_COPY.autopayTitle}:
+              </span>{" "}
+              {DONATION_COPY.autopayNote(recurring.every)}
+            </p>
+          </div>
+        )}
       </div>
 
 
@@ -126,7 +184,7 @@ export function DetailsStep({
           e.preventDefault();
           void paySecurely();
         }}
-        className="mt-5 space-y-4 font-figtree"
+        className="mt-4 space-y-4 font-figtree"
       >
         {/* Row 1: Full Name & Email Address */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -257,7 +315,9 @@ export function DetailsStep({
               <span className="text-[15px]">Processing Payment...</span>
             </>
           ) : (
-            <span className="text-[15px]">Continue to Payment</span>
+            <span className="text-[15px]">
+              {recurring ? recurring.button : "Continue to Payment"}
+            </span>
           )}
         </button>
       </form>

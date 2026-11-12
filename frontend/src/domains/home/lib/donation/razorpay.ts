@@ -1,18 +1,21 @@
 const RAZORPAY_SCRIPT = "https://checkout.razorpay.com/v1/checkout.js";
 
+/** Order payments return `razorpay_order_id`; recurring ones return `razorpay_subscription_id`. */
 export type RazorpaySuccessResponse = {
-  razorpay_order_id: string;
+  razorpay_order_id?: string;
+  razorpay_subscription_id?: string;
   razorpay_payment_id: string;
   razorpay_signature: string;
 };
 
 export type RazorpayCheckoutOptions = {
   key: string;
-  amount: number;
-  currency: string;
+  amount?: number;
+  currency?: string;
   name: string;
   description?: string;
-  order_id: string;
+  order_id?: string;
+  subscription_id?: string;
   prefill?: {
     name?: string;
     email?: string;

@@ -5,7 +5,10 @@ import {
   DONATION_COPY,
   DONATION_CAUSES,
   DEFAULT_DONATION_CAUSE,
+  DONATION_FREQUENCY_OPTIONS,
+  RECURRING_SCHEDULE,
   type DonationCause,
+  type DonationFrequencyOption,
 } from "@/shared/constants/donation";
 import {
   DEFAULT_COUNTRY,
@@ -19,6 +22,7 @@ import {
 import {
   amountDigitsFromDisplay,
   createDonationOrder,
+  createDonationSubscription,
   DONATE_CHECKOUT_EVENT,
   type DonateCheckoutDetail,
   formatDonationAmount,
@@ -28,6 +32,9 @@ import {
   openRazorpayCheckout,
   toAmountDigits,
   verifyDonationPayment,
+  verifyDonationSubscription,
+  type RazorpayCheckoutOptions,
+  type RazorpaySuccessResponse,
 } from "@/domains/home/lib/donation";
 
 export type DonationStep = 1 | 2;
@@ -42,6 +49,8 @@ export type DonationReceipt = {
   date: string;
   email: string;
   paymentId?: string;
+  /** Set for recurring donations, e.g. "every month". */
+  recurringEvery?: string;
 };
 
 function isValidTaxId(value: string) {
@@ -70,6 +79,7 @@ export function useDonationForm() {
   const [customDigits, setCustomDigits] = useState("");
   const [usingCustom, setUsingCustom] = useState(false);
   const [cause, setCause] = useState<DonationCause>(DEFAULT_DONATION_CAUSE);
+  const [frequency, setFrequencyState] = useState<DonationFrequencyOption>("once");
   const [editingAmount, setEditingAmount] = useState(false);
   const [countryCode, setCountryCodeState] = useState(DEFAULT_COUNTRY.code);
   const [phoneCountryCode, setPhoneCountryCode] = useState(DEFAULT_COUNTRY.code);
@@ -92,6 +102,19 @@ export function useDonationForm() {
   const phoneCountry = useMemo(() => getCountryByCode(phoneCountryCode), [phoneCountryCode]);
   // PAN (80G receipt) applies only to donations made from India
   const isIndia = countryCode === "IN";
+  // Razorpay subscriptions (eMandate / UPI Autopay / cards) are INR-only
+  const recurringAvailable = isIndia && currency === "INR";
+  const effectiveFrequency: DonationFrequencyOption = recurringAvailable
+    ? frequency
+    : "once";
+  const recurring =
+    effectiveFrequency === "once" ? null : RECURRING_SCHEDULE[effectiveFrequency];
+
+  const setFrequency = useCallback((next: DonationFrequencyOption) => {
+    setFrequencyState(next);
+    setStatusMessage(null);
+    setStatusTone(null);
+  }, []);
 
   const presets = useMemo(
     () =>
@@ -290,7 +313,7 @@ export function useDonationForm() {
       const loaded = await loadRazorpayScript();
       if (!loaded) throw new Error("Unable to load Razorpay checkout");
 
-      const order = await createDonationOrder({
+      const payload = {
         fullName: name,
         phone: fullPhone,
         email: mail,
@@ -303,15 +326,64 @@ export function useDonationForm() {
         city: city.trim(),
         ...(message.trim() ? { message: message.trim() } : {}),
         donationCategory: cause,
-      });
+      };
+
+      let checkout: Pick<
+        RazorpayCheckoutOptions,
+        "key" | "amount" | "currency" | "order_id" | "subscription_id" | "description"
+      >;
+      if (effectiveFrequency === "once") {
+        const order = await createDonationOrder(payload);
+        checkout = {
+          key: order.keyId,
+          amount: Number(order.amount),
+          currency: order.currency,
+          order_id: order.orderId,
+          description: `${cause} - Donation`,
+        };
+      } else {
+        const sub = await createDonationSubscription({
+          ...payload,
+          frequency: effectiveFrequency,
+        });
+        checkout = {
+          key: sub.keyId,
+          subscription_id: sub.subscriptionId,
+          description: `${cause} - ${RECURRING_SCHEDULE[effectiveFrequency].label} Donation`,
+        };
+      }
+
+      const confirmPayment = async (response: RazorpaySuccessResponse) => {
+        if (response.razorpay_subscription_id) {
+          const verified = await verifyDonationSubscription({
+            razorpaySubscriptionId: response.razorpay_subscription_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+          });
+          return {
+            receiptNumber:
+              verified.donor?.receiptNumber || DONATION_COPY.recurringReceiptPending,
+            amount: verified.donor?.amount || verified.subscription.amount,
+            currency: verified.donor?.currency || "INR",
+            donationCategory: verified.donor?.donationCategory || cause,
+          };
+        }
+        const verified = await verifyDonationPayment({
+          razorpayOrderId: response.razorpay_order_id ?? "",
+          razorpayPaymentId: response.razorpay_payment_id,
+          razorpaySignature: response.razorpay_signature,
+        });
+        return {
+          receiptNumber: verified.receiptNumber || `IHDUA-${Date.now()}`,
+          amount: verified.amount || amount,
+          currency: verified.currency || currency,
+          donationCategory: verified.donationCategory || cause,
+        };
+      };
 
       openRazorpayCheckout({
-        key: order.keyId,
-        amount: Number(order.amount),
-        currency: order.currency,
+        ...checkout,
         name: "IHDUA",
-        description: `${cause} - Donation`,
-        order_id: order.orderId,
         prefill: {
           name,
           email: mail,
@@ -321,20 +393,15 @@ export function useDonationForm() {
         handler: async (response) => {
           setStatusMessage(DONATION_COPY.verifying);
           try {
-            const verifyResult = await verifyDonationPayment({
-              razorpayOrderId: response.razorpay_order_id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature,
-            });
+            const confirmed = await confirmPayment(response);
             setStatusTone("ok");
-            setStatusMessage(DONATION_COPY.paymentSuccess);
+            setStatusMessage(
+              recurring ? DONATION_COPY.recurringSetUp : DONATION_COPY.paymentSuccess,
+            );
             setSuccessReceipt({
-              receiptNumber: verifyResult.receiptNumber || `IHDUA-${Date.now()}`,
+              ...confirmed,
               donorName: name,
-              amount: verifyResult.amount || amount,
-              currency: verifyResult.currency || currency,
               currencySymbol: currencyMeta.symbol,
-              donationCategory: verifyResult.donationCategory || cause,
               date: new Date().toLocaleDateString("en-IN", {
                 day: "numeric",
                 month: "short",
@@ -342,6 +409,7 @@ export function useDonationForm() {
               }),
               email: mail,
               paymentId: response.razorpay_payment_id,
+              recurringEvery: recurring?.every,
             });
             setFullName("");
             setMobile("");
@@ -391,6 +459,11 @@ export function useDonationForm() {
     usingCustom,
     cause,
     causes: DONATION_CAUSES,
+    frequency: effectiveFrequency,
+    frequencies: DONATION_FREQUENCY_OPTIONS,
+    setFrequency,
+    recurringAvailable,
+    recurring,
     editingAmount,
     countryCode,
     phoneCountryCode,

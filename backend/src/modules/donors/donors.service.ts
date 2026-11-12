@@ -3,6 +3,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -35,6 +36,8 @@ type OrderNotes = {
 
 @Injectable()
 export class DonorsService {
+  private readonly logger = new Logger(DonorsService.name);
+
   constructor(
     @InjectRepository(Donor)
     private readonly donorsRepository: Repository<Donor>,
@@ -65,47 +68,70 @@ export class DonorsService {
     return minor;
   }
 
-  private buildReceiptNumber(id: string): string {
+  buildReceiptNumber(id: string): string {
     const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
     return `IHDUA-${stamp}-${id.replace(/-/g, '').slice(0, 8).toUpperCase()}`;
   }
 
-  /** Creates a Razorpay order only — no donors row until payment succeeds. */
-  async createOrder(dto: CreateDonationOrderDto) {
-    const currency = (dto.currency ?? 'INR') as DonationCurrencyCode;
-    const amountMinor = this.toMinorUnits(dto.amount, currency);
+  /** Razorpay SDK errors carry the reason in `error.description`. */
+  razorpayErrorReason(error: unknown): string {
+    if (error && typeof error === 'object') {
+      const inner = (error as { error?: { description?: string } }).error;
+      if (inner?.description) return String(inner.description);
+      if ('message' in error) return String((error as Error).message);
+    }
+    return String(error);
+  }
 
-    const fullName = dto.fullName.trim();
-    const phone = dto.phone.trim();
-    const email = dto.email.trim().toLowerCase();
+  /** Normalises donor input shared by one-time orders and recurring donations. */
+  prepareDonation(dto: CreateDonationOrderDto) {
+    const currency = (dto.currency ?? 'INR') as DonationCurrencyCode;
     const countryCode = dto.countryCode?.trim().toUpperCase() || '';
     // PAN (and the 80G receipt it triggers) only applies to donations from India
-    const isIndianDonation = (!countryCode || countryCode === 'IN') && currency === 'INR';
-    const pan = isIndianDonation ? dto.pan?.trim().toUpperCase() || '' : '';
-    const address = dto.address?.trim() || '';
-    const city = dto.city?.trim() || '';
-    const message = dto.message?.trim() || '';
-    const donationCat = dto.donationCategory || DonationCategory.GENERAL_DONATION;
-    const countryName = dto.countryName?.trim() || '';
+    const isIndianDonation =
+      (!countryCode || countryCode === 'IN') && currency === 'INR';
+
+    return {
+      fullName: dto.fullName.trim(),
+      phone: dto.phone.trim(),
+      email: dto.email.trim().toLowerCase(),
+      pan: isIndianDonation ? dto.pan?.trim().toUpperCase() || '' : '',
+      address: dto.address?.trim() || '',
+      city: dto.city?.trim() || '',
+      message: dto.message?.trim() || '',
+      donationCategory:
+        dto.donationCategory || DonationCategory.GENERAL_DONATION,
+      countryCode,
+      countryName: dto.countryName?.trim() || '',
+      amount: dto.amount,
+      amountMinor: this.toMinorUnits(dto.amount, currency),
+      currency,
+      isIndianDonation,
+    };
+  }
+
+  /** Creates a Razorpay order only — no donors row until payment succeeds. */
+  async createOrder(dto: CreateDonationOrderDto) {
+    const d = this.prepareDonation(dto);
 
     try {
       const order = await this.razorpay.createOrder({
-        amountPaise: amountMinor,
-        currency,
+        amountPaise: d.amountMinor,
+        currency: d.currency,
         receipt: `ihdua_${Date.now()}`,
         notes: {
-          fullName,
-          phone,
-          email,
-          pan,
-          address,
-          city,
-          message,
-          donationCategory: donationCat,
-          amount: dto.amount,
-          currency,
-          countryCode,
-          countryName,
+          fullName: d.fullName,
+          phone: d.phone,
+          email: d.email,
+          pan: d.pan,
+          address: d.address,
+          city: d.city,
+          message: d.message,
+          donationCategory: d.donationCategory,
+          amount: d.amount,
+          currency: d.currency,
+          countryCode: d.countryCode,
+          countryName: d.countryName,
         },
       });
 
@@ -117,17 +143,42 @@ export class DonorsService {
       };
     } catch (error) {
       if (error instanceof InternalServerErrorException) throw error;
-      const message =
-        error &&
+      const hasReason =
+        !!error &&
         typeof error === 'object' &&
-        'error' in error &&
-        error.error &&
-        typeof error.error === 'object' &&
-        'description' in error.error
-          ? String((error.error as { description?: string }).description)
-          : 'Failed to create Razorpay order';
-      throw new InternalServerErrorException(message);
+        !!(error as { error?: { description?: string } }).error?.description;
+      throw new InternalServerErrorException(
+        hasReason
+          ? this.razorpayErrorReason(error)
+          : 'Failed to create Razorpay order',
+      );
     }
+  }
+
+  /** Verifies `x-razorpay-signature` against the raw body and returns the event. */
+  parseRazorpayWebhook(
+    rawBody: string | Buffer,
+    signature: string,
+  ): { event: string; payload: any } {
+    if (!signature) {
+      throw new BadRequestException('Missing x-razorpay-signature header');
+    }
+    if (!this.razorpay.verifyWebhookSignature(rawBody, signature)) {
+      this.logger.warn('Razorpay webhook signature verification failed.');
+      throw new BadRequestException('Invalid webhook signature');
+    }
+
+    const raw = Buffer.isBuffer(rawBody) ? rawBody.toString('utf8') : rawBody;
+    let body: { event?: string; payload?: unknown };
+    try {
+      body = JSON.parse(raw);
+    } catch {
+      throw new BadRequestException('Invalid JSON payload in webhook');
+    }
+
+    const event = String(body.event ?? '');
+    this.logger.log(`Received Razorpay webhook event: ${event}`);
+    return { event, payload: body.payload ?? {} };
   }
 
   /** Verifies Razorpay payment, then inserts the donors row (paid only). */
@@ -182,7 +233,9 @@ export class DonorsService {
       address: notes.address || null,
       city: notes.city || notes.countryName || notes.countryCode || null,
       message: notes.message || null,
-      donationCategory: (notes.donationCategory as DonationCategory) || DonationCategory.GENERAL_DONATION,
+      donationCategory:
+        (notes.donationCategory as DonationCategory) ||
+        DonationCategory.GENERAL_DONATION,
       amount: amountMajor,
       currency,
       razorpayOrderId: dto.razorpayOrderId,
