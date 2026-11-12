@@ -6,7 +6,7 @@ import logging
 import re
 from typing import Any
 
-from sqlalchemy import func, text
+from sqlalchemy import func, or_, text
 from sqlalchemy.orm import Session
 
 from app.config import settings
@@ -295,21 +295,27 @@ def with_neighbor_chunks(hits: list[dict]) -> list[dict]:
         db.close()
 
 
-def get_by_title_keywords(keywords: list[str]) -> list[dict]:
-    keys = [k.lower() for k in keywords if k]
+def get_by_title_keywords(keywords: list[str], limit: int = 8) -> list[dict]:
+    keys = [k.strip() for k in keywords if k and len(k.strip()) >= 3]
     if not keys:
         return []
 
     db = _db()
     try:
-        rows = db.query(DocumentChunk).all()
+        conditions = []
+        for k in keys[:6]:
+            conditions.append(DocumentChunk.title.ilike(f"%{k}%"))
+            conditions.append(DocumentChunk.category.ilike(f"%{k}%"))
+
+        rows = (
+            db.query(DocumentChunk)
+            .filter(or_(*conditions))
+            .limit(limit)
+            .all()
+        )
         hits: list[dict] = []
         seen_parents: set[str] = set()
         for row in rows:
-            title = (row.title or "").lower()
-            category = (row.category or "").lower()
-            if not any(k in title or k in category for k in keys):
-                continue
             parent = f"{row.source_table}#{row.source_id}"
             if parent in seen_parents:
                 continue
@@ -318,7 +324,7 @@ def get_by_title_keywords(keywords: list[str]) -> list[dict]:
                 {
                     "id": str(row.id),
                     "content": row.content,
-                    "similarity": 0.55,
+                    "similarity": 0.28,
                     "title": row.title or "",
                     "url": row.url or "/",
                     "category": row.category or "",

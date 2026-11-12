@@ -148,10 +148,14 @@ def _static_documents() -> list[dict]:
                 "Title: Donations & Tax Deductions\nCategory: Donation\nWebsite: /#donate\n\n"
                 "Donations to IHDUA qualify for official tax exemptions:\n"
                 "• For Indian Donors: Donations are eligible for tax deductions under Section 80G of the Income Tax Act "
-                "(50% deduction on taxable income). An official 80G tax receipt is issued.\n"
+                "(50% deduction of the donation amount from taxable income). An official 80G tax receipt is issued.\n"
                 "• For US Donors: Donations are tax-deductible under Section 501(c)(3) via the IHDUA Chicago chapter.\n"
                 "Payment Modes: Instant online donations on the website via UPI (Google Pay, PhonePe, Paytm), Debit/Credit Cards, "
-                "and Net Banking. Sponsorships available for student education, sewing machines, tree planting, and health camps."
+                "and Net Banking powered by Razorpay.\n"
+                "Donation Frequencies & AutoPay: Donors can make a One-Time donation or set up a Recurring Donation (Monthly, "
+                "Quarterly every 3 months, or Yearly every year). Recurring donations use AutoPay and are available for Indian (INR) donors. "
+                "Donors can pause or cancel recurring donations anytime. 80G tax receipts are emailed automatically after each charge. "
+                "Sponsorships available for student education, sewing machines, tree planting, and health camps."
             ),
         },
         {

@@ -177,7 +177,8 @@ def load_site_pages() -> tuple[list[dict], list[str]]:
         try:
             text = html_to_text(_fetch(base + path))
         except Exception as exc:
-            log.warning("Could not fetch %s%s: %s", base, path, exc)
+            # Skip pages that are not currently published in the CMS
+            log.debug("Skipping unrendered page %s%s: %s", base, path, exc)
             failed.append(path)
             continue
         if len(text) < 60:
