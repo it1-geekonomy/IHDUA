@@ -23,7 +23,7 @@ export interface KeyMilestonesProps {
 }
 
 const DEFAULT_EMPTY_MESSAGE =
-  "No milestones have been published yet. Please publish milestones from the CMS to show them here.";
+  "New milestones and updates will be displayed here soon.";
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);

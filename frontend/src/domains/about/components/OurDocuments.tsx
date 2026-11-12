@@ -23,9 +23,9 @@ type OurDocumentsProps = {
 /** Shown inside a card when nothing is published for it in the CMS */
 const EMPTY_MESSAGES: Record<string, string> = {
   organizational:
-    "No organizational documents have been published yet. Please publish documents from the CMS to show them here.",
+    "New organizational documents and updates will be displayed here soon.",
   annual:
-    "No annual reports have been published yet. Please publish reports from the CMS to show them here.",
+    "New annual reports and updates will be displayed here soon.",
 };
 const DEFAULT_EMPTY_MESSAGE =
   "Nothing has been published yet. Please publish from the CMS to show it here.";

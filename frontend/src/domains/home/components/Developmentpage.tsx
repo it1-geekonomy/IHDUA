@@ -279,7 +279,7 @@ export default function RuralDevelopmentSection() {
               variant="body-sm"
               className="max-w-xs font-figtree font-normal leading-relaxed text-[#5F6C6D]"
             >
-              No banners have been published yet. Please publish banners from the CMS to show them here.
+              New banners and updates will be displayed here soon.
             </Typography>
           </div>
         ) : (
