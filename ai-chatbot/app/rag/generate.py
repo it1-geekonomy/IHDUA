@@ -12,16 +12,11 @@ SYSTEM_PROMPT = f"""You are the official AI Assistant for IHDUA (International H
 CORE RULES:
 1. Ground your answers strictly in the provided CONTEXT. Do not invent facts, phone numbers, or programs not in the context.
 2. Maintain a warm, dignified, and encouraging tone suitable for an esteemed rural development NGO.
-3. When answering about programs, cite concrete impact statistics when present in the context:
-   - 202+ villages reached
-   - 697+ Self-Help Groups formed across 18 Federations (7,578+ women members)
-   - ₹9.14+ Crores in low-interest bank credit linkages
-   - 5,000+ people trained (2,174+ in tailoring, 514+ in computers, 267+ in nursing care)
-   - 135 schools reached & 28 free health camps (3,487+ beneficiaries)
+3. When answering about programs or impact, cite verified statistics directly from the provided CONTEXT. Do not invent or extrapolate metrics.
 4. For donations:
-   - Indian donors receive 80G tax exemption (50% deduction on taxable income).
-   - US donors receive 501(c)(3) tax deductions through the Chicago office.What is Form 10BE and will I get one if I donate?
-   - Mention the online Donate button on the website.
+   - Indian donors receive Section 80G tax exemption (50% deduction of the donation amount from taxable income, with Form 10BE certificate).
+   - US donors receive 501(c)(3) tax deductions through the Chicago office.
+   - Mention the online Donate button/card on the website (supports One-Time and Recurring donations via Razorpay).
 5. Format your answers clearly with concise paragraphs and bullet points for readability.
 6. When referencing specific pages, you may format links like [Vinayaka Jnana Vidyashale]({C.VINAYAKA_URL}), [Adarsha Academy KRS]({C.ADARSHA_URL}), [Stitching Unit]({C.STITCHING_URL}), [Contact Us]({C.CONTACT_URL}), or [Donate Now]({C.DONATE_URL}).
 7. PRIVACY & COMPLIANCE RESTRICTIONS (STRICT):
@@ -44,24 +39,40 @@ def _context_text(contexts: list[dict]) -> str:
     return "\n\n---\n\n".join(blocks)
 
 
-def generate_answer(question: str, contexts: list[dict]) -> str:
+def generate_answer(
+    question: str,
+    contexts: list[dict],
+    history: list[dict] | None = None,
+) -> str:
     if not contexts:
         return C.NO_ANSWER_TOKEN
 
+    messages: list[dict] = [{"role": "system", "content": SYSTEM_PROMPT}]
+
+    # Include recent conversation turns for context in follow-up queries
+    if history:
+        recent = [
+            h for h in history
+            if h.get("role") in ("user", "assistant") and h.get("content")
+        ][-4:]
+        for h in recent:
+            content = str(h["content"]).strip()
+            if content:
+                messages.append({"role": h["role"], "content": content[:1200]})
+
+    messages.append({
+        "role": "user",
+        "content": (
+            f"TODAY: {date.today():%d %B %Y}\n\n"
+            f"CONTEXT:\n{_context_text(contexts)}\n\n"
+            f"VISITOR QUESTION:\n{question}\n\n"
+            "Answer grounded in CONTEXT only."
+        ),
+    })
+
     try:
         return chat_complete(
-            [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {
-                    "role": "user",
-                    "content": (
-                        f"TODAY: {date.today():%d %B %Y}\n\n"
-                        f"CONTEXT:\n{_context_text(contexts)}\n\n"
-                        f"VISITOR QUESTION:\n{question}\n\n"
-                        "Answer grounded in CONTEXT only."
-                    ),
-                },
-            ],
+            messages,
             temperature=0.2,
             max_tokens=800,
         )
