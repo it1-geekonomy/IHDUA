@@ -89,8 +89,9 @@ CONTACT_ANSWER = (
 THANKS_ANSWER = "You're very welcome! Let me know if you would like to know anything more about IHDUA's programs."
 
 DONATE_INTENT_ANSWER = (
-    "You can make a secure online donation on our website using the **Donate** form (UPI, Netbanking, Cards). "
-    "All eligible donations qualify for **80G tax exemption** in India (50% deduction) and **501(c)(3)** deductions in the USA.\n\n"
+    "You can make a secure online donation on our website using the **Donate** form (UPI, Netbanking, Cards powered by Razorpay). "
+    "You can choose a **One-Time donation** or set up a **Recurring Donation** (Monthly, Quarterly, or Yearly via AutoPay in India, with the ability to pause or cancel anytime). "
+    "All eligible donations qualify for **80G tax exemption** in India (50% deduction with Form 10BE) and **501(c)(3)** deductions in the USA.\n\n"
     f"For custom donor support or CSR partnerships, email {OFFICIAL_EMAIL} or call {OFFICIAL_PHONE}."
 )
 
