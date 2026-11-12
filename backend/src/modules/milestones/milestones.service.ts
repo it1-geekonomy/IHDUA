@@ -1,6 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ChatbotSyncService } from '../../common/chatbot-sync/chatbot-sync.service';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { ContentStatus } from '../../common/enums/content-status.enum';
 import {
@@ -22,6 +23,7 @@ export class MilestonesService {
   constructor(
     @InjectRepository(Milestone)
     private readonly repo: Repository<Milestone>,
+    private readonly chatbotSync: ChatbotSyncService,
   ) {}
 
   async create(dto: CreateMilestoneDto): Promise<Milestone> {
@@ -31,6 +33,7 @@ export class MilestonesService {
     });
     const saved = await this.repo.save(entity);
     this.logger.log(`Created new milestone for year ${saved.year} with ID ${saved.id}`);
+    this.chatbotSync.notify('milestones', saved.id);
     return saved;
   }
 
@@ -100,16 +103,21 @@ export class MilestonesService {
   async update(id: string, dto: UpdateMilestoneDto): Promise<Milestone> {
     const entity = await this.findOne(id);
     Object.assign(entity, dto);
-    return await this.repo.save(entity);
+    const saved = await this.repo.save(entity);
+    this.chatbotSync.notify('milestones', saved.id);
+    return saved;
   }
 
   async remove(id: string): Promise<void> {
     const entity = await this.findOne(id);
     await this.repo.softRemove(entity);
     this.logger.log(`Soft-deleted milestone with ID ${id}`);
+    this.chatbotSync.notify('milestones', id, 'delete');
   }
 
   async restore(id: string): Promise<Milestone> {
-    return restoreSoftDeleted(this.repo, id, 'Milestone');
+    const restored = await restoreSoftDeleted(this.repo, id, 'Milestone');
+    this.chatbotSync.notify('milestones', id);
+    return restored;
   }
 }

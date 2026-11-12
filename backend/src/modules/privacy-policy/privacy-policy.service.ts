@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
+import { ChatbotSyncService } from '../../common/chatbot-sync/chatbot-sync.service';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { ContentStatus } from '../../common/enums/content-status.enum';
 import {
@@ -24,6 +25,7 @@ export class PrivacyPolicyService {
   constructor(
     @InjectRepository(PrivacyPolicy)
     private readonly repo: Repository<PrivacyPolicy>,
+    private readonly chatbotSync: ChatbotSyncService,
   ) {}
 
   async create(dto: CreatePrivacyPolicyDto): Promise<PrivacyPolicy> {
@@ -102,6 +104,7 @@ export class PrivacyPolicyService {
   async remove(id: string): Promise<void> {
     const entity = await this.findOne(id);
     await this.repo.softRemove(entity);
+    this.chatbotSync.notify('privacy_policy', id, 'delete');
   }
 
   async restore(id: string): Promise<PrivacyPolicy> {
@@ -122,7 +125,9 @@ export class PrivacyPolicyService {
         'Cannot restore this privacy policy because an active record already uses the same title.',
       );
     }
-    return restoreSoftDeleted(this.repo, id, 'Privacy policy');
+    const restored = await restoreSoftDeleted(this.repo, id, 'Privacy policy');
+    this.chatbotSync.notify('privacy_policy', id);
+    return restored;
   }
 
   private async saveOrThrow(entity: PrivacyPolicy): Promise<PrivacyPolicy> {
@@ -158,7 +163,9 @@ export class PrivacyPolicyService {
     }
 
     try {
-      return await this.repo.save(entity);
+      const saved = await this.repo.save(entity);
+      this.chatbotSync.notify('privacy_policy', saved.id);
+      return saved;
     } catch (err) {
       if (this.isUniqueViolation(err)) {
         throw new ConflictException(
