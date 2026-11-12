@@ -321,7 +321,7 @@ export default function MeetOurLeadership() {
             variant="body-lg"
             className="max-w-xl font-figtree font-normal leading-relaxed text-[#5F6C6D]"
           >
-            No leadership members have been published yet. Please add them from the CMS to show them here.
+            New leadership members and updates will be displayed here soon.
           </Typography>
         </div>
       )}
