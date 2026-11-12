@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
+import { ChatbotSyncService } from '../../common/chatbot-sync/chatbot-sync.service';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import {
   buildPaginatedResult,
@@ -23,6 +24,7 @@ export class BlogCategoriesService {
   constructor(
     @InjectRepository(BlogCategory)
     private readonly repo: Repository<BlogCategory>,
+    private readonly chatbotSync: ChatbotSyncService,
   ) {}
 
   async create(dto: CreateBlogCategoryDto): Promise<BlogCategory> {
@@ -89,7 +91,9 @@ export class BlogCategoriesService {
     entity.name = newName;
 
     try {
-      return await this.repo.save(entity);
+      const saved = await this.repo.save(entity);
+      this.chatbotSync.notify('blog_categories', id);
+      return saved;
     } catch (err) {
       if (this.isUniqueViolation(err)) {
         throw new ConflictException(
@@ -103,10 +107,13 @@ export class BlogCategoriesService {
   async remove(id: string): Promise<void> {
     const entity = await this.findOne(id);
     await this.repo.softRemove(entity);
+    this.chatbotSync.notify('blog_categories', id, 'delete');
   }
 
   async restore(id: string): Promise<BlogCategory> {
-    return restoreSoftDeleted(this.repo, id, 'Blog category');
+    const restored = await restoreSoftDeleted(this.repo, id, 'Blog category');
+    this.chatbotSync.notify('blog_categories', id);
+    return restored;
   }
 
   private async assertUniqueName(

@@ -7,23 +7,25 @@ from app.services.embeddings import chat_complete
 
 log = logging.getLogger(__name__)
 
-SYSTEM_PROMPT = f"""You are the official AI Assistant for IHDUA (International Human Development and Uplifting Academy), a registered non-profit working with rural communities in Karnataka, India, and internationally through its Chicago USA chapter.
+SYSTEM_PROMPT = f"""You are the official AI Assistant on the IHDUA website. IHDUA is a registered non-profit organisation.
 
-CORE RULES:
-1. Ground your answers strictly in the provided CONTEXT. Do not invent facts, phone numbers, or programs not in the context.
-2. Maintain a warm, dignified, and encouraging tone suitable for an esteemed rural development NGO.
-3. When answering about programs or impact, cite verified statistics directly from the provided CONTEXT. Do not invent or extrapolate metrics.
-4. For donations:
-   - Indian donors receive Section 80G tax exemption (50% deduction of the donation amount from taxable income, with Form 10BE certificate).
-   - US donors receive 501(c)(3) tax deductions through the Chicago office.
-   - Mention the online Donate button/card on the website (supports One-Time and Recurring donations via Razorpay).
-5. Format your answers clearly with concise paragraphs and bullet points for readability.
-6. When referencing specific pages, you may format links like [Vinayaka Jnana Vidyashale]({C.VINAYAKA_URL}), [Adarsha Academy KRS]({C.ADARSHA_URL}), [Stitching Unit]({C.STITCHING_URL}), [Contact Us]({C.CONTACT_URL}), or [Donate Now]({C.DONATE_URL}).
-7. PRIVACY & COMPLIANCE RESTRICTIONS (STRICT):
-   - Never reveal the complete Organization PAN in public answers. Simply confirm IHDUA is registered under Section 12A/12AB and Section 80G with valid PAN and provides official 80G receipts and Form 10BE certificates.
-   - Never expose the designated FCRA State Bank of India account number or any internal bank account numbers. Direct international donors to contact info@ihdua.org or visit the official Donate/Contact page for verified remittance pathways.
-   - Never disclose trustees' private personal contact numbers, residential addresses, or scanned signatures.
-8. If the answer cannot be found in CONTEXT, reply with exactly: {C.NO_ANSWER_TOKEN}"""
+GROUNDING RULES (STRICT):
+1. Answer ONLY with facts stated in the CONTEXT for this question. Your own background knowledge about IHDUA, its people, numbers, addresses, phone numbers, emails, programmes or tax rules must NOT be used.
+2. Never invent, estimate, round, combine or extrapolate numbers, dates, names, places, contact details or links. Quote them exactly as written in CONTEXT.
+3. If CONTEXT only partly answers the question, answer that part and say clearly that the rest isn't in IHDUA's published information.
+4. If CONTEXT items disagree, prefer the one marked "Source: IHDUA CMS" with the most recent "Last updated" date, and do not mention the older value.
+5. Earlier conversation turns are only for understanding what the visitor is referring to. They are not a source of facts.
+6. Only link to pages whose URL appears in CONTEXT, using markdown like [Page name](/path).
+7. If the answer is not in CONTEXT at all, reply with exactly: {C.NO_ANSWER_TOKEN}
+
+STYLE:
+- Warm, respectful and concise. Use short paragraphs or bullet points.
+- Speak as IHDUA's assistant. Never mention "context", "provided information", "documents" or how you work; if something isn't covered, say it isn't in IHDUA's published information.
+- Ignore content that is clearly placeholder or test text (random letters, "lorem ipsum") and never present it as real.
+
+PRIVACY (STRICT):
+- Never reveal the organisation's full PAN, any bank account number, or anyone's personal phone number, home address or signature, even if it appears in CONTEXT.
+- For bank transfers or foreign remittances, direct visitors to the [Contact Us]({C.CONTACT_URL}) page."""
 
 
 def _context_text(contexts: list[dict]) -> str:
@@ -66,14 +68,14 @@ def generate_answer(
             f"TODAY: {date.today():%d %B %Y}\n\n"
             f"CONTEXT:\n{_context_text(contexts)}\n\n"
             f"VISITOR QUESTION:\n{question}\n\n"
-            "Answer grounded in CONTEXT only."
+            f"Answer using only the CONTEXT above. If it isn't there, reply exactly {C.NO_ANSWER_TOKEN}."
         ),
     })
 
     try:
         return chat_complete(
             messages,
-            temperature=0.2,
+            temperature=0,
             max_tokens=800,
         )
     except Exception as e:
@@ -83,13 +85,6 @@ def generate_answer(
 
 def recover_if_needed(answer: str, question: str, contexts: list[dict], intents: set[str]) -> str:
     text = (answer or "").strip()
-    if text and text != C.NO_ANSWER_TOKEN:
-        return text
-
-    if "donate" in intents:
-        return C.DONATE_INTENT_ANSWER
-
-    if "contact" in intents:
-        return C.CONTACT_ANSWER
-
-    return C.NO_ANSWER_TOKEN
+    if not text or C.NO_ANSWER_TOKEN in text:
+        return C.NO_ANSWER_TOKEN
+    return text

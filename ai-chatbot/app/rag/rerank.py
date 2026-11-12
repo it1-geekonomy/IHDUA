@@ -35,9 +35,13 @@ def rerank(hits: list[dict], intents: set[str]) -> list[dict]:
             bonus += 0.06
         if "contact" in intents and any(k in title or k in content for k in ("contact", "office", "address", "mysore")):
             bonus += 0.06
-        if "leadership" in intents and any(k in title or k in content for k in ("leadership", "ajaikumar", "founder", "chairperson", "trustee", "board")):
+        if "leadership" in intents and any(k in title or k in content for k in ("leadership", "founder", "chairperson", "trustee", "board", "team")):
             bonus += 0.06
-        if "stories" in intents and any(k in title or k in content for k in ("blog", "story", "stories", "shanthamma", "village", "article")):
+        if "impact" in intents and any(k in title for k in ("impact", "numbers", "statistics")):
+            bonus += 0.06
+        if "history" in intents and any(k in title for k in ("milestone", "history", "annual report")):
+            bonus += 0.06
+        if "stories" in intents and h.get("table") == "blogs":
             bonus += 0.06
         if "model_village" in intents and any(k in title or k in content for k in ("village", "green cover", "solar", "rejuvenation", "sanitation")):
             bonus += 0.06

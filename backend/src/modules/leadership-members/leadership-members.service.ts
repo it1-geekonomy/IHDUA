@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ChatbotSyncService } from '../../common/chatbot-sync/chatbot-sync.service';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { ContentStatus } from '../../common/enums/content-status.enum';
 import {
@@ -32,6 +33,7 @@ export class LeadershipMembersService {
     @InjectRepository(LeadershipMember)
     private readonly repo: Repository<LeadershipMember>,
     private readonly cdn: CdnService,
+    private readonly chatbotSync: ChatbotSyncService,
   ) {}
 
   async create(
@@ -57,6 +59,7 @@ export class LeadershipMembersService {
       });
       const saved = await this.repo.save(entity);
       this.logger.log(`Created leadership member with ID ${saved.id}`);
+      this.chatbotSync.notify('leadership_members', saved.id);
       return saved;
     } catch (err) {
       if (file && photoUrl) {
@@ -138,16 +141,21 @@ export class LeadershipMembersService {
       );
     }
 
-    return await this.repo.save(entity);
+    const saved = await this.repo.save(entity);
+    this.chatbotSync.notify('leadership_members', saved.id);
+    return saved;
   }
 
   async remove(id: string): Promise<void> {
     const entity = await this.findOne(id);
     await this.repo.softRemove(entity);
     this.logger.log(`Soft-deleted leadership member with ID ${id}`);
+    this.chatbotSync.notify('leadership_members', id, 'delete');
   }
 
   async restore(id: string): Promise<LeadershipMember> {
-    return restoreSoftDeleted(this.repo, id, 'Leadership member');
+    const restored = await restoreSoftDeleted(this.repo, id, 'Leadership member');
+    this.chatbotSync.notify('leadership_members', id);
+    return restored;
   }
 }

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ChatbotSyncService } from '../../common/chatbot-sync/chatbot-sync.service';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { ContentStatus } from '../../common/enums/content-status.enum';
 import {
@@ -32,6 +33,7 @@ export class AnnualReportsService {
     @InjectRepository(AnnualReport)
     private readonly repo: Repository<AnnualReport>,
     private readonly cdn: CdnService,
+    private readonly chatbotSync: ChatbotSyncService,
   ) {}
 
   async create(
@@ -53,6 +55,7 @@ export class AnnualReportsService {
       });
       const saved = await this.repo.save(entity);
       this.logger.log(`Created annual report with ID ${saved.id}`);
+      this.chatbotSync.notify('annual_reports', saved.id);
       return saved;
     } catch (err) {
       await this.cdn.delete(fileUrl);
@@ -139,16 +142,21 @@ export class AnnualReportsService {
       );
     }
 
-    return await this.repo.save(entity);
+    const saved = await this.repo.save(entity);
+    this.chatbotSync.notify('annual_reports', saved.id);
+    return saved;
   }
 
   async remove(id: string): Promise<void> {
     const entity = await this.findOne(id);
     await this.repo.softRemove(entity);
     this.logger.log(`Soft-deleted annual report with ID ${id}`);
+    this.chatbotSync.notify('annual_reports', id, 'delete');
   }
 
   async restore(id: string): Promise<AnnualReport> {
-    return restoreSoftDeleted(this.repo, id, 'Annual report');
+    const restored = await restoreSoftDeleted(this.repo, id, 'Annual report');
+    this.chatbotSync.notify('annual_reports', id);
+    return restored;
   }
 }
