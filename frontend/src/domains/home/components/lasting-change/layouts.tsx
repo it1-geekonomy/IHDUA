@@ -1,3 +1,4 @@
+
 "use client";
 
 import { LASTING_CHANGE } from "@/domains/home/constants/lastingchange";
@@ -63,7 +64,7 @@ export function LgToXlLayout() {
 /** xl+ — original desktop grid */
 export function XlLayout() {
   return (
-    <div className="hidden xl:grid xl:grid-cols-4 xl:gap-5 2xl:gap-6">
+    <div className="hidden xl:grid xl:grid-cols-4 xl:gap-3 2xl:gap-4">
       <ImageCard image={community.image} label={community.label} />
       <YellowImpactCard />
       <HeadlineBlock variant="xl" />

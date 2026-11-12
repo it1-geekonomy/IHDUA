@@ -103,3 +103,26 @@ html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   display: none;
 }
+/* Hide Google Translate floating banner and icon */
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+.goog-te-balloon-frame,
+#goog-gt-tt,
+.goog-te-spinner-pos,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Remove the unwanted space added by Google Translate */
+html,
+body {
+  top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Hide Google Translate's tooltip */
+.goog-tooltip,
+.goog-tooltip:hover {
+  display: none !important;
+}

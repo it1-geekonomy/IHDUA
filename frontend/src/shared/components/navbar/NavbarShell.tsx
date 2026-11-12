@@ -11,8 +11,12 @@ import { smoothScrollToTop } from "@/shared/lib/smoothScroll";
 import { markClientNav } from "@/shared/lib/navState";
 import { NAV_LINKS, type NavLink } from "@/shared/constants/navbar";
 import { fetchImpactNavigation, mergeImpactNavigation } from "@/shared/lib/impactApi";
+// NOTE: adjust this path to wherever your SimpleLanguageProvider file lives
+import { useSimpleLanguage } from "@/context/SimpleLanguageContext";
 import {
   CONTACT_HREF,
+  KN_LG,
+  KN_LG_BTN,
   MenuToggle,
   MobileBackdrop,
   MobileMenu,
@@ -29,6 +33,7 @@ export default function NavbarShell() {
   const pathname = usePathname();
   const barRef = useRef<HTMLSpanElement>(null);
   const { hidden, setHidden } = useNavbarScroll(isOpen, barRef);
+  const { language } = useSimpleLanguage();
 
   useEffect(() => {
     let isMounted = true;
@@ -94,8 +99,10 @@ export default function NavbarShell() {
       <MobileBackdrop open={isOpen} onClose={() => setIsOpen(false)} />
 
       <header
+        data-lang={language}
         className={cn(
-          "fixed inset-x-0 top-0 z-50 will-change-transform transition-transform duration-500",
+          // `group/nav` + data-lang drive the Kannada-only lg overrides
+          "group/nav fixed inset-x-0 top-0 z-50 will-change-transform transition-transform duration-500",
           EASE,
           hidden && !isOpen ? "-translate-y-full" : "translate-y-0",
         )}
@@ -135,15 +142,20 @@ export default function NavbarShell() {
             <div className="flex shrink-0 items-center gap-1 sm:gap-3">
               <Link
                 href={CONTACT_HREF}
-                className="relative hidden items-center gap-2 overflow-hidden bg-white px-6 py-2.5 text-[#9739A8] shadow-lg shadow-black/10 sm:inline-flex lg:px-4 lg:py-2 xl:px-6 xl:py-2.5"
+                className={cn(
+                  "relative hidden items-center gap-2 overflow-hidden bg-white px-6 py-2.5 text-[#9739A8] shadow-lg shadow-black/10 sm:inline-flex lg:px-4 lg:py-2 xl:px-6 xl:py-2.5",
+                  KN_LG_BTN,
+                )}
               >
                 <Typography
                   variant="body-lg"
-                  className="relative z-10 font-manrope font-semibold text-[#9739A8]"
+                  className={cn(
+                    "relative z-10 font-manrope font-semibold text-[#9739A8]",
+                    KN_LG,
+                  )}
                 >
                   Contact Us
                 </Typography>
-              
               </Link>
 
               <MenuToggle open={isOpen} onToggle={() => setIsOpen((p) => !p)} />

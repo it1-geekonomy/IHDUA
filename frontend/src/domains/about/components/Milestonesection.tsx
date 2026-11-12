@@ -322,9 +322,13 @@ export default function KeyMilestones({
         <EdgeFade side="right" />
 
         <div
-          ref={trackRef}
-          className="relative w-[calc(var(--count)/var(--visible)*100%)] max-md:w-full lg:will-change-transform"
-        >
+  ref={trackRef}
+  className={cn(
+    "relative w-[calc(var(--count)/var(--visible)*100%)] max-md:w-full lg:will-change-transform",
+    // Wrap only at word boundaries, never split a word (both languages)
+    "[&_*]:[overflow-wrap:normal]! [&_*]:[word-break:normal]! [&_*]:hyphens-none! [&_*]:text-pretty",
+  )}
+>
           <MilestoneListDesktop
             milestones={milestones}
             revealed={revealed}

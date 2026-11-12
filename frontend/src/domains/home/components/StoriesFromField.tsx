@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
@@ -60,6 +60,20 @@ export default function StoriesFromField() {
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [isKn, setIsKn] = useState(false);
+
+  // Detect Kannada (Google Translate sets <html lang="kn"> / googtrans cookie).
+  // Used only for typography (letter-spacing / font size), not for layout.
+  useEffect(() => {
+    const check = () => {
+      const lang = (document.documentElement.getAttribute("lang") || "").toLowerCase();
+      setIsKn(lang.startsWith("kn") || /googtrans=\/[a-z-]+\/kn/i.test(document.cookie));
+    };
+    check();
+    const obs = new MutationObserver(check);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["lang", "class"] });
+    return () => obs.disconnect();
+  }, []);
 
   // Until the reader clicks a story, the first one is featured
   const featuredId = selectedId ?? list[0]?.id;
@@ -80,6 +94,16 @@ export default function StoriesFromField() {
     setHasInteracted(true);
     setSelectedId(story.id);
   };
+
+  /* ---------- Typography (differs per language) ---------- */
+  // category: Kannada has no uppercase / letter-spacing (breaks conjuncts)
+  const sideCategoryCls = isKn
+    ? `block font-figtree font-bold normal-case tracking-normal text-[#9739A8] ${figmaTypeScale[14]}`
+    : `block font-figtree font-bold uppercase tracking-wider text-[#9739A8] ${figmaTypeScale[14]}`;
+  // title: Kannada is a little smaller with a taller line-height
+  const sideTitleCls = isKn
+    ? `mt-1.5 block font-lora font-normal leading-normal text-[#00191B] transition-colors lg:text-[14px] xl:text-[17px] ${figmaTypeScale[18]}`
+    : `mt-1.5 block font-lora font-normal leading-snug text-[#00191B] transition-colors lg:text-[15px] xl:text-[20px] ${figmaTypeScale[20]}`;
 
   // Loading: keep the space so the page doesn't jump when stories arrive
   if (stories === null) {
@@ -183,11 +207,12 @@ export default function StoriesFromField() {
                     variants={sideCard}
                     initial={hasInteracted ? "hidden" : false}
                     animate="show"
-                    className="group flex min-h-0 min-w-0 flex-1 cursor-pointer items-center gap-3 text-left sm:gap-4 md:flex-1 lg:flex-none lg:shrink-0 xl:flex-1"
+                    // !min-h-fit: card grows to fit its full text (both languages)
+                    className="group flex !min-h-fit min-w-0 flex-1 cursor-pointer items-center gap-3 text-left sm:gap-4 md:flex-1 lg:flex-none lg:shrink-0 xl:flex-1"
                   >
                     <motion.div
                       variants={thumbWipe}
-                      className="relative aspect-square size-[112px] shrink-0 overflow-hidden sm:size-[128px] md:size-[100px] lg:size-[168px] lg:h-[168px] lg:w-[168px] lg:max-w-none xl:h-full xl:w-auto xl:max-w-[46%] xl:size-auto"
+                      className="relative aspect-square size-[112px] shrink-0 overflow-hidden sm:size-[128px] md:size-[100px] lg:size-[168px] lg:h-[168px] lg:w-[168px] lg:max-w-none xl:h-full xl:w-auto xl:max-w-[38%] xl:size-auto"
                     >
                       <Image
                         src={story.image}
@@ -199,16 +224,10 @@ export default function StoriesFromField() {
                     </motion.div>
 
                     <div className="min-w-0 flex-1">
-                      <motion.p
-                        variants={sideLine}
-                        className={`block font-figtree font-bold uppercase tracking-wider text-[#9739A8] ${figmaTypeScale[14]}`}
-                      >
+                      <motion.p variants={sideLine} className={sideCategoryCls}>
                         {story.category}
                       </motion.p>
-                      <motion.p
-                        variants={sideLine}
-                        className={`mt-1.5 block font-lora font-normal leading-snug text-[#00191B] transition-colors lg:text-[15px] xl:text-[20px] ${figmaTypeScale[20]}`}
-                      >
+                      <motion.p variants={sideLine} className={sideTitleCls}>
                         {story.title}
                       </motion.p>
                       <motion.p
@@ -255,7 +274,9 @@ export default function StoriesFromField() {
                     <Link href={featured.href} className="group inline-block">
                       <Typography
                         variant="h3"
-                        className="mt-2 max-w-2xl font-lora font-normal leading-snug text-[#00191B] transition-colors group-hover:text-[#9739A8]"
+                        className={`mt-2 max-w-2xl font-lora font-normal text-[#00191B] transition-colors group-hover:text-[#9739A8] ${
+                          isKn ? "leading-normal" : "leading-snug"
+                        }`}
                       >
                         {featured.title}
                       </Typography>
