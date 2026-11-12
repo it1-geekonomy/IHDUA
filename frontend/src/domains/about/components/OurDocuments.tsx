@@ -167,7 +167,6 @@ function DocumentCard({ group }: { group: DocumentGroup }) {
       )}
 
       {/* PDF list */}
-<<<<<<< HEAD
       {group.items.length > 0 && (
         <ul className="mt-[clamp(16px,2vw,24px)] flex flex-col gap-[clamp(8px,1vw,12px)]">
           {visibleItems.map((doc) =>
@@ -178,41 +177,18 @@ function DocumentCard({ group }: { group: DocumentGroup }) {
                 onClick={() => openPdf(doc.url)}
                 className="flex cursor-pointer items-center gap-[clamp(8px,1.2vw,16px)] bg-white p-[clamp(8px,1vw,12px)]"
               >
-                {/* Document icon in tinted square */}
+                {/* Same document icon for every organizational PDF */}
                 <div
                   className={`flex h-[clamp(32px,3.2vw,44px)] w-[clamp(32px,3.2vw,44px)] shrink-0 items-center justify-center rounded-md ${theme.headerIconBg}`}
                 >
                   <Image
-                    src={getDocIcon(doc.title)}
+                    src={ORG_DOC_ICON}
                     alt=""
                     width={24}
                     height={24}
                     className="h-[clamp(16px,1.6vw,24px)] w-[clamp(16px,1.6vw,24px)] object-contain"
                   />
                 </div>
-=======
-      <ul className="mt-[clamp(16px,2vw,24px)] flex flex-col gap-[clamp(8px,1vw,12px)]">
-        {visibleItems.map((doc) =>
-          viewOnly ? (
-            /* ---------- Organizational Documents: view only ---------- */
-            <li
-              key={doc.id}
-              onClick={() => openPdf(doc.url)}
-              className="flex cursor-pointer items-center gap-[clamp(8px,1.2vw,16px)] bg-white p-[clamp(8px,1vw,12px)]"
-            >
-              {/* Same document icon for every organizational PDF */}
-              <div
-                className={`flex h-[clamp(32px,3.2vw,44px)] w-[clamp(32px,3.2vw,44px)] shrink-0 items-center justify-center rounded-md ${theme.headerIconBg}`}
-              >
-                <Image
-                  src={ORG_DOC_ICON}
-                  alt=""
-                  width={24}
-                  height={24}
-                  className="h-[clamp(16px,1.6vw,24px)] w-[clamp(16px,1.6vw,24px)] object-contain"
-                />
-              </div>
->>>>>>> c9c3afe51122ecbc542af568fe4ae2bee732c0de
 
                 <Typography
                   variant="body-sm"
@@ -271,63 +247,38 @@ function DocumentCard({ group }: { group: DocumentGroup }) {
                   {doc.title}
                 </Typography>
 
-<<<<<<< HEAD
-                <a
-                  href={doc.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
+                <button
+                  type="button"
                   aria-label={`Download ${doc.title}`}
-                  onClick={(e) => e.stopPropagation()} // download only, don't open preview
+                  disabled={downloadingId === String(doc.id)}
+                  onClick={async (e) => {
+                    e.stopPropagation(); // download only, don't open preview
+                    if (downloadingId) return;
+                    setDownloadingId(String(doc.id));
+                    try {
+                      await downloadPdf(doc.url, doc.title);
+                    } finally {
+                      setDownloadingId(null);
+                    }
+                  }}
                   onKeyDown={(e) => e.stopPropagation()}
-                  className={`flex h-[clamp(30px,3vw,40px)] w-[clamp(30px,3vw,40px)] shrink-0 items-center justify-center rounded-md transition-opacity hover:opacity-80 ${theme.button}`}
+                  className={`flex h-[clamp(30px,3vw,40px)] w-[clamp(30px,3vw,40px)] shrink-0 cursor-pointer items-center justify-center rounded-md transition-opacity hover:opacity-80 disabled:cursor-wait disabled:opacity-50 ${theme.button}`}
                 >
                   <Image
                     src={theme.buttonIcon}
                     alt=""
                     width={20}
                     height={20}
-                    className="h-[clamp(14px,1.4vw,20px)] w-[clamp(14px,1.4vw,20px)]"
+                    className={`h-[clamp(14px,1.4vw,20px)] w-[clamp(14px,1.4vw,20px)] ${
+                      downloadingId === String(doc.id) ? "animate-pulse" : ""
+                    }`}
                   />
-                </a>
+                </button>
               </li>
             ),
           )}
         </ul>
       )}
-=======
-              <button
-                type="button"
-                aria-label={`Download ${doc.title}`}
-                disabled={downloadingId === String(doc.id)}
-                onClick={async (e) => {
-                  e.stopPropagation(); // download only, don't open preview
-                  if (downloadingId) return;
-                  setDownloadingId(String(doc.id));
-                  try {
-                    await downloadPdf(doc.url, doc.title);
-                  } finally {
-                    setDownloadingId(null);
-                  }
-                }}
-                onKeyDown={(e) => e.stopPropagation()}
-                className={`flex h-[clamp(30px,3vw,40px)] w-[clamp(30px,3vw,40px)] shrink-0 cursor-pointer items-center justify-center rounded-md transition-opacity hover:opacity-80 disabled:cursor-wait disabled:opacity-50 ${theme.button}`}
-              >
-                <Image
-                  src={theme.buttonIcon}
-                  alt=""
-                  width={20}
-                  height={20}
-                  className={`h-[clamp(14px,1.4vw,20px)] w-[clamp(14px,1.4vw,20px)] ${
-                    downloadingId === String(doc.id) ? "animate-pulse" : ""
-                  }`}
-                />
-              </button>
-            </li>
-          )
-        )}
-      </ul>
->>>>>>> c9c3afe51122ecbc542af568fe4ae2bee732c0de
 
       {/* Pagination: only when this card has more PDFs than one page */}
       {totalPages > 1 && (
