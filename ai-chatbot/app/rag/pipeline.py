@@ -15,14 +15,22 @@ from app.rag.rewrite import build_multi_queries, rewrite_query
 from app.services import vector_store
 
 
-def run_chat(message: str, session_id: str | None = None) -> dict:
-    result = _answer(message, session_id)
+def run_chat(
+    message: str,
+    session_id: str | None = None,
+    client_history: list[dict] | None = None,
+) -> dict:
+    result = _answer(message, session_id, client_history=client_history)
     result["answer"] = clean_answer(result["answer"])
     result["sources"] = valid_sources(result.get("sources"))
     return result
 
 
-def _answer(message: str, session_id: str | None) -> dict:
+def _answer(
+    message: str,
+    session_id: str | None,
+    client_history: list[dict] | None = None,
+) -> dict:
     started = time.perf_counter()
     sid = resolve_session_id(session_id)
     user_message = (message or "").strip()
@@ -61,12 +69,20 @@ def _answer(message: str, session_id: str | None) -> dict:
             "response_time_ms": int((time.perf_counter() - started) * 1000),
         }
 
-    # 3. Check answer cache
-    history = get_history(sid)
+    # 3. Check conversation history & answer cache
+    if client_history:
+        history = [
+            {"role": h["role"], "content": h["content"]}
+            for h in client_history
+            if h.get("role") in ("user", "assistant") and h.get("content")
+        ]
+    else:
+        history = get_history(sid)
+
     cacheable = not history
     index_ver = vector_store.index_version()
     if cacheable:
-        cached = answer_cache.get(user_message)
+        cached = answer_cache.get(user_message, current_version=index_ver)
         if cached:
             append_turn(sid, "user", user_message)
             append_turn(sid, "assistant", cached["answer"])
@@ -98,7 +114,7 @@ def _answer(message: str, session_id: str | None) -> dict:
     ranked = vector_store.with_neighbor_chunks(rerank(hits, intents))
 
     # 6. Generate answer
-    answer = generate_answer(user_message, ranked)
+    answer = generate_answer(user_message, ranked, history=history)
     answer = recover_if_needed(clean_answer(answer) or C.NO_ANSWER_TOKEN, user_message, ranked, intents)
     answer = clean_answer(answer) or C.NO_ANSWER_TOKEN
     sources = pick_sources(ranked, intents, answer)

@@ -64,8 +64,18 @@ export function DonationReceiptModal({
 
         {/* Body Text */}
         <p className="font-lora text-[14.5px] sm:text-[15px] text-[#D8D8D8] font-normal leading-relaxed">
-          Your donation of {receipt.currencySymbol}
-          {Number(receipt.amount).toLocaleString()} {receipt.currency} was received.
+          {receipt.recurringEvery ? (
+            <>
+              Your donation of {receipt.currencySymbol}
+              {Number(receipt.amount).toLocaleString()} {receipt.recurringEvery} is
+              set up. You&apos;ll get a receipt by email after every charge.
+            </>
+          ) : (
+            <>
+              Your donation of {receipt.currencySymbol}
+              {Number(receipt.amount).toLocaleString()} {receipt.currency} was received.
+            </>
+          )}
         </p>
 
         {/* Receipt Line */}

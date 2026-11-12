@@ -3,6 +3,7 @@ export const ApiTagsConst = {
   AUTH: 'auth',
   USERS: 'users',
   DONORS: 'donors',
+  DONATION_SUBSCRIPTIONS: 'donation-subscriptions',
   LEADS_CONTACT: 'leads-contact',
   LEADS_VOLUNTEER: 'leads-volunteer',
   TERMS_AND_CONDITIONS: 'terms-and-conditions',

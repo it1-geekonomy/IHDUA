@@ -10,6 +10,7 @@ import {
   applyDeletedFilter,
   restoreSoftDeleted,
 } from '../../common/utils/soft-delete';
+import { ChatbotSyncService } from '../../common/chatbot-sync/chatbot-sync.service';
 import { CreateImpactStatDto } from './dto/create-impact-stat.dto';
 import { UpdateImpactStatDto } from './dto/update-impact-stat.dto';
 import { ImpactStat } from './entities/impact-stat.entity';
@@ -21,12 +22,22 @@ export class ImpactStatsService {
   constructor(
     @InjectRepository(ImpactStat)
     private readonly repo: Repository<ImpactStat>,
+    private readonly chatbotSync: ChatbotSyncService,
   ) {}
 
   async create(dto: CreateImpactStatDto): Promise<ImpactStat> {
     const entity = this.repo.create(dto);
     const saved = await this.repo.save(entity);
     this.logger.log(`Created new impact stat "${saved.metricName}" with ID ${saved.id}`);
+    this.chatbotSync.syncContent({
+      table: 'impact_stats',
+      source_id: saved.id,
+      action: 'upsert',
+      title: `${saved.metricName} (${saved.metricValue})`,
+      content: `IHDUA Impact Statistic: ${saved.metricName} — ${saved.metricValue}`,
+      url: '/#our-impact',
+      category: 'Impact',
+    });
     return saved;
   }
 
@@ -94,6 +105,15 @@ export class ImpactStatsService {
     Object.assign(entity, dto);
     const saved = await this.repo.save(entity);
     this.logger.log(`Updated impact stat with ID ${id}`);
+    this.chatbotSync.syncContent({
+      table: 'impact_stats',
+      source_id: saved.id,
+      action: 'upsert',
+      title: `${saved.metricName} (${saved.metricValue})`,
+      content: `IHDUA Impact Statistic: ${saved.metricName} — ${saved.metricValue}`,
+      url: '/#our-impact',
+      category: 'Impact',
+    });
     return saved;
   }
 
@@ -101,9 +121,24 @@ export class ImpactStatsService {
     const entity = await this.findOne(id);
     await this.repo.softRemove(entity);
     this.logger.log(`Soft-deleted impact stat with ID ${id}`);
+    this.chatbotSync.syncContent({
+      table: 'impact_stats',
+      source_id: id,
+      action: 'delete',
+    });
   }
 
   async restore(id: string): Promise<ImpactStat> {
-    return restoreSoftDeleted(this.repo, id, 'Impact stat');
+    const restored = await restoreSoftDeleted(this.repo, id, 'Impact stat');
+    this.chatbotSync.syncContent({
+      table: 'impact_stats',
+      source_id: restored.id,
+      action: 'upsert',
+      title: `${restored.metricName} (${restored.metricValue})`,
+      content: `IHDUA Impact Statistic: ${restored.metricName} — ${restored.metricValue}`,
+      url: '/#our-impact',
+      category: 'Impact',
+    });
+    return restored;
   }
 }

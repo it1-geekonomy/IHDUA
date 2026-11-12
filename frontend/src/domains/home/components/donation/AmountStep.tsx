@@ -88,7 +88,6 @@ export function AmountStep({
           {DONATION_COPY.internationalNote}
         </p>
       </div>
-
       {/* Choose Amount */}
       <Typography
         variant="caption"

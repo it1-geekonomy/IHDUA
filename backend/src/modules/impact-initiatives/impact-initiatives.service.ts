@@ -13,6 +13,7 @@ import {
   PaginatedResult,
 } from '../../common/interfaces/paginated.interface';
 import { CdnFile, CdnService } from '../../common/storage/cdn.service';
+import { ChatbotSyncService } from '../../common/chatbot-sync/chatbot-sync.service';
 import {
   applyDeletedFilter,
   restoreSoftDeleted,
@@ -74,6 +75,7 @@ export class ImpactInitiativesService {
     @InjectRepository(ImpactCategory)
     private readonly categoryRepo: Repository<ImpactCategory>,
     private readonly cdn: CdnService,
+    private readonly chatbotSync: ChatbotSyncService,
   ) {}
 
   async create(
@@ -116,6 +118,18 @@ export class ImpactInitiativesService {
       this.logger.log(
         `Created impact initiative "${saved.name}" with ID ${saved.id}`,
       );
+      if (saved.status === ContentStatus.PUBLISHED) {
+        this.chatbotSync.syncContent({
+          table: 'impact_initiatives',
+          source_id: saved.id,
+          action: 'upsert',
+          title: saved.name || saved.heroTitle || 'Impact Initiative',
+          content: `${saved.name}\n${saved.heroTitle || ''}\n${saved.heroDescription || ''}\n${JSON.stringify(saved.content || {})}`,
+          url: `/${saved.slug}`,
+          category: 'Impact',
+          slug: saved.slug,
+        });
+      }
       return saved;
     } catch (err) {
       await Promise.all(uploadedUrls.map((url) => this.cdn.delete(url)));
@@ -403,6 +417,24 @@ export class ImpactInitiativesService {
           [...previousMedia].filter((url) => !currentMedia.has(url)),
         );
       }
+      if (saved.status === ContentStatus.PUBLISHED) {
+        this.chatbotSync.syncContent({
+          table: 'impact_initiatives',
+          source_id: saved.id,
+          action: 'upsert',
+          title: saved.name || saved.heroTitle || 'Impact Initiative',
+          content: `${saved.name}\n${saved.heroTitle || ''}\n${saved.heroDescription || ''}\n${JSON.stringify(saved.content || {})}`,
+          url: `/${saved.slug}`,
+          category: 'Impact',
+          slug: saved.slug,
+        });
+      } else {
+        this.chatbotSync.syncContent({
+          table: 'impact_initiatives',
+          source_id: saved.id,
+          action: 'delete',
+        });
+      }
       return saved;
     } catch (err) {
       if (this.isUniqueViolation(err)) {
@@ -418,6 +450,11 @@ export class ImpactInitiativesService {
     const entity = await this.findOne(id);
     await this.repo.softRemove(entity);
     this.logger.log(`Soft-deleted impact initiative with ID ${id}`);
+    this.chatbotSync.syncContent({
+      table: 'impact_initiatives',
+      source_id: id,
+      action: 'delete',
+    });
   }
 
   async restore(id: string): Promise<ImpactInitiative> {
@@ -435,7 +472,20 @@ export class ImpactInitiativesService {
         );
       }
     }
-    return restoreSoftDeleted(this.repo, id, 'Impact initiative');
+    const restored = await restoreSoftDeleted(this.repo, id, 'Impact initiative');
+    if (restored.status === ContentStatus.PUBLISHED) {
+      this.chatbotSync.syncContent({
+        table: 'impact_initiatives',
+        source_id: restored.id,
+        action: 'upsert',
+        title: restored.name || restored.heroTitle || 'Impact Initiative',
+        content: `${restored.name}\n${restored.heroTitle || ''}\n${restored.heroDescription || ''}\n${JSON.stringify(restored.content || {})}`,
+        url: `/${restored.slug}`,
+        category: 'Impact',
+        slug: restored.slug,
+      });
+    }
+    return restored;
   }
 
   /**

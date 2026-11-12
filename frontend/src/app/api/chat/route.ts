@@ -26,7 +26,9 @@ export async function POST(req: NextRequest) {
     const externalServiceUrl =
       process.env.CHATBOT_SERVICE_URL || "http://localhost:8001";
     const internalApiKey =
-      process.env.AI_SERVICE_INTERNAL_KEY || "replace-with-a-long-random-secret";
+      process.env.AI_SERVICE_INTERNAL_KEY ||
+      process.env.INTERNAL_API_KEY ||
+      "";
 
     try {
       const extRes = await fetch(`${externalServiceUrl}/chat`, {
@@ -35,7 +37,11 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/json",
           "X-Internal-Api-Key": internalApiKey,
         },
-        body: JSON.stringify({ message, session_id: body.session_id }),
+        body: JSON.stringify({
+          message,
+          session_id: body.session_id,
+          history: Array.isArray(body.history) ? body.history : undefined,
+        }),
         signal: AbortSignal.timeout(20000),
       });
 

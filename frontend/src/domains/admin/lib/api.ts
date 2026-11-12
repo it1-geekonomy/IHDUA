@@ -67,8 +67,50 @@ export type AdminDonationRow = {
   receiptEmailStatus?: string | null;
   receiptEmailAttempts?: number;
   receiptEmailSentAt?: string | null;
+  subscriptionId?: string | null;
   createdAt: string;
   updatedAt: string;
+};
+
+export type DonationFrequency = "monthly" | "quarterly" | "yearly";
+
+export type SubscriptionStatus =
+  | "created"
+  | "authenticated"
+  | "active"
+  | "pending"
+  | "halted"
+  | "paused"
+  | "cancelled"
+  | "completed"
+  | "expired";
+
+export type AdminSubscriptionRow = {
+  id: string;
+  fullName: string;
+  phone: string;
+  email: string;
+  pan: string | null;
+  address: string | null;
+  city: string | null;
+  message: string | null;
+  donationCategory: string;
+  frequency: DonationFrequency;
+  amount: string;
+  currency: string;
+  razorpayPlanId: string;
+  razorpaySubscriptionId: string;
+  status: SubscriptionStatus;
+  paidCount: number;
+  totalCount: number;
+  nextChargeAt: string | null;
+  endedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type AdminSubscriptionDetail = AdminSubscriptionRow & {
+  charges: AdminDonationRow[];
 };
 
 export class ApiError extends Error {
@@ -300,6 +342,50 @@ export async function fetchDonationById(
   return apiRequest<AdminDonationRow>(`/donors/${id}`, {
     token,
   });
+}
+
+export type SubscriptionsQueryParams = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: SubscriptionStatus;
+  frequency?: DonationFrequency;
+};
+
+export async function fetchSubscriptions(
+  token: string,
+  params: SubscriptionsQueryParams = {},
+): Promise<{ data: AdminSubscriptionRow[]; meta: PaginationMeta }> {
+  const query = new URLSearchParams();
+  if (params.page) query.set("page", String(params.page));
+  if (params.limit) query.set("limit", String(params.limit));
+  if (params.search?.trim()) query.set("search", params.search.trim());
+  if (params.status) query.set("status", params.status);
+  if (params.frequency) query.set("frequency", params.frequency);
+  const qs = query.toString();
+  return apiRequest(`/donation-subscriptions${qs ? `?${qs}` : ""}`, { token });
+}
+
+export async function fetchSubscriptionById(
+  token: string,
+  id: string,
+): Promise<AdminSubscriptionDetail> {
+  return apiRequest<AdminSubscriptionDetail>(`/donation-subscriptions/${id}`, {
+    token,
+  });
+}
+
+export type SubscriptionAction = "cancel" | "pause" | "resume" | "sync";
+
+export async function runSubscriptionAction(
+  token: string,
+  id: string,
+  action: SubscriptionAction,
+): Promise<AdminSubscriptionRow> {
+  return apiRequest<AdminSubscriptionRow>(
+    `/donation-subscriptions/${id}/${action}`,
+    { token, method: "POST" },
+  );
 }
 
 export type LeadContact = {

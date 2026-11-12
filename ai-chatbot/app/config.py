@@ -32,10 +32,19 @@ class Settings(BaseSettings):
     max_sources: int = 3
     source_score_margin: float = 0.05
     conversation_memory_size: int = 6
-    openai_timeout_seconds: int = 30
+    openai_timeout_seconds: int = 14
+
 
     internal_api_key: str = ""
     sync_api_key: str | None = None
+    cors_origins: list[str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:6061",
+        "http://127.0.0.1:6061",
+        "https://ihdua.org",
+        "https://www.ihdua.org",
+    ]
 
     knowledge_dir: str = "./knowledge/public"
     geekonomy_docs_dir: str = "./knowledge/source-docs"
