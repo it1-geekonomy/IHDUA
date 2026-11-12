@@ -138,6 +138,11 @@ export function DonationsTable({
                     <span className="font-mono font-bold text-sm text-[#0F1C1D]">
                       {formatDonationAmount(item.amount, item.currency)}
                     </span>
+                    {item.subscriptionId && (
+                      <span className="mt-0.5 block w-fit rounded bg-[#FAF5FC] px-1.5 text-[10px] font-semibold text-[#9739A8]">
+                        Recurring
+                      </span>
+                    )}
                   </td>
 
                   {/* Category */}

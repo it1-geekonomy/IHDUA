@@ -16,6 +16,7 @@ import {
   restoreSoftDeleted,
 } from '../../common/utils/soft-delete';
 import { CdnFile, CdnService } from '../../common/storage/cdn.service';
+import { ChatbotSyncService } from '../../common/chatbot-sync/chatbot-sync.service';
 import { BlogCategory } from '../blog-categories/entities/blog-category.entity';
 import { CreateBlogAndStoryDto } from './dto/create-blog-and-story.dto';
 import { QueryBlogAndStoryDto } from './dto/query-blog-and-story.dto';
@@ -37,6 +38,7 @@ export class BlogsAndStoriesService {
     @InjectRepository(BlogCategory)
     private readonly categoryRepo: Repository<BlogCategory>,
     private readonly cdn: CdnService,
+    private readonly chatbotSync: ChatbotSyncService,
   ) {}
 
   async create(
@@ -77,7 +79,20 @@ export class BlogsAndStoriesService {
     });
 
     try {
-      return await this.repo.save(entity);
+      const saved = await this.repo.save(entity);
+      if (saved.status === ContentStatus.PUBLISHED) {
+        this.chatbotSync.syncContent({
+          table: 'blogs',
+          source_id: saved.id,
+          action: 'upsert',
+          title: saved.title,
+          content: `${saved.title}\n\n${saved.content || ''}`,
+          url: `/blogs/${saved.slug}`,
+          category: 'Blog',
+          slug: saved.slug,
+        });
+      }
+      return saved;
     } catch (err) {
       if (bannerFile && blogBanner) {
         await this.cdn.delete(blogBanner);
@@ -319,7 +334,26 @@ export class BlogsAndStoriesService {
     });
 
     try {
-      return await this.repo.save(entity);
+      const saved = await this.repo.save(entity);
+      if (saved.status === ContentStatus.PUBLISHED) {
+        this.chatbotSync.syncContent({
+          table: 'blogs',
+          source_id: saved.id,
+          action: 'upsert',
+          title: saved.title,
+          content: `${saved.title}\n\n${saved.content || ''}`,
+          url: `/blogs/${saved.slug}`,
+          category: 'Blog',
+          slug: saved.slug,
+        });
+      } else {
+        this.chatbotSync.syncContent({
+          table: 'blogs',
+          source_id: saved.id,
+          action: 'delete',
+        });
+      }
+      return saved;
     } catch (err) {
       if (this.isUniqueViolation(err)) {
         throw new ConflictException(
@@ -333,10 +367,28 @@ export class BlogsAndStoriesService {
   async remove(id: string): Promise<void> {
     const entity = await this.findOne(id);
     await this.repo.softRemove(entity);
+    this.chatbotSync.syncContent({
+      table: 'blogs',
+      source_id: id,
+      action: 'delete',
+    });
   }
 
   async restore(id: string): Promise<BlogAndStory> {
-    return restoreSoftDeleted(this.repo, id, 'Blog/Story');
+    const restored = await restoreSoftDeleted(this.repo, id, 'Blog/Story');
+    if (restored.status === ContentStatus.PUBLISHED) {
+      this.chatbotSync.syncContent({
+        table: 'blogs',
+        source_id: restored.id,
+        action: 'upsert',
+        title: restored.title,
+        content: `${restored.title}\n\n${restored.content || ''}`,
+        url: `/blogs/${restored.slug}`,
+        category: 'Blog',
+        slug: restored.slug,
+      });
+    }
+    return restored;
   }
 
   private async assertCategoryExists(categoryId: string): Promise<void> {

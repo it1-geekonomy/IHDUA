@@ -1,9 +1,11 @@
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+_BASE_DIR = Path(__file__).resolve().parent.parent
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=str(_BASE_DIR / ".env"),
         case_sensitive=False,
         extra="ignore",
     )
@@ -32,13 +34,23 @@ class Settings(BaseSettings):
     max_sources: int = 3
     source_score_margin: float = 0.05
     conversation_memory_size: int = 6
-    openai_timeout_seconds: int = 30
+    openai_timeout_seconds: int = 14
+    auto_sync_minutes: int = 30
+
 
     internal_api_key: str = ""
     sync_api_key: str | None = None
+    cors_origins: list[str] = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:6061",
+        "http://127.0.0.1:6061",
+        "https://ihdua.org",
+        "https://www.ihdua.org",
+    ]
 
-    knowledge_dir: str = "./knowledge/public"
-    geekonomy_docs_dir: str = "./knowledge/source-docs"
+    knowledge_dir: str = str(_BASE_DIR / "knowledge" / "public")
+    geekonomy_docs_dir: str = str(_BASE_DIR / "knowledge" / "source-docs")
     site_base_url: str = "https://ihdua.org"
     site_crawl_url: str = "http://localhost:3000"
 

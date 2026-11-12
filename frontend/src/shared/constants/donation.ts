@@ -17,6 +17,27 @@ export const DONATION_CAUSES = [
 export type DonationCause = (typeof DONATION_CAUSES)[number];
 export const DEFAULT_DONATION_CAUSE: DonationCause = "General Donation";
 
+export type DonationFrequencyOption = "once" | "monthly" | "quarterly" | "yearly";
+
+export const DONATION_FREQUENCY_OPTIONS: {
+  id: DonationFrequencyOption;
+  label: string;
+}[] = [
+  { id: "once", label: "One Time" },
+  { id: "monthly", label: "Monthly" },
+  { id: "quarterly", label: "Quarterly" },
+  { id: "yearly", label: "Yearly" },
+];
+
+export const RECURRING_SCHEDULE: Record<
+  Exclude<DonationFrequencyOption, "once">,
+  { label: string; button: string; every: string }
+> = {
+  monthly: { label: "Monthly", button: "Set up Monthly Donation", every: "every month" },
+  quarterly: { label: "Quarterly", button: "Set up Quarterly Donation", every: "every 3 months" },
+  yearly: { label: "Yearly", button: "Set up Yearly Donation", every: "every year" },
+};
+
 export const DONATION_COPY = {
   sectionTitle: "Help Create Opportunities For Stronger Communities",
   sectionBody:
@@ -30,6 +51,13 @@ export const DONATION_COPY = {
   chooseAmountStep: "1. Choose an amount",
   chooseAmount: "Choose an amount",
   chooseCountry: "Choose your country",
+  chooseFrequency: "Choose donation frequency",
+  recurringIndiaOnly: "Recurring donations are available for India (INR) only",
+  autopayTitle: "AutoPay",
+  autopayNote: (every: string) =>
+    `Your chosen amount will be donated automatically ${every}. You can pause or cancel anytime.`,
+  recurringSetUp: "Thank you! Your recurring donation is set up.",
+  recurringReceiptPending: "Emailed after your first charge",
   otherAmountPlaceholder: "Other amount",
   donateNow: "Donate Now",
   chosenAmount: "Chosen Amount",

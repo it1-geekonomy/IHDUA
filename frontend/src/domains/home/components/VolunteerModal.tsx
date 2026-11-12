@@ -1,7 +1,12 @@
 "use client";
 
-import { useState, useCallback, type FormEvent } from "react";
+import { useState, useCallback, useRef, useEffect, type FormEvent } from "react";
 import { VOLUNTEER_AREAS_OF_INTEREST } from "@/domains/home/constants/volunteerOptions";
+import {
+  RESUME_ALLOWED_EXTENSIONS,
+  RESUME_MAX_BYTES,
+  submitVolunteerLead,
+} from "@/domains/home/lib/volunteerLeads";
 import { ModalShell, ModalSuccess } from "@/shared/components/modal";
 import {
   FormInput,
@@ -38,14 +43,21 @@ const INITIAL_FORM_STATE: VolunteerFormData = {
 export default function VolunteerModal({ isOpen, onClose }: VolunteerModalProps) {
   const [formData, setFormData] = useState<VolunteerFormData>(INITIAL_FORM_STATE);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  // Cancels an in-flight request if the modal is closed or unmounted
+  const abortRef = useRef<AbortController | null>(null);
+  useEffect(() => () => abortRef.current?.abort(), []);
+
   const handleClose = useCallback(() => {
+    abortRef.current?.abort();
     onClose();
     setTimeout(() => {
       setFormData(INITIAL_FORM_STATE);
       setErrors({});
+      setSubmitError("");
       setIsSubmitted(false);
       setIsSubmitting(false);
     }, 250);
@@ -56,6 +68,7 @@ export default function VolunteerModal({ isOpen, onClose }: VolunteerModalProps)
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: "" }));
     }
+    if (submitError) setSubmitError("");
   };
 
   const validate = (): Record<string, string> => {
@@ -76,12 +89,21 @@ export default function VolunteerModal({ isOpen, onClose }: VolunteerModalProps)
     }
     if (!formData.resumeFile) {
       errs.resumeFile = "Please attach your updated resume";
+    } else {
+      const name = formData.resumeFile.name.toLowerCase();
+      if (!RESUME_ALLOWED_EXTENSIONS.some((ext) => name.endsWith(ext))) {
+        errs.resumeFile = "Resume must be a PDF, DOC or DOCX file";
+      } else if (formData.resumeFile.size > RESUME_MAX_BYTES) {
+        errs.resumeFile = "Resume must be 5MB or smaller";
+      }
     }
     return errs;
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -89,12 +111,35 @@ export default function VolunteerModal({ isOpen, onClose }: VolunteerModalProps)
     }
 
     setErrors({});
+    setSubmitError("");
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    try {
+      await submitVolunteerLead(
+        {
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          areaOfInterest: formData.areaOfInterest,
+          skills: formData.skills,
+          resume: formData.resumeFile as File, // validated above
+        },
+        controller.signal,
+      );
       setIsSubmitted(true);
-    }, 1000);
+    } catch (err) {
+      if ((err as Error)?.name === "AbortError") return;
+      setSubmitError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Unable to submit your application. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -175,6 +220,12 @@ export default function VolunteerModal({ isOpen, onClose }: VolunteerModalProps)
             onFileChange={(file) => updateField("resumeFile", file)}
             error={errors.resumeFile}
           />
+
+          {submitError && (
+            <p role="alert" className="rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {submitError}
+            </p>
+          )}
 
           <SubmitButton label="Submit" isSubmitting={isSubmitting} />
         </form>

@@ -2,12 +2,17 @@ import {
   Body,
   Controller,
   Get,
+  Headers,
+  HttpCode,
   HttpStatus,
   Param,
   ParseUUIDPipe,
   Post,
+  Req,
   UseGuards,
+  type RawBodyRequest,
 } from '@nestjs/common';
+import type { Request } from 'express';
 import {
   ApiBearerAuth,
   ApiExtraModels,
@@ -23,6 +28,7 @@ import { UserRole } from '../../common/enums/user-role.enum';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateDonationOrderDto } from './dto/create-donation-order.dto';
 import { VerifyDonationPaymentDto } from './dto/verify-donation-payment.dto';
+import { DonationSubscriptionsService } from './donation-subscriptions.service';
 import { DonorsService } from './donors.service';
 import { Donor } from './entities/donor.entity';
 
@@ -31,7 +37,10 @@ import { Donor } from './entities/donor.entity';
 @Roles(UserRole.ADMIN)
 @Controller('donors')
 export class DonorsController {
-  constructor(private readonly donorsService: DonorsService) {}
+  constructor(
+    private readonly donorsService: DonorsService,
+    private readonly subscriptions: DonationSubscriptionsService,
+  ) {}
 
   @Public()
   @Post('create-order')
@@ -53,6 +62,33 @@ export class DonorsController {
     const data = await this.donorsService.verifyPayment(dto);
     return {
       statusCode: HttpStatus.OK,
+      data,
+    };
+  }
+
+  @Public()
+  @Post('webhook')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Razorpay webhook receiver',
+    description:
+      'Handles subscription.* events for recurring donations (each subscription.charged becomes a paid donation). Verifies x-razorpay-signature with RAZORPAY_WEBHOOK_SECRET. Other events are acknowledged and ignored.',
+  })
+  async handleWebhook(
+    @Req() req: RawBodyRequest<Request>,
+    @Headers('x-razorpay-signature') signature: string,
+  ) {
+    const rawBody = req.rawBody ?? JSON.stringify(req.body);
+    const { event, payload } = this.donorsService.parseRazorpayWebhook(
+      rawBody,
+      signature,
+    );
+    const data = event.startsWith('subscription.')
+      ? await this.subscriptions.handleWebhook(event, payload)
+      : { received: true, event, message: 'Event ignored' };
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Webhook processed successfully',
       data,
     };
   }

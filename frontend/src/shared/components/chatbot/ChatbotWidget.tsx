@@ -92,7 +92,12 @@ function SmartLink({ href, children }: { href: string; children: ReactNode }) {
   const className =
     "font-semibold text-[#9739A8] underline decoration-[#FFD638] decoration-2 underline-offset-2 hover:text-[#722280]";
 
-  if (href === "#donate" || href === "/#donate") {
+  if (
+    href === "#donate" ||
+    href === "/#donate" ||
+    href === "#cta-donate" ||
+    href === "/#cta-donate"
+  ) {
     return (
       <button
         type="button"
@@ -356,11 +361,20 @@ export function ChatbotWidget() {
     });
     setLoading(true);
 
+    const conversationHistory = messages.slice(-6).map((m) => ({
+      role: m.role === "bot" ? "assistant" : "user",
+      content: m.text,
+    }));
+
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: trimmed, session_id: sessionId }),
+        body: JSON.stringify({
+          message: trimmed,
+          session_id: sessionId,
+          history: conversationHistory,
+        }),
       });
 
       if (!res.ok) throw new Error("Request failed");
@@ -638,16 +652,47 @@ export function ChatbotWidget() {
                               <span className="text-[10px] text-[#8A9596] font-medium">
                                 Sources:
                               </span>
-                              {msg.sources.map((s, idx) => (
-                                <Link
-                                  key={idx}
-                                  href={s.url || "/about"}
-                                  className="inline-flex items-center gap-1 rounded-md bg-[#FAF7FB] px-1.5 py-0.5 text-[10px] font-medium text-[#9739A8] hover:bg-[#9739A8] hover:text-white transition"
-                                >
-                                  {s.title}
-                                  <ExternalLink className="size-2.5" />
-                                </Link>
-                              ))}
+                              {msg.sources.map((s, idx) => {
+                                const isDonate =
+                                  s.url === "#donate" ||
+                                  s.url === "/#donate" ||
+                                  s.url === "#cta-donate" ||
+                                  s.url === "/#cta-donate" ||
+                                  s.title?.toLowerCase().includes("donate");
+
+                                if (isDonate) {
+                                  return (
+                                    <button
+                                      key={idx}
+                                      type="button"
+                                      onClick={() => {
+                                        setOpen(false);
+                                        if (isHomePath(pathname)) {
+                                          void scrollToDonateSection();
+                                        } else {
+                                          sessionStorage.setItem("scroll_to_donate", "true");
+                                          router.push("/#cta-donate");
+                                        }
+                                      }}
+                                      className="inline-flex items-center gap-1 rounded-md bg-[#FAF7FB] px-1.5 py-0.5 text-[10px] font-medium text-[#9739A8] hover:bg-[#9739A8] hover:text-white transition cursor-pointer"
+                                    >
+                                      {s.title}
+                                      <ExternalLink className="size-2.5" />
+                                    </button>
+                                  );
+                                }
+
+                                return (
+                                  <Link
+                                    key={idx}
+                                    href={s.url || "/about"}
+                                    className="inline-flex items-center gap-1 rounded-md bg-[#FAF7FB] px-1.5 py-0.5 text-[10px] font-medium text-[#9739A8] hover:bg-[#9739A8] hover:text-white transition"
+                                  >
+                                    {s.title}
+                                    <ExternalLink className="size-2.5" />
+                                  </Link>
+                                );
+                              })}
                             </div>
                           ) : null}
                         </div>

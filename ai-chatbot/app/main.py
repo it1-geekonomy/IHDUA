@@ -11,6 +11,7 @@ from app.routers import chat, health, sync
 async def lifespan(_: FastAPI):
     warmup.start()
     yield
+    warmup.stop()
 
 
 app = FastAPI(
@@ -25,9 +26,9 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -39,4 +40,4 @@ app.include_router(chat.router)
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("app.main:app", host="0.0.0.0", port=settings.port, reload=True)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=settings.port)

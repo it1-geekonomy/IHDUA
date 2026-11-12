@@ -3,6 +3,7 @@ export const ADMIN_NAV_SECTIONS = [
     title: "Financials",
     items: [
       { href: "/admin/donations", label: "Donations", icon: "donations" as const },
+      { href: "/admin/recurring-donations", label: "Recurring Donations", icon: "recurring" as const },
     ],
   },
   {
@@ -54,6 +55,7 @@ export const ADMIN_NAV_SECTIONS = [
 
 export const ADMIN_NAV = [
   { href: "/admin/donations", label: "Donations", icon: "donations" as const },
+  { href: "/admin/recurring-donations", label: "Recurring Donations", icon: "recurring" as const },
   { href: "/admin/forms/contact", label: "Contact Leads", icon: "contact" as const },
   { href: "/admin/forms/volunteer", label: "Volunteer Leads", icon: "volunteer" as const },
   { href: "/admin/forms/partnership", label: "Partnership Inquiries", icon: "partnership" as const },

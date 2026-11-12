@@ -55,7 +55,12 @@ export class Donor extends BaseEntity {
   donationCategory: string;
 
   @ApiPropertyOptional({ example: 'IHDUA-20261026-A1B2C3D4' })
-  @Column({ name: 'receipt_number', type: 'varchar', length: 50, nullable: true })
+  @Column({
+    name: 'receipt_number',
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+  })
   receiptNumber: string | null;
 
   @ApiPropertyOptional({ example: 'pay_xyz123' })
@@ -77,6 +82,14 @@ export class Donor extends BaseEntity {
     nullable: true,
   })
   razorpayOrderId: string | null;
+
+  @ApiPropertyOptional({
+    description: 'Set when this charge belongs to a recurring donation',
+    example: null,
+  })
+  @Index('idx_donors_subscription_id')
+  @Column({ name: 'subscription_id', type: 'uuid', nullable: true })
+  subscriptionId: string | null;
 
   @ApiProperty({ enum: DonationStatus, default: DonationStatus.PENDING })
   @Index('idx_donors_status')
@@ -103,7 +116,10 @@ export class Donor extends BaseEntity {
   @Column({ name: 'receipt_url', type: 'text', nullable: true })
   receiptUrl: string | null;
 
-  @ApiPropertyOptional({ enum: ReceiptEmailStatus, example: ReceiptEmailStatus.SENT })
+  @ApiPropertyOptional({
+    enum: ReceiptEmailStatus,
+    example: ReceiptEmailStatus.SENT,
+  })
   @Index('idx_donors_receipt_email_queue')
   @Column({
     name: 'receipt_email_status',
@@ -126,7 +142,11 @@ export class Donor extends BaseEntity {
   receiptEmailNextAttemptAt: Date | null;
 
   @ApiPropertyOptional({ example: '2026-10-24T10:00:30.000Z' })
-  @Column({ name: 'receipt_email_sent_at', type: 'timestamptz', nullable: true })
+  @Column({
+    name: 'receipt_email_sent_at',
+    type: 'timestamptz',
+    nullable: true,
+  })
   receiptEmailSentAt: Date | null;
 
   @ApiPropertyOptional({ example: null })

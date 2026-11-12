@@ -322,20 +322,27 @@ export const KNOWLEDGE_BASE: KnowledgeDocument[] = [
       "payment",
       "csr",
       "how to donate",
+      "recurring",
+      "monthly",
+      "quarterly",
+      "yearly",
+      "autopay",
+      "subscription",
+      "auto debit",
     ],
     summary:
-      "Donations to IHDUA qualify for 80G tax exemption in India (50% tax deduction) and 501(c)(3) tax deductions in the United States. Secure online donation is available on our website.",
+      "Donations to IHDUA qualify for 80G tax exemption in India (50% deduction of donation amount) and 501(c)(3) in the US. Donors can make One-Time or Recurring donations (Monthly, Quarterly, Yearly via AutoPay in India) and cancel anytime.",
     content:
-      "Your support transforms rural lives. All donations to IHDUA are eligible for official tax benefits:\n\n• For Indian Donors: Donations are eligible for tax deductions under Section 80G of the Income Tax Act (50% deduction on taxable income). An official 80G receipt and certificate are issued upon receipt.\n• For US Donors: Donations are tax-deductible under Section 501(c)(3) through our registered Chicago non-profit office.\n\nWays to Contribute:\n1. Online via Website: Click the 'Donate' button to contribute via UPI (Google Pay, PhonePe, Paytm), Net Banking, Debit/Credit Cards, or international cards.\n2. Sponsorship Tiers: Sponsor a child's school education for a year, fund a woman's sewing machine kit, sponsor a free village health camp, or plant a green grove.\n3. Corporate CSR: IHDUA is registered and eligible for Corporate Social Responsibility (CSR) partnerships under MCA guidelines.",
+      "Your support transforms rural lives. All donations to IHDUA are eligible for official tax benefits:\n\n• For Indian Donors: Eligible for 50% tax deduction of the donation amount under Section 80G. Official 80G receipt and Form 10BE certificate are generated.\n• For US Donors: Tax-deductible under Section 501(c)(3) via the Chicago non-profit chapter.\n\nWays to Contribute:\n1. Online One-Time Donation: Via UPI (Google Pay, PhonePe, Paytm), Net Banking, or Debit/Credit Cards powered by Razorpay.\n2. Recurring Donations (AutoPay): Donors in India (INR) can set up automatic donations with Monthly (every month), Quarterly (every 3 months), or Yearly (every year) frequency. AutoPay can be paused or cancelled anytime. Official 80G receipts are emailed automatically after each deduction.\n3. Sponsorship Tiers & Causes: General Donation, Sponsor a child's annual education at Vinayaka Jnana Vidyashale or Adarsha Academy KRS, fund a sewing machine kit for rural women, sponsor a free village health camp, or plant 50 trees.\n4. Corporate CSR: IHDUA is registered and eligible for Corporate Social Responsibility partnerships under MCA guidelines.",
     url: "/#donate",
     actions: [
       { label: "Donate Online Now", href: "/#donate", action: "donate" },
       { label: "Contact for CSR Partnerships", href: "/contact", action: "navigate" },
     ],
     suggestedFollowUps: [
+      "Can I set up a monthly recurring donation?",
       "How do I receive my 80G tax receipt?",
       "Can US residents donate and get tax deductions?",
-      "What is the cost to sponsor a child's education?",
     ],
   },
   {
@@ -647,7 +654,7 @@ export const KNOWLEDGE_BASE: KnowledgeDocument[] = [
     summary:
       "IHDUA maintains total transparency with official 80G tax certification, FCRA authorization for foreign grants, Registered Private Trust status, and published annual audit reports.",
     content:
-      "IHDUA is committed to the highest standards of governance, financial integrity, and transparency:\n• Registered Private Trust (India): Officially established under the Indian Trusts Act as a non-profit organization.\n• 80G Tax Exemption (India): Valid Section 80G certificate providing Indian donors a 50% tax deduction with instant receipts.\n• FCRA Registration: Authorized by the Ministry of Home Affairs to receive international contributions and grants.\n• US Chapter (501(c)(3)): Registered tax-exempt charity in Chicago, Illinois for American donors.\n• Annual Reports: Audited financials and progress reports from 2015 through 2026 are publicly accessible.",
+      "IHDUA is committed to the highest standards of governance, financial integrity, and transparency:\n• Registered Private Trust (India): Officially established under the Indian Trusts Act as a non-profit organization.\n• 80G Tax Exemption (India): Valid Section 80G certificate providing Indian donors a 50% tax deduction on the donated amount with instant receipts.\n• FCRA Registration: Authorized by the Ministry of Home Affairs to receive international contributions and grants.\n• US Chapter (501(c)(3)): Registered tax-exempt charity in Chicago, Illinois for American donors.\n• Annual Reports: Audited financials and progress reports from 2015 through 2026 are publicly accessible.",
     url: "/about",
     actions: [
       { label: "About IHDUA", href: "/about", action: "navigate" },
@@ -680,7 +687,7 @@ export const KNOWLEDGE_BASE: KnowledgeDocument[] = [
     summary:
       "IHDUA holds 12A/12AB registration (URN: AAATI3426LE20216, dated 22 Mar 2022), 80G approval (URN: AAATI3426LF20214, dated 23 Mar 2022) valid through AY 2026-27, and renewed FCRA registration (No: 094590127) valid through 2028.",
     content:
-      "IHDUA is officially certified and registered under Indian non-profit and tax regulations:\n\n1. Section 12A / 12AB Registration:\n• Order for Registration: Form 10AC issued under Section 12A/12AB of the Income Tax Act, 1961.\n• Unique Registration Number (URN): AAATI3426LE20216.\n• Order Date: 22-03-2022.\n• Valid Assessment Years: AY 2022-23 to AY 2026-27.\n\n2. Section 80G Approval & Form 10BE:\n• Order for Approval: Form 10AC issued under Section 80G.\n• Unique Registration Number (URN): AAATI3426LF20214.\n• Order Date: 23-03-2022.\n• Valid Assessment Years: AY 2022-23 to AY 2026-27.\n• Tax Benefit: Donors receive a 50% deduction on taxable income under Section 80G.\n• Form 10BE: Formal donation certificates are filed with the Income Tax Department and issued to donors for their tax returns.\n\n3. FCRA Registration (Foreign Contributions):\n• Registration Number: 094590127.\n• Nature: Educational and Social.\n• Renewal Effective Date: 01-04-2023 (5-year validity period, valid through 31-03-2028).\n• Authorized to accept international philanthropic grants and donations in compliance with FCRA 2010 regulations.",
+      "IHDUA is officially certified and registered under Indian non-profit and tax regulations:\n\n1. Section 12A / 12AB Registration:\n• Order for Registration: Form 10AC issued under Section 12A/12AB of the Income Tax Act, 1961.\n• Unique Registration Number (URN): AAATI3426LE20216.\n• Order Date: 22-03-2022.\n• Valid Assessment Years: AY 2022-23 to AY 2026-27.\n\n2. Section 80G Approval & Form 10BE:\n• Order for Approval: Form 10AC issued under Section 80G.\n• Unique Registration Number (URN): AAATI3426LF20214.\n• Order Date: 23-03-2022.\n• Valid Assessment Years: AY 2022-23 to AY 2026-27.\n• Tax Benefit: Donors receive a 50% deduction of the donation amount under Section 80G.\n• Form 10BE: Formal donation certificates are filed with the Income Tax Department and issued to donors for their tax returns.\n\n3. FCRA Registration (Foreign Contributions):\n• Registration Number: 094590127.\n• Nature: Educational and Social.\n• Renewal Effective Date: 01-04-2023 (5-year validity period, valid through 31-03-2028).\n• Authorized to accept international philanthropic grants and donations in compliance with FCRA 2010 regulations.",
     url: "/about",
     actions: [
       { label: "View About Us", href: "/about", action: "navigate" },

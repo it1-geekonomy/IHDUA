@@ -2,68 +2,112 @@ import { notFound } from "next/navigation";
 import HeroBanner from "@/shared/components/Herobanner";
 import NewsletterSection from "@/shared/components/Newsletter";
 import BlogDetailClient from "@/domains/blogs/components/BlogDetailClient";
-import { BLOG_POSTS, BLOGS_HERO, type BlogPost } from "@/domains/blogs/constants/blogsData";
+import { BLOGS_HERO } from "@/domains/blogs/constants/blogsData";
+import {
+  mapStoryToLink,
+  mapStoryToPost,
+  sortPublishedStories,
+} from "@/domains/blogs/lib/mapStoryToPost";
+import {
+  fetchBlogCategories,
+  fetchPublishedStories,
+  fetchStoryBySlug,
+  type BlogCategory,
+  type BlogStory,
+} from "@/domains/home/lib/blogs";
 
 interface BlogSlugPageProps {
   params: Promise<{ slug: string }>;
 }
 
+/** Always try to show this many related stories */
+const RELATED_COUNT = 3;
+
+/** Pre-build known slugs; new stories still work on demand (dynamicParams defaults to true) */
 export async function generateStaticParams() {
-  return BLOG_POSTS.map((post) => ({
-    slug: post.slug,
-  }));
+  try {
+    const stories = await fetchPublishedStories();
+    return stories.filter((s) => s.slug).map((s) => ({ slug: s.slug }));
+  } catch {
+    return []; // backend offline at build time: pages render on first request
+  }
 }
 
 export async function generateMetadata({ params }: BlogSlugPageProps) {
   const { slug } = await params;
-  const post = BLOG_POSTS.find((p) => p.slug === slug);
+  const story = await fetchStoryBySlug(slug).catch(() => null);
 
-  if (!post) {
-    return {
-      title: "Blog Story | IHDUA",
-    };
+  if (!story) {
+    return { title: "Blog Story | IHDUA" };
   }
 
-  const description = post.excerpt || post.leadParagraph || "Read this story from IHDUA.";
-
-  const canonical = post.canonicalUrl || `/blogs/${slug}`;
+  const title = story.metaTitle || `${story.title} | IHDUA`;
+  const description =
+    story.metaDescription || story.shortDescription || "Read this story from IHDUA.";
+  const canonical = `/blogs/${slug}`;
 
   return {
-    title: `${post.title} | IHDUA`,
+    title,
     description,
-    alternates: {
-      canonical,
-    },
+    alternates: { canonical },
     openGraph: {
-      title: `${post.title} | IHDUA`,
+      title,
       description,
       url: canonical,
       type: "article",
-      images: post.image
-        ? [
-            {
-              url: post.image,
-              alt: post.imageAlt || post.title,
-            },
-          ]
+      images: story.blogBanner
+        ? [{ url: story.blogBanner, alt: story.title }]
         : undefined,
     },
     twitter: {
       card: "summary_large_image",
-      title: `${post.title} | IHDUA`,
+      title,
       description,
-      images: post.image ? [post.image] : undefined,
+      images: story.blogBanner ? [story.blogBanner] : undefined,
     },
   };
 }
 
 export default async function BlogSlugPage({ params }: BlogSlugPageProps) {
   const { slug } = await params;
-  const post = BLOG_POSTS.find((p) => p.slug === slug);
 
-  if (!post) {
+  const [story, published, categories] = await Promise.all([
+    fetchStoryBySlug(slug).catch(() => null),
+    // The list and categories are optional here: a failure must not break the page
+    fetchPublishedStories().catch(() => [] as BlogStory[]),
+    fetchBlogCategories().catch(() => [] as BlogCategory[]),
+  ]);
+
+  if (!story) {
     notFound();
   }
+
+  const post = mapStoryToPost(story, categories);
+
+  // Newest first. "Previous" = the newer story, "Next" = the older one.
+  const ordered = sortPublishedStories(published);
+  const index = ordered.findIndex((s) => s.id === story.id);
+  const prev = index > 0 ? mapStoryToLink(ordered[index - 1]) : null;
+  const next =
+    index >= 0 && index < ordered.length - 1
+      ? mapStoryToLink(ordered[index + 1])
+      : null;
+
+  // Related: the API's list first, then topped up to RELATED_COUNT with
+  // the newest other published stories (no duplicates, never the current story)
+  const relatedSource: BlogStory[] = (story.related ?? []).filter(
+    (r) => r.id !== story.id && r.slug && r.title,
+  );
+  const seen = new Set<string>([story.id, ...relatedSource.map((r) => r.id)]);
+
+  for (const s of ordered) {
+    if (relatedSource.length >= RELATED_COUNT) break;
+    if (seen.has(s.id)) continue;
+    seen.add(s.id);
+    relatedSource.push(s);
+  }
+
+  const related = relatedSource.slice(0, RELATED_COUNT).map(mapStoryToLink);
 
   return (
     <main className="w-full">
@@ -75,7 +119,14 @@ export default async function BlogSlugPage({ params }: BlogSlugPageProps) {
         imageAlt={BLOGS_HERO.imageAlt}
       />
 
-      <BlogDetailClient initialPost={post} />
+      <BlogDetailClient
+        post={post}
+        related={related}
+        prev={prev}
+        next={next}
+        position={index >= 0 ? index + 1 : 1}
+        total={ordered.length > 0 ? ordered.length : 1}
+      />
 
       <NewsletterSection />
     </main>

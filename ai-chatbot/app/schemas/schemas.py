@@ -23,14 +23,21 @@ class FullSyncRequest(BaseModel):
     force: bool = False
 
 
+class ChatTurn(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(..., max_length=4000)
+
+
 class ChatRequest(BaseModel):
-    message: Optional[str] = Field(None, min_length=1)
+    message: Optional[str] = Field(None, min_length=1, max_length=1000)
     question: Optional[str] = Field(
         None,
         description="Legacy alias for message",
         min_length=1,
+        max_length=1000,
     )
-    session_id: Optional[str] = None
+    session_id: Optional[str] = Field(None, max_length=100)
+    history: Optional[list[ChatTurn]] = Field(None, max_length=10)
 
     def resolved_message(self) -> str:
         return (self.message or self.question or "").strip()

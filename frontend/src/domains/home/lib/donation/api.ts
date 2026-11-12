@@ -44,6 +44,35 @@ export type VerifyDonationPaymentResponse = {
   donationCategory?: string;
 };
 
+export type DonationFrequency = "monthly" | "quarterly" | "yearly";
+
+export type CreateSubscriptionResponse = {
+  subscriptionId: string;
+  frequency: DonationFrequency;
+  amount: string;
+  amountPaise: number;
+  currency: string;
+  keyId: string;
+};
+
+export type VerifySubscriptionPayload = {
+  razorpaySubscriptionId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
+};
+
+export type VerifySubscriptionResponse = {
+  subscription: {
+    id: string;
+    status: string;
+    frequency: DonationFrequency;
+    amount: string;
+    nextChargeAt: string | null;
+  };
+  /** Null when the bank only approved the mandate; the first charge follows shortly. */
+  donor: Omit<VerifyDonationPaymentResponse, "status"> | null;
+};
+
 async function parseError(res: Response) {
   try {
     const body = (await res.json()) as { message?: string | string[] };
@@ -79,6 +108,34 @@ export async function verifyDonationPayment(
   if (!res.ok) throw new Error(await parseError(res));
   const json = await res.json();
   return (json?.data ?? json) as VerifyDonationPaymentResponse;
+}
+
+export async function createDonationSubscription(
+  payload: CreateDonationOrderPayload & { frequency: DonationFrequency },
+) {
+  const res = await fetch(`${API_BASE}/donation-subscriptions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) throw new Error(await parseError(res));
+  const json = await res.json();
+  return (json?.data ?? json) as CreateSubscriptionResponse;
+}
+
+export async function verifyDonationSubscription(
+  payload: VerifySubscriptionPayload,
+) {
+  const res = await fetch(`${API_BASE}/donation-subscriptions/verify`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) throw new Error(await parseError(res));
+  const json = await res.json();
+  return (json?.data ?? json) as VerifySubscriptionResponse;
 }
 
 /** Whole-rupee digits from a display amount like "₹2,500". */

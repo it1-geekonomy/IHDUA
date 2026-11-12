@@ -11,82 +11,104 @@ _THANKS_RE = re.compile(
     r"^(thanks|thank you|thankyou|thx|much appreciated|great job|awesome)[\s!.]*$",
     re.I,
 )
-_CONTACT_RE = re.compile(
-    r"^(contact|where is your office|office address|phone number|email address|how to contact|where are you located)[\s!?.]*$",
+_ACK_RE = re.compile(
+    r"^(no|nope|nah|nothing|no thanks|no thank you|ok|okay|k|fine|cool|great|alright|got it|sure|yes|yeah|hmm+)[\s!.]*$",
     re.I,
 )
-_DONATE_FAST_RE = re.compile(
-    r"^(how to donate|donate|donation|i want to donate|give donation|how can i contribute)[\s!?.]*$",
-    re.I,
-)
+_BYE_RE = re.compile(r"^(bye|goodbye|see you|tata|good night)[\s!.]*$", re.I)
+
+
 def match_fast_intent(message: str) -> dict | None:
+    """Only small talk is answered without retrieval; every factual answer comes from indexed content."""
     msg = message.strip()
     if _GREETING_RE.match(msg):
-        return {
-            "answer": C.GREETING_ANSWER,
-            "sources": [{"title": "About IHDUA", "url": C.ABOUT_URL}],
-        }
+        return {"answer": C.GREETING_ANSWER, "sources": []}
     if _THANKS_RE.match(msg):
-        return {
-            "answer": C.THANKS_ANSWER,
-            "sources": [],
-        }
-    if _CONTACT_RE.match(msg):
-        return {
-            "answer": C.CONTACT_ANSWER,
-            "sources": [{"title": "Contact Us", "url": C.CONTACT_URL}],
-        }
-    if _DONATE_FAST_RE.match(msg):
-        return {
-            "answer": C.DONATE_INTENT_ANSWER,
-            "sources": [{"title": "Donate Now", "url": C.DONATE_URL}],
-        }
+        return {"answer": C.THANKS_ANSWER, "sources": []}
+    if _BYE_RE.match(msg):
+        return {"answer": C.BYE_ANSWER, "sources": []}
+    if _ACK_RE.match(msg):
+        return {"answer": C.ACK_ANSWER, "sources": []}
     return None
 
 
+_INTENT_PATTERNS: dict[str, re.Pattern] = {
+    "donate": re.compile(
+        r"\b(donate|donations?|80g|tax|taxes|tax-exempt|tax-exemption|501c|501\(c\)\(3\)|contribute|contributions?|funds?|receipts?)\b",
+        re.I,
+    ),
+    "education": re.compile(
+        r"\b(schools?|education|vinayaka|adarsha|krs|study|students?|teachers?|children)\b",
+        re.I,
+    ),
+    "women": re.compile(
+        r"\b(women|shg|shgs|self[\s-]*help|federations?|empowerment|women['s]?\s*savings)\b",
+        re.I,
+    ),
+    "microfinance": re.compile(
+        r"\b(microfinance|loans?|credits?|bank[\s-]*linkages?|interest)\b",
+        re.I,
+    ),
+    "stitching": re.compile(
+        r"\b(stitching|garments?|tailors?|tailoring|sewing)\b",
+        re.I,
+    ),
+    "health": re.compile(
+        r"\b(health|camps?|doctors?|medical|eye|checkups?|clinics?|cancer|anaemia|anemia|hygiene)\b",
+        re.I,
+    ),
+    "model_village": re.compile(
+        r"\b(model[\s-]*village|green[\s-]*cover|trees?|plants?|plantations?|afforestation|rejuvenation|sanitation|solar)\b",
+        re.I,
+    ),
+    "farmers": re.compile(
+        r"\b(farmers?|agriculture|farming|crops?|fodder|livestock|cattle|soil|harvest|organic|irrigation|pumps?)\b",
+        re.I,
+    ),
+    "skills": re.compile(
+        r"\b(youth|nursing|gda|computers?|skills?|vocational|assistants?|general[\s-]*duty)\b",
+        re.I,
+    ),
+    "governance": re.compile(
+        r"\b(12a|12ab|80g|fcra|pan|trust[\s-]*deed|certificates?|downloads?|registration|form[\s-]*10ac|form[\s-]*10be)\b",
+        re.I,
+    ),
+    "contact": re.compile(
+        r"\b(contact|address|phones?|emails?|office|locations?|reach|hours|mysore|chicago)\b",
+        re.I,
+    ),
+    "volunteer": re.compile(
+        r"\b(volunteers?|volunteering|interns?|internships?|careers?|join|partner(s|ship|ships)?|collaborat\w*|csr|get\s+involved)\b",
+        re.I,
+    ),
+    "leadership": re.compile(
+        r"\b(founders?|chairpersons?|chairman|trustees?|leadership|leaders?|governance|board|team|director|ceo)\b",
+        re.I,
+    ),
+    "about": re.compile(
+        r"\b(about|mission|vision|values?|objectives?|aims?|ngo|non[\s-]*profit|who\s+(are|is)|what\s+is\s+ihdua|purpose)\b",
+        re.I,
+    ),
+    "impact": re.compile(
+        r"\b(impact|numbers?|statistics?|stats|how\s+many|achievements?|reached|beneficiar(y|ies))\b",
+        re.I,
+    ),
+    "history": re.compile(
+        r"\b(history|milestones?|founded|established|started|journey|annual\s+reports?)\b",
+        re.I,
+    ),
+    "stories": re.compile(
+        r"\b(story|stories|blogs?|articles?|news|beneficiaries|field[\s-]*story)\b",
+        re.I,
+    ),
+}
+
+
 def detect_intents(text: str) -> set[str]:
-    lower = text.lower()
     intents = set()
-
-    if any(k in lower for k in ("donate", "donation", "80g", "tax", "501c", "contribute", "fund", "receipt")):
-        intents.add("donate")
-
-    if any(k in lower for k in ("school", "schools", "education", "vinayaka", "adarsha", "krs", "study", "student", "teacher", "children")):
-        intents.add("education")
-
-    if any(k in lower for k in ("women", "shg", "self help", "federation", "empowerment", "women savings")):
-        intents.add("women")
-
-    if any(k in lower for k in ("microfinance", "loan", "loans", "credit", "bank linkage", "interest")):
-        intents.add("microfinance")
-
-    if any(k in lower for k in ("stitching", "garment", "tailor", "tailoring", "sewing")):
-        intents.add("stitching")
-
-    if any(k in lower for k in ("health", "camp", "camps", "doctor", "medical", "eye", "checkup", "clinic", "cancer")):
-        intents.add("health")
-
-    if any(k in lower for k in ("model village", "green cover", "tree", "plant", "afforestation", "rejuvenation", "sanitation", "solar")):
-        intents.add("model_village")
-
-    if any(k in lower for k in ("youth", "farmer", "farmers", "agriculture", "nursing", "gda", "computer", "skills", "vocational", "assistant", "general duty")):
-        intents.add("skills")
-
-    if any(k in lower for k in ("12a", "12ab", "80g", "fcra", "pan", "trust deed", "certificate", "certificates", "download", "registration", "form 10ac", "form 10be")):
-        intents.add("governance")
-
-    if any(k in lower for k in ("contact", "address", "phone", "email", "office", "location", "reach", "hours", "mysore", "chicago")):
-        intents.add("contact")
-
-    if any(k in lower for k in ("volunteer", "intern", "internship", "career", "join")):
-        intents.add("volunteer")
-
-    if any(k in lower for k in ("ajaikumar", "founder", "chairperson", "trustee", "leadership", "leader", "trustees", "governance", "board")):
-        intents.add("leadership")
-
-    if any(k in lower for k in ("shanthamma", "ripple effect", "story", "stories", "blog", "blogs", "beneficiary", "field story")):
-        intents.add("stories")
-
+    for intent, pattern in _INTENT_PATTERNS.items():
+        if pattern.search(text):
+            intents.add(intent)
     return intents
 
 

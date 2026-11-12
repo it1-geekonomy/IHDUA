@@ -108,7 +108,9 @@ export class CreateDonationOrderDto {
     example: 'ABCDE1234F',
   })
   @IsOptional()
-  @ValidateIf((_, value) => value !== undefined && value !== null && value !== '')
+  @ValidateIf(
+    (_, value) => value !== undefined && value !== null && value !== '',
+  )
   @IsString()
   @MinLength(10)
   @MaxLength(20)

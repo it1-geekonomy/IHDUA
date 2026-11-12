@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react";
 const PATH_LABELS: Record<string, string> = {
   admin: "Admin CMS",
   donations: "Donations",
+  "recurring-donations": "Recurring Donations",
   forms: "Forms",
   contact: "Contact Leads",
   volunteer: "Volunteer Leads",

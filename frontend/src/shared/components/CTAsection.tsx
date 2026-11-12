@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import Typography from "@/lib/Typography";
@@ -31,8 +32,25 @@ export default function CTASection() {
     }
   };
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const shouldScroll =
+      sessionStorage.getItem("scroll_to_donate") === "true" ||
+      window.location.hash === "#donate" ||
+      window.location.hash === "#cta-donate";
+
+    if (shouldScroll) {
+      sessionStorage.removeItem("scroll_to_donate");
+      const timer = window.setTimeout(() => {
+        void smoothScrollToId(DONATION_SECTION_ID, 24);
+      }, 300);
+      return () => window.clearTimeout(timer);
+    }
+  }, [pathname]);
+
   return (
     <section id={DONATION_SECTION_ID} className="relative w-full overflow-hidden">
+      <span id="donate" className="absolute -top-24 pointer-events-none" aria-hidden="true" />
       <div className="relative w-full min-h-[640px] py-12 sm:py-16 lg:py-20 flex items-center">
         <Image
           src={DONATION_COPY.bgImage}
