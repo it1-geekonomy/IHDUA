@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
+import { ChatbotSyncService } from '../../common/chatbot-sync/chatbot-sync.service';
 import { ContentStatus } from '../../common/enums/content-status.enum';
 import {
   buildPaginatedResult,
@@ -31,6 +32,7 @@ export class ImpactCategoriesService {
   constructor(
     @InjectRepository(ImpactCategory)
     private readonly repo: Repository<ImpactCategory>,
+    private readonly chatbotSync: ChatbotSyncService,
   ) {}
 
   async create(dto: CreateImpactCategoryDto): Promise<ImpactCategory> {
@@ -214,6 +216,7 @@ export class ImpactCategoriesService {
     try {
       const saved = await this.repo.save(entity);
       this.logger.log(`Updated impact category with ID ${id}`);
+      this.chatbotSync.notify('impact_categories', id);
       return saved;
     } catch (err) {
       if (this.isUniqueViolation(err)) {
@@ -242,7 +245,9 @@ export class ImpactCategoriesService {
   }
 
   async restore(id: string): Promise<ImpactCategory> {
-    return restoreSoftDeleted(this.repo, id, 'Impact category');
+    const restored = await restoreSoftDeleted(this.repo, id, 'Impact category');
+    this.chatbotSync.notify('impact_categories', id);
+    return restored;
   }
 
   private async assertNoInitiatives(category: ImpactCategory): Promise<void> {

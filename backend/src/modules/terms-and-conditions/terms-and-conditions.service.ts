@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
+import { ChatbotSyncService } from '../../common/chatbot-sync/chatbot-sync.service';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { ContentStatus } from '../../common/enums/content-status.enum';
 import {
@@ -24,6 +25,7 @@ export class TermsAndConditionsService {
   constructor(
     @InjectRepository(TermsAndConditions)
     private readonly repo: Repository<TermsAndConditions>,
+    private readonly chatbotSync: ChatbotSyncService,
   ) {}
 
   async create(
@@ -104,6 +106,7 @@ export class TermsAndConditionsService {
   async remove(id: string): Promise<void> {
     const entity = await this.findOne(id);
     await this.repo.softRemove(entity);
+    this.chatbotSync.notify('terms_and_conditions', id, 'delete');
   }
 
   async restore(id: string): Promise<TermsAndConditions> {
@@ -124,7 +127,9 @@ export class TermsAndConditionsService {
         'Cannot restore this terms and conditions because an active record already uses the same title.',
       );
     }
-    return restoreSoftDeleted(this.repo, id, 'Terms and conditions');
+    const restored = await restoreSoftDeleted(this.repo, id, 'Terms and conditions');
+    this.chatbotSync.notify('terms_and_conditions', id);
+    return restored;
   }
 
   private async saveOrThrow(
@@ -162,7 +167,9 @@ export class TermsAndConditionsService {
     }
 
     try {
-      return await this.repo.save(entity);
+      const saved = await this.repo.save(entity);
+      this.chatbotSync.notify('terms_and_conditions', saved.id);
+      return saved;
     } catch (err) {
       if (this.isUniqueViolation(err)) {
         throw new ConflictException(

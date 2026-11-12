@@ -41,7 +41,13 @@ def hybrid_retrieve(
     if "model_village" in intents:
         keywords.extend(["model village", "green cover", "rejuvenation"])
     if "contact" in intents:
-        keywords.extend(["contact", "office", "mysore"])
+        keywords.extend(["contact"])
+    if "leadership" in intents:
+        keywords.extend(["leadership"])
+    if "impact" in intents:
+        keywords.extend(["impact numbers"])
+    if "history" in intents:
+        keywords.extend(["milestones", "annual reports"])
 
     if keywords:
         kw_hits = vector_store.get_by_title_keywords(keywords)

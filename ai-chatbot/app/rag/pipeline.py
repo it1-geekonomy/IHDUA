@@ -11,7 +11,7 @@ from app.rag.memory import append_turn, get_history, resolve_session_id
 from app.rag.normalize import normalize_for_retrieval
 from app.rag.rerank import pick_sources, rerank
 from app.rag.retrieve import hybrid_retrieve
-from app.rag.rewrite import build_multi_queries, rewrite_query
+from app.rag.rewrite import build_multi_queries, is_continuation, last_turn, rewrite_query
 from app.services import vector_store
 
 
@@ -47,21 +47,8 @@ def _answer(
             "response_time_ms": int((time.perf_counter() - started) * 1000),
         }
 
-    # 2. Check if vector store is ready
+    # 2. Nothing indexed yet: never answer from memory
     if vector_store.indexed_count() == 0:
-        # If DB not indexed yet, attempt quick fallback search or static answers
-        from app.services.corpus import _static_documents
-        static_docs = _static_documents()
-        for doc in static_docs:
-            if any(w in user_message.lower() for w in doc["title"].lower().split()):
-                ans = f"### {doc['title']}\n\n{doc['content']}"
-                return {
-                    "answer": ans,
-                    "sources": [{"title": doc["title"], "url": doc["url"]}],
-                    "session_id": sid,
-                    "response_time_ms": int((time.perf_counter() - started) * 1000),
-                }
-
         return {
             "answer": C.SETUP_ANSWER,
             "sources": [],
@@ -92,9 +79,17 @@ def _answer(
                 "response_time_ms": int((time.perf_counter() - started) * 1000),
             }
 
-    # 4. Normalize & rewrite query
-    search_text = normalize_for_retrieval(user_message)
-    rewritten = rewrite_query(search_text, history)
+    # 4. Normalize & rewrite query ("then" / "tell me more" continue the previous question)
+    question = search_source = user_message
+    previous = last_turn(history, "user")
+    if is_continuation(user_message) and previous and last_turn(history, "assistant") != C.FALLBACK_ANSWER:
+        search_source = previous
+        question = (
+            f"Tell me more about: {previous}. Share details not already given in your previous answer; "
+            "if there are none, say briefly that this is all IHDUA has published on it."
+        )
+    search_text = normalize_for_retrieval(search_source)
+    rewritten = rewrite_query(search_text, history, unanswered=C.FALLBACK_ANSWER)
     intents = detect_intents(f"{search_text} {rewritten}")
 
     # Reject explicit off-topic queries immediately
@@ -109,13 +104,13 @@ def _answer(
         }
 
     # 5. Multi-query retrieval
-    queries = build_multi_queries(rewritten, intents)
+    queries = build_multi_queries(rewritten, intents, original=search_text)
     hits = hybrid_retrieve(queries, intents, question=search_text)
     ranked = vector_store.with_neighbor_chunks(rerank(hits, intents))
 
     # 6. Generate answer
-    answer = generate_answer(user_message, ranked, history=history)
-    answer = recover_if_needed(clean_answer(answer) or C.NO_ANSWER_TOKEN, user_message, ranked, intents)
+    answer = generate_answer(question, ranked, history=history)
+    answer = recover_if_needed(clean_answer(answer) or C.NO_ANSWER_TOKEN, question, ranked, intents)
     answer = clean_answer(answer) or C.NO_ANSWER_TOKEN
     sources = pick_sources(ranked, intents, answer)
 

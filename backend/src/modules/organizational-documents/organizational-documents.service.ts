@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ChatbotSyncService } from '../../common/chatbot-sync/chatbot-sync.service';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { ContentStatus } from '../../common/enums/content-status.enum';
 import {
@@ -31,6 +32,7 @@ export class OrganizationalDocumentsService {
     @InjectRepository(OrganizationalDocument)
     private readonly repo: Repository<OrganizationalDocument>,
     private readonly cdn: CdnService,
+    private readonly chatbotSync: ChatbotSyncService,
   ) {}
 
   async create(
@@ -52,6 +54,7 @@ export class OrganizationalDocumentsService {
       });
       const saved = await this.repo.save(entity);
       this.logger.log(`Created organizational document with ID ${saved.id}`);
+      this.chatbotSync.notify('organizational_documents', saved.id);
       return saved;
     } catch (err) {
       await this.cdn.delete(fileUrl);
@@ -130,16 +133,21 @@ export class OrganizationalDocumentsService {
       );
     }
 
-    return await this.repo.save(entity);
+    const saved = await this.repo.save(entity);
+    this.chatbotSync.notify('organizational_documents', saved.id);
+    return saved;
   }
 
   async remove(id: string): Promise<void> {
     const entity = await this.findOne(id);
     await this.repo.softRemove(entity);
     this.logger.log(`Soft-deleted organizational document with ID ${id}`);
+    this.chatbotSync.notify('organizational_documents', id, 'delete');
   }
 
   async restore(id: string): Promise<OrganizationalDocument> {
-    return restoreSoftDeleted(this.repo, id, 'Organizational document');
+    const restored = await restoreSoftDeleted(this.repo, id, 'Organizational document');
+    this.chatbotSync.notify('organizational_documents', id);
+    return restored;
   }
 }
