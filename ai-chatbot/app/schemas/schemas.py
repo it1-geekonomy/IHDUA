@@ -23,6 +23,11 @@ class FullSyncRequest(BaseModel):
     force: bool = False
 
 
+class ChatTurn(BaseModel):
+    role: str
+    content: str
+
+
 class ChatRequest(BaseModel):
     message: Optional[str] = Field(None, min_length=1)
     question: Optional[str] = Field(
@@ -31,6 +36,7 @@ class ChatRequest(BaseModel):
         min_length=1,
     )
     session_id: Optional[str] = None
+    history: Optional[list[ChatTurn]] = None
 
     def resolved_message(self) -> str:
         return (self.message or self.question or "").strip()
