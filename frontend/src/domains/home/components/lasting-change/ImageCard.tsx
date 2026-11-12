@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { figmaTypeScale } from "@/lib/Typography";
 import { cn } from "@/lib/utils";
 
 type ImageCardProps = {
@@ -23,13 +22,9 @@ export function ImageCard({ image, label, className }: ImageCardProps) {
         className="object-cover"
         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
       />
-      <div className="absolute inset-x-0 bottom-0 z-10 flex w-full items-center justify-center bg-black/50 px-2 py-2.5 sm:px-3 sm:py-3">
-        <p
-          className={cn(
-            "text-center font-figtree font-medium text-white",
-            figmaTypeScale[18]
-          )}
-        >
+
+      <div className="absolute inset-x-0 bottom-0 z-10 flex h-[48px] min-h-[48px] w-full items-center justify-center bg-black/50 px-2 py-1">
+        <p className="line-clamp-2 w-full text-center font-figtree text-[12px] font-medium leading-[16px] text-white [overflow-wrap:normal] [word-break:keep-all]">
           {label}
         </p>
       </div>

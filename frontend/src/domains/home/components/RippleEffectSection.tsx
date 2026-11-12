@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { IMPACT_STEPS } from "@/domains/home/constants/RippleEffectSection";
 import Typography from "@/lib/Typography";
@@ -6,13 +7,17 @@ export default function RippleEffectSection() {
   return (
     <section className="w-full bg-[#FAF9F5]">
       <div className="w-full px-6 pt-6 pb-6 xl:py-14 lg:px-10 lg:pt-8 lg:pb-8 2xl:px-40">
-        {/* Eyebrow + heading: centered below lg, left-aligned at lg+ */}
+        {/* Eyebrow + heading */}
         <div className="flex items-center justify-center gap-3 lg:justify-start">
           <span className="h-px w-8 bg-[#9739A8]" />
-          <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
+
+          <Typography
+            variant="caption"
+            className="font-bold font-figtree text-[#9739A8]"
+          >
             Real People, Real Change
           </Typography>
-          {/* Right-side line only below lg, so the centered label is balanced */}
+
           <span className="h-px w-8 bg-[#9739A8]" />
         </div>
 
@@ -23,11 +28,11 @@ export default function RippleEffectSection() {
           The Ripple Effect of a Single Opportunity
         </Typography>
 
-        {/* Two parts: image on the left, story on the right, matched heights */}
+        {/* Image and story */}
         <div className="mt-8 grid grid-cols-1 items-stretch gap-8 sm:mt-10 lg:grid-cols-2 lg:gap-16">
           <Link
             href="/blogs/the-ripple-effect-of-a-single-opportunity"
-            className="group relative h-64 overflow-hidden sm:h-80 md:h-[26rem] lg:h-auto rounded-md block cursor-pointer"
+            className="group relative block h-64 cursor-pointer overflow-hidden rounded-md sm:h-80 md:h-[26rem] lg:h-auto"
           >
             <img
               src="/rippleeffect/shanthamma1.png"
@@ -43,10 +48,13 @@ export default function RippleEffectSection() {
             >
               <Typography
                 variant="h3"
-                className="leading-snug font-lora font-normal text-[#00191B] transition-colors group-hover:text-[#9739A8] w-full lg:max-w-xl"
+                className="w-full leading-snug font-lora font-normal text-[#00191B] transition-colors group-hover:text-[#9739A8] lg:max-w-xl"
               >
-                How <span className="text-[#C09A00] font-lora font-medium">Shanthamma</span> Secured
-                Her Family's Future
+                How{" "}
+                <span className="font-lora font-medium text-[#C09A00]">
+                  Shanthamma
+                </span>{" "}
+                Secured Her Family&apos;s Future
               </Typography>
             </Link>
 
@@ -60,10 +68,15 @@ export default function RippleEffectSection() {
                     >
                       {step.label}
                     </Typography>
-                    <Typography variant="body-lg" className="leading-relaxed text-[#5F6C6D] font-figtree font-normal">
+
+                    <Typography
+                      variant="body-lg"
+                      className="font-figtree font-normal leading-relaxed text-[#5F6C6D]"
+                    >
                       {step.description}
                     </Typography>
                   </div>
+
                   {index !== IMPACT_STEPS.length - 1 && (
                     <span className="block h-px w-full bg-[#E3ECEC]" />
                   )}
@@ -71,11 +84,18 @@ export default function RippleEffectSection() {
               ))}
             </div>
 
+            {/* Read More button */}
             <Link
               href="/blogs/the-ripple-effect-of-a-single-opportunity"
-              className="mx-auto flex mt-6 w-fit bg-[#FFD638] px-6 py-3 cursor-pointer transition-opacity hover:opacity-90 sm:mt-16 lg:mx-0"
+              className="mx-auto mt-6 flex w-fit max-w-full cursor-pointer items-center justify-center whitespace-nowrap bg-[#FFD638] px-3 py-3 transition-opacity hover:opacity-90 sm:mt-16 sm:px-6 lg:mx-0"
             >
-              <Typography variant="body-sm" className="font-semibold font-figtree uppercase tracking-wide text-[#1E1E1E]">
+              <Typography
+                variant="body-sm"
+                className="whitespace-nowrap font-semibold font-figtree uppercase tracking-wide text-[#1E1E1E]"
+                style={{
+                  fontSize: "clamp(10px, 2.8vw, 14px)",
+                }}
+              >
                 Read More Inspiring Field Stories →
               </Typography>
             </Link>
