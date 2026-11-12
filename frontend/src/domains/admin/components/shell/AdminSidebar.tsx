@@ -19,6 +19,7 @@ import {
   Mail,
   MessageSquare,
   Milestone,
+  Repeat,
   ScrollText,
   Shield,
   Tag,
@@ -34,6 +35,7 @@ import { cn } from "@/lib/utils";
 const ICONS = {
   users: Users,
   donations: HandCoins,
+  recurring: Repeat,
   forms: FileText,
   contact: MessageSquare,
   volunteer: HeartHandshake,
