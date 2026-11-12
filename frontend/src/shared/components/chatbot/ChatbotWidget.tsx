@@ -377,8 +377,8 @@ export function ChatbotWidget() {
         }),
       });
 
-      if (!res.ok) throw new Error("Request failed");
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
+      if (!data || (!res.ok && !data.reply)) throw new Error("Request failed");
 
       if (data.session_id) setSessionId(data.session_id);
 

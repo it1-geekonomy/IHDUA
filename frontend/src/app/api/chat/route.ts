@@ -1,5 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
-import { queryKnowledgeBase } from "@/shared/components/chatbot/ragEngine";
+
+const MAX_MESSAGE_CHARS = 1000;
+const MAX_HISTORY_TURNS = 6;
+const MAX_TURN_CHARS = 4000;
+
+const UNAVAILABLE_RESPONSE = {
+  reply:
+    "Sorry, the IHDUA assistant is temporarily unavailable. Please try again in a few minutes, or reach the IHDUA team through the Contact Us page.",
+  sources: [],
+  actions: [{ label: "Contact Us", href: "/contact", action: "navigate" as const }],
+};
+
+type HistoryTurn = { role: "user" | "assistant"; content: string };
+
+function sanitizeHistory(raw: unknown): HistoryTurn[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  return raw
+    .filter(
+      (t): t is HistoryTurn =>
+        !!t &&
+        (t.role === "user" || t.role === "assistant") &&
+        typeof t.content === "string" &&
+        t.content.trim().length > 0,
+    )
+    .slice(-MAX_HISTORY_TURNS)
+    .map((t) => ({ role: t.role, content: t.content.slice(0, MAX_TURN_CHARS) }));
+}
+
+function clientIp(req: NextRequest): string {
+  return (
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip")?.trim() ||
+    ""
+  );
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,11 +70,12 @@ export async function POST(req: NextRequest) {
         headers: {
           "Content-Type": "application/json",
           "X-Internal-Api-Key": internalApiKey,
+          ...(clientIp(req) ? { "X-Forwarded-For": clientIp(req) } : {}),
         },
         body: JSON.stringify({
-          message,
-          session_id: body.session_id,
-          history: Array.isArray(body.history) ? body.history : undefined,
+          message: message.trim().slice(0, MAX_MESSAGE_CHARS),
+          session_id: typeof body.session_id === "string" ? body.session_id : undefined,
+          history: sanitizeHistory(body.history),
         }),
         signal: AbortSignal.timeout(20000),
       });
@@ -100,23 +135,24 @@ export async function POST(req: NextRequest) {
           });
         }
       }
-    } catch {
-      // Fall through smoothly to built-in knowledge base RAG engine
+      if (extRes.status === 429) {
+        return NextResponse.json(
+          {
+            ...UNAVAILABLE_RESPONSE,
+            reply: "You're sending messages a little too quickly. Please wait a moment and try again.",
+            actions: [],
+          },
+          { status: 429 },
+        );
+      }
+      console.error(`Chatbot service responded with HTTP ${extRes.status}`);
+    } catch (error) {
+      console.error("Chatbot service unreachable:", error);
     }
 
-    // Grounded RAG query from IHDUA Knowledge Base
-    const result = queryKnowledgeBase(message);
-
-    return NextResponse.json(result);
+    return NextResponse.json(UNAVAILABLE_RESPONSE, { status: 503 });
   } catch (error) {
     console.error("Chat API error:", error);
-    return NextResponse.json(
-      {
-        reply: "I apologize, but I encountered an error processing your request. Please try asking again or reach out to us at info@ihdua.org.",
-        sources: ["IHDUA Support"],
-        actions: [{ label: "Contact Us", href: "/contact", action: "navigate" }],
-      },
-      { status: 500 },
-    );
+    return NextResponse.json(UNAVAILABLE_RESPONSE, { status: 500 });
   }
 }
