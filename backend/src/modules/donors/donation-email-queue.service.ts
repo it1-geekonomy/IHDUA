@@ -6,7 +6,12 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThan, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import {
+  LessThan,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm';
 import { ReceiptEmailStatus } from '../../common/enums/receipt-email-status.enum';
 import { EmailService, QuotaScope } from '../email/email.service';
 import { DonationDocumentsService } from './donation-documents.service';
@@ -23,14 +28,18 @@ const RETRY_DELAYS_MIN = [5, 30, 120, 360, 720];
 const MAX_ATTEMPTS = RETRY_DELAYS_MIN.length + 1;
 
 function startOfUtcDay(now = new Date()): Date {
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  return new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+  );
 }
 
 /** Resend's daily quota resets at 00:00 UTC (05:30 IST); the monthly one on the 1st. */
 function quotaResetsAt(scope: QuotaScope, now = new Date()): Date {
   if (scope === 'rate') return new Date(now.getTime() + 60_000);
   if (scope === 'monthly') {
-    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 1));
+    return new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 1),
+    );
   }
   return new Date(startOfUtcDay(now).getTime() + 24 * 60 * 60_000 + 60_000);
 }
@@ -86,7 +95,10 @@ export class DonationEmailQueueService
   /** Fields to set on a donation that has just been paid. */
   static queuedFields(): Pick<
     Donor,
-    'receiptEmailStatus' | 'receiptEmailAttempts' | 'receiptEmailNextAttemptAt' | 'receiptEmailError'
+    | 'receiptEmailStatus'
+    | 'receiptEmailAttempts'
+    | 'receiptEmailNextAttemptAt'
+    | 'receiptEmailError'
   > {
     return {
       receiptEmailStatus: ReceiptEmailStatus.QUEUED,
@@ -113,7 +125,9 @@ export class DonationEmailQueueService
         await this.drain();
       } while (this.rerun);
     } catch (err) {
-      this.logger.error(`Receipt email queue run failed: ${(err as Error).message}`);
+      this.logger.error(
+        `Receipt email queue run failed: ${(err as Error).message}`,
+      );
     } finally {
       this.running = false;
     }
@@ -142,7 +156,10 @@ export class DonationEmailQueueService
 
       const remaining = this.dailyLimit - (await this.sentToday());
       if (remaining <= 0) {
-        await this.pause('daily', `daily limit of ${this.dailyLimit} receipt emails reached`);
+        await this.pause(
+          'daily',
+          `daily limit of ${this.dailyLimit} receipt emails reached`,
+        );
         return;
       }
       due.splice(remaining);
@@ -198,11 +215,16 @@ export class DonationEmailQueueService
 
       case 'error': {
         const giveUp = attempts >= MAX_ATTEMPTS;
-        const delayMin = RETRY_DELAYS_MIN[Math.min(attempts - 1, RETRY_DELAYS_MIN.length - 1)];
+        const delayMin =
+          RETRY_DELAYS_MIN[Math.min(attempts - 1, RETRY_DELAYS_MIN.length - 1)];
         await this.repo.update(donor.id, {
-          receiptEmailStatus: giveUp ? ReceiptEmailStatus.FAILED : ReceiptEmailStatus.QUEUED,
+          receiptEmailStatus: giveUp
+            ? ReceiptEmailStatus.FAILED
+            : ReceiptEmailStatus.QUEUED,
           receiptEmailAttempts: attempts,
-          receiptEmailNextAttemptAt: giveUp ? null : new Date(Date.now() + delayMin * 60_000),
+          receiptEmailNextAttemptAt: giveUp
+            ? null
+            : new Date(Date.now() + delayMin * 60_000),
           receiptEmailError: result.message.slice(0, 1000),
         });
         if (giveUp) {
@@ -247,7 +269,9 @@ export class DonationEmailQueueService
       { receiptEmailStatus: ReceiptEmailStatus.QUEUED },
     );
     if (released.affected) {
-      this.logger.warn(`Re-queued ${released.affected} receipt email(s) left in "sending"`);
+      this.logger.warn(
+        `Re-queued ${released.affected} receipt email(s) left in "sending"`,
+      );
     }
   }
 }
