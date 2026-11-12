@@ -12,6 +12,7 @@ export default () => ({
   razorpay: {
     keyId: process.env.RAZORPAY_KEY_ID ?? '',
     keySecret: process.env.RAZORPAY_KEY_SECRET ?? '',
+    webhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET ?? '',
   },
   jwt: {
     secret: process.env.JWT_SECRET ?? 'ihdua-dev-jwt-secret-change-me',
