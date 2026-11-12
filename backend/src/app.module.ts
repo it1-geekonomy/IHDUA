@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PaymentsModule } from './common/payments/payments.module';
+import { ChatbotSyncModule } from './common/chatbot-sync/chatbot-sync.module';
 import configuration from './config/configuration';
 import { StorageModule } from './common/storage/storage.module';
 import { DatabaseModule } from './database/database.module';
@@ -37,6 +38,7 @@ import { UsersModule } from './modules/users/users.module';
     DatabaseModule,
     StorageModule,
     PaymentsModule,
+    ChatbotSyncModule,
     EmailModule,
     AuthModule,
     UsersModule,
