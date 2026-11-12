@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from app.rag import answer_cache
 from app.services import corpus, site_pages, vector_store
 
 log = logging.getLogger(__name__)
@@ -13,6 +14,8 @@ def prune_cms_table(table: str, keep_ids: list[str]) -> dict:
         return {"status": "skipped", "table": table, "chunks_deleted": 0}
     keep = {(table, str(i)) for i in keep_ids}
     deleted = vector_store.delete_stale({table}, keep)
+    if deleted > 0:
+        answer_cache.clear()
     return {"status": "pruned", "table": table, "chunks_deleted": deleted}
 
 
@@ -23,6 +26,8 @@ def upsert_cms_event(event: dict) -> dict:
 
     if action == "delete":
         deleted = vector_store.delete_row(table, source_id)
+        if deleted > 0:
+            answer_cache.clear()
         return {
             "status": "deleted",
             "table": table,
@@ -41,6 +46,7 @@ def upsert_cms_event(event: dict) -> dict:
         "designation": event.get("designation") or "",
     }
     chunks = vector_store.upsert_document(doc)
+    answer_cache.clear()
     return {
         "status": "upserted",
         "table": table,
@@ -73,6 +79,7 @@ def full_sync(force: bool = False) -> dict:
     stale = vector_store.delete_stale(_CURATED_TABLES, keep)
 
     vector_store.save_fingerprint(fp)
+    answer_cache.clear()
     return {
         "status": "synced",
         "fingerprint": fp,

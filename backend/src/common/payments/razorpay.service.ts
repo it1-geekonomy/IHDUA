@@ -168,6 +168,8 @@ export class RazorpayService {
   async createSubscription(params: {
     planId: string;
     totalCount: number;
+    /** Unix seconds; an unauthorised subscription expires after this. */
+    expireBy?: number;
     notes?: Record<string, string>;
   }): Promise<RazorpaySubscriptionInfo> {
     const sub = await this.getClient().subscriptions.create({
@@ -175,6 +177,7 @@ export class RazorpayService {
       total_count: params.totalCount,
       quantity: 1,
       customer_notify: 1,
+      ...(params.expireBy ? { expire_by: params.expireBy } : {}),
       notes: params.notes,
     });
     this.logger.log(`Razorpay subscription created: ${sub.id}`);

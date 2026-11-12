@@ -63,6 +63,9 @@ const ENDED_STATUSES: SubscriptionStatus[] = [
   'expired',
 ];
 
+/** Abandoned checkouts expire in Razorpay instead of staying 'created' forever. */
+const AUTHORISATION_WINDOW_SECONDS = 24 * 60 * 60;
+
 export type SubscriptionCheckout = {
   subscriptionId: string;
   frequency: DonationFrequency;
@@ -130,6 +133,7 @@ export class DonationSubscriptionsService {
       const sub = await this.razorpay.createSubscription({
         planId,
         totalCount: schedule.totalCount,
+        expireBy: Math.floor(Date.now() / 1000) + AUTHORISATION_WINDOW_SECONDS,
         notes: {
           fullName: d.fullName.slice(0, 256),
           email: d.email.slice(0, 256),
