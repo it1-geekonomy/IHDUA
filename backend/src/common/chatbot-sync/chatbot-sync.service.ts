@@ -32,6 +32,11 @@ export class ChatbotSyncService {
       '';
   }
 
+  /** Fire-and-forget: the chatbot re-reads the row from the database itself. */
+  notify(table: string, sourceId: string, action: 'upsert' | 'delete' = 'upsert'): void {
+    void this.syncContent({ table, source_id: sourceId, action });
+  }
+
   async syncContent(payload: ChatbotSyncPayload): Promise<void> {
     try {
       const res = await fetch(`${this.chatbotUrl}/internal/sync`, {
