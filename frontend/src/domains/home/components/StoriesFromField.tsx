@@ -124,7 +124,7 @@ export default function StoriesFromField() {
               variant="body-lg"
               className="max-w-xl font-figtree font-normal leading-relaxed text-[#5F6C6D]"
             >
-              No stories have been published yet. Please publish stories from the CMS to show them here.
+              New stories and updates will be displayed here soon.
             </Typography>
           </div>
         ) : (

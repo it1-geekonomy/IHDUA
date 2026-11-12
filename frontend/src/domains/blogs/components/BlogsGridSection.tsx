@@ -223,7 +223,7 @@ export default function BlogsGridSection() {
               variant="body-lg"
               className="max-w-xl font-figtree font-normal leading-relaxed text-[#5F6C6D]"
             >
-              No blogs or stories have been published yet. Please publish them from the CMS to show them here.
+             New blogs and updates will be displayed here soon.
             </Typography>
           </div>
         )}

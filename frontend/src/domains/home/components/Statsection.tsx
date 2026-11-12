@@ -410,7 +410,7 @@ export default function StatSection() {
               variant="body-lg"
               className="max-w-xl font-figtree font-normal leading-relaxed text-[#5F6C6D]"
             >
-              No impact stats have been published yet. Please add stats from the CMS to show them here.
+              New impact stats and updates will be displayed here soon.
             </Typography>
           </div>
         )}
