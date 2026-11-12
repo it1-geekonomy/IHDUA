@@ -11,36 +11,24 @@ _THANKS_RE = re.compile(
     r"^(thanks|thank you|thankyou|thx|much appreciated|great job|awesome)[\s!.]*$",
     re.I,
 )
-_CONTACT_RE = re.compile(
-    r"^(contact|where is your office|office address|phone number|email address|how to contact|where are you located)[\s!?.]*$",
+_ACK_RE = re.compile(
+    r"^(no|nope|nah|nothing|no thanks|no thank you|ok|okay|k|fine|cool|great|alright|got it|sure|yes|yeah|hmm+)[\s!.]*$",
     re.I,
 )
-_DONATE_FAST_RE = re.compile(
-    r"^(how to donate|donate|donation|i want to donate|give donation|how can i contribute)[\s!?.]*$",
-    re.I,
-)
+_BYE_RE = re.compile(r"^(bye|goodbye|see you|tata|good night)[\s!.]*$", re.I)
+
+
 def match_fast_intent(message: str) -> dict | None:
+    """Only small talk is answered without retrieval; every factual answer comes from indexed content."""
     msg = message.strip()
     if _GREETING_RE.match(msg):
-        return {
-            "answer": C.GREETING_ANSWER,
-            "sources": [{"title": "About IHDUA", "url": C.ABOUT_URL}],
-        }
+        return {"answer": C.GREETING_ANSWER, "sources": []}
     if _THANKS_RE.match(msg):
-        return {
-            "answer": C.THANKS_ANSWER,
-            "sources": [],
-        }
-    if _CONTACT_RE.match(msg):
-        return {
-            "answer": C.CONTACT_ANSWER,
-            "sources": [{"title": "Contact Us", "url": C.CONTACT_URL}],
-        }
-    if _DONATE_FAST_RE.match(msg):
-        return {
-            "answer": C.DONATE_INTENT_ANSWER,
-            "sources": [{"title": "Online Donation (80G Tax Exemption)", "url": C.DONATE_URL}],
-        }
+        return {"answer": C.THANKS_ANSWER, "sources": []}
+    if _BYE_RE.match(msg):
+        return {"answer": C.BYE_ANSWER, "sources": []}
+    if _ACK_RE.match(msg):
+        return {"answer": C.ACK_ANSWER, "sources": []}
     return None
 
 
@@ -90,15 +78,27 @@ _INTENT_PATTERNS: dict[str, re.Pattern] = {
         re.I,
     ),
     "volunteer": re.compile(
-        r"\b(volunteers?|volunteering|interns?|internships?|careers?|join)\b",
+        r"\b(volunteers?|volunteering|interns?|internships?|careers?|join|partner(s|ship|ships)?|collaborat\w*|csr|get\s+involved)\b",
         re.I,
     ),
     "leadership": re.compile(
-        r"\b(ajaikumar|founders?|chairpersons?|trustees?|leadership|leaders?|governance|board)\b",
+        r"\b(founders?|chairpersons?|chairman|trustees?|leadership|leaders?|governance|board|team|director|ceo)\b",
+        re.I,
+    ),
+    "about": re.compile(
+        r"\b(about|mission|vision|values?|objectives?|aims?|ngo|non[\s-]*profit|who\s+(are|is)|what\s+is\s+ihdua|purpose)\b",
+        re.I,
+    ),
+    "impact": re.compile(
+        r"\b(impact|numbers?|statistics?|stats|how\s+many|achievements?|reached|beneficiar(y|ies))\b",
+        re.I,
+    ),
+    "history": re.compile(
+        r"\b(history|milestones?|founded|established|started|journey|annual\s+reports?)\b",
         re.I,
     ),
     "stories": re.compile(
-        r"\b(shanthamma|ripple[\s-]*effect|story|stories|blogs?|beneficiaries|field[\s-]*story)\b",
+        r"\b(story|stories|blogs?|articles?|news|beneficiaries|field[\s-]*story)\b",
         re.I,
     ),
 }
