@@ -76,9 +76,11 @@ export default function ContactInfo() {
                   return (
                     <div key={line.text} className="flex items-center gap-2">
                       {href ? (
+                        // translate="no" + notranslate: emails / phone numbers stay as written
                         <a
                           href={href}
-                          className="group transition-colors hover:underline focus-visible:underline focus-visible:outline-none"
+                          translate="no"
+                          className="notranslate group transition-colors hover:underline focus-visible:underline focus-visible:outline-none"
                         >
                           <Typography
                             as="span"

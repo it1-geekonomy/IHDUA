@@ -13,6 +13,22 @@ export const YELLOW = "text-[#FFD638]";
 export const EASE = "[transition-timing-function:cubic-bezier(.22,1,.36,1)]";
 export const CONTACT_HREF = "/contact";
 
+/**
+ * Kannada-only tweaks for the lg breakpoint (1024px–1279px).
+ * They depend on <header className="group/nav" data-lang="kn"> in NavbarShell,
+ * so English (and every other breakpoint) is never affected.
+ */
+// smaller text for navbar content
+export const KN_LG =
+  "lg:max-xl:group-data-[lang=kn]/nav:!text-[15px] lg:max-xl:group-data-[lang=kn]/nav:!leading-snug";
+// horizontal padding for top-level nav triggers (controls the gap between links)
+export const KN_LG_PX = "lg:max-xl:group-data-[lang=kn]/nav:!px-3.5";
+// tighter padding for the Contact button
+export const KN_LG_BTN = "lg:max-xl:group-data-[lang=kn]/nav:!px-3";
+// let long Kannada labels wrap instead of truncating (Kannada only, all sizes)
+export const KN_WRAP =
+  "group-data-[lang=kn]/nav:overflow-visible group-data-[lang=kn]/nav:whitespace-normal group-data-[lang=kn]/nav:text-clip group-data-[lang=kn]/nav:break-words";
+
 export function isNavLinkActive(pathname: string, link: NavLink): boolean {
   if (!link.href) {
     return link.children?.some((child) => isNavLinkActive(pathname, child)) ?? false;

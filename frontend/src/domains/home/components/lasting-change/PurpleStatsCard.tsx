@@ -1,17 +1,16 @@
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { LASTING_CHANGE } from "@/domains/home/constants/lastingchange";
 
-const TARGET = LASTING_CHANGE.purpleCard.statValue;
+const TARGET = Number(LASTING_CHANGE.purpleCard.statValue) || 0;
 const SUFFIX = LASTING_CHANGE.purpleCard.statSuffix;
 
 const CHART_TOP = 12;
 const CHART_BASELINE = 84;
 
-// Cumulative villages reached. Last value must equal TARGET (202).
-// Replace 48 and 120 with your actual numbers.
 const CHART_DATA = [
   { x: 52, year: "2024", value: 48 },
   { x: 160, year: "2025", value: 120 },
@@ -19,24 +18,31 @@ const CHART_DATA = [
 ];
 
 const yFor = (value: number) =>
-  CHART_BASELINE - (value / TARGET) * (CHART_BASELINE - CHART_TOP);
+  CHART_BASELINE -
+  (value / (TARGET || 1)) * (CHART_BASELINE - CHART_TOP);
 
-const CHART_POINTS = CHART_DATA.map((d) => ({ ...d, y: yFor(d.value) }));
+const CHART_POINTS = CHART_DATA.map((d) => ({
+  ...d,
+  y: yFor(d.value),
+}));
 
-// Smooth curve through the points (Catmull-Rom -> cubic Bezier)
 const buildPath = (pts: { x: number; y: number }[]) => {
   let d = `M ${pts[0].x} ${pts[0].y}`;
+
   for (let i = 0; i < pts.length - 1; i++) {
     const p0 = pts[i - 1] ?? pts[i];
     const p1 = pts[i];
     const p2 = pts[i + 1];
     const p3 = pts[i + 2] ?? p2;
+
     const c1x = p1.x + (p2.x - p0.x) / 6;
     const c1y = p1.y + (p2.y - p0.y) / 6;
     const c2x = p2.x - (p3.x - p1.x) / 6;
     const c2y = p2.y - (p3.y - p1.y) / 6;
+
     d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2.x} ${p2.y}`;
   }
+
   return d;
 };
 
@@ -62,39 +68,52 @@ export function PurpleStatsCard({
     const node = rootRef.current;
     if (!node) return;
 
-    const shouldStart = () => {
-      const rect = node.getBoundingClientRect();
-      // Skip display:none / zero-size clones
-      if (rect.width < 8 || rect.height < 8) return false;
-      const vh = window.innerHeight || 800;
-      // Near or inside viewport
-      return rect.top < vh + 120 && rect.bottom > -120;
-    };
-
     const start = () => {
       if (startedRef.current) return;
-      if (!shouldStart()) return;
+
+      const rect = node.getBoundingClientRect();
+
+      // Ignore hidden responsive-layout copies.
+      if (rect.width < 8 || rect.height < 8) return;
+
+      const vh = window.innerHeight || 800;
+      const isNearViewport = rect.top < vh + 120 && rect.bottom > -120;
+
+      if (!isNearViewport) return;
+
       startedRef.current = true;
       setPlay(true);
     };
 
     start();
 
-    const io = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
-        if (entries.some((e) => e.isIntersecting)) start();
+        if (entries.some((entry) => entry.isIntersecting)) {
+          start();
+        }
       },
-      { root: null, threshold: 0, rootMargin: "120px 0px" }
+      {
+        root: null,
+        threshold: 0,
+        rootMargin: "120px 0px",
+      }
     );
-    io.observe(node);
+
+    observer.observe(node);
 
     const onScroll = () => start();
+
     window.addEventListener("scroll", onScroll, { passive: true });
-    document.addEventListener("scroll", onScroll, { passive: true, capture: true });
+    document.addEventListener("scroll", onScroll, {
+      passive: true,
+      capture: true,
+    });
+
     const poll = window.setInterval(start, 300);
 
     return () => {
-      io.disconnect();
+      observer.disconnect();
       window.clearInterval(poll);
       window.removeEventListener("scroll", onScroll);
       document.removeEventListener("scroll", onScroll, true);
@@ -106,19 +125,25 @@ export function PurpleStatsCard({
 
     let cancelled = false;
     let frame = 0;
+
     const duration = 1800;
-    const t0 = performance.now();
+    const startTime = performance.now();
 
     const tick = (now: number) => {
       if (cancelled) return;
-      const p = Math.min(1, (now - t0) / duration);
-      const eased = 1 - (1 - p) ** 3;
+
+      const progress = Math.min(1, (now - startTime) / duration);
+      const eased = 1 - (1 - progress) ** 3;
+
       setCount(Math.round(TARGET * eased));
-      if (p < 1) frame = requestAnimationFrame(tick);
-      else setCount(TARGET);
+
+      if (progress < 1) {
+        frame = requestAnimationFrame(tick);
+      } else {
+        setCount(TARGET);
+      }
     };
 
-    // Restart cleanly (handles React Strict Mode remount)
     setCount(0);
     frame = requestAnimationFrame(tick);
 
@@ -139,8 +164,9 @@ export function PurpleStatsCard({
     >
       <div>
         <p
+          translate="no"
           className={cn(
-            "font-figtree font-bold leading-none tracking-tight tabular-nums transition-transform duration-500",
+            "notranslate font-figtree font-bold leading-none tracking-tight tabular-nums transition-transform duration-500",
             compact ? "text-[34px]" : "text-[40px] xl:text-[52px]",
             play && "scale-105"
           )}
@@ -149,10 +175,12 @@ export function PurpleStatsCard({
           {count}
           {SUFFIX}
         </p>
+
         <p
           className={cn(
             "mt-1.5 font-figtree font-medium leading-snug",
-            compact ? "text-[14px]" : "text-[16px] xl:text-[20px]"
+            compact ? "text-[14px]" : "text-[16px] xl:text-[20px]",
+            "[html.translated-ltr_&]:leading-[1.4]"
           )}
         >
           {LASTING_CHANGE.purpleCard.label}
@@ -187,6 +215,7 @@ export function PurpleStatsCard({
               strokeDasharray="1.5 3.5"
               opacity={0.7}
             />
+
             {CHART_POINTS.map((point) => (
               <line
                 key={`g-${point.year}`}
@@ -220,6 +249,7 @@ export function PurpleStatsCard({
 
             {CHART_POINTS.map((point, i) => {
               const isHovered = hoveredPoint === i;
+
               return (
                 <g
                   key={`d-${point.year}`}
@@ -242,13 +272,20 @@ export function PurpleStatsCard({
                       opacity={0.22}
                     />
                   )}
+
                   <circle
                     cx={point.x}
                     cy={point.y}
                     r={isHovered ? 6 : 5}
                     fill="#FFFFFF"
                   />
-                  <circle cx={point.x} cy={point.y} r="16" fill="transparent" />
+
+                  <circle
+                    cx={point.x}
+                    cy={point.y}
+                    r="16"
+                    fill="transparent"
+                  />
                 </g>
               );
             })}
@@ -275,31 +312,35 @@ export function PurpleStatsCard({
             ))}
           </svg>
 
-          {/* HTML tooltip — clean floating label, no SVG chrome */}
-          {hoveredPoint !== null && play && (() => {
-            const point = CHART_POINTS[hoveredPoint];
-            const left = (point.x / 320) * 100;
-            const top = (point.y / 108) * 100;
-            const flipDown = point.y < 28;
+          {hoveredPoint !== null &&
+            play &&
+            (() => {
+              const point = CHART_POINTS[hoveredPoint];
+              const left = (point.x / 320) * 100;
+              const top = (point.y / 108) * 100;
+              const flipDown = point.y < 28;
 
-            return (
-              <div
-                className="pointer-events-none absolute z-10"
-                style={{
-                  left: `${left}%`,
-                  top: `${top}%`,
-                  transform: flipDown
-                    ? "translate(-50%, 12px)"
-                    : "translate(-50%, calc(-100% - 10px))",
-                }}
-              >
-                <div className="rounded bg-[#00191B]/90 px-2 py-1 font-figtree text-[11px] font-semibold tabular-nums leading-none text-white shadow-sm backdrop-blur-[2px]">
-                  {point.value}
-                  {SUFFIX}
+              return (
+                <div
+                  className="pointer-events-none absolute z-10"
+                  style={{
+                    left: `${left}%`,
+                    top: `${top}%`,
+                    transform: flipDown
+                      ? "translate(-50%, 12px)"
+                      : "translate(-50%, calc(-100% - 10px))",
+                  }}
+                >
+                  <div
+                    translate="no"
+                    className="notranslate rounded bg-[#00191B]/90 px-2 py-1 font-figtree text-[11px] font-semibold tabular-nums leading-none text-white shadow-sm backdrop-blur-[2px]"
+                  >
+                    {point.value}
+                    {SUFFIX}
+                  </div>
                 </div>
-              </div>
-            );
-          })()}
+              );
+            })()}
         </div>
       </div>
     </div>

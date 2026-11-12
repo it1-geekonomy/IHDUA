@@ -1,4 +1,8 @@
-import { DULL, HIGHLIGHT, type Region, type RegionId } from "@/domains/home/constants/mapdata";
+"use client";
+
+import { DULL, HIGHLIGHT, W, H, type Region, type RegionId } from "@/domains/home/constants/mapdata";
+import { useSimpleLanguage } from "@/context/SimpleLanguageContext"; // <-- fix this import path
+import { LANGUAGES } from "@/utils/languageHelper";
 
 export function Hill({ x, y, w }: { x: number; y: number; w: number }) {
   const h = w * 0.38;
@@ -34,7 +38,59 @@ function Pin({ x, y, color }: { x: number; y: number; color: string }) {
   );
 }
 
-function Label({
+/** SVG layer: pins only (no text, so nothing here needs translating). */
+export function RegionPins({ id }: { id: RegionId }) {
+  if (id === "mysuru") return <Pin x={169} y={238} color="#FFD056" />;
+  if (id === "mandya") return <Pin x={369} y={133} color={HIGHLIGHT} />;
+  return <Pin x={262} y={339} color={HIGHLIGHT} />;
+}
+
+/* ------------------------------------------------------------------ */
+/* HTML overlay: real DOM text, so Google Translate can translate it.  */
+/* Google Translate skips everything inside <svg>, which is why the    */
+/* labels live outside it. Sizes use container-query units (cqw) so    */
+/* they scale exactly like the SVG viewBox does.                       */
+/* ------------------------------------------------------------------ */
+
+// SVG units -> cqw (the overlay's container is as wide as the viewBox)
+const u = (n: number) => `${((n / W) * 100).toFixed(4)}cqw`;
+const px = (x: number) => `${((x / W) * 100).toFixed(4)}%`;
+const py = (y: number) => `${((y / H) * 100).toFixed(4)}%`;
+
+function RegionName({
+  x,
+  y,
+  size,
+  color,
+  spaced,
+  children,
+}: {
+  x: number;
+  y: number;
+  size: number;
+  color: string;
+  spaced: boolean;
+  children: string;
+}) {
+  return (
+    <span
+      className="absolute whitespace-nowrap font-lora"
+      style={{
+        left: px(x),
+        top: py(y),
+        transform: "translate(-50%, -80%)", // (x, y) = baseline centre, like the old SVG <text>
+        fontSize: u(size),
+        lineHeight: 1,
+        letterSpacing: spaced ? u(2.2) : "normal",
+        color,
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+function PillLabel({
   x,
   y,
   w,
@@ -47,63 +103,63 @@ function Label({
 }) {
   const h = lines.length * 14 + 10;
   return (
-    <g pointerEvents="none">
-      <rect x={x} y={y} width={w} height={h} rx={h / 2.4} fill="#fff" fillOpacity={0.94} />
-      {lines.map((line, i) => (
-        <text
-          key={line}
-          x={x + 13}
-          y={y + 16 + i * 14}
-          fontSize={12}
-          fontWeight={500}
-          fill="#1E2627"
-          className="font-figtree"
-        >
+    <div
+      className="absolute whitespace-nowrap font-figtree font-medium text-[#1E2627]"
+      style={{
+        left: px(x),
+        top: py(y),
+        minWidth: u(w),
+        boxSizing: "border-box",
+        padding: `${u(5)} ${u(10)} ${u(5)} ${u(13)}`,
+        borderRadius: u(h / 2.4),
+        background: "rgba(255,255,255,0.94)",
+        fontSize: u(12),
+        lineHeight: u(14),
+      }}
+    >
+      {lines.map((line) => (
+        <span key={line} className="block">
           {line}
-        </text>
+        </span>
       ))}
-    </g>
+    </div>
   );
 }
 
-/**
- * Pin, label and region name.
- * Rendered in a separate top layer (after all regions) so a neighbouring
- * region's fill can never paint over a label.
- */
-export function RegionExtras({ id }: { id: RegionId }) {
+/** HTML layer: region names + pill labels (plain English; the translator converts them). */
+export function RegionLabels({ id }: { id: RegionId }) {
+  const { language } = useSimpleLanguage();
+  const spaced = language === LANGUAGES.ENGLISH; // letter-spacing breaks Kannada conjuncts
+
   if (id === "mysuru") {
     return (
       <>
-        <text x={107} y={240} textAnchor="middle" fontSize={10.5} letterSpacing={2.2} fill="#A59E8A" className="font-lora">
+        <RegionName x={107} y={240} size={10.5} color="#A59E8A" spaced={spaced}>
           MYSURU
-        </text>
-        <Pin x={169} y={238} color="#FFD056" />
-        <Label x={181} y={206} w={104} lines={["Mulluru Village,", "Mysuru"]} />
+        </RegionName>
+        <PillLabel x={181} y={206} w={104} lines={["Mulluru Village,", "Mysuru"]} />
       </>
     );
   }
   if (id === "mandya") {
     return (
       <>
-        <text x={447} y={172} textAnchor="middle" fontSize={10.5} letterSpacing={2.2} fill="#9C8F70" className="font-lora">
+        <RegionName x={447} y={172} size={10.5} color="#9C8F70" spaced={spaced}>
           MANDYA
-        </text>
-        <Pin x={369} y={133} color={HIGHLIGHT} />
-        <Label x={380} y={108} w={90} lines={["KRS, Mandya"]} />
+        </RegionName>
+        <PillLabel x={380} y={108} w={90} lines={["KRS, Mandya"]} />
       </>
     );
   }
   return (
     <>
-      <text x={294} y={384} textAnchor="middle" fontSize={11} letterSpacing={2.2} fill="#4F6350" className="font-lora">
+      <RegionName x={294} y={384} size={11} color="#4F6350" spaced={spaced}>
         GUNDLUPETE
-      </text>
-      <text x={287} y={400} textAnchor="middle" fontSize={11} letterSpacing={2.2} fill="#4F6350" className="font-lora">
+      </RegionName>
+      <RegionName x={287} y={400} size={11} color="#4F6350" spaced={spaced}>
         TALUK
-      </text>
-      <Pin x={262} y={339} color={HIGHLIGHT} />
-      <Label x={274} y={312} w={112} lines={["Gundlupete Taluk"]} />
+      </RegionName>
+      <PillLabel x={274} y={312} w={112} lines={["Gundlupete Taluk"]} />
     </>
   );
 }
