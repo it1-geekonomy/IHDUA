@@ -21,6 +21,8 @@ import {
 } from '@nestjs/swagger';
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../common/enums/user-role.enum';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreatePartnershipInquiryDto } from './dto/create-partnership-inquiry.dto';
@@ -29,6 +31,7 @@ import { PartnershipInquiry } from './entities/partnership-inquiry.entity';
 import { PartnershipInquiriesService } from './partnership-inquiries.service';
 
 @ApiTags(ApiTagsConst.PARTNERSHIP_INQUIRIES)
+@Roles(UserRole.ADMIN)
 @Controller('partnership-inquiries')
 export class PartnershipInquiriesController {
   constructor(private readonly service: PartnershipInquiriesService) {}

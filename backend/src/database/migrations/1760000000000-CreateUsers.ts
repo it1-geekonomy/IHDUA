@@ -25,6 +25,13 @@ export class CreateUsers1760000000000 implements MigrationInterface {
             isNullable: false,
           },
           {
+            name: 'role',
+            type: 'varchar',
+            length: '50',
+            isNullable: false,
+            default: `'ADMIN'`,
+          },
+          {
             name: 'email',
             type: 'varchar',
             length: '255',
@@ -43,6 +50,16 @@ export class CreateUsers1760000000000 implements MigrationInterface {
             name: 'UQ_users_email',
             columnNames: ['email'],
           }),
+        ],
+        indices: [
+          {
+            name: 'idx_users_email',
+            columnNames: ['email'],
+          },
+          {
+            name: 'idx_users_role',
+            columnNames: ['role'],
+          },
         ],
       }),
       true,
