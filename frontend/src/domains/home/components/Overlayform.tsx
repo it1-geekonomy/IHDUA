@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import { IMPACT_ITEMS } from "@/domains/home/constants/overlayform";
 import { useDonationForm } from "@/domains/home/components/donation/useDonationForm";
@@ -41,6 +41,40 @@ function useBodyScrollLock() {
   }, []);
 }
 
+// ===== Fit-to-screen (all screen sizes) =====
+// Measures the card's natural height and scales it down, only if needed, so the
+// whole form is always visible with no inner scrolling.
+function useFitToScreen(deps: unknown[]) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState(1);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const measure = () => {
+      const natural = el.offsetHeight; // not affected by transforms
+      const margin = window.innerWidth >= 1024 ? 32 : 16;
+      const available = window.innerHeight - margin;
+      const next =
+        natural > available ? Math.max(0.45, available / natural) : 1;
+      setFit(Math.floor(next * 1000) / 1000);
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+
+  return { cardRef, fit };
+}
+
 interface OverlayAmountProps {
   form: ReturnType<typeof useDonationForm>;
   rise: string;
@@ -71,7 +105,7 @@ function OverlayAmountSection({ form, rise, delay }: OverlayAmountProps) {
       </div>
 
       {/* Streamlined compact impact pillars */}
-      <div className="grid shrink-0 grid-cols-4 gap-1 py-1">
+      <div className="grid shrink-0 grid-cols-2 gap-x-1 gap-y-3 py-1 sm:grid-cols-4 sm:gap-y-1">
         {IMPACT_ITEMS.map((item, idx) => (
           <div
             key={item.title}
@@ -133,6 +167,7 @@ export default function Overlayform({ onClose }: OverlayformProps) {
   const form = useDonationForm();
   const { intro, exiting, rise, delay, beginClose } = useOverlayformAnimation(onClose);
   useBodyScrollLock();
+  const { cardRef, fit } = useFitToScreen([form.step]);
 
   return (
     <div
@@ -163,13 +198,20 @@ export default function Overlayform({ onClose }: OverlayformProps) {
         </div>
       ) : (
         <div
+          className="shrink-0"
+          style={{
+            transform: fit < 1 ? `scale(${fit})` : undefined,
+            transformOrigin: "center center",
+          }}
+        >
+        <div
+          ref={cardRef}
           className={`
             overlayform-card-in
             relative flex w-[min(380px,calc(100vw-2rem))] shrink-0 flex-col
-            max-h-[calc(100dvh-1rem)] lg:max-h-[calc(100dvh-2rem)]
-            [@media(max-width:1023px)_and_(max-height:800px)]:h-[calc(100dvh-1rem)]
             rounded-xl bg-white shadow-2xl overflow-hidden
             transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none
+            sm:w-[min(500px,calc(100vw-2rem))]
             lg:w-[min(840px,calc(100vw-4rem))] lg:rounded-none
             xl:w-[min(900px,calc(100vw-5rem))]
             2xl:w-[min(960px,calc(100vw-6rem))]
@@ -188,16 +230,12 @@ export default function Overlayform({ onClose }: OverlayformProps) {
           </button>
 
           {intro && <IntroCurtains />}
-          
+
           <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain lg:flex-row">
             {/* Image */}
             <div
               className="
                 relative w-full shrink-0 overflow-hidden h-36
-                [@media(max-width:1023px)_and_(max-height:800px)]:h-auto
-                [@media(max-width:1023px)_and_(max-height:800px)]:min-h-[clamp(64px,14dvh,110px)]
-                [@media(max-width:1023px)_and_(max-height:800px)]:flex-1
-                [@media(max-width:1023px)_and_(max-height:800px)]:shrink
                 lg:h-auto lg:min-h-0 lg:w-[38%] lg:flex-none lg:self-stretch
                 xl:w-[40%] 2xl:w-[42%]
               "
@@ -226,10 +264,6 @@ export default function Overlayform({ onClose }: OverlayformProps) {
             <div
               className="
                 flex w-full shrink-0 flex-col gap-1 bg-[#F6F2EC] px-4 py-3
-                [@media(min-height:641px)_and_(max-height:720px)]:[zoom:0.93]
-                [@media(min-height:561px)_and_(max-height:640px)]:[zoom:0.85]
-                [@media(min-height:501px)_and_(max-height:560px)]:[zoom:0.75]
-                [@media(max-height:500px)]:[zoom:0.68]
                 lg:w-[62%] lg:px-6 lg:py-4
                 xl:w-[60%] xl:px-7 xl:py-5
                 2xl:w-[58%] 2xl:px-8 2xl:py-5
@@ -238,6 +272,7 @@ export default function Overlayform({ onClose }: OverlayformProps) {
               <OverlayAmountSection form={form} rise={rise} delay={delay} />
             </div>
           </div>
+        </div>
         </div>
       )}
 
