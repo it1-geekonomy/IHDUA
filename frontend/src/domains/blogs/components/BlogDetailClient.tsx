@@ -66,7 +66,7 @@ export default function BlogDetailClient({
   }, []);
 
   return (
-    <section className="blog-sticky-active w-full bg-white px-6 pt-8 pb-16 sm:pt-10 sm:pb-20 lg:px-12 lg:pt-12 2xl:px-32">
+    <section className="blog-sticky-active w-full bg-white px-6 pt-8 sm:pt-10 lg:px-12 lg:pt-12 2xl:px-32">
       <div className="mx-auto w-full max-w-[100rem]">
         {/* Top Header: Category Tag & Date */}
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -222,12 +222,13 @@ export default function BlogDetailClient({
                   Related Stories
                 </Typography>
 
+                {/* items-start so thumbnails stay top-aligned when titles wrap to many lines */}
                 <div className="mt-5 grid grid-cols-1 gap-4 sm:mt-6 sm:grid-cols-3 sm:gap-5 lg:grid-cols-1 lg:gap-4 xl:gap-5">
                   {related.map((story) => (
                     <Link
                       key={story.id}
                       href={`/blogs/${story.slug}`}
-                      className="group flex cursor-pointer flex-row items-center gap-3 transition hover:opacity-90 sm:flex-col sm:items-start lg:flex-row lg:items-center xl:gap-4"
+                      className="group flex cursor-pointer flex-row items-start gap-3 transition hover:opacity-90 sm:flex-col sm:items-start lg:flex-row lg:items-start xl:gap-4"
                     >
                       <div className="relative size-20 shrink-0 overflow-hidden rounded-[0.375rem] bg-neutral-200 sm:aspect-[16/10] sm:size-auto sm:w-full lg:size-[5.5rem] lg:aspect-auto xl:size-[6.75rem]">
                         {story.image && (
@@ -241,11 +242,12 @@ export default function BlogDetailClient({
                         )}
                       </div>
 
-                      <div className="flex min-w-0 flex-1 flex-col justify-center sm:w-full sm:justify-start">
+                      {/* Full title shown: no line-clamp, wraps naturally (English + Kannada) */}
+                      <div className="flex min-w-0 flex-1 flex-col justify-start sm:w-full">
                         <Typography
                           variant="body-md"
                           as="h4"
-                          className="line-clamp-2 font-lora font-normal leading-[1.35] text-[#00191B] transition-colors group-hover:text-[#9739A8]"
+                          className="break-words font-lora font-normal leading-normal text-[#00191B] transition-colors group-hover:text-[#9739A8]"
                         >
                           {story.title}
                         </Typography>

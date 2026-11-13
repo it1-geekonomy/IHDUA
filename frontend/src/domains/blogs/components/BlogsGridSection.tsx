@@ -18,11 +18,13 @@ function Dropdown({
   options,
   onChange,
   widthClass = "w-40",
+  menuAlign = "right",
 }: {
   value: string;
   options: Option[];
   onChange: (value: string) => void;
   widthClass?: string;
+  menuAlign?: "left" | "right";
 }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -42,15 +44,18 @@ function Dropdown({
   const current = options.find((o) => o.value === value) ?? options[0];
 
   return (
-    <div ref={wrapRef} className="relative">
+    // flex-1 + min-w-0 on mobile so both dropdowns share the row equally
+    <div ref={wrapRef} className="relative min-w-0 flex-1 sm:flex-none">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex cursor-pointer items-center gap-2 rounded border border-[#E0E0E0] bg-white px-3 py-1.5 text-xs font-medium text-[#1E1E1E] shadow-xs transition hover:bg-neutral-50 sm:px-4 sm:py-2 sm:text-sm"
+        className="flex w-full cursor-pointer items-center justify-between gap-2 rounded border border-[#E0E0E0] bg-white px-3 py-1.5 text-xs font-medium whitespace-nowrap text-[#1E1E1E] shadow-xs transition hover:bg-neutral-50 sm:inline-flex sm:w-auto sm:justify-start sm:px-4 sm:py-2 sm:text-sm"
         aria-expanded={open}
         aria-haspopup="listbox"
       >
-        <span className="max-w-[9rem] truncate">{current?.label}</span>
+        <span className="min-w-0 flex-1 truncate text-left leading-normal">
+          {current?.label}
+        </span>
         <svg
           className={`size-4 shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           fill="none"
@@ -64,7 +69,9 @@ function Dropdown({
       {open && (
         <div
           role="listbox"
-          className={`absolute right-0 z-20 mt-1 max-h-64 overflow-auto rounded border border-neutral-200 bg-white py-1 shadow-lg ${widthClass}`}
+          className={`absolute z-20 mt-1 max-h-64 min-w-full max-w-[calc(100vw-3rem)] overflow-auto rounded border border-neutral-200 bg-white py-1 shadow-lg sm:right-0 sm:left-auto sm:min-w-0 ${
+            menuAlign === "left" ? "left-0" : "right-0"
+          } ${widthClass}`}
         >
           {options.map((o) => (
             <button
@@ -76,7 +83,7 @@ function Dropdown({
                 onChange(o.value);
                 setOpen(false);
               }}
-              className={`w-full cursor-pointer px-4 py-2 text-left text-sm transition hover:bg-neutral-100 ${
+              className={`w-full cursor-pointer px-4 py-2 text-left text-sm leading-normal transition hover:bg-neutral-100 ${
                 o.value === value ? "font-semibold text-[#9739A8]" : "text-neutral-700"
               }`}
             >
@@ -164,31 +171,32 @@ export default function BlogsGridSection() {
   return (
     <section
       ref={sectionRef}
-      className="w-full bg-white px-6 pt-6 pb-14 sm:pt-8 sm:pb-16 lg:px-10 lg:pt-10 lg:pb-20 2xl:px-40"
+      className="w-full bg-white px-6 pt-6 sm:pt-8 lg:px-10 lg:pt-10 2xl:px-40"
     >
       <div className="w-full">
-        {/* Header: Eyebrow + Filters */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <span className="h-px w-4 bg-[#9739A8] sm:w-8" />
+        {/* Header: Eyebrow + Filters (stacked on mobile, one row from sm) */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+            <span className="h-px w-4 shrink-0 bg-[#9739A8] sm:w-8" />
             <Typography
               variant="caption"
-              className="font-figtree font-bold uppercase tracking-wider text-[#9739A8]"
+              className="font-figtree font-bold uppercase tracking-wider whitespace-nowrap text-[#9739A8]"
             >
               LATEST STORIES
             </Typography>
-            <span className="h-px w-4 bg-[#9739A8] sm:w-8" />
+            <span className="h-px w-4 shrink-0 bg-[#9739A8] sm:w-8" />
           </div>
 
           {/* Controls only make sense once there is something to filter */}
           {!loading && !nothingPublished && (
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex w-full items-center gap-2 sm:w-auto sm:gap-3">
               {categories.length > 0 && (
                 <Dropdown
                   value={categoryId}
                   options={categoryOptions}
                   onChange={handleCategoryChange}
                   widthClass="w-48"
+                  menuAlign="left"
                 />
               )}
               <Dropdown
@@ -196,6 +204,7 @@ export default function BlogsGridSection() {
                 options={SORT_OPTIONS}
                 onChange={handleSortChange}
                 widthClass="w-36"
+                menuAlign="right"
               />
             </div>
           )}
@@ -223,7 +232,7 @@ export default function BlogsGridSection() {
               variant="body-lg"
               className="max-w-xl font-figtree font-normal leading-relaxed text-[#5F6C6D]"
             >
-             New blogs and updates will be displayed here soon.
+              New blogs and updates will be displayed here soon.
             </Typography>
           </div>
         )}
@@ -269,21 +278,21 @@ export default function BlogsGridSection() {
                   )}
                 </div>
 
-                <div className="mt-4 flex items-start justify-between gap-4">
+                <div className="mt-4 flex items-start justify-between gap-3">
                   <Typography
                     variant="body-xl"
                     as="h3"
-                    className="flex-1 font-lora font-normal leading-snug text-[#00191B] transition-colors group-hover:text-[#9739A8]"
+                    className="min-w-0 flex-1 font-lora font-normal leading-snug text-[#00191B] transition-colors group-hover:text-[#9739A8]"
                   >
                     {post.title}
                   </Typography>
 
                   <div
-                    className="flex size-9 shrink-0 items-center justify-center rounded bg-[#FFD638] text-black shadow-xs transition-transform duration-200 group-hover:scale-105"
+                    className="flex size-7 shrink-0 items-center justify-center rounded bg-[#FFD638] text-black shadow-xs transition-transform duration-200 group-hover:scale-105 sm:size-8"
                     aria-hidden="true"
                   >
                     <svg
-                      className="size-4.5 stroke-[2.5]"
+                      className="size-3.5 stroke-[2.5]"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
