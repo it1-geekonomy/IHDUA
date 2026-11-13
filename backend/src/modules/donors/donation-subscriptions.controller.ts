@@ -19,6 +19,8 @@ import {
 } from '@nestjs/swagger';
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../common/enums/user-role.enum';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { DonationSubscriptionsService } from './donation-subscriptions.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
@@ -27,6 +29,7 @@ import { VerifySubscriptionDto } from './dto/verify-subscription.dto';
 import { DonationSubscription } from './entities/donation-subscription.entity';
 
 @ApiTags(ApiTagsConst.DONATION_SUBSCRIPTIONS)
+@Roles(UserRole.ADMIN)
 @Controller('donation-subscriptions')
 export class DonationSubscriptionsController {
   constructor(private readonly service: DonationSubscriptionsService) {}
