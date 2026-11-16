@@ -181,7 +181,10 @@ const FeatureHighlightSection = ({
                     className="m-0 font-figtree font-medium"
                     style={{ color: COLORS.primary }}
                   >
-                    {typeof itemHeading === "string" ? (
+                    {/* Count-up animation is only for headings that contain a number
+                        (e.g. "3,000+"). Text headings such as "Mission" render as
+                        plain text so they can be translated with the rest of the page. */}
+                    {typeof itemHeading === "string" && /\d/.test(itemHeading) ? (
                       <CountUp value={itemHeading} />
                     ) : (
                       itemHeading
