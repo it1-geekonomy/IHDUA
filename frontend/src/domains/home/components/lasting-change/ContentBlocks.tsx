@@ -11,6 +11,10 @@ type HeadlineBlockProps = {
   className?: string;
 };
 
+// Wrap only at spaces, never mid-word (both languages)
+const headingWrap =
+  "break-keep whitespace-normal [overflow-wrap:normal] [word-break:keep-all]";
+
 export function HeadlineBlock({
   variant = "stack",
   className,
@@ -19,16 +23,22 @@ export function HeadlineBlock({
     return (
       <div
         className={cn(
-          "col-span-2 flex aspect-[2/1] min-h-0 flex-col justify-center overflow-hidden px-2",
+          "col-span-2 flex h-auto min-h-0 flex-col justify-start overflow-visible px-2 py-3",
           className
         )}
       >
-        <Typography className="font-lora text-[28px]! font-normal leading-tight">
+        <Typography
+          className={cn(
+            "font-lora text-[23px]! font-normal leading-[1.4]!",
+            headingWrap
+          )}
+        >
           {LASTING_CHANGE.headline}
         </Typography>
+
         <Typography
           variant="body-lg"
-          className="mt-3 font-figtree !text-[15px] leading-snug text-[#5F6C6D]"
+          className="mt-3 font-figtree !text-[13px] !leading-[1.6] text-[#5F6C6D]"
         >
           {LASTING_CHANGE.body}
         </Typography>
@@ -40,21 +50,29 @@ export function HeadlineBlock({
     return (
       <div
         className={cn(
-          "col-span-2 flex flex-col items-end justify-center px-2 xl:px-4",
+          "col-span-2 flex flex-col items-start justify-center px-2 xl:px-4",
           className
         )}
       >
         <Typography
           className={cn(
-            "max-w-[34rem] font-lora font-normal leading-tight!",
-            figmaTypeScale[50]
+            "w-full max-w-none font-lora font-normal leading-tight!",
+            figmaTypeScale[50],
+            "xl:max-2xl:!text-[26px]",
+            "xl:max-2xl:!leading-[1.4]",
+            headingWrap
           )}
         >
           {LASTING_CHANGE.headline}
         </Typography>
+
         <Typography
           variant="body-lg"
-          className="mt-4 max-w-[34rem] font-figtree leading-relaxed text-[#5F6C6D] xl:mt-5"
+          className="
+            mt-4 w-full max-w-none font-figtree leading-relaxed text-[#5F6C6D] xl:mt-5
+            xl:max-2xl:!text-[14px]
+            xl:max-2xl:!leading-[1.6]
+          "
         >
           {LASTING_CHANGE.body}
         </Typography>
@@ -66,10 +84,14 @@ export function HeadlineBlock({
     <div className={className}>
       <Typography
         variant="h2"
-        className="font-lora font-medium leading-tight text-[#00191B]"
+        className={cn(
+          "font-lora font-medium leading-tight text-[#00191B]",
+          headingWrap
+        )}
       >
         {LASTING_CHANGE.headline}
       </Typography>
+
       <Typography
         variant="body-lg"
         className="mt-3 font-figtree leading-relaxed text-[#5F6C6D]"
@@ -107,7 +129,10 @@ function GetInvolvedButton({ className }: { className?: string }) {
   );
 }
 
-export function CtaBlock({ variant = "centered", className }: CtaBlockProps) {
+export function CtaBlock({
+  variant = "centered",
+  className,
+}: CtaBlockProps) {
   if (variant === "lg") {
     return (
       <div
@@ -122,6 +147,7 @@ export function CtaBlock({ variant = "centered", className }: CtaBlockProps) {
         >
           {LASTING_CHANGE.ctaText}
         </Typography>
+
         <GetInvolvedButton className="w-fit rounded-sm" />
       </div>
     );
@@ -138,6 +164,7 @@ export function CtaBlock({ variant = "centered", className }: CtaBlockProps) {
         >
           {LASTING_CHANGE.ctaText}
         </Typography>
+
         <GetInvolvedButton className="w-fit rounded-sm" />
       </div>
     );
@@ -151,6 +178,7 @@ export function CtaBlock({ variant = "centered", className }: CtaBlockProps) {
       >
         {LASTING_CHANGE.ctaText}
       </Typography>
+
       <GetInvolvedButton className="mt-4" />
     </div>
   );

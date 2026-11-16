@@ -21,6 +21,8 @@ import {
 } from '@nestjs/swagger';
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../common/enums/user-role.enum';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateLeadContactDto } from './dto/create-lead-contact.dto';
@@ -29,6 +31,7 @@ import { LeadContact } from './entities/lead-contact.entity';
 import { LeadsContactService } from './leads-contact.service';
 
 @ApiTags(ApiTagsConst.LEADS_CONTACT)
+@Roles(UserRole.ADMIN)
 @Controller('leads-contact')
 export class LeadsContactController {
   constructor(private readonly service: LeadsContactService) {}

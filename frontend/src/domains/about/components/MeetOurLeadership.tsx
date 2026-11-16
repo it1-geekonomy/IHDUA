@@ -24,6 +24,8 @@ import {
  *   block. They only appear when there are more cards than fit: more than 2
  *   below 1024px, more than 4 from 1024px up.
  * - Swipe / trackpad / mouse drag moves exactly one card per gesture.
+ * - Every card in the row is the same height: the name + designation box
+ *   stretches to match the tallest card.
  *
  * --gap is the space between cards; card widths are calculated from it.
  * Below 1024px the row is exactly 2 cards + 1 gap wide, so the arrows sit
@@ -96,7 +98,8 @@ function ArrowButton({
 
 function LeaderCard({ leader, index }: { leader: Leader; index: number }) {
   return (
-    <article className={CARD}>
+    // Column layout so the info box can fill the tallest card's height
+    <article className={`${CARD} flex flex-col`}>
       {/* Photo with gradient: #FFFFFF 0% → #A14DB1 100% */}
       <div className="relative aspect-[341/317] w-full overflow-hidden bg-gradient-to-b from-[#FFFFFF] from-0% to-[#A14DB1] to-100%">
         {leader.image && (
@@ -111,8 +114,8 @@ function LeaderCard({ leader, index }: { leader: Leader; index: number }) {
         )}
       </div>
 
-      {/* Name + designation card */}
-      <div className="mt-[clamp(6px,0.8vw,10px)] bg-[#FDF4FF] px-[clamp(8px,1.2vw,16px)] py-[clamp(8px,1.2vw,16px)]">
+      {/* Name + designation card: flex-1 = same height as the tallest card */}
+      <div className="mt-[clamp(6px,0.8vw,10px)] flex-1 bg-[#FDF4FF] px-[clamp(8px,1.2vw,16px)] py-[clamp(8px,1.2vw,16px)]">
         <Typography
           variant="body-lg"
           className="font-figtree font-bold text-[length:clamp(13px,1.4vw,18px)] leading-[1.4] text-[#684170]"

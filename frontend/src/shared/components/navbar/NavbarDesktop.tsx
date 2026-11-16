@@ -12,7 +12,16 @@ import Link from "next/link";
 import { NAV_LINKS, type NavLink } from "@/shared/constants/navbar";
 import { cn } from "@/lib/utils";
 import Typography from "@/lib/Typography";
-import { YELLOW, EASE, Chevron, Arrow, isNavLinkActive } from "./navbar";
+import {
+  YELLOW,
+  EASE,
+  Chevron,
+  Arrow,
+  isNavLinkActive,
+  KN_LG,
+  KN_LG_PX,
+  KN_WRAP,
+} from "./navbar";
 import { markClientNav } from "@/shared/lib/navState";
 
 /* ────────────────────────────  desktop  ─────────────────────────── */
@@ -137,8 +146,10 @@ function DesktopDropdown({
     setOpen((p) => !p);
   };
 
-  const triggerCls =
-    "group inline-flex items-center gap-1 whitespace-nowrap px-2.5 py-2 xl:gap-1.5 xl:px-4";
+  const triggerCls = cn(
+    "group inline-flex items-center gap-1 whitespace-nowrap px-2.5 py-2 xl:gap-1.5 xl:px-4",
+    KN_LG_PX,
+  );
 
   const triggerInner = (
     <>
@@ -147,6 +158,7 @@ function DesktopDropdown({
         className={cn(
           "font-manrope font-medium transition-colors duration-300",
           active || open ? YELLOW : "text-white group-hover:text-[#FFD638]",
+          KN_LG,
         )}
       >
         {link.label}
@@ -239,8 +251,10 @@ function DesktopDropdown({
                   const a = slideIn(i);
                   const lit = on || isNavLinkActive(pathname, child);
 
+                  // English: single line (nowrap). Kannada: KN_WRAP lets labels wrap, never truncate.
                   const rowCls = cn(
                     "group flex w-full items-center gap-3 whitespace-nowrap rounded-2xl px-4 py-3.5 text-left transition-colors duration-300",
+                    KN_WRAP,
                     on ? "bg-white/10" : "hover:bg-white/5",
                     lit ? YELLOW : "text-white hover:text-[#FFD638]",
                   );
@@ -254,6 +268,8 @@ function DesktopDropdown({
                         variant="body-lg"
                         className={cn(
                           "flex-1 min-w-0 truncate font-manrope font-semibold transition-colors duration-300",
+                          KN_WRAP,
+                          KN_LG,
                           lit ? YELLOW : "text-white group-hover:text-[#FFD638]",
                         )}
                       >
@@ -335,13 +351,21 @@ function DesktopDropdown({
                         <Link
                           href={focused.href}
                           onClick={close}
-                          className="group inline-flex items-center gap-2 font-manrope text-2xl font-bold text-white transition-colors hover:text-[#FFD638]"
+                          className={cn(
+                            "group inline-flex items-center gap-2 font-manrope text-2xl font-bold text-white transition-colors hover:text-[#FFD638]",
+                            "lg:max-xl:group-data-[lang=kn]/nav:!text-xl",
+                          )}
                         >
                           {focused.label}
                           <Arrow className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
                         </Link>
                       ) : (
-                        <h3 className="font-manrope text-2xl font-bold text-white">
+                        <h3
+                          className={cn(
+                            "font-manrope text-2xl font-bold text-white",
+                            "lg:max-xl:group-data-[lang=kn]/nav:!text-xl",
+                          )}
+                        >
                           {focused.label}
                         </h3>
                       )}
@@ -373,6 +397,7 @@ function DesktopDropdown({
                                 variant="body-lg"
                                 className={cn(
                                   "flex-1 min-w-0 font-manrope font-medium transition-colors duration-300",
+                                  KN_LG,
                                   lit ? YELLOW : "text-white/90 group-hover:text-[#FFD638]",
                                 )}
                               >
@@ -428,6 +453,7 @@ function DesktopDropdown({
                               variant="body-lg"
                               className={cn(
                                 "font-manrope font-semibold transition-colors duration-300 leading-snug",
+                                KN_LG,
                                 lit ? YELLOW : "text-white group-hover:text-[#FFD638]",
                               )}
                             >
@@ -472,12 +498,13 @@ export function DesktopNav({
             <Link
               href={link.href}
               onClick={link.href === "/" ? onHomeClick : markClientNav}
-              className="group whitespace-nowrap px-2.5 py-2 xl:px-4"
+              className={cn("group whitespace-nowrap px-2.5 py-2 xl:px-4", KN_LG_PX)}
             >
               <Typography
                 variant="body-lg"
                 className={cn(
                   "font-manrope font-medium transition-colors duration-300",
+                  KN_LG,
                   active ? YELLOW : "text-white group-hover:text-[#FFD638]",
                 )}
               >

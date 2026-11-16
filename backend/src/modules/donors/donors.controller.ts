@@ -23,6 +23,8 @@ import {
 } from '@nestjs/swagger';
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../common/enums/user-role.enum';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateDonationOrderDto } from './dto/create-donation-order.dto';
 import { VerifyDonationPaymentDto } from './dto/verify-donation-payment.dto';
@@ -32,6 +34,7 @@ import { Donor } from './entities/donor.entity';
 
 @ApiTags(ApiTagsConst.DONORS)
 @ApiExtraModels(Donor)
+@Roles(UserRole.ADMIN)
 @Controller('donors')
 export class DonorsController {
   constructor(
