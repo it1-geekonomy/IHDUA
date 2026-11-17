@@ -60,9 +60,11 @@ export interface PublicImpactInitiativeListItem {
   };
 }
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
-  "http://localhost:6061/api";
+const API_BASE = (
+  (typeof window === "undefined"
+    ? process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL
+    : process.env.NEXT_PUBLIC_API_URL) || "http://localhost:6061/api"
+).replace(/\/$/, "");
 
 /**
  * Fetch published categories and their published pages for the "Our Impact" navigation menu.
