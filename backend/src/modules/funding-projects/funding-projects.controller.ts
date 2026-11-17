@@ -54,7 +54,9 @@ export class FundingProjectsController {
 
   @Get()
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'List funding projects (CMS)' })
+  @ApiOperation({
+    summary: 'List funding projects (CMS table summary; no breakup JSON)',
+  })
   @ApiUnauthorizedResponse()
   async findAll(@Query() query: PaginationQueryDto) {
     const result = await this.service.findAll(query);
@@ -63,7 +65,9 @@ export class FundingProjectsController {
 
   @Get('deleted')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'List soft-deleted funding projects (CMS trash)' })
+  @ApiOperation({
+    summary: 'List soft-deleted funding projects (CMS trash summary)',
+  })
   @ApiUnauthorizedResponse()
   async findDeleted(@Query() query: PaginationQueryDto) {
     const result = await this.service.findDeleted(query);
@@ -72,7 +76,9 @@ export class FundingProjectsController {
 
   @Get(':id')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get funding project by id (CMS)' })
+  @ApiOperation({
+    summary: 'Get full funding project by id (CMS edit form)',
+  })
   @ApiOkResponse({ type: FundingProject })
   @ApiUnauthorizedResponse()
   async findOne(@Param('id', ParseUUIDPipe) id: string) {

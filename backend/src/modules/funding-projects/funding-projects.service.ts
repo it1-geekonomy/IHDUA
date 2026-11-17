@@ -20,6 +20,36 @@ import { CreateFundingProjectDto } from './dto/create-funding-project.dto';
 import { UpdateFundingProjectDto } from './dto/update-funding-project.dto';
 import { FundingProject } from './entities/funding-project.entity';
 
+/** CMS table rows only — heavy JSON (summary/highlights/components) comes from GET :id. */
+export type FundingProjectListItem = {
+  id: string;
+  slug: string;
+  projectNumber: string;
+  title: string;
+  totalLabel: string;
+  cause: string;
+  sortOrder: number;
+  status: ContentStatus;
+  componentsCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+};
+
+const LIST_COLUMNS = [
+  'id',
+  'slug',
+  'projectNumber',
+  'title',
+  'totalLabel',
+  'cause',
+  'sortOrder',
+  'status',
+  'createdAt',
+  'updatedAt',
+  'deletedAt',
+] as const;
+
 @Injectable()
 export class FundingProjectsService {
   private readonly logger = new Logger(FundingProjectsService.name);
@@ -52,12 +82,17 @@ export class FundingProjectsService {
 
   async findAll(
     query: PaginationQueryDto,
-  ): Promise<PaginatedResult<FundingProject>> {
+  ): Promise<PaginatedResult<FundingProjectListItem>> {
     const page = query.page ?? 1;
     const limit = query.limit ?? 20;
 
     const qb = this.repo
       .createQueryBuilder('entity')
+      .select(LIST_COLUMNS.map((column) => `entity.${column}`))
+      .addSelect(
+        'COALESCE(jsonb_array_length(entity.components), 0)',
+        'components_count',
+      )
       .orderBy('entity.sortOrder', 'ASC')
       .addOrderBy('entity.projectNumber', 'ASC')
       .addOrderBy('entity.createdAt', 'ASC');
@@ -75,17 +110,33 @@ export class FundingProjectsService {
       );
     }
 
-    const [data, total] = await qb
+    const total = await qb.clone().getCount();
+    const { entities, raw } = await qb
       .skip((page - 1) * limit)
       .take(limit)
-      .getManyAndCount();
+      .getRawAndEntities();
+
+    const data: FundingProjectListItem[] = entities.map((entity, index) => ({
+      id: entity.id,
+      slug: entity.slug,
+      projectNumber: entity.projectNumber,
+      title: entity.title,
+      totalLabel: entity.totalLabel,
+      cause: entity.cause,
+      sortOrder: entity.sortOrder,
+      status: entity.status,
+      componentsCount: Number(raw[index]?.components_count ?? 0),
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+      deletedAt: entity.deletedAt ?? null,
+    }));
 
     return buildPaginatedResult(data, total, page, limit);
   }
 
   async findDeleted(
     query: PaginationQueryDto,
-  ): Promise<PaginatedResult<FundingProject>> {
+  ): Promise<PaginatedResult<FundingProjectListItem>> {
     return this.findAll({ ...query, includeDeleted: true, onlyDeleted: true });
   }
 

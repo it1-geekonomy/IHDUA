@@ -6,7 +6,7 @@ import {
   FLUID,
   FOCUS_AREAS_ID,
 } from "@/domains/home/constants/development";
-import { scrollToDonateSection } from "@/domains/home/lib/donation";
+import Link from "next/link";
 import { useHeroBanners } from "@/domains/home/hooks/useHeroBanners";
 import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 import Typography from "@/lib/Typography";
@@ -247,9 +247,8 @@ export default function RuralDevelopmentSection() {
           </Typography>
 
           <div className="mt-8 flex flex-row flex-wrap items-center justify-center gap-3 md:justify-start">
-            <button
-              type="button"
-              onClick={scrollToDonateSection}
+            <Link
+              href="/donate"
               className="inline-flex w-fit cursor-pointer items-center justify-center gap-2 rounded bg-[#FFD638] px-6 py-3 font-bold text-[#1E1E1E]"
             >
               <Typography variant="body-sm" className="font-figtree font-semibold text-[#1E1E1E]">
@@ -258,7 +257,7 @@ export default function RuralDevelopmentSection() {
               <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4" stroke="currentColor" strokeWidth={2.2}>
                 <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-            </button>
+            </Link>
             <a
               href={`#${FOCUS_AREAS_ID}`}
               onClick={handleExploreClick}

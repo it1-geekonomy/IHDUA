@@ -2,6 +2,7 @@ import type {
   ContentStatus,
   FundingComponentItem,
   FundingProjectItem,
+  FundingProjectListItem,
   PaginationMeta,
 } from "@/domains/admin/lib/api";
 
@@ -9,6 +10,7 @@ export type {
   ContentStatus,
   FundingComponentItem,
   FundingProjectItem,
+  FundingProjectListItem,
   PaginationMeta,
 };
 

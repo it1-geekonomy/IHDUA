@@ -4,7 +4,7 @@ import { AlertCircle, Check, Loader2, Pencil, Plus, RefreshCw, RotateCcw, Trash2
 import { AdminSelect, type AdminSelectOption } from "@/domains/admin/components/AdminSelect";
 import { FundingProjectEditorModal } from "./FundingProjectEditorModal";
 import { useFundingProjects } from "./useFundingProjects";
-import type { ContentStatus, FundingProjectItem } from "./types";
+import type { ContentStatus, FundingProjectListItem } from "./types";
 
 const STATUS_FILTER: AdminSelectOption<ContentStatus | "all">[] = [
   { value: "all", label: "All statuses" },
@@ -139,7 +139,7 @@ export function FundingProjectsManager() {
                   </td>
                 </tr>
               ) : (
-                m.items.map((item: FundingProjectItem) => (
+                m.items.map((item: FundingProjectListItem) => (
                   <tr key={item.id} className="border-b border-[#F0EBF3]">
                     <td className="px-4 py-3 font-mono font-semibold">{item.projectNumber}</td>
                     <td className="px-4 py-3">
@@ -147,7 +147,7 @@ export function FundingProjectsManager() {
                       <p className="text-[10px] text-[#5F6C6D]">{item.slug}</p>
                     </td>
                     <td className="px-4 py-3 font-semibold">{item.totalLabel}</td>
-                    <td className="px-4 py-3">{item.components?.length ?? 0}</td>
+                    <td className="px-4 py-3">{item.componentsCount ?? 0}</td>
                     <td className="px-4 py-3">
                       <StatusBadge status={item.status} />
                     </td>
@@ -157,8 +157,9 @@ export function FundingProjectsManager() {
                           <>
                             <button
                               type="button"
-                              onClick={() => m.openEdit(item)}
-                              className="rounded border border-[#D9D3C9] p-1.5 hover:bg-neutral-50"
+                              disabled={m.actionLoading}
+                              onClick={() => void m.openEdit(item)}
+                              className="rounded border border-[#D9D3C9] p-1.5 hover:bg-neutral-50 disabled:opacity-50"
                               title="Edit"
                             >
                               <Pencil className="h-3.5 w-3.5" />

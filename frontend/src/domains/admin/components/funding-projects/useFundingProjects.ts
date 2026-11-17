@@ -6,11 +6,13 @@ import {
   createFundingProject,
   deleteFundingProject,
   fetchDeletedFundingProjects,
+  fetchFundingProjectById,
   fetchFundingProjects,
   restoreFundingProject,
   updateFundingProject,
   type ContentStatus,
   type FundingProjectItem,
+  type FundingProjectListItem,
   type PaginationMeta,
 } from "@/domains/admin/lib/api";
 import type { FundingProjectFormValues } from "./types";
@@ -18,7 +20,7 @@ import type { FundingProjectFormValues } from "./types";
 export function useFundingProjects() {
   const { token, ready } = useAdminAuth();
   const [activeTab, setActiveTab] = useState<"active" | "deleted">("active");
-  const [items, setItems] = useState<FundingProjectItem[]>([]);
+  const [items, setItems] = useState<FundingProjectListItem[]>([]);
   const [page, setPage] = useState(1);
   const limit = 10;
   const [statusFilter, setStatusFilter] = useState<ContentStatus | "all">("all");
@@ -36,7 +38,7 @@ export function useFundingProjects() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FundingProjectItem | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<FundingProjectItem | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<FundingProjectListItem | null>(null);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -88,9 +90,19 @@ export function useFundingProjects() {
     setIsEditorOpen(true);
   };
 
-  const openEdit = (item: FundingProjectItem) => {
-    setEditingItem(item);
-    setIsEditorOpen(true);
+  const openEdit = async (item: FundingProjectListItem) => {
+    if (!token) return;
+    setActionLoading(true);
+    setError(null);
+    try {
+      const full = await fetchFundingProjectById(token, item.id);
+      setEditingItem(full);
+      setIsEditorOpen(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load project.");
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const closeEditor = () => {
@@ -119,7 +131,10 @@ export function useFundingProjects() {
     }
   };
 
-  const handleQuickStatus = async (item: FundingProjectItem, status: ContentStatus) => {
+  const handleQuickStatus = async (
+    item: FundingProjectListItem,
+    status: ContentStatus,
+  ) => {
     if (!token) return;
     setActionLoading(true);
     try {
@@ -148,7 +163,7 @@ export function useFundingProjects() {
     }
   };
 
-  const handleRestore = async (item: FundingProjectItem) => {
+  const handleRestore = async (item: FundingProjectListItem) => {
     if (!token) return;
     setActionLoading(true);
     try {
