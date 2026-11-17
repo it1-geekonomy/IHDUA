@@ -39,6 +39,7 @@ export class FundingProjectsController {
   @ApiOkResponse({ type: [FundingProject] })
   async findPublished() {
     const data = await this.service.findPublished();
+    console.log("Hyyy",data);
     return { statusCode: HttpStatus.OK, data };
   }
 

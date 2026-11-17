@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 # Verified reference files only (certificate facts, donation-flow behaviour).
 # Everything else comes from the CMS database or the live website.
 _KNOWLEDGE_PAGES = {
-    "donations_80g_tax": ("/#donate", "Donation"),
+    "donations_80g_tax": ("/donate", "Donation"),
     "legal_certifications_12a_80g_fcra": ("/about", "Governance"),
 }
 

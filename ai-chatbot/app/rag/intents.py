@@ -34,7 +34,9 @@ def match_fast_intent(message: str) -> dict | None:
 
 _INTENT_PATTERNS: dict[str, re.Pattern] = {
     "donate": re.compile(
-        r"\b(donate|donations?|80g|tax|taxes|tax-exempt|tax-exemption|501c|501\(c\)\(3\)|contribute|contributions?|funds?|receipts?)\b",
+        r"\b(donate|donations?|donating|80g|tax|taxes|tax-exempt|tax-exemption|501c|501\(c\)\(3\)|"
+        r"contribute|contributions?|funds?|funding|receipts?|"
+        r"project[\s-]*based|funding[\s-]*projects?|component[\s-]*wise|breakup)\b",
         re.I,
     ),
     "education": re.compile(
