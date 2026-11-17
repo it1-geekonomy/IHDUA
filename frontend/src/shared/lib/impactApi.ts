@@ -125,6 +125,24 @@ export async function fetchImpactInitiativePage(
   }
 }
 
+/** Map API initiative payload into the shape ImpactPageView / ImpactGalleryView expect. */
+export function toImpactPageData(page: PublicImpactInitiativePage) {
+  return {
+    layoutType: page.category.layoutType as
+      | "education"
+      | "women_empowerment"
+      | "skills_employment"
+      | "model_village"
+      | "health",
+    slug: page.slug,
+    heroTitle: page.heroTitle || page.name,
+    heroDescription: page.heroDescription || "",
+    heroImage: page.heroImageUrl || "",
+    heroImageMobile: page.heroImageMobileUrl || page.heroImageUrl || "",
+    content: page.content || {},
+  };
+}
+
 /**
  * Fetch all published impact initiatives for public listing.
  * Endpoint: GET /api/impact-initiatives/public

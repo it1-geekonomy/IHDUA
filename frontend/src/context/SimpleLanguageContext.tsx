@@ -1,12 +1,23 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { usePathname } from "next/navigation";
 import {
   getCurrentLanguage,
   reloadWithLanguage,
   LANGUAGES,
   LanguageCode,
 } from "@/utils/languageHelper";
+import {
+  bindKannadaHardNav,
+  whenTranslateReady,
+} from "@/utils/googleTranslate";
 
 type LanguageContextType = {
   language: LanguageCode;
@@ -24,23 +35,19 @@ declare global {
 }
 
 export function SimpleLanguageProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const [language, setLanguageState] = useState<LanguageCode>(LANGUAGES.ENGLISH);
   const [isChanging, setIsChanging] = useState(false);
+  const isAdmin = pathname?.startsWith("/admin") ?? false;
 
-  // Detect language on mount
   useEffect(() => {
-    if (typeof window === "undefined") return;
     setLanguageState(getCurrentLanguage());
   }, []);
 
-  // Load Google Translate script once
+  // Load Google Translate once on the public site.
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || isAdmin) return;
     if (document.querySelector('script[src*="translate.google.com"]')) return;
-
-    const script = document.createElement("script");
-    script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-    script.async = true;
 
     window.googleTranslateElementInit = () => {
       try {
@@ -50,27 +57,53 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
             includedLanguages: "en,kn",
             autoDisplay: false,
           },
-          "google_translate_element"
+          "google_translate_element",
         );
       } catch {
-        // ignore init errors
+        return;
+      }
+
+      const lang = getCurrentLanguage();
+      setLanguageState(lang);
+      if (lang === LANGUAGES.KANNADA) {
+        void whenTranslateReady(LANGUAGES.KANNADA, 3000);
       }
     };
 
+    const script = document.createElement("script");
+    // Absolute https keeps translate working on HTTPS live domains (and localhost).
+    script.src =
+      "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    script.async = true;
     document.head.appendChild(script);
-  }, []);
+  }, [isAdmin]);
 
-  const setLanguage = (newLang: LanguageCode) => {
-    if (isChanging || newLang === language) return;
-    setIsChanging(true);
-    setLanguageState(newLang);
-    reloadWithLanguage(newLang);
-  };
+  // Kannada: full document navigations so googtrans applies cleanly (no EN flash / blank gate).
+  useEffect(() => {
+    if (isAdmin || language !== LANGUAGES.KANNADA) return;
+    return bindKannadaHardNav();
+  }, [language, isAdmin]);
+
+  const setLanguage = useCallback(
+    (newLang: LanguageCode) => {
+      if (isChanging || newLang === language) return;
+      setIsChanging(true);
+      setLanguageState(newLang);
+      reloadWithLanguage(newLang);
+    },
+    [isChanging, language],
+  );
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, isChanging }}>
       {children}
-      <div id="google_translate_element" className="hidden" />
+      {/* Must stay in layout for the widget; visually hidden via CSS, not display:none */}
+      {!isAdmin && (
+        <div
+          id="google_translate_element"
+          style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}
+        />
+      )}
     </LanguageContext.Provider>
   );
 }

@@ -1,15 +1,30 @@
-import Bannersection from "@/domains/women/components/bannersection";
-import Supportingwomen from "@/domains/women/components/supportingwomen";
-import Gallerysection from"@/domains/women/components/gallerysection";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { resolveImpactGalleryPage } from "@/domains/impact/cms/resolveImpactPage";
+import { ImpactGalleryView } from "@/domains/impact/cms/ImpactPageView";
 import NewsletterSection from "@/shared/components/Newsletter";
 
-export default function OurTeamPage() {
+export const dynamic = "force-dynamic";
+
+const SLUG = "women";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const loaded = await resolveImpactGalleryPage(SLUG);
+  if (!loaded) return {};
+  return {
+    title: `Gallery · ${loaded.page.metaTitle || loaded.data.heroTitle}`,
+    description: loaded.page.metaDescription || loaded.data.heroDescription || undefined,
+  };
+}
+
+export default async function WomenGalleryPage() {
+  const loaded = await resolveImpactGalleryPage(SLUG);
+  if (!loaded) notFound();
+
   return (
-    <> 
-      <Bannersection />
-      <Supportingwomen />
-      <Gallerysection />
+    <main className="w-full">
+      <ImpactGalleryView data={loaded.data} withChrome />
       <NewsletterSection />
-    </>
+    </main>
   );
 }

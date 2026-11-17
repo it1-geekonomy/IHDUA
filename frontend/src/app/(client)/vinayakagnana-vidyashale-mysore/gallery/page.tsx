@@ -1,45 +1,30 @@
-import HeroBanner from "@/shared/components/Herobanner";
-import FeatureHighlightSection from "@/shared/components/Featurehighlightsection ";
-import GallerySection from "@/shared/components/Gallerysection";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { resolveImpactGalleryPage } from "@/domains/impact/cms/resolveImpactPage";
+import { ImpactGalleryView } from "@/domains/impact/cms/ImpactPageView";
 import NewsletterSection from "@/shared/components/Newsletter";
-import {
-  VINAYAKA_GALLERY_HERO,
-  VINAYAKA_HEADER,
-  VINAYAKA_GALLERY,
-} from "@/domains/impact/education/constants/vinayakaSchool";
 
-export default function MullurSchoolGalleryPage() {
-  const galleryImages = VINAYAKA_GALLERY.map((photo) => ({
-    src: photo.src,
-    alt: photo.alt,
-  }));
+export const dynamic = "force-dynamic";
+
+/** Covers both historical and current CMS slugs for this school. */
+const SLUG = "vinayaka-jnana-vidyashale-mysuru";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const loaded = await resolveImpactGalleryPage(SLUG);
+  if (!loaded) return {};
+  return {
+    title: `Gallery · ${loaded.page.metaTitle || loaded.data.heroTitle}`,
+    description: loaded.page.metaDescription || loaded.data.heroDescription || undefined,
+  };
+}
+
+export default async function VinayakaGalleryPage() {
+  const loaded = await resolveImpactGalleryPage(SLUG);
+  if (!loaded) notFound();
 
   return (
     <main className="w-full">
-      <HeroBanner
-        heading={VINAYAKA_GALLERY_HERO.heading}
-        description={VINAYAKA_GALLERY_HERO.description}
-        image={VINAYAKA_GALLERY_HERO.image}
-        imageMobile={VINAYAKA_GALLERY_HERO.imageMobile}
-        imageAlt={VINAYAKA_GALLERY_HERO.imageAlt}
-      />
-
-      <FeatureHighlightSection
-        label={VINAYAKA_HEADER.eyebrow}
-        heading={VINAYAKA_HEADER.title}
-        description={VINAYAKA_HEADER.description}
-        button={{
-          label: VINAYAKA_HEADER.buttonText,
-        }}
-        items={[...VINAYAKA_HEADER.highlights]}
-      />
-
-      <GallerySection
-        heading="Gallery"
-        rows={4}
-        images={galleryImages}
-      />
-
+      <ImpactGalleryView data={loaded.data} withChrome />
       <NewsletterSection />
     </main>
   );
