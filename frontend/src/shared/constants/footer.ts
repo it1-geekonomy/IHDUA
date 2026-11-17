@@ -13,7 +13,7 @@ export const FOOTER_WHAT_WE_DO: FooterLink[] = [
 
 
 export const FOOTER_GET_INVOLVED: FooterLink[] = [
-  { label: "Donate", href: "/" },
+  { label: "Donate", href: "/donate" },
   { label: "Volunteer", href: "/" },
   { label: "Partner", href: "/" },
 ];

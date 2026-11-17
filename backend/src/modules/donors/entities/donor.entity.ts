@@ -49,7 +49,7 @@ export class Donor extends BaseEntity {
   @Column({
     name: 'donation_category',
     type: 'varchar',
-    length: 100,
+    length: 250,
     default: 'General Donation',
   })
   donationCategory: string;

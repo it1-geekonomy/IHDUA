@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { PATHS } from "@/domains/home/constants/ThreePathsSection";
 import Typography from "@/lib/Typography";
-import { scrollToDonateSection } from "@/domains/home/lib/donation";
+import { useRouter } from "next/navigation";
 import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 import VolunteerModal from "./VolunteerModal";
 import PartnershipModal from "./PartnershipModal";
 
 export default function ThreePathsSection() {
+  const router = useRouter();
   const [isVolunteerModalOpen, setIsVolunteerModalOpen] = useState(false);
   const [isPartnershipModalOpen, setIsPartnershipModalOpen] = useState(false);
 
@@ -99,7 +100,7 @@ export default function ThreePathsSection() {
                   } else if (path.title === "Partner") {
                     setIsPartnershipModalOpen(true);
                   } else if (path.title === "Donate") {
-                    void scrollToDonateSection();
+                    router.push("/donate");
                   }
                 }}
                 className="mt-auto mb-4 w-full bg-[#9739A8] hover:bg-[#852f94] transition-colors px-6 py-4 sm:w-fit sm:self-start cursor-pointer"

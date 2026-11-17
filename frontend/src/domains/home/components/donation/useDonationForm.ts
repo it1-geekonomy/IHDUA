@@ -154,12 +154,20 @@ export function useDonationForm() {
     setCurrency(next.currency);
   }, [applyCountry, setCurrency]);
 
-  const applyExternalAmount = useCallback((amount: string, extCountryCode?: string) => {
+  const applyExternalAmount = useCallback((
+    amount: string,
+    extCountryCode?: string,
+    nextCause?: string,
+  ) => {
     // External CTAs can optionally specify country, else fallback to India
     const nextCode = extCountryCode || "IN";
     const nextCountry = getCountryByCode(nextCode);
     applyCountry(nextCountry.code);
     setCurrencyState(nextCountry.currency);
+
+    if (nextCause?.trim()) {
+      setCause(nextCause.trim() as DonationCause);
+    }
 
     const digits = normalizeAmountDigits(toAmountDigits(amount));
     if (!digits) return;
@@ -181,7 +189,7 @@ export function useDonationForm() {
     const onCheckout = (event: Event) => {
       const detail = (event as CustomEvent<DonateCheckoutDetail>).detail;
       if (!detail?.amount) return;
-      applyExternalAmount(detail.amount, detail.countryCode);
+      applyExternalAmount(detail.amount, detail.countryCode, detail.cause);
     };
 
     window.addEventListener(DONATE_CHECKOUT_EVENT, onCheckout);
@@ -458,7 +466,9 @@ export function useDonationForm() {
     customDigits,
     usingCustom,
     cause,
-    causes: DONATION_CAUSES,
+    causes: (DONATION_CAUSES as readonly string[]).includes(cause)
+      ? DONATION_CAUSES
+      : ([cause, ...DONATION_CAUSES] as typeof DONATION_CAUSES),
     frequency: effectiveFrequency,
     frequencies: DONATION_FREQUENCY_OPTIONS,
     setFrequency,

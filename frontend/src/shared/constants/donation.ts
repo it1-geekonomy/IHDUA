@@ -5,6 +5,15 @@ export type CtaPresetAmount = (typeof CTA_PRESET_AMOUNTS)[number];
 
 export const DONATION_CAUSES = [
   "General Donation",
+  "School Essentials",
+  "Rural School Transformation",
+  "Watershed Development",
+  "Organic Farming Programme",
+  "Prevention of Child Marriage",
+  "Solid Waste Management",
+  "Support for Persons with Disabilities",
+  "Millet Processing Unit",
+  "Edible Oil Processing Unit",
   "Education & School Support",
   "Healthcare & Medical Camps",
   "Women's Empowerment",
