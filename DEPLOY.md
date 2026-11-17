@@ -99,19 +99,60 @@ docker compose --env-file .env.prod -f docker-compose.prod.yml exec ai-chatbot \
   python -c "from app.services.sync_service import full_sync; print(full_sync(force=True))"
 ```
 
-## 5. Later deploys
+## 5. Later deploys (automatic via GitHub Actions)
+
+Every push to `main` runs `.github/workflows/deploy.yml`:
+
+1. Detects which folders changed (`frontend`, `backend`, `ai-chatbot`, `nginx`).
+2. CI-checks **only** those folders (skipped jobs do not rebuild).
+3. SSHs into the Droplet and runs `deploy.sh`, which rebuilds **only** the
+   changed Docker images (same path filter), then restarts containers.
+
+| Change under     | Rebuilds          |
+|------------------|-------------------|
+| `frontend/`      | frontend only     |
+| `backend/`       | backend only      |
+| `ai-chatbot/`    | ai-chatbot only   |
+| `nginx/`         | nginx reload only |
+| docs / other     | pull code, no image rebuild |
+
+Manual run: GitHub → Actions → **Deploy to production** → **Run workflow**
+(options: one service, rebuild all, force chatbot re-index).
+
+On the server by hand:
 
 ```bash
 cd /opt/ihdua
 bash deploy.sh
-# or force everything:
 REBUILD_ALL=true bash deploy.sh
-# force chatbot re-index:
 REINDEX_CHATBOT=true bash deploy.sh
 ```
 
-`deploy.sh` rebuilds only changed services, reloads nginx, runs migrations when
-the backend changed, and prunes old images.
+### One-time GitHub Actions setup
+
+1. On the Droplet, create an SSH key for Actions:
+
+   ```bash
+   ssh-keygen -t ed25519 -f ~/.ssh/github_actions -N "" -C "github-actions-deploy"
+   cat ~/.ssh/github_actions.pub >> ~/.ssh/authorized_keys
+   cat ~/.ssh/github_actions
+   ```
+
+2. GitHub → repo → Settings → Secrets and variables → Actions → add:
+
+   | Secret           | Value |
+   |------------------|--------|
+   | `DEPLOY_HOST`    | `165.22.217.143` |
+   | `DEPLOY_USER`    | `root` |
+   | `DEPLOY_SSH_KEY` | Full private key (`-----BEGIN` … `-----END`) |
+
+Optional: `DEPLOY_PORT` (default `22`).
+
+Create a GitHub Environment named **production** (workflow uses it) if the
+repo asks for one — no extra protection rules required.
+
+The server fetches code with the job’s temporary GitHub token; no PAT needed
+on the Droplet after the first clone.
 
 ## Changing PUBLIC_URL / IP
 
