@@ -1940,6 +1940,7 @@ export interface FundingComponentItem {
   amountDigits?: string;
 }
 
+/** Full project (create/update/get-by-id, public published). */
 export interface FundingProjectItem {
   id: string;
   slug: string;
@@ -1957,6 +1958,22 @@ export interface FundingProjectItem {
   deletedAt?: string | null;
 }
 
+/** CMS list/trash rows — breakup JSON omitted; use fetchFundingProjectById for edit. */
+export interface FundingProjectListItem {
+  id: string;
+  slug: string;
+  projectNumber: string;
+  title: string;
+  totalLabel: string;
+  cause: string;
+  sortOrder: number;
+  status: ContentStatus;
+  componentsCount: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}
+
 export interface FundingProjectQueryParams {
   page?: number;
   limit?: number;
@@ -1965,7 +1982,7 @@ export interface FundingProjectQueryParams {
 }
 
 export interface PaginatedFundingProjectsResponse {
-  data: FundingProjectItem[];
+  data: FundingProjectListItem[];
   meta: PaginationMeta;
 }
 
@@ -2013,6 +2030,13 @@ export async function fetchDeletedFundingProjects(
     `/funding-projects/deleted${qs ? `?${qs}` : ""}`,
     { token },
   );
+}
+
+export async function fetchFundingProjectById(
+  token: string,
+  id: string,
+): Promise<FundingProjectItem> {
+  return apiRequest<FundingProjectItem>(`/funding-projects/${id}`, { token });
 }
 
 export async function fetchPublishedFundingProjects(): Promise<
