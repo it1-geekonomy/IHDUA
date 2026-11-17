@@ -22,30 +22,6 @@ export interface ChatMessage {
   suggestedFollowUps?: string[];
 }
 
-export interface KnowledgeDocument {
-  id: string;
-  title: string;
-  category:
-    | "about"
-    | "education"
-    | "women"
-    | "microfinance"
-    | "skills"
-    | "health"
-    | "model_village"
-    | "donation"
-    | "contact"
-    | "governance"
-    | "farmers"
-    | "youth";
-  keywords: string[];
-  summary: string;
-  content: string;
-  url?: string;
-  actions?: ActionButton[];
-  suggestedFollowUps?: string[];
-}
-
 export interface ChatResponse {
   reply: string;
   sources?: (string | SourceLink)[];
