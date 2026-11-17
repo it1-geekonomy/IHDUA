@@ -577,7 +577,6 @@ const INITIATIVES: SeedInitiativeDef[] = [
           "Through Self-Help Groups, women build financial awareness, leadership and collective decision-making skills. Microfinance initiatives support access to financial resources, while vocational training develops practical skills in tailoring, Aari work and computer education. Together, these programmes support women's participation in income-generating activities and livelihood development.",
         ],
         image: '/skills%20and%20employement/women.png',
-        button: { label: 'View All Photos', href: '/women/gallery' },
       },
       twoImageStory: {
         heading: 'Creating Opportunities for Women',

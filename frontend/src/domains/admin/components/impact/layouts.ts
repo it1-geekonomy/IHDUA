@@ -374,9 +374,8 @@ export const IMPACT_CATEGORIES: ImpactCategoryDef[] = [
       storySection(
         "overview",
         "Overview",
-        "Heading and paragraphs with a photo, with an optional button.",
+        "Heading and paragraphs with a photo. Shows \"View All Photos\" when the gallery is set to a separate page (Link label).",
         EXAMPLES.skills.storyHeading,
-        EXAMPLES.skills.button,
       ),
       {
         key: "video",
@@ -420,17 +419,19 @@ export const IMPACT_CATEGORIES: ImpactCategoryDef[] = [
       {
         key: "gallery",
         title: "Photo Gallery",
-        description: "Either a one-row slider on this page, or a separate gallery page at /{slug}/gallery.",
+        description:
+          "Separate gallery page at /{slug}/gallery, linked from the overview — or a one-row slider on this page.",
         optional: true,
         fields: [
           { kind: "text", key: "heading", label: "Heading", placeholder: "Gallery" },
+          { kind: "text", key: "ctaLabel", label: "Link label", placeholder: "View All Photos" },
           {
             kind: "select",
             key: "displayMode",
             label: "Show as",
             options: [
-              { value: "inline", label: "Slider on this page" },
               { value: "page", label: "Separate gallery page" },
+              { value: "inline", label: "Slider on this page" },
             ],
           },
           { kind: "images", key: "images", label: "Photos", min: 1, max: 40 },
