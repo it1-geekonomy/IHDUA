@@ -1,15 +1,14 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Check, ChevronDown, Search } from "lucide-react";
-import { useClickOutside } from "@/shared/hooks/useClickOutside";
 import { cn } from "@/lib/utils";
 
 export interface AdminSelectOption<T extends string = string> {
   value: T;
   label: string;
   dotColor?: string;
-  
   badge?: string;
 }
 
@@ -35,23 +34,23 @@ export function AdminSelect<T extends string = string>({
   className,
   containerClassName,
   dropdownClassName,
-  direction = "down",
+  direction,
   searchable = false,
   disabled = false,
   size = "sm",
 }: AdminSelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [dropdownPos, setDropdownPos] = useState<{
+    top?: number;
+    bottom?: number;
+    left: number;
+    minWidth: number;
+    openUp: boolean;
+  } | null>(null);
 
-  useClickOutside(
-    containerRef,
-    () => {
-      setIsOpen(false);
-      setSearchQuery("");
-    },
-    isOpen,
-  );
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const normalizedOptions: AdminSelectOption<T>[] = useMemo(() => {
     return options.map((opt) => {
@@ -77,7 +76,166 @@ export function AdminSelect<T extends string = string>({
     );
   }, [normalizedOptions, searchable, searchQuery]);
 
+  const updatePosition = useCallback(() => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const dropdownEstimatedHeight = 220;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const openUp =
+      direction === "up" ||
+      (!direction && spaceBelow < dropdownEstimatedHeight && rect.top > dropdownEstimatedHeight);
+
+    // Keep dropdown within window horizontal boundary
+    const minWidth = Math.max(rect.width, 160);
+    let left = rect.left;
+    if (left + minWidth > window.innerWidth - 12) {
+      left = Math.max(12, window.innerWidth - minWidth - 12);
+    }
+
+    if (openUp) {
+      setDropdownPos({
+        bottom: window.innerHeight - rect.top + 6,
+        left,
+        minWidth,
+        openUp: true,
+      });
+    } else {
+      setDropdownPos({
+        top: rect.bottom + 6,
+        left,
+        minWidth,
+        openUp: false,
+      });
+    }
+  }, [direction]);
+
+  // Handle open/close and positioning
+  useEffect(() => {
+    if (!isOpen) {
+      setDropdownPos(null);
+      setSearchQuery("");
+      return;
+    }
+
+    updatePosition();
+
+    const handleScrollOrResize = () => {
+      setIsOpen(false);
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as Node;
+      if (
+        containerRef.current?.contains(target) ||
+        dropdownRef.current?.contains(target)
+      ) {
+        return;
+      }
+      setIsOpen(false);
+    };
+
+    window.addEventListener("scroll", handleScrollOrResize, { capture: true, passive: true });
+    window.addEventListener("resize", handleScrollOrResize, { passive: true });
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("scroll", handleScrollOrResize, { capture: true });
+      window.removeEventListener("resize", handleScrollOrResize);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isOpen, updatePosition]);
+
   const isFullWidth = className?.includes("w-full");
+
+  const dropdownPortal =
+    isOpen && dropdownPos && typeof document !== "undefined"
+      ? createPortal(
+          <div
+            ref={dropdownRef}
+            style={{
+              position: "fixed",
+              top: dropdownPos.top !== undefined ? `${dropdownPos.top}px` : undefined,
+              bottom: dropdownPos.bottom !== undefined ? `${dropdownPos.bottom}px` : undefined,
+              left: `${dropdownPos.left}px`,
+              minWidth: `${dropdownPos.minWidth}px`,
+              zIndex: 99999,
+            }}
+            className={cn(
+              "w-max rounded-xl border border-[#E5E0D8] bg-white p-1 shadow-2xl animate-in fade-in-50 zoom-in-95 duration-150 font-figtree",
+              dropdownClassName,
+            )}
+          >
+            {searchable && (
+              <div className="mb-1 flex items-center gap-2 border-b border-[#E5E0D8] px-2.5 py-1.5">
+                <Search className="h-3.5 w-3.5 shrink-0 text-[#8A847A]" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search..."
+                  className="w-full bg-transparent font-figtree text-xs text-[#0F1C1D] placeholder:text-[#8A847A] focus:outline-hidden"
+                  autoFocus
+                />
+              </div>
+            )}
+
+            <div className="max-h-56 overflow-y-auto space-y-0.5 no-scrollbar">
+              {filteredOptions.length === 0 ? (
+                <div className="px-3 py-2 text-center text-xs text-[#8A847A]">
+                  No options found
+                </div>
+              ) : (
+                filteredOptions.map((opt) => {
+                  const isSelected = opt.value === value;
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => {
+                        onChange(opt.value);
+                        setIsOpen(false);
+                        setSearchQuery("");
+                      }}
+                      className={cn(
+                        "flex w-full items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-left text-xs font-medium transition-colors cursor-pointer whitespace-nowrap",
+                        isSelected
+                          ? "bg-[#FAF5FC] font-semibold text-[#9739A8]"
+                          : "text-[#0F1C1D] hover:bg-[#FAF8F4] hover:text-[#9739A8]",
+                      )}
+                    >
+                      <div className="flex items-center gap-2 shrink-0">
+                        {opt.dotColor && (
+                          <span
+                            className={cn(
+                              "h-2 w-2 shrink-0 rounded-full",
+                              opt.dotColor,
+                            )}
+                          />
+                        )}
+                        <span className="whitespace-nowrap">{opt.label}</span>
+                      </div>
+                      {isSelected && (
+                        <Check className="h-3.5 w-3.5 shrink-0 text-[#9739A8] ml-2" />
+                      )}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
 
   return (
     <div
@@ -120,75 +278,12 @@ export function AdminSelect<T extends string = string>({
         <ChevronDown
           className={cn(
             "h-3.5 w-3.5 shrink-0 text-[#8A847A] transition-transform duration-200",
-            isOpen && (direction === "up" ? "-rotate-180" : "rotate-180"),
+            isOpen && (dropdownPos?.openUp ? "-rotate-180" : "rotate-180"),
           )}
         />
       </button>
 
-      {isOpen && (
-        <div
-          className={cn(
-            "absolute left-0 z-50 min-w-full w-max rounded-xl border border-[#E5E0D8] bg-white p-1 shadow-xl animate-in fade-in-50 zoom-in-95 duration-150",
-            direction === "up" ? "bottom-full mb-1.5" : "top-full mt-1.5",
-            dropdownClassName || "min-w-[170px]",
-          )}
-        >
-          {searchable && (
-            <div className="mb-1 flex items-center gap-2 border-b border-[#E5E0D8] px-2.5 py-1.5">
-              <Search className="h-3.5 w-3.5 shrink-0 text-[#8A847A]" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search..."
-                className="w-full bg-transparent font-figtree text-xs text-[#0F1C1D] placeholder:text-[#8A847A] focus:outline-hidden"
-                autoFocus
-              />
-            </div>
-          )}
-
-          <div className="max-h-56 overflow-y-auto space-y-0.5">
-            {filteredOptions.length === 0 ? (
-              <div className="px-3 py-2 text-center text-xs text-[#8A847A]">
-                No options found
-              </div>
-            ) : (
-              filteredOptions.map((opt) => {
-                const isSelected = opt.value === value;
-                return (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => {
-                      onChange(opt.value);
-                      setIsOpen(false);
-                      setSearchQuery("");
-                    }}
-                    className={cn(
-                      "flex w-full items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-left text-xs font-medium transition-colors cursor-pointer whitespace-nowrap",
-                      isSelected
-                        ? "bg-[#FAF5FC] font-semibold text-[#9739A8]"
-                        : "text-[#0F1C1D] hover:bg-[#FAF8F4] hover:text-[#9739A8]",
-                    )}
-                  >
-                    <div className="flex items-center gap-2 shrink-0">
-                      {opt.dotColor && (
-                        <span
-                          className={cn("h-2 w-2 shrink-0 rounded-full", opt.dotColor)}
-                        />
-                      )}
-                      <span className="whitespace-nowrap">{opt.label}</span>
-                    </div>
-                    {isSelected && (
-                      <Check className="h-3.5 w-3.5 shrink-0 text-[#9739A8] ml-2" />
-                    )}
-                  </button>
-                );
-              })
-            )}
-          </div>
-        </div>
-      )}
+      {dropdownPortal}
     </div>
   );
 }
