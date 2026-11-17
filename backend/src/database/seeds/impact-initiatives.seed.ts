@@ -40,9 +40,9 @@ const INITIATIVES: SeedInitiativeDef[] = [
       'Creating opportunities to learn, grow and build brighter futures for rural children and communities.',
     heroImageUrl:
       'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793853875714-wfp0c-frame-648.webp',
-    heroImageMobileUrl: '/Rural Education/Frame 695.png',
+    heroImageMobileUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/rural-education/frame-695.png',
     cardTitle: 'Adarsha Academy',
-    cardImageUrl: '/Rural Education/Rectangle 44 (1).png',
+    cardImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/rural-education/rectangle-44-1.png',
     content: {
       intro: {
         eyebrow: 'EDUCATION',
@@ -52,13 +52,13 @@ const INITIATIVES: SeedInitiativeDef[] = [
         button: { label: 'Visit School Website', href: '#' },
         highlights: [
           {
-            iconUrl: '/icons/mission.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/mission.png',
             heading: 'Mission',
             description:
               'Providing quality primary education for children in rural communities.',
           },
           {
-            iconUrl: '/icons/benifit.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/benifit.png',
             heading: 'Beneficiaries',
             description: 'More than 380 students since 2010',
           },
@@ -70,7 +70,7 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'The Adarsha Academy is a kindergarten through 8th grade rural private school providing full-time education to children from seven villages in the vicinity of the Krishnarajasagara (KRS) Dam.',
           'The school is situated in a rural setting overlooking the KRS reservoir, surrounded by an agricultural landscape. This setting forms an important part of the school environment and provides a peaceful space for learning. Students follow a state-approved Kannada-medium curriculum, while students in grades 6 through 8 also receive instruction in English.',
         ],
-        image: '/Rural Education/Rectangle 51 (2).png',
+        image: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/rural-education/rectangle-51-2.png',
       },
       storyImageLeft: {
         heading: 'Education for Rural Children',
@@ -79,7 +79,7 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'The community made a different request: could those resources instead help establish a school for local children?',
           'At the time, children from Mullur and nearby villages had to travel long distances to attend government schools. Recognising the need for accessible education, IHDUA responded by establishing a kindergarten programme and developing a school for the community.',
         ],
-        image: '/Rural Education/Rectangle 52 (2).png',
+        image: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/rural-education/rectangle-52-2.png',
         button: {
           label: 'View All Photos',
           href: '/adarsha-academy-krs/gallery',
@@ -90,9 +90,9 @@ const INITIATIVES: SeedInitiativeDef[] = [
         paragraphs: [
           "The school grounds are situated on an outcrop overlooking the KRS reservoir, which is a vast and important fixture of the region's agricultural infrastructure. More than that, however, it serves as a tranquil backdrop for learning and contemplative reflection.",
         ],
-        image: '/Rural Education/Rectangle 55 (1).png',
+        image: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/rural-education/rectangle-55-1.png',
         featureCard: {
-          iconUrl: '/Rural Education/raphael_books (1).png',
+          iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/rural-education/raphael_books-1.png',
           title: 'A Rural Learning Environment',
           description:
             'Students follow a state-approved Kannada-medium curriculum, while those in grades 6 through 8 also receive instruction in English.',
@@ -113,9 +113,9 @@ const INITIATIVES: SeedInitiativeDef[] = [
       'Creating opportunities to learn, grow and build brighter futures for rural children and communities.',
     heroImageUrl:
       'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793853875714-wfp0c-frame-648.webp',
-    heroImageMobileUrl: '/Rural Education/mobile Frame 751.png',
+    heroImageMobileUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/rural-education/mobile-frame-751.png',
     cardTitle: 'Vinayaka Jnana Vidyashale, Mysuru',
-    cardImageUrl: '/Rural Education/Rectangle 44.png',
+    cardImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/rural-education/rectangle-44.png',
     content: {
       intro: {
         eyebrow: 'EDUCATION',
@@ -125,13 +125,13 @@ const INITIATIVES: SeedInitiativeDef[] = [
         button: { label: 'Visit School Website', href: '#' },
         highlights: [
           {
-            iconUrl: '/icons/mission.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/mission.png',
             heading: 'Mission',
             description:
               'Provide excellent primary school instruction for rural students.',
           },
           {
-            iconUrl: '/icons/benifit.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/benifit.png',
             heading: '3,000+',
             description:
               'Students have completed 10th grade since the school was founded in 1994.',
@@ -167,9 +167,9 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'Education creates opportunities for children to develop knowledge, discover their abilities, and prepare for the future. Vinayaka Jnana Vidyashale supports rural students through school-based learning.',
         ],
         image:
-          '/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/Rectangle 55 (2).png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/rural-education/vinayaka-jnana-vidyashale-mysuru/rectangle-55-2.png',
         featureCard: {
-          iconUrl: '/Rural Education/raphael_books (1).png',
+          iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/rural-education/raphael_books-1.png',
           title: 'Learning for Every Child',
           description:
             'A school environment that encourages curiosity, builds essential knowledge, and helps children progress in their education.',
@@ -179,25 +179,25 @@ const INITIATIVES: SeedInitiativeDef[] = [
         items: [
           {
             iconUrl:
-              '/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/fi_14600942.png',
+              'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/rural-education/vinayaka-jnana-vidyashale-mysuru/fi_14600942.png',
             value: '3,000+',
             label: 'Students completed 10th grade',
           },
           {
             iconUrl:
-              '/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/fi_158234.png',
+              'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/rural-education/vinayaka-jnana-vidyashale-mysuru/fi_158234.png',
             value: '32+',
             label: 'Years of Education',
           },
           {
             iconUrl:
-              '/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/fi_4733397.png',
+              'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/rural-education/vinayaka-jnana-vidyashale-mysuru/fi_4733397.png',
             value: '400+',
             label: 'Children served each year',
           },
           {
             iconUrl:
-              '/Rural Education/Vinayaka Jnana Vidyashale, Mysuru/fi_12885332.png',
+              'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/rural-education/vinayaka-jnana-vidyashale-mysuru/fi_12885332.png',
             value: '20+',
             label: 'Classrooms and learning spaces',
           },
@@ -220,10 +220,10 @@ const INITIATIVES: SeedInitiativeDef[] = [
     heroTitle: 'Self Help Group & Federation',
     heroDescription:
       'Village Self-Help Groups and federations where women save together, share decisions and grow as community leaders.',
-    heroImageUrl: '/selfhelpgroup/banner-desktop.png',
-    heroImageMobileUrl: '/selfhelpgroup/banner-mobile.png',
+    heroImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/selfhelpgroup/banner-desktop.png',
+    heroImageMobileUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/selfhelpgroup/banner-mobile.png',
     cardTitle: 'Self-Help Group & Federation',
-    cardImageUrl: '/womenempowerment/self-help.png',
+    cardImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/womenempowerment/self-help.png',
     content: {
       intro: {
         eyebrow: 'WOMEN EMPOWERMENT',
@@ -232,13 +232,13 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA supports rural communities through Self-Help Groups that encourage collective savings, shared decision-making and women’s leadership.',
         highlights: [
           {
-            iconUrl: '/icons/mission.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/mission.png',
             heading: 'Mission',
             description:
               'Empowering rural women through savings, skills and leadership.',
           },
           {
-            iconUrl: '/icons/benifit.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/benifit.png',
             heading: 'Beneficiaries',
             description:
               'Building financial confidence, collaboration and stronger communities.',
@@ -251,7 +251,7 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'Self-Help Groups (SHGs) bring together 10–20 women from the same village to build financial skills, shared responsibility and leadership. With IHDUA’s guidance, members contribute to shared savings, maintain group records and participate in collective decision-making.',
           'Through regular meetings and shared learning, members build confidence, strengthen their financial awareness and support one another in addressing common challenges. Federations bring SHG representatives together once a month to discuss community concerns, exchange experiences and identify possible solutions. These collective efforts encourage shared responsibility, stronger local networks and greater participation in community decision-making.',
         ],
-        image: '/selfhelpgroup/collective.png',
+        image: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/selfhelpgroup/collective.png',
       },
       howItWorks: {
         eyebrow: 'HOW SELF-HELP GROUPS WORK',
@@ -260,25 +260,25 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA facilitates the formation of SHGs and provides guidance on group rules, meeting processes and recordkeeping. Two selected members receive additional training to maintain group records and coordinate with bank officials.',
         steps: [
           {
-            iconUrl: '/icons/training-session.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/training-session.svg',
             title: 'Group Formation',
             description:
               '10–20 women from the same village come together to form a group.',
           },
           {
-            iconUrl: '/icons/savings-fund.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/savings-fund.svg',
             title: 'Regular Savings',
             description:
               'Members contribute to a shared fund and build a savings habit.',
           },
           {
-            iconUrl: '/icons/financial-literacy.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/financial-literacy.svg',
             title: 'Financial Learning',
             description:
               'Members gain practical skills in recordkeeping and financial management.',
           },
           {
-            iconUrl: '/icons/peer-support.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/peer-support.svg',
             title: 'Leadership & Participation',
             description:
               'Members take part in decisions and community activities.',
@@ -291,8 +291,8 @@ const INITIATIVES: SeedInitiativeDef[] = [
           topDescription:
             'IHDUA’s Self-Help Groups help rural women save together, keep group records and take part in collective decisions. Regular meetings build financial confidence, while federations bring group representatives together to discuss village concerns and share solutions.',
           images: [
-            '/selfhelpgroup/financial-independence-1.jpg',
-            '/selfhelpgroup/financial-independence-2.jpg',
+            'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/selfhelpgroup/financial-independence-1.jpg',
+            'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/selfhelpgroup/financial-independence-2.jpg',
           ],
           bottomDescription:
             'IHDUA’s Microfinance Initiative makes it possible for rural women to become informed financial decision-makers who have access to loans at competitive rates, which they may use for their family’s health, education and livelihood needs. Microfinance also supports women through Self-Help Groups, where members can build savings, access loans, participate in income-generating activities and strengthen their role in household and community decision-making.',
@@ -307,22 +307,22 @@ const INITIATIVES: SeedInitiativeDef[] = [
         ],
         features: [
           {
-            iconUrl: '/icons/piggy-bank.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/piggy-bank.svg',
             title: 'Community Leadership',
             description: 'Encouraging women to lead group decisions.',
           },
           {
-            iconUrl: '/icons/training-session.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/training-session.svg',
             title: 'Shared Responsibility',
             description: 'Working together towards common goals.',
           },
           {
-            iconUrl: '/icons/peer-support.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/peer-support.svg',
             title: 'Collective Voice',
             description: 'Sharing concerns and finding solutions.',
           },
           {
-            iconUrl: '/icons/wallet.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/wallet.svg',
             title: 'Stronger Networks',
             description: 'Building connections through shared experiences.',
           },
@@ -337,25 +337,25 @@ const INITIATIVES: SeedInitiativeDef[] = [
         bannerHeading: 'Creating Lasting Change',
         stats: [
           {
-            iconUrl: '/icons/training-session.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/training-session.svg',
             iconBg: '#F1E7F4',
             value: '7,578+',
             label: 'SHG Members',
           },
           {
-            iconUrl: '/icons/women-empowerment.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/women-empowerment.svg',
             iconBg: '#FFEDCF',
             value: '697+',
             label: 'Self-Help Groups',
           },
           {
-            iconUrl: '/icons/community-network.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/community-network.svg',
             iconBg: '#F1E7F4',
             value: '18',
             label: 'Federations Reported',
           },
           {
-            iconUrl: '/icons/sustainable-livelihoods.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/sustainable-livelihoods.svg',
             iconBg: '#FFEDCF',
             value: '43',
             label: 'Farmer SHGs',
@@ -375,10 +375,10 @@ const INITIATIVES: SeedInitiativeDef[] = [
     heroTitle: 'Micro-finance Initiative',
     heroDescription:
       'Community-based savings and fair credit that help rural women invest in health, education and livelihoods.',
-    heroImageUrl: '/microfinanceinitiatives/banner-desktop.png',
-    heroImageMobileUrl: '/microfinanceinitiatives/banner-mobile.png',
+    heroImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/microfinanceinitiatives/banner-desktop.png',
+    heroImageMobileUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/microfinanceinitiatives/banner-mobile.png',
     cardTitle: 'Microfinance Initiative',
-    cardImageUrl: '/womenempowerment/microfinance.png',
+    cardImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/womenempowerment/microfinance.png',
     content: {
       intro: {
         eyebrow: 'WOMEN EMPOWERMENT',
@@ -387,13 +387,13 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA supports community-based savings and access to financial learning so rural women can make informed decisions.',
         highlights: [
           {
-            iconUrl: '/icons/mission.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/mission.png',
             heading: 'Mission',
             description:
               'Supporting community-driven investment activities on behalf of rural women.',
           },
           {
-            iconUrl: '/icons/benifit.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/benifit.png',
             heading: 'Beneficiaries',
             description:
               'More than 5,000 women have benefited from our programmes.',
@@ -406,7 +406,7 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA’s Microfinance Initiative makes it possible for rural women to become informed financial decision-makers who have access to loans at competitive rates, which they may use for their family’s health, education and livelihood needs. Microfinance also supports women through Self-Help Groups, where members can build savings, access loans, participate in income-generating activities and strengthen their role in household and community decision-making.',
           'Self-Help Groups provide a community-based platform where women can save together, access financial support and participate in income-generating activities. Through these groups, IHDUA’s Microfinance Initiative encourages greater participation, shared responsibility and stronger financial decision-making within rural communities.',
         ],
-        image: '/microfinanceinitiatives/why-microfinance-matters.png',
+        image: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/microfinanceinitiatives/why-microfinance-matters.png',
       },
       howItWorks: {
         eyebrow: 'HOW MICROFINANCE WORKS',
@@ -415,25 +415,25 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA supports Self-Help Groups through shared savings, group rules, meeting processes and financial recordkeeping. Two selected members receive additional training to maintain records and coordinate with bank officials.',
         steps: [
           {
-            iconUrl: '/icons/savings-fund.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/savings-fund.svg',
             title: 'Build a Savings Fund',
             description:
               'Members contribute ₹10 each week to grow their shared fund.',
           },
           {
-            iconUrl: '/icons/financial-literacy.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/financial-literacy.svg',
             title: 'Access Group Loans',
             description:
               'Members may apply for loans after three months of contributions.',
           },
           {
-            iconUrl: '/icons/peer-support.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/peer-support.svg',
             title: 'Review Loan Requests',
             description:
               "The group collectively discusses and approves members' loan requests.",
           },
           {
-            iconUrl: '/icons/wallet.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/wallet.svg',
             title: 'Build Bank Linkages',
             description:
               'After four lending rounds, groups can access bank loans directly.',
@@ -446,8 +446,8 @@ const INITIATIVES: SeedInitiativeDef[] = [
           topDescription:
             'IHDUA’s Microfinance Initiative helps rural women access financial resources through Self-Help Groups (SHGs). Members build shared savings, learn financial recordkeeping and collectively review loan requests. After three months of contributions, members may become eligible to borrow from their group fund.',
           images: [
-            '/microfinanceinitiatives/financial-independence-1.png',
-            '/microfinanceinitiatives/financial-independence-2.png',
+            'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/microfinanceinitiatives/financial-independence-1.png',
+            'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/microfinanceinitiatives/financial-independence-2.png',
           ],
           bottomDescription:
             'The initiative supports women in managing finances, accessing credit and participating in income-generating activities. Through regular savings and group lending, members develop financial responsibility and strengthen their role in household and community decision-making.',
@@ -457,8 +457,8 @@ const INITIATIVES: SeedInitiativeDef[] = [
           topDescription:
             'IHDUA’s Microfinance Initiative supports rural women through Self-Help Groups (SHGs), helping members build shared savings, develop financial management skills and access group loans. Members contribute regularly and participate in collective financial decisions.',
           images: [
-            '/microfinanceinitiatives/self-help-groups.png',
-            '/microfinanceinitiatives/field-household-visit.png',
+            'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/microfinanceinitiatives/self-help-groups.png',
+            'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/microfinanceinitiatives/field-household-visit.png',
           ],
           bottomDescription:
             'Groups that demonstrate consistent repayment discipline qualify for escalating credit tiers. After successfully completing four internal lending cycles, groups become eligible for formal bank credit lines, unlocking larger capital for micro-enterprises, agriculture, and family welfare.',
@@ -473,23 +473,23 @@ const INITIATIVES: SeedInitiativeDef[] = [
         ],
         features: [
           {
-            iconUrl: '/icons/savings-fund.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/savings-fund.svg',
             title: 'Regular Savings',
             description: 'Small contributions create big opportunities.',
           },
           {
-            iconUrl: '/icons/financial-literacy.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/financial-literacy.svg',
             title: 'Training & Guidance',
             description:
               'Learn financial management and group responsibility.',
           },
           {
-            iconUrl: '/icons/peer-support.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/peer-support.svg',
             title: 'Peer Support',
             description: 'Grow together through shared knowledge.',
           },
           {
-            iconUrl: '/icons/wallet.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/wallet.svg',
             title: 'Access to Credit',
             description: 'Fair and affordable loans for real needs.',
           },
@@ -503,25 +503,25 @@ const INITIATIVES: SeedInitiativeDef[] = [
         bannerHeading: 'Creating Lasting Change',
         stats: [
           {
-            iconUrl: '/icons/training-session.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/training-session.svg',
             iconBg: '#F1E7F4',
             value: '5,000+',
             label: 'People Trained',
           },
           {
-            iconUrl: '/icons/women-empowerment.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/women-empowerment.svg',
             iconBg: '#FFEDCF',
             value: '600+',
             label: 'Self-Help Groups Reported',
           },
           {
-            iconUrl: '/icons/community-network.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/community-network.svg',
             iconBg: '#F1E7F4',
             value: '₹4.36 Cr',
             label: 'SHG Savings (Jan 2022)',
           },
           {
-            iconUrl: '/icons/sustainable-livelihoods.svg',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/sustainable-livelihoods.svg',
             iconBg: '#FFEDCF',
             value: '₹10 Cr+',
             label: 'Loans Historically Issued',
@@ -545,10 +545,10 @@ const INITIATIVES: SeedInitiativeDef[] = [
     heroTitle: 'Women',
     heroDescription:
       'IHDUA promotes sustainable organic farming practices that support healthier soil, responsible agriculture and stronger rural communities',
-    heroImageUrl: '/skills and employement/womenbanner.png',
-    heroImageMobileUrl: '/skills and employement/womenmobilebg.png',
+    heroImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/womenbanner.png',
+    heroImageMobileUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/womenmobilebg.png',
     cardTitle: 'Women',
-    cardImageUrl: '/Skillsandemployment/Women.png',
+    cardImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skillsandemployment/women.png',
     content: {
       intro: {
         eyebrow: 'WOMEN EMPOWERMENT',
@@ -557,13 +557,13 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA empowers women through self-help groups, microfinance and vocational training to strengthen skills and livelihoods.',
         highlights: [
           {
-            iconUrl: '/icons/mission.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/mission.png',
             heading: 'Focus Areas',
             description:
               'Supporting women through self-help groups, microfinance and vocational training.',
           },
           {
-            iconUrl: '/icons/benifit.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/benifit.png',
             heading: 'Programme Reach',
             description:
               '7,578 SHG members reported under IHDUA’s Women Leadership Project.',
@@ -576,7 +576,7 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA works with women through community groups, access to financial resources and practical training programmes to help them build skills, participate in income-earning and strengthen their role in families and communities.',
           "Through Self-Help Groups, women build financial awareness, leadership and collective decision-making skills. Microfinance initiatives support access to financial resources, while vocational training develops practical skills in tailoring, Aari work and computer education. Together, these programmes support women's participation in income-generating activities and livelihood development.",
         ],
-        image: '/skills%20and%20employement/women.png',
+        image: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/women.png',
         button: { label: 'View All Photos', href: '/women/gallery' },
       },
       twoImageStory: {
@@ -584,8 +584,8 @@ const INITIATIVES: SeedInitiativeDef[] = [
         topDescription:
           'IHDUA supports women through Self-Help Groups, microfinance initiatives and vocational training. These programmes encourage financial awareness, collective decision-making and participation in income-generating activities.',
         images: [
-          '/skills%20and%20employement/womenhelp1.png',
-          '/skills%20and%20employement/womenhelp2.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/womenhelp1.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/womenhelp2.png',
         ],
         bottomDescription:
           "The organisation's vocational training includes tailoring, Aari work, computer courses and other skill-based programmes. Through these initiatives, women can develop practical skills and strengthen their livelihood opportunities.",
@@ -596,25 +596,25 @@ const INITIATIVES: SeedInitiativeDef[] = [
         style: 'strip',
         stats: [
           {
-            iconUrl: '/skills and employement/697.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/697.png',
             iconBg: '#F1E7F4',
             value: '697+',
             label: 'Self-Help Groups formed',
           },
           {
-            iconUrl: '/skills and employement/7578.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/7578.png',
             iconBg: '#FFEDCF',
             value: '7,578+',
             label: 'SHG members',
           },
           {
-            iconUrl: '/skills and employement/18.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/18.png',
             iconBg: '#F1E7F4',
             value: '18',
             label: 'Federations reported',
           },
           {
-            iconUrl: '/skills and employement/3290.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/3290.png',
             iconBg: '#FFEDCF',
             value: '3,290+',
             label: 'Skill development participants recorded',
@@ -634,10 +634,10 @@ const INITIATIVES: SeedInitiativeDef[] = [
     heroTitle: 'Youth',
     heroDescription:
       'IHDUA promotes sustainable organic farming practices that support healthier soil, responsible agriculture and stronger rural communities',
-    heroImageUrl: '/skills and employement/youthbanner.png',
-    heroImageMobileUrl: '/skills and employement/youthmobilebg.png',
+    heroImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/youthbanner.png',
+    heroImageMobileUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/youthmobilebg.png',
     cardTitle: 'Youth',
-    cardImageUrl: '/Skillsandemployment/Youth.png',
+    cardImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skillsandemployment/youth.png',
     content: {
       intro: {
         eyebrow: 'YOUTH EMPOWERMENT',
@@ -646,13 +646,13 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA supports rural youth through skill development and vocational training to build practical skills and future opportunities.',
         highlights: [
           {
-            iconUrl: '/icons/mission.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/mission.png',
             heading: 'Focus Areas',
             description:
               'Skill development, digital literacy and vocational training to enhance employability and future opportunities for rural youth.',
           },
           {
-            iconUrl: '/icons/benifit.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/benifit.png',
             heading: 'Programme Reach',
             description:
               'Youth equipped with practical skills through computer training, GDA training and other vocational courses.',
@@ -665,7 +665,7 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA’s Skill Development Project provides rural students with opportunities to develop practical knowledge and prepare for employment. The programme includes computer training covering basic computer skills, Tally, GST and spoken English, alongside General Duty Assistant (GDA) training and other vocational courses. These initiatives aim to strengthen employability and make skill development more accessible to rural communities.',
           'Through structured training, students can develop useful abilities, explore different career pathways and prepare for future opportunities. IHDUA’s listed courses also include tailoring, Aari work, Lippan art, Vision Assistant training and Thanjavur painting, offering learners opportunities to explore different vocational skills.',
         ],
-        image: '/youth/whyyouthskills.png',
+        image: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/youth/whyyouthskills.png',
       },
       twoImageStory: {
         heading: 'Building Skills for a Brighter Future',
@@ -687,22 +687,22 @@ const INITIATIVES: SeedInitiativeDef[] = [
         ],
         features: [
           {
-            iconUrl: '/skills%20and%20employement/practiclelearning.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/practiclelearning.png',
             title: 'Practical Learning',
             description: 'Develop useful skills through hands-on training.',
           },
           {
-            iconUrl: '/skills%20and%20employement/training.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/training.png',
             title: 'Training & Guidance',
             description: 'Learn through structured vocational programmes.',
           },
           {
-            iconUrl: '/skills%20and%20employement/peersupport.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/peersupport.png',
             title: 'Peer Support',
             description: 'Build confidence through shared learning.',
           },
           {
-            iconUrl: '/skills%20and%20employement/credit.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/credit.png',
             title: 'Access to Credit',
             description: 'Prepare for future employment opportunities.',
           },
@@ -716,25 +716,25 @@ const INITIATIVES: SeedInitiativeDef[] = [
         bannerHeading: 'Creating Lasting Change',
         stats: [
           {
-            iconUrl: '/Healthawareness/160.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/160.png',
             iconBg: '#F1E7F4',
             value: '514+',
             label: 'Computer course participants',
           },
           {
-            iconUrl: '/Healthawareness/855.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/855.png',
             iconBg: '#FFEDCF',
             value: '265+',
             label: 'GDA course participants',
           },
           {
-            iconUrl: '/Healthawareness/988.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/988.png',
             iconBg: '#F1E7F4',
             value: '2,161',
             label: 'Tailoring training participants',
           },
           {
-            iconUrl: '/Healthawareness/34.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/34.png',
             iconBg: '#FFEDCF',
             value: '3,290+',
             label: 'Total skill development participants',
@@ -754,10 +754,10 @@ const INITIATIVES: SeedInitiativeDef[] = [
     heroTitle: 'Farmers',
     heroDescription:
       'Supporting rural farmers through sustainable agricultural practices, soil health improvement and livestock support to strengthen farming communities.',
-    heroImageUrl: '/farmers/farmersbanner.png',
-    heroImageMobileUrl: '/farmers/farmersmobilebanner.png',
+    heroImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/farmers/farmersbanner.png',
+    heroImageMobileUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/farmers/farmersmobilebanner.png',
     cardTitle: 'Farmers',
-    cardImageUrl: '/Skillsandemployment/Farmers.png',
+    cardImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skillsandemployment/farmers.png',
     content: {
       intro: {
         eyebrow: 'FARMER EMPOWERMENT',
@@ -766,13 +766,13 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA supports rural farmers through agricultural initiatives, practical training and sustainable farming practices that strengthen rural livelihoods.',
         highlights: [
           {
-            iconUrl: '/icons/mission.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/mission.png',
             heading: 'Focus Areas',
             description:
               'Sustainable agriculture, soil health, crop cultivation and livestock care.',
           },
           {
-            iconUrl: '/icons/benifit.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/benifit.png',
             heading: 'Programme Reach',
             description:
               'Farmer support through agricultural training, demonstrations and Model Village initiatives.',
@@ -785,7 +785,7 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA’s Model Village project supports farmers through soil health training, composting, crop cultivation awareness and agricultural exposure visits. Documented activities include foxtail millet adoption, turmeric cultivation awareness and sunflower farming guidance.',
           'Through the Model Village project, farmers participate in activities such as composting, crop cultivation awareness and agricultural exposure visits. Initiatives include foxtail millet adoption, turmeric and sunflower cultivation awareness, fruit sapling distribution and livestock support. Together, these efforts encourage improved farming practices, strengthen agricultural knowledge and support rural communities.',
         ],
-        image: '/farmers/sustainablefarming.png',
+        image: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/farmers/sustainablefarming.png',
       },
       twoImageStory: {
         heading: 'Supporting Farmers Together',
@@ -793,7 +793,7 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA’s Model Village project supports farmers through soil health training, composting, crop cultivation awareness and agricultural exposure visits. These activities encourage improved farming practices, promote sustainable agriculture and strengthen farmers’ knowledge.',
         images: [
           'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/1793946279960-2yxa9-rectangle-35-5-.webp',
-          '/farmers/supportfarmers2.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/farmers/supportfarmers2.png',
         ],
         bottomDescription:
           'The project also documents foxtail millet adoption, turmeric and sunflower cultivation awareness, fruit sapling distribution and vermicompost production. Livestock support includes veterinary camps, green fodder distribution and Azolla cultivation. These activities support animal health and sustainable farming practices.',
@@ -807,22 +807,22 @@ const INITIATIVES: SeedInitiativeDef[] = [
         ],
         features: [
           {
-            iconUrl: '/skills%20and%20employement/practiclelearning.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/practiclelearning.png',
             title: 'Soil Health',
             description: 'Develop useful skills through hands-on training.',
           },
           {
-            iconUrl: '/skills%20and%20employement/training.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/training.png',
             title: 'Crop Awareness',
             description: 'Turmeric and sunflower cultivation awareness.',
           },
           {
-            iconUrl: '/skills%20and%20employement/peersupport.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/peersupport.png',
             title: 'Livestock Support',
             description: 'Veterinary camps and green fodder distribution.',
           },
           {
-            iconUrl: '/skills%20and%20employement/credit.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skills-and-employement/credit.png',
             title: 'Farmer Learning',
             description:
               'Agricultural exposure visits and practical learning.',
@@ -837,25 +837,25 @@ const INITIATIVES: SeedInitiativeDef[] = [
         bannerHeading: 'Creating Lasting Change',
         stats: [
           {
-            iconUrl: '/Healthawareness/160.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/160.png',
             iconBg: '#F1E7F4',
             value: '48+',
             label: 'Soil health training participants.',
           },
           {
-            iconUrl: '/Healthawareness/855.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/855.png',
             iconBg: '#FFEDCF',
             value: '32+',
             label: 'Turmeric cultivation awareness participants.',
           },
           {
-            iconUrl: '/Healthawareness/988.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/988.png',
             iconBg: '#F1E7F4',
             value: '15',
             label: 'Farmers adopted foxtail millet.',
           },
           {
-            iconUrl: '/Healthawareness/34.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/34.png',
             iconBg: '#FFEDCF',
             value: '3,290+',
             label: 'Farmers received green maize fodder.',
@@ -875,10 +875,10 @@ const INITIATIVES: SeedInitiativeDef[] = [
     heroTitle: 'Stitching Unit',
     heroDescription:
       'IHDUA promotes sustainable organic farming practices that support healthier soil, responsible agriculture and stronger rural communities',
-    heroImageUrl: '/Stitchingunit/banner1.png',
-    heroImageMobileUrl: '/Stitchingunit/mobilebanner1.png',
+    heroImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/stitchingunit/banner1.png',
+    heroImageMobileUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/stitchingunit/mobilebanner1.png',
     cardTitle: 'Stitching Unit',
-    cardImageUrl: '/Skillsandemployment/StitchingUnit.png',
+    cardImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/skillsandemployment/stitchingunit.png',
     content: {
       intro: {
         eyebrow: 'Women Empowerment',
@@ -887,13 +887,13 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'A practical skills programme designed to provide vocational training opportunities for rural women.',
         highlights: [
           {
-            iconUrl: '/icons/mission.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/mission.png',
             heading: 'Mission',
             description:
               'Provide practical vocational training to rural women.',
           },
           {
-            iconUrl: '/icons/benifit.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/benifit.png',
             heading: 'Beneficiaries',
             description:
               'More than 250 women have benefited from our programmes since 2005.',
@@ -906,7 +906,7 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA’s vocational training programme provides rural women with practical tailoring skills that can support employment and additional livelihood opportunities. The programme was established to create another avenue for women to develop a commercially valuable skill alongside their existing responsibilities at home and in the fields.',
           'Each year, training workshops are conducted in two villages. Over six months, participants learn hand stitching, embroidery and the operation of modern sewing machines, developing skills that can be used for factory employment or home-based tailoring work.',
         ],
-        image: '/Stitchingunit/practicalskills.png',
+        image: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/stitchingunit/practicalskills.png',
       },
       video: {
         heading: 'Forging Paths to Economic Engagement',
@@ -930,25 +930,25 @@ const INITIATIVES: SeedInitiativeDef[] = [
         bannerHeading: 'Turning Skills Into Opportunities',
         stats: [
           {
-            iconUrl: '/Healthawareness/160.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/160.png',
             iconBg: '#F1E7F4',
             value: '250+',
             label: 'Women Benefited',
           },
           {
-            iconUrl: '/Healthawareness/855.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/855.png',
             iconBg: '#FFEDCF',
             value: '06 Months',
             label: 'Training Duration',
           },
           {
-            iconUrl: '/Healthawareness/988.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/988.png',
             iconBg: '#F1E7F4',
             value: '02',
             label: 'Villages Per Year',
           },
           {
-            iconUrl: '/Healthawareness/34.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/34.png',
             iconBg: '#FFEDCF',
             value: 'Since 2005',
             label: 'Programme Running',
@@ -959,10 +959,10 @@ const INITIATIVES: SeedInitiativeDef[] = [
         heading: 'Gallery',
         displayMode: 'inline',
         images: [
-          '/Stitchingunit/Gallerypic1.png',
-          '/Stitchingunit/Gallerypic2.png',
-          '/Stitchingunit/Gallerypic3.png',
-          '/Stitchingunit/Gallerypic4.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/stitchingunit/gallerypic1.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/stitchingunit/gallerypic2.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/stitchingunit/gallerypic3.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/stitchingunit/gallerypic4.png',
         ],
       },
     },
@@ -982,10 +982,10 @@ const INITIATIVES: SeedInitiativeDef[] = [
     heroTitle: 'Rejuvenation of villages',
     heroDescription:
       'Supporting holistic village development through sustainable agriculture, livestock care and community infrastructure initiatives.',
-    heroImageUrl: '/modelvillage/rejuvenationbanner.png',
-    heroImageMobileUrl: '/modelvillage/rejuvenationmobilebg.png',
+    heroImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/modelvillage/rejuvenationbanner.png',
+    heroImageMobileUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/modelvillage/rejuvenationmobilebg.png',
     cardTitle: 'Rejuvenation of villages',
-    cardImageUrl: '/modelvillage/villageD1.png',
+    cardImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/modelvillage/villaged1.png',
     content: {
       intro: {
         eyebrow: 'VILLAGE DEVELOPMENT',
@@ -994,13 +994,13 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA supports rural farmers through agricultural initiatives, practical training and sustainable farming practices that strengthen rural livelihoods.',
         highlights: [
           {
-            iconUrl: '/icons/mission.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/mission.png',
             heading: 'Focus Areas',
             description:
               'Agriculture, livestock care, sanitation and village infrastructure improvements.',
           },
           {
-            iconUrl: '/icons/benifit.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/benifit.png',
             heading: 'Programme Reach',
             description:
               'Village initiatives include soil health training, veterinary support and solar street-light installation.',
@@ -1035,25 +1035,25 @@ const INITIATIVES: SeedInitiativeDef[] = [
         bannerHeading: 'Creating Lasting Change',
         stats: [
           {
-            iconUrl: '/Healthawareness/160.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/160.png',
             iconBg: '#F1E7F4',
             value: '16+',
             label: 'Solar street lights installed',
           },
           {
-            iconUrl: '/Healthawareness/855.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/855.png',
             iconBg: '#FFEDCF',
             value: '14+',
             label: 'People benefited from toilet construction',
           },
           {
-            iconUrl: '/Healthawareness/988.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/988.png',
             iconBg: '#F1E7F4',
             value: '48',
             label: 'Soil health training participants',
           },
           {
-            iconUrl: '/Healthawareness/34.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/34.png',
             iconBg: '#FFEDCF',
             value: '81+',
             label: 'Cattle covered by green fodder distribution',
@@ -1073,10 +1073,10 @@ const INITIATIVES: SeedInitiativeDef[] = [
     heroTitle: 'Increase the green cover',
     heroDescription:
       'Encouraging greener rural communities through fruit sapling distribution, sustainable agriculture and eco-friendly village initiatives.',
-    heroImageUrl: '/modelvillage/greencoverbanner.png',
-    heroImageMobileUrl: '/modelvillage/greencovermobile.png',
+    heroImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/modelvillage/greencoverbanner.png',
+    heroImageMobileUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/modelvillage/greencovermobile.png',
     cardTitle: 'Increase the green cover',
-    cardImageUrl: '/modelvillage/villageD2.png',
+    cardImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/modelvillage/villaged2.png',
     content: {
       intro: {
         eyebrow: 'GREEN VILLAGE INITIATIVES',
@@ -1085,13 +1085,13 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA supports rural farmers through agricultural initiatives, practical training and sustainable farming practices that strengthen rural livelihoods.',
         highlights: [
           {
-            iconUrl: '/icons/mission.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/mission.png',
             heading: 'Focus Areas',
             description:
               'Fruit sapling distribution, horticulture and sustainable farming practices.',
           },
           {
-            iconUrl: '/icons/benifit.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/benifit.png',
             heading: 'Programme Reach',
             description:
               'Fruit saplings, agroforestry learning and eco-friendly agricultural initiatives.',
@@ -1113,10 +1113,10 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'Horticulture and agroforestry are among the agricultural activities documented in IHDUA’s Model Village project. These initiatives connect farming practices with nutrition, resource use and sustainable rural development.',
         ],
         images: [
-          '/modelvillage/growing1.png',
-          '/modelvillage/growing2.png',
-          '/modelvillage/growing3.png',
-          '/modelvillage/growing4.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/modelvillage/growing1.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/modelvillage/growing2.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/modelvillage/growing3.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/modelvillage/growing4.png',
         ],
       },
       impactStats: {
@@ -1127,25 +1127,25 @@ const INITIATIVES: SeedInitiativeDef[] = [
         bannerHeading: 'Creating Lasting Change',
         stats: [
           {
-            iconUrl: '/Healthawareness/160.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/160.png',
             iconBg: '#F1E7F4',
             value: '5/family',
             label: 'Fruit saplings distributed',
           },
           {
-            iconUrl: '/Healthawareness/855.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/855.png',
             iconBg: '#FFEDCF',
             value: '16',
             label: 'Participants in Model Village exposure visit',
           },
           {
-            iconUrl: '/Healthawareness/988.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/988.png',
             iconBg: '#F1E7F4',
             value: '18',
             label: 'Participants from other villages in exposure visit',
           },
           {
-            iconUrl: '/Healthawareness/34.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/34.png',
             iconBg: '#FFEDCF',
             value: '32',
             label: 'Farmers reached through sunflower cultivation awareness',
@@ -1169,10 +1169,10 @@ const INITIATIVES: SeedInitiativeDef[] = [
     heroTitle: 'Health Awareness',
     heroDescription:
       'Working alongside rural communities to create opportunities, strengthen livelihoods, and build brighter futures.',
-    heroImageUrl: '/Healthawareness/healthawarenessbg.png',
-    heroImageMobileUrl: '/Healthawareness/healthawarenessmobilebg.png',
+    heroImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/healthawarenessbg.png',
+    heroImageMobileUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/healthawarenessmobilebg.png',
     cardTitle: 'Health Awareness',
-    cardImageUrl: '/Health/health111.png',
+    cardImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/health/health111.png',
     content: {
       intro: {
         eyebrow: 'HEALTH AWARENESS',
@@ -1181,13 +1181,13 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA’s health education initiatives cover personal and environmental hygiene, nutrition, sanitation, reproductive health and common health concerns.',
         highlights: [
           {
-            iconUrl: '/icons/mission.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/mission.png',
             heading: 'Focus Areas',
             description:
               'Health education, hygiene practices, nutrition and reproductive health awareness.',
           },
           {
-            iconUrl: '/icons/benifit.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/benifit.png',
             heading: 'Programme Reach',
             description:
               'Health education reached SHG members, schoolchildren and Anganwadi workers.',
@@ -1223,25 +1223,25 @@ const INITIATIVES: SeedInitiativeDef[] = [
         bannerHeading: 'Creating Lasting Change',
         stats: [
           {
-            iconUrl: '/Healthawareness/160.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/160.png',
             iconBg: '#F1E7F4',
             value: '160',
             label: 'Reproductive and child health sessions',
           },
           {
-            iconUrl: '/Healthawareness/855.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/855.png',
             iconBg: '#FFEDCF',
             value: '855',
             label: 'Women in nutrition & anaemia sessions',
           },
           {
-            iconUrl: '/Healthawareness/988.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/988.png',
             iconBg: '#F1E7F4',
             value: '988',
             label: 'Women reached through hygiene sessions',
           },
           {
-            iconUrl: '/Healthawareness/34.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/34.png',
             iconBg: '#FFEDCF',
             value: '34+',
             label: 'Anganwadi workers trained',
@@ -1261,10 +1261,10 @@ const INITIATIVES: SeedInitiativeDef[] = [
     heroTitle: 'Health Camps',
     heroDescription:
       'Working alongside rural communities to create opportunities, strengthen livelihoods, and build brighter futures.',
-    heroImageUrl: '/Healthcamps/healthcampsbanner.png',
-    heroImageMobileUrl: '/Healthcamps/healthcampmobilebg.png',
+    heroImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthcamps/healthcampsbanner.png',
+    heroImageMobileUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthcamps/healthcampmobilebg.png',
     cardTitle: 'Health Camps',
-    cardImageUrl: '/Health/health222.png',
+    cardImageUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/health/health222.png',
     content: {
       intro: {
         eyebrow: 'HEALTH AWARENESS',
@@ -1273,13 +1273,13 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'IHDUA supports rural farmers through agricultural initiatives, practical training and sustainable farming practices that strengthen rural livelihoods.',
         highlights: [
           {
-            iconUrl: '/icons/mission.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/mission.png',
             heading: 'Focus Areas',
             description:
               'Nutrition, hygiene, sanitation and reproductive health awareness.',
           },
           {
-            iconUrl: '/icons/benifit.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/icons/benifit.png',
             heading: 'Programme Reach',
             description:
               'Historical programmes included health education for women, schoolchildren and Anganwadi workers.',
@@ -1300,10 +1300,10 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'Documented activities include health education sessions, Anganwadi worker training, nutrition awareness and reproductive and child health programmes. These initiatives promote health knowledge and well-being in rural communities.',
         ],
         images: [
-          '/Healthcamps/camps1.png',
-          '/Healthcamps/camps2.png',
-          '/Healthcamps/camps3.png',
-          '/Healthcamps/camps4.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthcamps/camps1.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthcamps/camps2.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthcamps/camps3.png',
+          'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthcamps/camps4.png',
         ],
       },
       impactStats: {
@@ -1314,25 +1314,25 @@ const INITIATIVES: SeedInitiativeDef[] = [
         bannerHeading: 'Creating Lasting Change',
         stats: [
           {
-            iconUrl: '/Healthawareness/160.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/160.png',
             iconBg: '#F1E7F4',
             value: '160',
             label: 'Reproductive and child health sessions',
           },
           {
-            iconUrl: '/Healthawareness/855.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/855.png',
             iconBg: '#FFEDCF',
             value: '855',
             label: 'Women in nutrition & anaemia sessions',
           },
           {
-            iconUrl: '/Healthawareness/988.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/988.png',
             iconBg: '#F1E7F4',
             value: '988',
             label: 'Women reached through hygiene sessions',
           },
           {
-            iconUrl: '/Healthawareness/34.png',
+            iconUrl: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/healthawareness/34.png',
             iconBg: '#FFEDCF',
             value: '34+',
             label: 'Anganwadi workers trained',
