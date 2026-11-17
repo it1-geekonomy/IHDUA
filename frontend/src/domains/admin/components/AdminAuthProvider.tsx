@@ -23,6 +23,8 @@ import { getTokenRemainingMs, isTokenExpired } from "@/domains/admin/lib/jwt";
 import {
   ADMIN_TOKEN_KEY,
   SESSION_EXPIRED_EVENT,
+  dispatchSessionLogout,
+  type LogoutReason,
 } from "@/domains/admin/lib/session";
 
 type AuthContextType = {
@@ -48,13 +50,27 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     clearSession();
     setToken(null);
     setUser(null);
+    initializedTokenRef.current = null;
 
+    try {
+      dispatchSessionLogout(reason as LogoutReason);
+    } catch {
+      /* ignore */
+    }
+
+    // Explicit user logout should NEVER redirect back to the previous page
+    const isIntentional = reason === "user_action" || reason === "logged_out";
     const next =
-      pathname?.startsWith("/admin") && pathname !== "/admin/login"
+      !isIntentional && pathname?.startsWith("/admin") && pathname !== "/admin/login"
         ? `&next=${encodeURIComponent(pathname)}`
         : "";
-    if (pathname !== "/admin/login") {
-      router.replace(`/admin/login?reason=${reason}${next}`);
+
+    // Perform a hard navigation to /admin/login to completely wipe in-memory caches,
+    // React state, and Next.js router cache
+    if (typeof window !== "undefined") {
+      window.location.href = `/admin/login?reason=${encodeURIComponent(reason)}${next}`;
+    } else if (pathname !== "/admin/login") {
+      router.replace(`/admin/login?reason=${encodeURIComponent(reason)}${next}`);
     }
   };
 

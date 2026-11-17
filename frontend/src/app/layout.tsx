@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { figtree, lora, manrope } from "@/lib/fonts";
 import { SimpleLanguageProvider } from "@/context/SimpleLanguageContext";
+import { GT_BOOT_SCRIPT } from "@/utils/googleTranslate";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ihdua.org";
@@ -15,7 +16,6 @@ export const metadata: Metadata = {
   },
 };
 
-// app/layout.tsx
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -26,6 +26,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://translate.google.com" />
         <link rel="preconnect" href="https://translate.googleapis.com" />
+        {/* Keep googtrans cookie in sync with saved preference (no blank gate). */}
+        <script dangerouslySetInnerHTML={{ __html: GT_BOOT_SCRIPT }} />
       </head>
       <body className="font-sans antialiased">
         <SimpleLanguageProvider>{children}</SimpleLanguageProvider>

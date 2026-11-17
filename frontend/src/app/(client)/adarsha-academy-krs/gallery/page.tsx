@@ -1,37 +1,29 @@
-import HeroBanner from "@/shared/components/Herobanner";
-import FeatureHighlightSection from "@/shared/components/Featurehighlightsection ";
-import GallerySection from "@/shared/components/Gallerysection";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { resolveImpactGalleryPage } from "@/domains/impact/cms/resolveImpactPage";
+import { ImpactGalleryView } from "@/domains/impact/cms/ImpactPageView";
 import NewsletterSection from "@/shared/components/Newsletter";
-import {
-  ADARSHA_HERO,
-  ADARSHA_HIGHLIGHTS,
-  ADARSHA_GALLERY,
-} from "@/domains/impact/education/constants/adarshaSchool";
 
-export default function AdarshaAcademyGalleryPage() {
+export const dynamic = "force-dynamic";
+
+const SLUG = "adarsha-academy-krs";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const loaded = await resolveImpactGalleryPage(SLUG);
+  if (!loaded) return {};
+  return {
+    title: `Gallery · ${loaded.page.metaTitle || loaded.data.heroTitle}`,
+    description: loaded.page.metaDescription || loaded.data.heroDescription || undefined,
+  };
+}
+
+export default async function AdarshaAcademyGalleryPage() {
+  const loaded = await resolveImpactGalleryPage(SLUG);
+  if (!loaded) notFound();
+
   return (
     <main className="w-full">
-      <HeroBanner
-        heading={ADARSHA_HERO.heading}
-        description={ADARSHA_HERO.description}
-        image={ADARSHA_HERO.image}
-        imageMobile={ADARSHA_HERO.imageMobile}
-        imageAlt={ADARSHA_HERO.imageAlt}
-      />
-
-      <FeatureHighlightSection
-        label="EDUCATION"
-        heading="Adarsha Academy"
-        description="A rural private school providing education to children from villages in the vicinity of the Krishnarajasagara (KRS) Dam."
-        items={[...ADARSHA_HIGHLIGHTS]}
-      />
-
-      <GallerySection
-        heading="Gallery"
-        rows={4}
-        images={[...ADARSHA_GALLERY]}
-      />
-
+      <ImpactGalleryView data={loaded.data} withChrome />
       <NewsletterSection />
     </main>
   );

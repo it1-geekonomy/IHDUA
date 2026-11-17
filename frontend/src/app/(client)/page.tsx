@@ -23,7 +23,7 @@ export default function ClientHomePage() {
 			</div>
 			<HowCanYouHelpSection />
 			<Missionsection />
-			<RippleEffectSection />
+			{/* <RippleEffectSection /> */}
 			<LastingChangeSection />
 			<GeographicFootprint />
 			<StoriesFromField />

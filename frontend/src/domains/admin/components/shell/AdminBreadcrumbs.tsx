@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { useAdminAuth } from "@/domains/admin/components/AdminAuthProvider";
 
 const PATH_LABELS: Record<string, string> = {
   admin: "Admin CMS",
@@ -40,6 +41,10 @@ interface AdminBreadcrumbsProps {
 }
 
 export function AdminBreadcrumbs({ pathname }: AdminBreadcrumbsProps) {
+  const { user } = useAdminAuth();
+  const isContentRole = (user?.role || "").toUpperCase() === "CONTENT";
+  const defaultAdminHome = isContentRole ? "/admin/blogs-and-stories" : "/admin/donations";
+
   const segments = pathname.split("/").filter(Boolean);
   const breadcrumbs = segments.map((seg, index) => {
     const accumulatedPath = `/${segments.slice(0, index + 1).join("/")}`;
@@ -47,7 +52,7 @@ export function AdminBreadcrumbs({ pathname }: AdminBreadcrumbsProps) {
       PATH_LABELS[seg] ||
       (UUID.test(seg) ? "Edit Page" : seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, " "));
     const isLast = index === segments.length - 1;
-    const href = accumulatedPath === "/admin" ? "/admin/donations" : accumulatedPath;
+    const href = accumulatedPath === "/admin" ? defaultAdminHome : accumulatedPath;
     return { href, label, isLast };
   });
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import Link from "next/link";
 import {
   BookOpen,
@@ -71,6 +72,12 @@ interface AdminSidebarProps {
   onLogout: () => void;
 }
 
+type NavItem = (typeof ADMIN_NAV_SECTIONS)[number]["items"][number];
+type NavSection = {
+  title: string;
+  items: NavItem[];
+};
+
 export function AdminSidebar({
   isMobile,
   mobileNavOpen,
@@ -82,11 +89,42 @@ export function AdminSidebar({
   onLogout,
 }: AdminSidebarProps) {
   const isCollapsed = sidebarCollapsed && !isMobile;
+  const userRole = (user?.role || "ADMIN").toUpperCase();
+  const isAdmin = userRole === "ADMIN";
+  const defaultHomeHref = isAdmin ? "/admin/donations" : "/admin/blogs-and-stories";
+
+  const visibleSections = useMemo<NavSection[]>(() => {
+    const result: NavSection[] = [];
+    for (const section of ADMIN_NAV_SECTIONS) {
+      if ("roles" in section && section.roles) {
+        if (!(section.roles as readonly string[]).includes(userRole)) {
+          continue;
+        }
+      }
+      const items: NavItem[] = [];
+      for (const item of section.items) {
+        if ("roles" in item && item.roles) {
+          if (!(item.roles as readonly string[]).includes(userRole)) {
+            continue;
+          }
+        }
+        items.push(item);
+      }
+      if (items.length > 0) {
+        result.push({
+          title: section.title,
+          items,
+        });
+      }
+    }
+    return result;
+  }, [userRole]);
 
   return (
     <aside
+      style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       className={cn(
-        "fixed inset-y-0 left-0 z-40 flex flex-col bg-[#1A0F1C] text-white shadow-2xl transition-all duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:shrink-0 lg:z-30 lg:shadow-xl",
+        "fixed inset-y-0 left-0 z-40 flex flex-col bg-[#1A0F1C] text-white shadow-2xl transition-all duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:shrink-0 lg:z-30 lg:shadow-xl no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
         mobileNavOpen ? "translate-x-0 w-72" : "-translate-x-full w-72",
         !isMobile && (sidebarCollapsed ? "lg:translate-x-0 lg:w-[72px]" : "lg:translate-x-0 lg:w-64"),
       )}
@@ -126,7 +164,7 @@ export function AdminSidebar({
         >
           {isCollapsed ? (
             <Link
-              href="/admin/donations"
+              href={defaultHomeHref}
               className="group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all hover:scale-105"
               title="IHDUA Admin CMS"
             >
@@ -139,7 +177,7 @@ export function AdminSidebar({
           ) : (
             <>
               <Link
-                href="/admin/donations"
+                href={defaultHomeHref}
                 className="flex items-center transition-opacity hover:opacity-90 min-w-0 overflow-hidden shrink-0"
                 title="IHDUA Admin CMS"
                 onClick={onCloseMobileNav}
@@ -167,12 +205,13 @@ export function AdminSidebar({
 
         {/* Navigation Links */}
         <nav
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           className={cn(
-            "flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-contain",
+            "flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-contain no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
             isCollapsed ? "gap-2.5 p-2.5" : "gap-4 p-4",
           )}
         >
-          {ADMIN_NAV_SECTIONS.map((section, sIdx) => (
+          {visibleSections.map((section, sIdx) => (
             <div key={section.title} className="flex flex-col gap-1 min-w-0">
               {!isCollapsed ? (
                 <p className="px-3 pb-1 font-figtree text-[10px] font-bold uppercase tracking-wider text-white/40 truncate whitespace-nowrap">
@@ -260,9 +299,14 @@ export function AdminSidebar({
                   {user?.fullName?.charAt(0) || "A"}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-figtree text-xs font-semibold text-white">
-                    {user?.fullName || "Administrator"}
-                  </p>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <p className="truncate font-figtree text-xs font-semibold text-white">
+                      {user?.fullName || "Administrator"}
+                    </p>
+                    <span className="shrink-0 rounded-full bg-white/10 px-1.5 py-0.2 text-[9px] font-bold text-white/70">
+                      {userRole}
+                    </span>
+                  </div>
                   <p className="truncate font-figtree text-[11px] text-white/50">
                     {user?.email || "admin@ihdua.org"}
                   </p>

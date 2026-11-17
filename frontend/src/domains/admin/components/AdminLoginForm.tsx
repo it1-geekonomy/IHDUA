@@ -16,10 +16,23 @@ import {
   Mail,
 } from "lucide-react";
 import { useAdminAuth } from "@/domains/admin/components/AdminAuthProvider";
-import { getSavedEmail, setSavedEmail } from "@/domains/admin/lib/api";
+import { clearSession, getSavedEmail, setSavedEmail } from "@/domains/admin/lib/api";
+import { ADMIN_ONLY_ROUTES } from "@/domains/admin/constants";
+
+function resolvePostLoginRoute(userRole?: string, nextParam?: string | null): string {
+  const isContent = (userRole || "").toUpperCase() === "CONTENT";
+  const defaultRoute = isContent ? "/admin/blogs-and-stories" : "/admin/donations";
+  if (!nextParam || nextParam === "/admin" || nextParam === "/admin/login") {
+    return defaultRoute;
+  }
+  if (isContent && ADMIN_ONLY_ROUTES.some((r) => nextParam.startsWith(r))) {
+    return defaultRoute;
+  }
+  return nextParam;
+}
 
 export function AdminLoginForm() {
-  const { login, token, ready } = useAdminAuth();
+  const { login, token, user, ready } = useAdminAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -32,6 +45,13 @@ export function AdminLoginForm() {
 
   const reason = searchParams.get("reason");
 
+  // Ensure session is completely wiped if user just logged out
+  useEffect(() => {
+    if (reason === "logged_out" || reason === "user_action") {
+      clearSession();
+    }
+  }, [reason]);
+
   // Populate remembered email
   useEffect(() => {
     const saved = getSavedEmail();
@@ -41,12 +61,16 @@ export function AdminLoginForm() {
     }
   }, []);
 
-  // Redirect if already logged in
+  // Redirect if already logged in (never redirect if reason is logged_out or user_action)
   useEffect(() => {
-    if (ready && token) {
-      router.replace(searchParams.get("next") || "/admin/donations");
+    if (reason === "logged_out" || reason === "user_action") {
+      return;
     }
-  }, [ready, token, router, searchParams]);
+    if (ready && token) {
+      const destination = resolvePostLoginRoute(user?.role, searchParams.get("next"));
+      router.replace(destination);
+    }
+  }, [ready, token, user, router, searchParams, reason]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -60,9 +84,10 @@ export function AdminLoginForm() {
 
     setSubmitting(true);
     try {
-      await login(trimmedEmail, password, rememberMe);
+      const loggedUser = await login(trimmedEmail, password, rememberMe);
       setSavedEmail(trimmedEmail, rememberMe);
-      router.replace(searchParams.get("next") || "/admin/donations");
+      const destination = resolvePostLoginRoute(loggedUser?.role, searchParams.get("next"));
+      router.replace(destination);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Authentication failed.");
     } finally {
@@ -107,7 +132,7 @@ export function AdminLoginForm() {
             </div>
           )}
 
-          {reason === "logged_out" && !error && (
+          {(reason === "logged_out" || reason === "user_action") && !error && (
             <div className="mb-4 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-2.5 text-xs text-emerald-200">
               <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
               <span>You have signed out successfully.</span>

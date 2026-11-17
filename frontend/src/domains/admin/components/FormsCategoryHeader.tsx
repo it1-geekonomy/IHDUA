@@ -3,10 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Handshake, HeartHandshake, Mail, MessageSquare } from "lucide-react";
+import { useAdminAuth } from "@/domains/admin/components/AdminAuthProvider";
 import { cn } from "@/lib/utils";
 
 export function FormsCategoryHeader() {
   const pathname = usePathname();
+  const { user } = useAdminAuth();
+  const isContentRole = (user?.role || "").toUpperCase() === "CONTENT";
+
+  if (isContentRole) {
+    return null;
+  }
   const isNewsletter = pathname.includes("newsletter");
   const isPartnership = !isNewsletter && pathname.includes("/forms/partnership");
   const isVolunteer = !isNewsletter && !isPartnership && pathname.includes("/forms/volunteer");
