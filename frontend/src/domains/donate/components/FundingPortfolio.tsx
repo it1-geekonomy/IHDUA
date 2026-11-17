@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type MouseEvent } from "react";
 import type { FundingProject } from "@/domains/donate/constants/fundingProjects";
 import { openDonationCheckout } from "@/domains/home/lib/donation";
 import HeroBanner from "@/shared/components/Herobanner";
+import Typography from "@/lib/Typography";
 
 const DONATE_BANNER = {
   heading: "Together, We Can Create Lasting Change.",
@@ -41,17 +42,27 @@ function DonateButton({
   cause: string;
   variant?: "primary" | "ghost";
 }) {
+  if (variant === "ghost") {
+    return (
+      <button
+        type="button"
+        onClick={() => openDonationCheckout(amountDigits || "5000", "IN", 0, cause)}
+        className="inline-flex items-center justify-center border border-[#9739A8]/40 px-3 py-1.5 font-figtree text-xs font-semibold text-[#9739A8] transition hover:bg-[#9739A8]/5"
+      >
+        {label}
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"
       onClick={() => openDonationCheckout(amountDigits || "5000", "IN", 0, cause)}
-      className={
-        variant === "primary"
-          ? "inline-flex items-center justify-center bg-[#FFD638] px-4 py-2.5 font-figtree text-sm font-bold text-[#00191B] transition hover:opacity-90"
-          : "inline-flex items-center justify-center border border-[#9739A8]/40 px-3 py-1.5 font-figtree text-xs font-semibold text-[#9739A8] transition hover:bg-[#9739A8]/5"
-      }
+      className="inline-flex w-fit cursor-pointer items-center justify-center rounded bg-[#FFD638] px-6 py-3 font-bold text-[#1E1E1E] transition hover:opacity-90"
     >
-      {label}
+      <Typography variant="body-sm" className="font-figtree font-semibold text-[#1E1E1E]">
+        {label}
+      </Typography>
     </button>
   );
 }
@@ -213,6 +224,15 @@ export function FundingPortfolio({ projects }: { projects: FundingProject[] }) {
   const countLabel =
     projects.length === 1 ? "1 project" : `${projects.length} projects`;
 
+  const scrollToProjects = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const el = document.getElementById("funding-projects");
+    if (!el) return;
+    const offset = window.innerWidth >= 1024 ? 96 : 80;
+    const top = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: "smooth" });
+  };
+
   return (
     <div className="w-full">
       <HeroBanner
@@ -221,6 +241,20 @@ export function FundingPortfolio({ projects }: { projects: FundingProject[] }) {
         image={DONATE_BANNER.image}
         imageMobile={DONATE_BANNER.image}
         imageAlt={DONATE_BANNER.imageAlt}
+        actions={
+          <>
+            <a
+              href="#funding-projects"
+              onClick={scrollToProjects}
+              className="inline-flex w-fit cursor-pointer items-center justify-center rounded border border-white bg-white px-6 py-3 font-bold text-[#00191B] transition hover:opacity-90"
+            >
+              <Typography variant="body-sm" className="font-figtree font-semibold text-[#00191B]">
+                Browse projects
+              </Typography>
+            </a>
+            <DonateButton label="General donation" cause="General Donation" />
+          </>
+        }
       />
 
       <section

@@ -5,9 +5,11 @@ import {
   currencySymbol,
   drawLine,
   fitSize,
+  type FontSet,
   hex,
   istParts,
   loadTemplate,
+  measure,
   readAsset,
   splitRuns,
   titleCase,
@@ -119,24 +121,61 @@ export class DonationCertificateService {
       category,
       String(donor.receiptNumber || donor.razorpayPaymentId || '—'),
       donor.pan?.trim().toUpperCase() || '—',
-    ].map((value) => splitRuns(value, valueFonts));
-    // One size for the whole row, so a long value shrinks every column equally
-    const rowSize = Math.min(
-      ...values.map((runs, i) =>
-        fitSize(
-          runs,
+    ];
+    // DONATION FOR can be a long "Project — Component" string. Wrap it instead of
+    // shrinking the entire footer row to an unreadable size.
+    const CATEGORY_INDEX = 2;
+    const CATEGORY_LETTER_SPACING = 0.02;
+    const CATEGORY_MIN_SIZE = 48;
+    const CATEGORY_MAX_LINES = 2;
+
+    values.forEach((value, i) => {
+      const col = COLUMNS[i];
+      const maxWidth = col.halfWidth * 2 - VALUE.padding * 2;
+
+      if (i === CATEGORY_INDEX) {
+        const size = this.fitCategorySize(
+          value,
+          valueFonts,
           VALUE.size,
-          COLUMNS[i].halfWidth * 2 - VALUE.padding * 2,
-          VALUE.letterSpacing,
-        ),
-      ),
-    );
-    values.forEach((runs, i) => {
+          maxWidth,
+          CATEGORY_MAX_LINES,
+          CATEGORY_LETTER_SPACING,
+          CATEGORY_MIN_SIZE,
+        );
+        const lines = wrapWords(
+          value,
+          valueFonts,
+          size,
+          maxWidth,
+          CATEGORY_LETTER_SPACING,
+        ).slice(0, CATEGORY_MAX_LINES);
+        const lineHeight = size * 1.2;
+        const blockSpan = lineHeight * (lines.length - 1);
+        const firstBaseline =
+          VALUE.baseline -
+          blockSpan / 2 -
+          (VALUE.capHeight * (VALUE.size - size)) / 2;
+        lines.forEach((line, lineIndex) => {
+          drawLine(page, splitRuns(line, valueFonts), {
+            size,
+            letterSpacing: CATEGORY_LETTER_SPACING,
+            x: col.center,
+            baseline: firstBaseline + lineIndex * lineHeight,
+            align: 'center',
+            color: hex(VALUE.color),
+          });
+        });
+        return;
+      }
+
+      const runs = splitRuns(value, valueFonts);
+      const size = fitSize(runs, VALUE.size, maxWidth, VALUE.letterSpacing);
       drawLine(page, runs, {
-        size: rowSize,
+        size,
         letterSpacing: VALUE.letterSpacing,
-        x: COLUMNS[i].center,
-        baseline: VALUE.baseline - (VALUE.capHeight * (VALUE.size - rowSize)) / 2,
+        x: col.center,
+        baseline: VALUE.baseline - (VALUE.capHeight * (VALUE.size - size)) / 2,
         align: 'center',
         color: hex(VALUE.color),
       });
@@ -152,6 +191,31 @@ export class DonationCertificateService {
     });
 
     return Buffer.from(await pdf.save());
+  }
+
+  /**
+   * Largest size where `text` wraps into at most `maxLines` inside `maxWidth`.
+   * Keeps long donation categories readable instead of a single tiny line.
+   */
+  private fitCategorySize(
+    text: string,
+    fonts: FontSet,
+    preferred: number,
+    maxWidth: number,
+    maxLines: number,
+    letterSpacing: number,
+    minSize: number,
+  ) {
+    for (let size = preferred; size >= minSize; size -= 2) {
+      const lines = wrapWords(text, fonts, size, maxWidth, letterSpacing);
+      if (lines.length > maxLines) continue;
+      const overflow = lines.some(
+        (line) =>
+          measure(splitRuns(line, fonts), size, letterSpacing) > maxWidth,
+      );
+      if (!overflow) return size;
+    }
+    return minSize;
   }
 
   /** "₹ 10,000" as in the design; paise only when there are any. */

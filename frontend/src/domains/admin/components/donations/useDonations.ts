@@ -3,9 +3,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAdminAuth } from "@/domains/admin/components/AdminAuthProvider";
 import {
+  downloadBase64Pdf,
   fetchDonations,
   fetchDonationById,
+  issueOfflineDonationDocs,
   type AdminDonationRow,
+  type CreateManualDonationInput,
 } from "@/domains/admin/lib/api";
 import type { StatusFilter } from "./types";
 
@@ -15,6 +18,7 @@ export function useDonations() {
   const [rawDonations, setRawDonations] = useState<AdminDonationRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Filters & pagination
   const [searchTerm, setSearchTerm] = useState("");
@@ -27,6 +31,10 @@ export function useDonations() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
+
+  // Manual offline donation modal
+  const [isManualOpen, setIsManualOpen] = useState(false);
+  const [manualLoading, setManualLoading] = useState(false);
 
   const loadDonations = useCallback(async () => {
     if (!token) return;
@@ -124,6 +132,60 @@ export function useDonations() {
     setDetailError(null);
   };
 
+  useEffect(() => {
+    if (!successMessage) return;
+    const timer = setTimeout(() => setSuccessMessage(null), 5000);
+    return () => clearTimeout(timer);
+  }, [successMessage]);
+
+  const openManual = () => {
+    setIsManualOpen(true);
+    setError(null);
+  };
+
+  const closeManual = () => {
+    if (manualLoading) return;
+    setIsManualOpen(false);
+  };
+
+  const handleCreateManual = async (input: CreateManualDonationInput) => {
+    if (!token) return;
+    setManualLoading(true);
+    setError(null);
+    try {
+      const docs = await issueOfflineDonationDocs(token, input);
+      downloadBase64Pdf(
+        docs.certificateBase64,
+        `IHDUA-Donation-Certificate-${docs.receiptNumber}.pdf`,
+      );
+      if (docs.receiptBase64) {
+        downloadBase64Pdf(
+          docs.receiptBase64,
+          `IHDUA-Donation-Receipt-${docs.receiptNumber}.pdf`,
+        );
+      }
+      setIsManualOpen(false);
+      const emailNote =
+        input.sendEmail === false
+          ? ""
+          : docs.emailStatus === "sent"
+            ? " Email sent."
+            : docs.emailStatus
+              ? ` Email ${docs.emailStatus}${docs.emailDetail ? `: ${docs.emailDetail}` : ""}.`
+              : "";
+      setSuccessMessage(
+        `PDFs ready for ${docs.fullName} (${docs.receiptNumber}). Not saved to donations ledger.${emailNote}`,
+      );
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to issue offline donation docs.";
+      setError(message);
+      throw err instanceof Error ? err : new Error(message);
+    } finally {
+      setManualLoading(false);
+    }
+  };
+
   const handleStatusFilterChange = (val: StatusFilter) => {
     setStatusFilter(val);
     setPage(1);
@@ -150,6 +212,7 @@ export function useDonations() {
     totalRaisedINR,
     loading,
     error,
+    successMessage,
     refresh: loadDonations,
     selectedDonation,
     isDetailOpen,
@@ -157,6 +220,11 @@ export function useDonations() {
     detailError,
     onViewDetail: handleViewDetail,
     onCloseDetail: handleCloseDetail,
+    isManualOpen,
+    manualLoading,
+    openManual,
+    closeManual,
+    handleCreateManual,
   };
 }
 

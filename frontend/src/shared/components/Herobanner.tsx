@@ -10,6 +10,8 @@ export interface HeroBannerProps {
   imageMobile: string;
   imageAlt?: string;
   className?: string;
+  /** Optional CTAs under the description (e.g. Donate / Explore on /donate). */
+  actions?: ReactNode;
 }
 
 const FLUID_PADDING_X = "px-[clamp(1rem,9.3vw_-_1.2rem,10rem)]";
@@ -23,6 +25,7 @@ export default function HeroBanner({
   imageMobile,
   imageAlt = "",
   className,
+  actions,
 }: HeroBannerProps) {
   const shared = { alt: imageAlt, sizes: "100vw", priority: true } as const;
 
@@ -35,7 +38,6 @@ export default function HeroBanner({
   } = getImageProps({ ...shared, src: imageMobile, width: 780, height: 400 });
 
   return (
-    
     <section
       className={cn(
         "relative grid w-full aspect-[780/400] sm:aspect-[1920/490] sm:min-h-[15rem] md:min-h-[19rem] lg:min-h-0 bg-[#9739A8]",
@@ -57,7 +59,6 @@ export default function HeroBanner({
           FLUID_PADDING_X,
         )}
       >
-      
         <div className="w-full max-w-[95%] sm:max-w-[85%] md:w-fit md:min-w-[24rem] md:max-w-full lg:min-w-[28rem] xl:min-w-[32rem]">
           <Typography
             variant="h4"
@@ -81,6 +82,12 @@ export default function HeroBanner({
           >
             {description}
           </Typography>
+
+          {actions ? (
+            <div className={cn("flex flex-wrap items-center gap-3", FLUID_GAP_Y)}>
+              {actions}
+            </div>
+          ) : null}
         </div>
       </div>
     </section>

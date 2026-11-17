@@ -400,6 +400,70 @@ export async function fetchDonationById(
   });
 }
 
+export type OfflinePaymentMode =
+  | "cash"
+  | "cheque"
+  | "bank_transfer"
+  | "upi"
+  | "other";
+
+export type CreateManualDonationInput = {
+  fullName: string;
+  phone: string;
+  email: string;
+  amount: string;
+  currency?: string;
+  donationCategory?: string;
+  pan?: string;
+  address?: string;
+  city?: string;
+  message?: string;
+  paymentMode?: OfflinePaymentMode;
+  offlineReference?: string;
+  donatedAt?: string;
+  sendEmail?: boolean;
+};
+
+export type OfflineDonationDocsResult = {
+  receiptNumber: string;
+  fullName: string;
+  email: string;
+  amount: string;
+  currency: string;
+  donationCategory: string;
+  pan: string | null;
+  donatedAt: string;
+  hasCertificate: boolean;
+  hasReceipt: boolean;
+  certificateBase64: string;
+  receiptBase64: string | null;
+  emailStatus: "sent" | "skipped" | "error" | "quota" | null;
+  emailDetail: string | null;
+};
+
+/** Admin: generate offline certificate (+ 80G if PAN). Does not store a donors row. */
+export async function issueOfflineDonationDocs(
+  token: string,
+  input: CreateManualDonationInput,
+): Promise<OfflineDonationDocsResult> {
+  return apiRequest<OfflineDonationDocsResult>("/donors/manual", {
+    method: "POST",
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
+export function downloadBase64Pdf(base64: string, filename: string) {
+  const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+  const blob = new Blob([bytes], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export type SubscriptionsQueryParams = {
   page?: number;
   limit?: number;

@@ -14,6 +14,7 @@ import {
 import type { Request } from 'express';
 import {
   ApiBearerAuth,
+  ApiCreatedResponse,
   ApiExtraModels,
   ApiOkResponse,
   ApiOperation,
@@ -25,6 +26,7 @@ import { Public } from '../../common/decorators/public.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { UserRole } from '../../common/enums/user-role.enum';
 import { CreateDonationOrderDto } from './dto/create-donation-order.dto';
+import { CreateManualDonationDto } from './dto/create-manual-donation.dto';
 import { VerifyDonationPaymentDto } from './dto/verify-donation-payment.dto';
 import { DonationSubscriptionsService } from './donation-subscriptions.service';
 import { DonorsService } from './donors.service';
@@ -87,6 +89,22 @@ export class DonorsController {
     return {
       statusCode: HttpStatus.OK,
       message: 'Webhook processed successfully',
+      data,
+    };
+  }
+
+  @Post('manual')
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Issue offline donation certificate / 80G (admin)',
+    description:
+      'Generates donation certificate PDF and 80G receipt (when PAN is provided) for an offline donor. Does not create a donors database row — returns PDF base64 for download and can email the donor.',
+  })
+  @ApiCreatedResponse({ description: 'Offline donation PDFs (base64)' })
+  async issueOfflineDocuments(@Body() dto: CreateManualDonationDto) {
+    const data = await this.donorsService.issueOfflineDocuments(dto);
+    return {
+      statusCode: HttpStatus.CREATED,
       data,
     };
   }
