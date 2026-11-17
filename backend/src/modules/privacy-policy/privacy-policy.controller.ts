@@ -9,7 +9,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -20,7 +19,6 @@ import {
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreatePrivacyPolicyDto } from './dto/create-privacy-policy.dto';
 import { UpdatePrivacyPolicyDto } from './dto/update-privacy-policy.dto';
 import { PrivacyPolicy } from './entities/privacy-policy.entity';
@@ -29,9 +27,7 @@ import { PrivacyPolicyService } from './privacy-policy.service';
 @ApiTags(ApiTagsConst.PRIVACY_POLICY)
 @Controller('privacy-policy')
 export class PrivacyPolicyController {
-  constructor(
-    private readonly privacyPolicyService: PrivacyPolicyService,
-  ) {}
+  constructor(private readonly privacyPolicyService: PrivacyPolicyService) {}
 
   @Public()
   @Get('published')
@@ -50,7 +46,6 @@ export class PrivacyPolicyController {
   }
 
   @Get('deleted')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List soft-deleted privacy policies (Admin)',
@@ -64,7 +59,6 @@ export class PrivacyPolicyController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new privacy policy entry (Admin)' })
   @ApiResponse({
@@ -81,7 +75,6 @@ export class PrivacyPolicyController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary:
@@ -96,7 +89,6 @@ export class PrivacyPolicyController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get privacy policy by id (Admin)' })
   @ApiResponse({
@@ -113,7 +105,6 @@ export class PrivacyPolicyController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Restore soft-deleted privacy policy (Admin)' })
   @ApiResponse({
@@ -130,7 +121,6 @@ export class PrivacyPolicyController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update privacy policy entry by id (Admin)' })
   @ApiResponse({
@@ -150,7 +140,6 @@ export class PrivacyPolicyController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Soft-delete privacy policy entry by id (Admin)' })
   async remove(@Param('id', ParseUUIDPipe) id: string) {

@@ -10,7 +10,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -23,7 +22,6 @@ import {
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateImpactStatDto } from './dto/create-impact-stat.dto';
 import { UpdateImpactStatDto } from './dto/update-impact-stat.dto';
 import { ImpactStat } from './entities/impact-stat.entity';
@@ -54,7 +52,6 @@ export class ImpactStatsController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Create new impact stat (CMS Admin)',
@@ -75,7 +72,6 @@ export class ImpactStatsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List all impact stats with pagination & search (CMS Admin)',
@@ -93,7 +89,6 @@ export class ImpactStatsController {
   }
 
   @Get('deleted')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List recently deleted impact stats (CMS trash)',
@@ -111,7 +106,6 @@ export class ImpactStatsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get impact stat by id (CMS Admin)' })
   @ApiOkResponse({ type: ImpactStat })
@@ -127,7 +121,6 @@ export class ImpactStatsController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Restore soft-deleted impact stat (CMS Admin)',
@@ -145,7 +138,6 @@ export class ImpactStatsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update impact stat (CMS Admin)' })
   @ApiOkResponse({ type: ImpactStat })
@@ -165,7 +157,6 @@ export class ImpactStatsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Soft-delete impact stat (CMS Admin)',

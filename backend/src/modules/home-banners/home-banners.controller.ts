@@ -10,7 +10,6 @@ import {
   Post,
   Query,
   UploadedFiles,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -27,7 +26,6 @@ import {
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import {
   CreateHomeBannerMultipartDto,
   UpdateHomeBannerMultipartDto,
@@ -61,7 +59,6 @@ export class HomeBannersController {
   }
 
   @Get('deleted')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List soft-deleted home banners (CMS Trash)',
@@ -80,14 +77,11 @@ export class HomeBannersController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateHomeBannerMultipartDto })
   @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'bannerImage', maxCount: 1 },
-    ]),
+    FileFieldsInterceptor([{ name: 'bannerImage', maxCount: 1 }]),
   )
   @ApiOperation({
     summary: 'Upload images and create home banner (CMS)',
@@ -113,7 +107,6 @@ export class HomeBannersController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List all home banners with filtering (CMS)',
@@ -133,7 +126,6 @@ export class HomeBannersController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get home banner by id (CMS)',
@@ -155,14 +147,11 @@ export class HomeBannersController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateHomeBannerMultipartDto })
   @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'bannerImage', maxCount: 1 },
-    ]),
+    FileFieldsInterceptor([{ name: 'bannerImage', maxCount: 1 }]),
   )
   @ApiOperation({
     summary: 'Update home banner (CMS)',
@@ -189,7 +178,6 @@ export class HomeBannersController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Restore soft-deleted home banner (CMS)',
@@ -211,7 +199,6 @@ export class HomeBannersController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Soft-delete home banner (CMS)',

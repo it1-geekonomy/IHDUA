@@ -11,7 +11,6 @@ import {
   Post,
   Query,
   UploadedFiles,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -27,7 +26,6 @@ import {
 } from '@nestjs/swagger';
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateImpactInitiativeDto } from './dto/create-impact-initiative.dto';
 import { ImpactInitiativeCardDto } from './dto/impact-initiative-card.dto';
 import {
@@ -115,7 +113,6 @@ export class ImpactInitiativesController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateImpactInitiativeMultipartDto })
@@ -144,7 +141,6 @@ export class ImpactInitiativesController {
   }
 
   @Get('deleted')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List recently deleted impact initiatives (CMS Trash)',
@@ -163,7 +159,6 @@ export class ImpactInitiativesController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary:
@@ -184,7 +179,6 @@ export class ImpactInitiativesController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get impact initiative by id (CMS Admin)' })
   @ApiOkResponse({ type: ImpactInitiative })
@@ -200,7 +194,6 @@ export class ImpactInitiativesController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Restore soft-deleted impact initiative (CMS Admin)',
@@ -218,7 +211,6 @@ export class ImpactInitiativesController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateImpactInitiativeMultipartDto })
@@ -246,7 +238,6 @@ export class ImpactInitiativesController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Soft-delete impact initiative (CMS Admin)',
