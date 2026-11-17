@@ -915,9 +915,9 @@ const INITIATIVES: SeedInitiativeDef[] = [
           'In order to provide an additional avenue for rural women to earn more money, we have established a vocational training program that provides instruction in tailoring, a craft that is in perennial demand in southern India',
         ],
         videos: [
-          { url: '/Stitchingunit/video1.mp4', title: 'Tailoring uniforms' },
+          { url: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/stitchingunit/video1.mp4', title: 'Tailoring uniforms' },
           {
-            url: '/Stitchingunit/video2.mp4',
+            url: 'https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/stitchingunit/video2.mp4',
             title: 'Women learning tailoring',
           },
         ],
