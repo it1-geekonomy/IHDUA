@@ -103,6 +103,26 @@ html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   display: none;
 }
+
+/* Utility to hide scrollbars on any scrollable container and sidebar elements */
+aside,
+aside *,
+nav.no-scrollbar,
+.no-scrollbar,
+.scrollbar-none {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+aside::-webkit-scrollbar,
+aside *::-webkit-scrollbar,
+nav.no-scrollbar::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
 /* Hide Google Translate floating banner and icon */
 .goog-te-banner-frame,
 .goog-te-banner-frame.skiptranslate,

@@ -227,8 +227,8 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[#E5E0D8] bg-white shadow-2xs overflow-visible">
-        <div className="overflow-x-auto overflow-y-visible min-h-[260px]">
+      <div className="rounded-2xl border border-[#E5E0D8] bg-white shadow-2xs overflow-hidden">
+        <div className="overflow-x-auto">
           <table className="w-full text-left font-figtree text-xs">
             <thead className="border-b border-[#E5E0D8] bg-[#FAF8F4] text-[11px] uppercase tracking-wide text-[#8A847A]">
               <tr>

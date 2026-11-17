@@ -1,17 +1,29 @@
+export type AdminRole = "ADMIN" | "CONTENT";
+
+export const ADMIN_ONLY_ROUTES = [
+  "/admin/donations",
+  "/admin/recurring-donations",
+  "/admin/forms/contact",
+  "/admin/forms/volunteer",
+  "/admin/forms/partnership",
+  "/admin/users",
+] as const;
+
 export const ADMIN_NAV_SECTIONS = [
   {
     title: "Financials",
+    roles: ["ADMIN" as const],
     items: [
-      { href: "/admin/donations", label: "Donations", icon: "donations" as const },
-      { href: "/admin/recurring-donations", label: "Recurring Donations", icon: "recurring" as const },
+      { href: "/admin/donations", label: "Donations", icon: "donations" as const, roles: ["ADMIN" as const] },
+      { href: "/admin/recurring-donations", label: "Recurring Donations", icon: "recurring" as const, roles: ["ADMIN" as const] },
     ],
   },
   {
     title: "Forms & Inquiries",
     items: [
-      { href: "/admin/forms/contact", label: "Contact Leads", icon: "contact" as const },
-      { href: "/admin/forms/volunteer", label: "Volunteer Leads", icon: "volunteer" as const },
-      { href: "/admin/forms/partnership", label: "Partnership Inquiries", icon: "partnership" as const },
+      { href: "/admin/forms/contact", label: "Contact Leads", icon: "contact" as const, roles: ["ADMIN" as const] },
+      { href: "/admin/forms/volunteer", label: "Volunteer Leads", icon: "volunteer" as const, roles: ["ADMIN" as const] },
+      { href: "/admin/forms/partnership", label: "Partnership Inquiries", icon: "partnership" as const, roles: ["ADMIN" as const] },
       { href: "/admin/newsletter-subscribers", label: "Newsletter Subscribers", icon: "newsletter" as const },
     ],
   },
@@ -47,8 +59,9 @@ export const ADMIN_NAV_SECTIONS = [
   },
   {
     title: "System",
+    roles: ["ADMIN" as const],
     items: [
-      { href: "/admin/users", label: "Users & Admins", icon: "users" as const },
+      { href: "/admin/users", label: "Users & Admins", icon: "users" as const, roles: ["ADMIN" as const] },
     ],
   },
 ] as const;
