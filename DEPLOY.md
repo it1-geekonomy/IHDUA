@@ -101,12 +101,17 @@ docker compose --env-file .env.prod -f docker-compose.prod.yml exec ai-chatbot \
 
 ## 5. Later deploys (automatic via GitHub Actions)
 
+**Do not only `git pull` on the server.** Host code updates do not update running
+containers. Always deploy with Actions or `bash deploy.sh` so images rebuild.
+
 Every push to `main` runs `.github/workflows/deploy.yml`:
 
 1. Detects which folders changed (`frontend`, `backend`, `ai-chatbot`, `nginx`).
 2. CI-checks **only** those folders (skipped jobs do not rebuild).
 3. SSHs into the Droplet and runs `deploy.sh`, which rebuilds **only** the
    changed Docker images (same path filter), then restarts containers.
+4. When backend rebuilds: runs migrations + `seed:admin` + `seed:funding`
+   (both seeds are idempotent).
 
 | Change under     | Rebuilds          |
 |------------------|-------------------|
