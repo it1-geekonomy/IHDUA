@@ -23,6 +23,13 @@ export type BlogDetail = BlogStory & {
   related: BlogStory[];
 };
 
+export type BlogSort = "newest" | "oldest";
+
+export type PublishedQuery = {
+  sort?: BlogSort;
+  limit?: number;
+};
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const isBrowser = () => typeof window !== "undefined";
@@ -44,21 +51,39 @@ function unwrapList<T>(json: unknown): T[] {
 }
 
 /**
- * Browser only: the request currently in flight, per endpoint.
+ * Browser only: requests currently in flight, keyed by query string.
  * Strict Mode's second effect run happens before the response arrives, so it
- * reuses this promise (1 call, not 2). It is cleared as soon as the request
- * settles, so the next visit always makes a fresh call.
+ * reuses the same promise (1 call, not 2). Each entry is removed as soon as
+ * its request settles, so the next visit or sort change always makes a fresh call.
  * (Never used on the server, so server renders always get fresh data.)
  */
-let storiesRequest: Promise<BlogStory[]> | null = null;
+const storiesRequests = new Map<string, Promise<BlogStory[]>>();
 let categoriesRequest: Promise<BlogCategory[]> | null = null;
 
-/** Public endpoint: only stories with status "published" */
-export function fetchPublishedStories(): Promise<BlogStory[]> {
-  const browser = isBrowser();
-  if (browser && storiesRequest) return storiesRequest;
+/**
+ * `sort` is always sent: the backend's default is "oldest",
+ * so callers that pass nothing still get newest first.
+ */
+function buildQuery(q: PublishedQuery): string {
+  const params = new URLSearchParams();
+  params.set("sort", q.sort ?? "newest");
+  if (q.limit) params.set("limit", String(q.limit));
+  return params.toString();
+}
 
-  const request = fetch(`${API_URL}/blogs-and-stories/published`, {
+/** Public endpoint: only stories with status "published". Sorted by the backend. */
+export function fetchPublishedStories(
+  query: PublishedQuery = {},
+): Promise<BlogStory[]> {
+  const browser = isBrowser();
+  const qs = buildQuery(query);
+
+  if (browser) {
+    const existing = storiesRequests.get(qs);
+    if (existing) return existing;
+  }
+
+  const request = fetch(`${API_URL}/blogs-and-stories/published?${qs}`, {
     headers: { accept: "application/json" },
     // On the server, let Next.js cache the response for 60 seconds
     ...(browser ? {} : { next: { revalidate: 60 } }),
@@ -68,10 +93,10 @@ export function fetchPublishedStories(): Promise<BlogStory[]> {
       return unwrapList<BlogStory>(await res.json());
     })
     .finally(() => {
-      if (browser) storiesRequest = null;
+      if (browser) storiesRequests.delete(qs);
     });
 
-  if (browser) storiesRequest = request;
+  if (browser) storiesRequests.set(qs, request);
   return request;
 }
 
