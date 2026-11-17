@@ -124,7 +124,8 @@ export function AdminSidebar({
     <aside
       style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       className={cn(
-        "fixed inset-y-0 left-0 z-40 flex flex-col bg-[#1A0F1C] text-white shadow-2xl transition-all duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:shrink-0 lg:z-30 lg:shadow-xl no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
+        // Always fixed to the viewport — main content scrolls independently.
+        "fixed inset-y-0 left-0 z-40 flex h-dvh flex-col bg-[#1A0F1C] text-white shadow-2xl transition-all duration-300 ease-in-out no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
         mobileNavOpen ? "translate-x-0 w-72" : "-translate-x-full w-72",
         !isMobile && (sidebarCollapsed ? "lg:translate-x-0 lg:w-[72px]" : "lg:translate-x-0 lg:w-64"),
       )}

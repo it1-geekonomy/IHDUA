@@ -27,17 +27,17 @@ export function BlogSeoAccordion({
   );
 
   return (
-    <div className="rounded-xl border border-[#E5E0D8] bg-[#FAF8F4]/50 p-4">
+    <div className="min-w-0 rounded-xl border border-[#E5E0D8] bg-[#FAF8F4]/50 p-3.5 sm:p-4">
       <button
         type="button"
         onClick={() => setShowSeo((prev) => !prev)}
-        className="flex w-full items-center justify-between font-figtree text-xs font-semibold text-[#0F1C1D] cursor-pointer"
+        className="flex w-full items-start sm:items-center justify-between gap-2 font-figtree text-xs font-semibold text-[#0F1C1D] cursor-pointer text-left"
       >
-        <span>Search Engine Optimization (SEO & Social Sharing)</span>
+        <span className="min-w-0 leading-snug">Search Engine Optimization (SEO & Social Sharing)</span>
         {showSeo ? (
-          <ChevronUp className="h-4 w-4 text-[#8A847A]" />
+          <ChevronUp className="h-4 w-4 shrink-0 text-[#8A847A]" />
         ) : (
-          <ChevronDown className="h-4 w-4 text-[#8A847A]" />
+          <ChevronDown className="h-4 w-4 shrink-0 text-[#8A847A]" />
         )}
       </button>
 
