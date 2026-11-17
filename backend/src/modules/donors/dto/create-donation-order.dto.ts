@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
-  IsEnum,
   IsIn,
   IsNotEmpty,
   IsNumberString,
@@ -77,13 +76,15 @@ export class CreateDonationOrderDto {
   message?: string;
 
   @ApiPropertyOptional({
-    enum: DonationCategory,
     example: DonationCategory.GENERAL_DONATION,
     default: DonationCategory.GENERAL_DONATION,
+    description:
+      'Donation cause / funding project label (free text; CMS funding projects set this)',
   })
   @IsOptional()
-  @IsEnum(DonationCategory)
-  donationCategory?: DonationCategory;
+  @IsString()
+  @MaxLength(250)
+  donationCategory?: string;
 
   @ApiProperty({
     description: 'Donation amount in major units (e.g. 1500 INR or 25 USD)',
