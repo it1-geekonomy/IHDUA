@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Typography from "@/lib/Typography";
 
@@ -14,36 +15,18 @@ export interface CommunityHealthBannerProps {
   mainImageAlt?: string;
 }
 
-// Split the heading into at most 2 lines.
-// A lone "&", "+", "/", "|" or "-" is glued to the previous word.
-const splitHeading = (heading: string): string[] => {
-  const tokens = heading.trim().split(/\s+/);
-  const words: string[] = [];
+const KANNADA_RANGE = /[\u0C80-\u0CFF]/;
 
-  tokens.forEach((token) => {
-    if (/^[&+/|-]$/.test(token) && words.length > 0) {
-      words[words.length - 1] = `${words[words.length - 1]} ${token}`;
-    } else {
-      words.push(token);
-    }
-  });
-
-  if (words.length <= 1) return words;
-  const splitAt = Math.ceil(words.length / 2);
-  return [words.slice(0, splitAt).join(" "), words.slice(splitAt).join(" ")];
+// The heading is rendered as ONE text string (not split into per-line pieces),
+// so an in-page translator sees the whole sentence ("Skills & Employment")
+// and translates "&" as "ಮತ್ತು". Line breaks are done with CSS instead.
+// If the heading already arrives in Kannada with a "&", swap it for "ಮತ್ತು".
+const normalizeHeading = (heading: string): string => {
+  const text = heading.trim().replace(/\s+/g, " ");
+  return KANNADA_RANGE.test(text)
+    ? text.replace(/\s*(?:&amp;|&)\s*/g, " ಮತ್ತು ")
+    : text;
 };
-
-// Stat title: split into one word per line
-const TitleLines = ({ title }: { title: string }) => (
-  <>
-    {title.split(" ").map((word, i, arr) => (
-      <span key={`${word}-${i}`}>
-        {word}
-        {i < arr.length - 1 && <br />}
-      </span>
-    ))}
-  </>
-);
 
 const CommunityHealthBanner = ({
   heading,
@@ -51,7 +34,7 @@ const CommunityHealthBanner = ({
   mainImage,
   mainImageAlt = "",
 }: CommunityHealthBannerProps) => {
-  const headingLines = splitHeading(heading);
+  const headingText = normalizeHeading(heading);
 
   return (
     <section className="w-full">
@@ -72,42 +55,36 @@ const CommunityHealthBanner = ({
           />
 
           {/* Heading + stats */}
-          <div className="relative z-10 flex w-full flex-col items-start gap-8 px-2 pt-10 pb-8 sm:min-w-0 sm:flex-1 sm:flex-row sm:items-center sm:gap-3 sm:px-4 sm:py-4 md:gap-4 md:px-6 lg:gap-6 lg:px-10 lg:py-3 xl:gap-10 xl:px-12 xl:py-4 2xl:px-16">
+          <div className="relative z-10 flex w-full flex-col items-start gap-8 px-1 pt-10 pb-8 sm:min-w-0 sm:flex-1 sm:flex-row sm:items-center sm:gap-3 sm:px-4 sm:py-4 md:gap-4 md:px-6 lg:gap-6 lg:px-10 lg:py-3 xl:gap-10 xl:px-12 xl:py-4 2xl:px-16">
             {/* Gradient heading:
-                below 640px -> 1 line (never breaks), centered, full width
-                640px and up -> 2 lines, never wraps further */}
+                below 640px -> full width, centered, wraps onto as many lines as needed
+                640px and up -> width-capped and balanced, so it normally breaks into
+                2 lines; longer text wraps further instead of being hidden */}
             <Typography
               variant="h4"
-              className="w-full text-center font-figtree font-medium bg-gradient-to-r from-[#9739A8] to-[#E6AC20] bg-clip-text text-transparent whitespace-nowrap sm:w-fit sm:max-w-full sm:shrink-0 sm:text-left"
+              className="w-full break-words bg-gradient-to-r from-[#9739A8] to-[#E6AC20] bg-clip-text text-center font-figtree font-medium leading-snug text-transparent text-balance sm:w-fit sm:max-w-[15rem] sm:text-left md:max-w-[17rem] xl:max-w-[20rem]"
             >
-              {headingLines.map((line, i) => (
-                <span key={`${line}-${i}`} className="sm:block">
-                  {line}
-                  {i < headingLines.length - 1 && " "}
-                </span>
-              ))}
+              {headingText}
             </Typography>
 
-            {/* Stats */}
-            <div className="flex w-full min-w-0 items-stretch justify-between sm:flex-1 sm:justify-center">
-              {items.map((item, index) => (
-                <div
-                  key={`${item.title}-${index}`}
-                  className="flex min-w-0 flex-1 items-stretch lg:flex-none"
-                >
-                  {/* Divider: shown at every breakpoint */}
-                  {index > 0 && (
-                    <span
-                      className="block w-px shrink-0 self-stretch bg-[#FCE1A0]"
-                      aria-hidden="true"
-                    />
-                  )}
-
-                  {/* Padding:
-                      below xl -> small / fluid so the stats fit
-                      xl and up -> the same fixed padding on every stat, so the
-                      gap on both sides of each divider is equal (as in Figma) */}
-                  <div className="flex w-full min-w-0 flex-col items-center gap-2 px-1 text-center sm:gap-2 sm:px-1.5 md:gap-2 md:px-2 lg:px-[clamp(0.75rem,2.2vw,2rem)] xl:gap-3 xl:px-10 2xl:px-12">
+            {/* Stats: one grid row, so every stat starts on the same line.
+                From 640px up each column is at least as wide as its longest
+                word, so a title wraps to the next line but never spills over a
+                divider or a neighbouring stat. Below 640px the three columns
+                always share the width equally and a very long word may break
+                inside itself, so nothing is ever pushed off-screen. */}
+            <div className="flex w-full min-w-0 sm:min-w-min sm:flex-1 sm:justify-center">
+              <div
+                className="grid w-full grid-cols-[repeat(var(--n),minmax(0,1fr))] sm:w-fit sm:grid-cols-[repeat(var(--n),minmax(min-content,1fr))]"
+                style={{ "--n": Math.max(items.length, 1) } as CSSProperties}
+              >
+                {items.map((item, index) => (
+                  <div
+                    key={`${item.title}-${index}`}
+                    className={`flex min-w-0 flex-col items-center justify-start gap-2 px-1 text-center sm:px-2 md:px-3 lg:px-[clamp(0.75rem,2.2vw,2rem)] xl:gap-3 xl:px-10 2xl:px-12 ${
+                      index > 0 ? "border-l border-[#FCE1A0]" : ""
+                    }`}
+                  >
                     {/* Icon circle:
                         below 640px -> 40px / 20px
                         640px to 1279px -> small, to fit
@@ -125,31 +102,24 @@ const CommunityHealthBanner = ({
                       />
                     </div>
 
-                    {/* Title:
-                        below 640px -> body-lg
-                        640px to 1279px -> caption, normal-case
+                    {/* Title: wraps naturally onto the next line, never clipped.
+                        below xl -> caption, normal-case
                         xl and up -> body-lg */}
                     <Typography
-                      variant="body-lg"
-                      className="font-figtree font-medium text-[#501959] sm:hidden"
-                    >
-                      <TitleLines title={item.title} />
-                    </Typography>
-                    <Typography
                       variant="caption"
-                      className="hidden font-figtree font-medium normal-case text-[#501959] sm:block xl:hidden"
+                      className="text-balance font-figtree font-medium normal-case leading-normal text-[#501959] max-sm:[overflow-wrap:anywhere] sm:break-words xl:hidden"
                     >
-                      <TitleLines title={item.title} />
+                      <span className="max-sm:text-[0.6875rem]">{item.title}</span>
                     </Typography>
                     <Typography
                       variant="body-lg"
-                      className="hidden font-figtree font-medium text-[#501959] xl:block"
+                      className="hidden break-words text-balance font-figtree font-medium leading-normal text-[#501959] xl:block"
                     >
-                      <TitleLines title={item.title} />
+                      {item.title}
                     </Typography>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
 

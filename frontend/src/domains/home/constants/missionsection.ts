@@ -4,7 +4,7 @@ export const PILLARS = [
     title: "Understand Local Needs",
     description:
       "Identify community needs and development priorities.",
-    image: "/missionsection/learning.png",
+    image: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1794803525715-xahg3-rectangle-15-1-.webp",
   },
   {
     number: "02",
