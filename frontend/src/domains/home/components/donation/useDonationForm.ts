@@ -467,8 +467,8 @@ export function useDonationForm() {
     usingCustom,
     cause,
     causes: (DONATION_CAUSES as readonly string[]).includes(cause)
-      ? DONATION_CAUSES
-      : ([cause, ...DONATION_CAUSES] as typeof DONATION_CAUSES),
+      ? [...DONATION_CAUSES]
+      : [cause, ...DONATION_CAUSES],
     frequency: effectiveFrequency,
     frequencies: DONATION_FREQUENCY_OPTIONS,
     setFrequency,
