@@ -138,8 +138,14 @@ main() {
 
     log "Admin seed (skipped if the admin already exists)"
     compose exec -T backend pnpm run seed:admin:prod | sed '/password:/d'
+
+    # Idempotent: creates/updates the CMS funding projects from the seed deck
+    log "Funding projects seed"
+    if ! compose exec -T backend pnpm run seed:funding:prod; then
+      warn "Funding seed failed (script missing in image?). Rebuild backend and re-run."
+    fi
   else
-    log "Skipping database migrations & admin seed (backend code unchanged)"
+    log "Skipping database migrations & seeds (backend code unchanged)"
   fi
 
   if [[ "$REINDEX_CHATBOT" == "true" || "$rebuild_ai" == "true" ]]; then
