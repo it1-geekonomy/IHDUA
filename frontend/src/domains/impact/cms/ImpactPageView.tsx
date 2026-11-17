@@ -90,11 +90,12 @@ function Story({ section, imageLeft, extraButton }: { section: Json; imageLeft?:
     image: img(section.image),
     imageAlt: heading,
   };
+  const b = button(section.button) ?? extraButton;
+  const resolved = b ? { ...b, href: b.href } : undefined;
   if (imageLeft) {
-    const b = button(section.button) ?? extraButton;
-    return <StoryLeftImageSection {...props} button={b ? { ...b, href: b.href } : undefined} />;
+    return <StoryLeftImageSection {...props} button={resolved} />;
   }
-  return <OpportunitiesSection {...props} button={button(section.button)} />;
+  return <OpportunitiesSection {...props} button={resolved} />;
 }
 
 function Stats({ section, strip }: { section: Json; strip?: boolean }) {
@@ -247,7 +248,7 @@ function WomenSections({ content }: { content: Json }) {
   );
 }
 
-function SkillsSections({ content }: { content: Json }) {
+function SkillsSections({ content, slug }: { content: Json; slug: string }) {
   const intro = obj(content.intro);
   const overview = obj(content.overview);
   const video = obj(content.video);
@@ -256,11 +257,21 @@ function SkillsSections({ content }: { content: Json }) {
   const stats = obj(content.impactStats);
   const gallery = obj(content.gallery);
   const videos = list(video?.videos).filter((v) => str(v.url));
+  const galleryAsPage = Boolean(gallery) && str(gallery?.displayMode, "inline") === "page";
 
   return (
     <>
       {intro && <Intro section={intro} />}
-      {overview && <Story section={overview} />}
+      {overview && (
+        <Story
+          section={overview}
+          extraButton={
+            galleryAsPage
+              ? { label: str(gallery?.ctaLabel, "View All Photos"), href: `/${slug}/gallery` }
+              : undefined
+          }
+        />
+      )}
       {video && videos.length > 0 && (
         <Videosection
           heading={str(video.heading)}
@@ -277,7 +288,7 @@ function SkillsSections({ content }: { content: Json }) {
       {twoImage && <TwoImageStory section={twoImage} />}
       {featureGrid && <FeatureGrid section={featureGrid} />}
       {stats && <Stats section={stats} strip={str(stats.style) === "strip"} />}
-      {gallery && str(gallery.displayMode, "inline") === "inline" && (
+      {gallery && !galleryAsPage && (
         <GallerySection1Row heading={str(gallery.heading, "Gallery")} images={photos(gallery.images, "Gallery photo")} />
       )}
     </>
@@ -319,7 +330,7 @@ export function ImpactPageView({ data }: { data: ImpactPageData }) {
       />
       {data.layoutType === "education" && <EducationSections content={content} slug={data.slug} />}
       {data.layoutType === "women_empowerment" && <WomenSections content={content} />}
-      {data.layoutType === "skills_employment" && <SkillsSections content={content} />}
+      {data.layoutType === "skills_employment" && <SkillsSections content={content} slug={data.slug} />}
       {(data.layoutType === "model_village" || data.layoutType === "health") && (
         <VillageHealthSections content={content} />
       )}
