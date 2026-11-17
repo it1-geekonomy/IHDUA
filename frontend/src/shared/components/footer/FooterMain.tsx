@@ -11,7 +11,6 @@ import {
 import Typography from "@/lib/Typography";
 import { isHomePath } from "@/shared/lib/path";
 import { smoothScrollToId, smoothScrollToTop } from "@/shared/lib/smoothScroll";
-import { scrollToDonateSection } from "@/domains/home/lib/donation";
 import { markClientNav } from "@/shared/lib/navState";
 
 const CONTAINER = "max-w-[1200px] 2xl:max-w-[1600px] mx-auto px-6";
@@ -44,12 +43,10 @@ export function FooterMain() {
     }
   };
 
-  // CHANGED: the CTA/donation section is in the shared layout, so it exists
-  // on every page. Scroll to it on the current page, with no navigation.
   const handleDonateClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     markInternalNav();
-    void scrollToDonateSection();
+    router.push("/donate");
   };
 
   const handleOurImpactClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -152,7 +149,7 @@ export function FooterMain() {
               {FOOTER_GET_INVOLVED.map((item) => (
                 <li key={item.label}>
                   <Link
-                    href="/"
+                    href={item.href}
                     onClick={item.label === "Donate" ? handleDonateClick : handleGetInvolvedClick}
                     className="text-white transition-colors hover:text-[#FFD638]"
                   >
