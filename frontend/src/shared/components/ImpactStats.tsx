@@ -22,7 +22,7 @@ const ImpactStats = ({
   bannerHeading,
   stats,
 }: ImpactStatsProps) => {
-  // Split the banner heading into exactly 2 lines.
+  // Split the banner heading into exactly 2 lines (used at lg and up only).
   // "Creating Lasting Change" -> "Creating Lasting" / "Change"
   const words = bannerHeading.split(" ");
   const splitAt = Math.ceil(words.length / 2);
@@ -48,7 +48,7 @@ const ImpactStats = ({
               <Typography
                 key={index}
                 variant="body-lg"
-                className="w-full font-figtree font-normal text-[#5F6C6D] text-center sm:text-left"
+                className="w-full text-center font-figtree font-normal text-[#5F6C6D] sm:text-left"
               >
                 {paragraph}
               </Typography>
@@ -58,12 +58,12 @@ const ImpactStats = ({
           {/* Stats box */}
           <div className="flex w-full flex-col items-center gap-6 bg-[#FEF7EF] px-4 py-6 sm:px-6 sm:py-8 lg:flex-row lg:gap-4 lg:px-6 lg:py-6 xl:gap-8 xl:px-12 xl:py-8">
             {/* Gradient heading:
-                below lg -> one line, centered
-                lg and up -> exactly 2 lines */}
+                below lg  -> full width of the box, wraps and centers (no overflow)
+                lg and up -> shrink-wrapped, exactly 2 lines, never wraps further */}
             <Typography
               variant="h4"
               as="h3"
-              className="w-fit shrink-0 whitespace-nowrap text-center font-figtree font-medium bg-gradient-to-r from-[#9739A8] to-[#E6AC20] bg-clip-text text-transparent lg:text-left"
+              className="w-full min-w-0 text-balance bg-gradient-to-r from-[#9739A8] to-[#E6AC20] bg-clip-text text-center font-figtree font-medium text-transparent lg:w-fit lg:shrink-0 lg:whitespace-nowrap lg:text-left"
             >
               <span className="lg:block">{lineOne}</span>{" "}
               {lineTwo && <span className="lg:block">{lineTwo}</span>}
@@ -71,7 +71,7 @@ const ImpactStats = ({
 
             {/* Stats:
                 below sm    -> 2x2 grid, no dividers
-                sm and up   -> 4 equal columns with dividers */}
+                sm and up   -> equal columns with dividers */}
             <div className="grid w-full grid-cols-2 gap-x-4 gap-y-6 sm:flex sm:flex-1 sm:items-stretch sm:gap-0 lg:min-w-0">
               {stats.map((item, index) => (
                 <div
@@ -108,11 +108,11 @@ const ImpactStats = ({
                       </Typography>
                       {/* Label width:
                           below lg -> narrow so it wraps into short lines
-                          lg -> uses the full column width (no extra cap)
-                          xl and up -> capped again for a tidy look */}
+                          lg       -> uses the full column width
+                          xl+      -> capped again for a tidy look */}
                       <Typography
                         variant="body-sm"
-                        className="max-w-[9rem] font-figtree font-normal text-[#5F6C6D] md:max-w-[10rem] lg:max-w-none xl:max-w-[11rem]"
+                        className="max-w-[9rem] text-center font-figtree font-normal text-[#5F6C6D] md:max-w-[10rem] lg:max-w-none xl:max-w-[11rem]"
                       >
                         {item.label}
                       </Typography>

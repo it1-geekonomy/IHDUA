@@ -63,11 +63,12 @@ export default function StoryLeftImageSection({
             </div>
 
             {button?.label && (
+              // Centered when stacked (below lg), left aligned from lg up
               <Link
                 href={button.href}
                 target={button.external ? "_blank" : undefined}
                 rel={button.external ? "noopener noreferrer" : undefined}
-                className="group mt-6 inline-flex w-fit items-center gap-1.5 self-start bg-[#FFD638] px-4 py-2 text-[#000000] transition-[filter] duration-200 hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:gap-2 sm:px-5 sm:py-2.5"
+                className="group mt-6 inline-flex w-fit items-center gap-1.5 self-center bg-[#FFD638] px-4 py-2 text-[#000000] transition-[filter] duration-200 hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:gap-2 sm:px-5 sm:py-2.5 lg:self-start"
               >
                 <Typography
                   variant="body-sm"
