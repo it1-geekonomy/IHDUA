@@ -6,6 +6,7 @@ import { Menu } from "lucide-react";
 import { useAdminAuth } from "@/domains/admin/components/AdminAuthProvider";
 import { AdminSidebar } from "./shell/AdminSidebar";
 import { AdminBreadcrumbs } from "./shell/AdminBreadcrumbs";
+import { cn } from "@/lib/utils";
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -15,7 +16,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // Track viewport breakpoint
   useEffect(() => {
     const updateSize = () => {
       const mobile = window.innerWidth < 1024;
@@ -27,7 +27,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("resize", updateSize);
   }, []);
 
-  // Restore desktop collapsed preference from localStorage
   useEffect(() => {
     try {
       const saved = localStorage.getItem("ihdua_admin_sidebar_collapsed");
@@ -37,10 +36,23 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Close mobile drawer on route navigation
   useEffect(() => {
     setMobileNavOpen(false);
   }, [pathname]);
+
+  // Prevent body + main double scrollbars inside the fixed admin shell.
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    return () => {
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+    };
+  }, []);
 
   const toggleSidebar = useCallback(() => {
     if (typeof window !== "undefined" && window.innerWidth < 1024) {
@@ -58,7 +70,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  // Keyboard shortcut: Ctrl+B or Cmd+B to toggle sidebar
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") {
@@ -71,8 +82,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }, [toggleSidebar]);
 
   return (
-    <div className="flex min-h-screen bg-[#F7F4EE] text-[#00191B]">
-      {/* Mobile Drawer Backdrop */}
+    <div className="flex h-dvh overflow-hidden bg-[#F7F4EE] text-[#00191B]">
       {mobileNavOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity lg:hidden"
@@ -81,7 +91,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         />
       )}
 
-      {/* Modular Sidebar Component */}
       <AdminSidebar
         isMobile={isMobile}
         mobileNavOpen={mobileNavOpen}
@@ -93,28 +102,33 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         onLogout={() => logout("user_action")}
       />
 
-      {/* Main Content Area */}
-      <div className="flex min-w-0 flex-1 flex-col transition-all duration-300">
-        {/* Dynamic Breadcrumbs Header */}
-        <header className="flex h-16 items-center justify-between border-b border-[#E5E0D8] bg-white px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 min-w-0">
+      {/* Offset for fixed desktop sidebar so content isn't covered */}
+      <div
+        className={cn(
+          "flex min-h-0 min-w-0 flex-1 flex-col transition-[padding] duration-300",
+          sidebarCollapsed ? "lg:pl-[72px]" : "lg:pl-64",
+        )}
+      >
+        <header className="flex h-14 sm:h-16 shrink-0 items-center gap-2 border-b border-[#E5E0D8] bg-white px-3 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
             <button
               id="btn-mobile-menu-open"
               type="button"
               onClick={() => setMobileNavOpen(true)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#D9D3C9] bg-white text-[#5F6C6D] hover:bg-slate-50 hover:text-[#00191B] lg:hidden cursor-pointer shadow-2xs"
+              className="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-[#D9D3C9] bg-white text-[#5F6C6D] shadow-2xs hover:bg-slate-50 hover:text-[#00191B] lg:hidden"
               title="Open navigation menu"
               aria-label="Open navigation menu"
             >
               <Menu className="h-4 w-4" />
             </button>
 
-            <AdminBreadcrumbs pathname={pathname} />
+            <div className="min-w-0 flex-1 overflow-hidden">
+              <AdminBreadcrumbs pathname={pathname} />
+            </div>
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 p-3.5 sm:p-5 lg:p-8 min-w-0 overflow-x-hidden">
+        <main className="min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain p-2.5 sm:p-5 lg:p-8">
           {children}
         </main>
       </div>

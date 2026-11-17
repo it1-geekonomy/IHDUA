@@ -83,11 +83,11 @@ export function FieldsEditor({
   onChange: (next: Json) => void;
 }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid min-w-0 gap-3 sm:gap-4 sm:grid-cols-2">
       {fields.map((field) => {
         const wide = !["text", "icon", "color", "select"].includes(field.kind);
         return (
-          <div key={field.key} className={wide ? "sm:col-span-2" : undefined}>
+          <div key={field.key} className={`min-w-0 ${wide ? "sm:col-span-2" : ""}`}>
             <FieldRenderer
               field={field}
               value={value?.[field.key]}

@@ -37,12 +37,12 @@ export function SectionCard({ index, section, value, onChange, saveCount }: Sect
   };
 
   return (
-    <section className="rounded-2xl border border-[#E5E0D8] bg-white shadow-2xs">
-      <div className="flex items-center gap-3 px-5 py-4">
+    <section className="min-w-0 rounded-xl sm:rounded-2xl border border-[#E5E0D8] bg-white shadow-2xs">
+      <div className="flex items-center gap-2 sm:gap-3 px-3.5 sm:px-5 py-3 sm:py-4">
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="flex min-w-0 flex-1 items-center gap-3 text-left cursor-pointer"
+          className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3 text-left cursor-pointer"
         >
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#FAF8F4] text-[11px] font-bold text-[#9739A8] border border-[#E5E0D8]">
             {index + 1}
@@ -51,7 +51,7 @@ export function SectionCard({ index, section, value, onChange, saveCount }: Sect
             <p className="font-figtree text-sm font-semibold text-[#0F1C1D]">
               {section.title}
               {section.optional && (
-                <span className="ml-2 rounded-full bg-[#1A0F1C]/5 px-2 py-0.5 text-[10px] font-semibold text-[#5F6C6D]">
+                <span className="ml-1.5 sm:ml-2 inline-block rounded-full bg-[#1A0F1C]/5 px-2 py-0.5 text-[10px] font-semibold text-[#5F6C6D]">
                   Optional
                 </span>
               )}
@@ -92,7 +92,7 @@ export function SectionCard({ index, section, value, onChange, saveCount }: Sect
       </div>
 
       {open && (
-        <div className="border-t border-[#E5E0D8] px-5 py-5">
+        <div className="border-t border-[#E5E0D8] px-3.5 sm:px-5 py-3.5 sm:py-5">
           {!enabled ? (
             <p className="text-xs text-[#8A847A]">
               {hiddenValue
@@ -123,8 +123,8 @@ function RepeatableBlocks({
   return (
     <div className="space-y-4">
       {blocks.map((block, i) => (
-        <div key={i} className="rounded-xl border border-[#E5E0D8] p-4">
-          <div className="mb-3 flex items-center justify-between">
+        <div key={i} className="min-w-0 rounded-xl border border-[#E5E0D8] p-3 sm:p-4">
+          <div className="mb-3 flex items-center justify-between gap-2">
             <span className="text-[11px] font-bold uppercase tracking-wide text-[#8A847A]">
               {itemLabel} {i + 1}
             </span>

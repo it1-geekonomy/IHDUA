@@ -178,10 +178,10 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
     }
   };
 
-  const card = "rounded-2xl border border-[#E5E0D8] bg-white p-5 shadow-2xs";
+  const card = "rounded-xl sm:rounded-2xl border border-[#E5E0D8] bg-white p-3.5 sm:p-5 shadow-2xs";
 
   return (
-    <div className="space-y-6 pb-24">
+    <div className="w-full min-w-0 space-y-4 sm:space-y-6 pb-20 sm:pb-24">
       {previewing && (
         <ImpactPagePreview
           data={{ layoutType: def.layoutType, slug, heroTitle, heroDescription, content }}
@@ -190,28 +190,28 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
           onClose={() => setPreviewing(false)}
         />
       )}
-      <div className="flex flex-col gap-4 border-b border-[#E5E0D8] pb-5 lg:flex-row lg:items-center lg:justify-between">
-        <div>
+      <div className="flex flex-col gap-3 sm:gap-4 border-b border-[#E5E0D8] pb-4 sm:pb-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
           <Link
             href={listHref}
             className="mb-2 inline-flex items-center gap-1 text-xs font-semibold text-[#5F6C6D] hover:text-[#9739A8]"
           >
-            <ArrowLeft className="h-3.5 w-3.5" /> {def.name} pages
+            <ArrowLeft className="h-3.5 w-3.5 shrink-0" /> {def.name} pages
           </Link>
-          <Typography variant="h4" className="font-lora text-[#0F1C1D]">
+          <Typography variant="h4" className="font-lora text-[#0F1C1D] break-words">
             {page ? `Edit: ${page.name}` : `New ${def.name} Page`}
           </Typography>
           <Typography variant="body-sm" className="mt-1 font-figtree text-[#5F6C6D]">
             Uses the {def.name} layout. Fill each section below; optional sections can be switched off.
           </Typography>
         </div>
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
           {page?.status === "published" && (
             <a
               href={`/${page.slug}`}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-[#D9D3C9] bg-white px-3.5 py-1.5 text-xs font-semibold text-[#5F6C6D] hover:text-[#00191B]"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-[#D9D3C9] bg-white px-3 py-1.5 text-xs font-semibold text-[#5F6C6D] hover:text-[#00191B]"
             >
               <ExternalLink className="h-3.5 w-3.5" /> View on website
             </a>
@@ -219,7 +219,7 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
           <button
             type="button"
             onClick={() => setPreviewing(true)}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-[#D9D3C9] bg-white px-3.5 py-1.5 text-xs font-semibold text-[#5F6C6D] hover:text-[#00191B] cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[#D9D3C9] bg-white px-3 py-1.5 text-xs font-semibold text-[#5F6C6D] hover:text-[#00191B] cursor-pointer"
           >
             <Eye className="h-3.5 w-3.5" /> Preview
           </button>
@@ -227,7 +227,7 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[#1A0F1C] px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#2C1A30] disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-[#1A0F1C] px-3.5 sm:px-4 py-1.5 sm:py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#2C1A30] disabled:opacity-50 cursor-pointer"
           >
             {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             {page ? "Save changes" : "Create page"}
@@ -263,12 +263,12 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
         </div>
       )}
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-6">
+      <div className="grid w-full min-w-0 gap-4 sm:gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0 space-y-4 sm:space-y-6">
           <section className={card}>
-            <h3 className="mb-4 text-sm font-semibold text-[#0F1C1D]">Page details</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
+            <h3 className="mb-3 sm:mb-4 text-sm font-semibold text-[#0F1C1D]">Page details</h3>
+            <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
+              <div className="min-w-0">
                 <FieldLabel label="Page name (menu label)" required />
                 <input
                   value={name}
@@ -277,10 +277,10 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
                   className={inputClass}
                 />
               </div>
-              <div>
+              <div className="min-w-0">
                 <FieldLabel label="URL slug" required />
-                <div className="flex items-center rounded-lg border border-[#D9D3C9] bg-white focus-within:border-[#9739A8]">
-                  <span className="pl-3 text-xs text-[#8A847A]">/</span>
+                <div className="flex min-w-0 items-center rounded-lg border border-[#D9D3C9] bg-white focus-within:border-[#9739A8]">
+                  <span className="shrink-0 pl-3 text-xs text-[#8A847A]">/</span>
                   <input
                     value={slug}
                     onChange={(e) => {
@@ -288,7 +288,7 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
                       setSlug(toSlug(e.target.value));
                     }}
                     placeholder={def.examples.slug}
-                    className="w-full rounded-lg bg-transparent px-1 py-1.5 text-xs text-[#0F1C1D] focus:outline-hidden"
+                    className="min-w-0 w-full rounded-lg bg-transparent px-1 py-1.5 text-xs text-[#0F1C1D] focus:outline-hidden"
                   />
                 </div>
               </div>
@@ -297,13 +297,13 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
 
           <section className={card}>
             <h3 className="mb-1 text-sm font-semibold text-[#0F1C1D]">Banner</h3>
-            <p className="mb-4 text-[11px] text-[#5F6C6D]">Large image at the top of the page with the title and short description.</p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="sm:col-span-2">
+            <p className="mb-3 sm:mb-4 text-[11px] text-[#5F6C6D]">Large image at the top of the page with the title and short description.</p>
+            <div className="grid gap-3 sm:gap-4 sm:grid-cols-2">
+              <div className="min-w-0 sm:col-span-2">
                 <FieldLabel label="Title" required />
                 <input value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} className={inputClass} />
               </div>
-              <div className="sm:col-span-2">
+              <div className="min-w-0 sm:col-span-2">
                 <FieldLabel label="Short description" />
                 <textarea
                   rows={2}
@@ -326,13 +326,12 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
                 currentUrl={page?.heroImageMobileUrl}
                 file={heroImageMobile}
                 onFileChange={setHeroImageMobile}
-                aspect="aspect-[16/7]"
               />
             </div>
           </section>
 
-          <div className="flex items-center justify-between pt-2">
-            <h3 className="font-lora text-lg text-[#0F1C1D]">Page sections</h3>
+          <div className="flex flex-col gap-0.5 sm:flex-row sm:items-center sm:justify-between pt-1 sm:pt-2">
+            <h3 className="font-lora text-base sm:text-lg text-[#0F1C1D]">Page sections</h3>
             <span className="text-[11px] text-[#8A847A]">Shown on the website in this order</span>
           </div>
 
@@ -348,9 +347,9 @@ export function ImpactPageEditor({ categorySlug, pageId }: ImpactPageEditorProps
           ))}
         </div>
 
-        <aside className="space-y-6">
+        <aside className="min-w-0 space-y-4 sm:space-y-6">
           <section className={card}>
-            <h3 className="mb-4 text-sm font-semibold text-[#0F1C1D]">Publishing</h3>
+            <h3 className="mb-3 sm:mb-4 text-sm font-semibold text-[#0F1C1D]">Publishing</h3>
             <div className="space-y-4">
               <div>
                 <FieldLabel label="Status" />
