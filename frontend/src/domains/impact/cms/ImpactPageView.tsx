@@ -57,7 +57,9 @@ const paras = (v: unknown): string[] => {
   return [];
 };
 const photos = (v: unknown, alt: string) =>
-  (Array.isArray(v) ? v : []).map((url, i) => ({ src: img(url), alt: `${alt} ${i + 1}` }));
+  (Array.isArray(v) ? v : [])
+    .filter((url): url is string => typeof url === "string" && url.trim() !== "")
+    .map((url, i) => ({ src: img(url), alt: `${alt} ${i + 1}` }));
 const button = (v: unknown) => {
   const b = obj(v);
   const label = str(b?.label);
@@ -173,15 +175,15 @@ function TextBlock({ section }: { section: Json }) {
   );
 }
 
-function EducationSections({ content, slug }: { content: Json; slug: string }) {
+function EducationSections({ content, slug, layoutType }: { content: Json; slug: string; layoutType: ImpactLayout }) {
   const intro = obj(content.intro);
   const right = obj(content.storyImageRight);
   const left = obj(content.storyImageLeft);
   const community = obj(content.communityStory);
   const statsStrip = obj(content.statsStrip);
-  const gallery = obj(content.gallery);
   const card = obj(community?.featureCard);
   const communityHeading = str(community?.heading);
+  const galleryCta = galleryPageButton({ layoutType, content, slug });
 
   return (
     <>
@@ -189,9 +191,10 @@ function EducationSections({ content, slug }: { content: Json; slug: string }) {
       {right && <Story section={right} />}
       {left && (
         <Story
-          section={left}
+          // Gallery CTA is owned by content.gallery (CMS), not a hardcoded story button.
+          section={galleryCta ? { ...left, button: undefined } : left}
           imageLeft
-          extraButton={gallery ? { label: str(gallery.ctaLabel, "View All Photos"), href: `/${slug}/gallery` } : undefined}
+          extraButton={galleryCta}
         />
       )}
       {community && (
@@ -248,7 +251,7 @@ function WomenSections({ content }: { content: Json }) {
   );
 }
 
-function SkillsSections({ content, slug }: { content: Json; slug: string }) {
+function SkillsSections({ content, slug, layoutType }: { content: Json; slug: string; layoutType: ImpactLayout }) {
   const intro = obj(content.intro);
   const overview = obj(content.overview);
   const video = obj(content.video);
@@ -257,19 +260,17 @@ function SkillsSections({ content, slug }: { content: Json; slug: string }) {
   const stats = obj(content.impactStats);
   const gallery = obj(content.gallery);
   const videos = list(video?.videos).filter((v) => str(v.url));
-  const galleryAsPage = Boolean(gallery) && str(gallery?.displayMode, "inline") === "page";
+  const galleryCta = galleryPageButton({ layoutType, content, slug });
+  const galleryInline =
+    Boolean(gallery) && !galleryCta && str(gallery?.displayMode, "inline") === "inline";
 
   return (
     <>
       {intro && <Intro section={intro} />}
       {overview && (
         <Story
-          section={overview}
-          extraButton={
-            galleryAsPage
-              ? { label: str(gallery?.ctaLabel, "View All Photos"), href: `/${slug}/gallery` }
-              : undefined
-          }
+          section={galleryCta ? { ...overview, button: undefined } : overview}
+          extraButton={galleryCta}
         />
       )}
       {video && videos.length > 0 && (
@@ -288,8 +289,8 @@ function SkillsSections({ content, slug }: { content: Json; slug: string }) {
       {twoImage && <TwoImageStory section={twoImage} />}
       {featureGrid && <FeatureGrid section={featureGrid} />}
       {stats && <Stats section={stats} strip={str(stats.style) === "strip"} />}
-      {gallery && !galleryAsPage && (
-        <GallerySection1Row heading={str(gallery.heading, "Gallery")} images={photos(gallery.images, "Gallery photo")} />
+      {galleryInline && (
+        <GallerySection1Row heading={str(gallery?.heading, "Gallery")} images={photos(gallery?.images, "Gallery photo")} />
       )}
     </>
   );
@@ -328,9 +329,13 @@ export function ImpactPageView({ data }: { data: ImpactPageData }) {
         imageMobile={str(data.heroImageMobile, heroImage)}
         imageAlt={data.heroTitle}
       />
-      {data.layoutType === "education" && <EducationSections content={content} slug={data.slug} />}
+      {data.layoutType === "education" && (
+        <EducationSections content={content} slug={data.slug} layoutType={data.layoutType} />
+      )}
       {data.layoutType === "women_empowerment" && <WomenSections content={content} />}
-      {data.layoutType === "skills_employment" && <SkillsSections content={content} slug={data.slug} />}
+      {data.layoutType === "skills_employment" && (
+        <SkillsSections content={content} slug={data.slug} layoutType={data.layoutType} />
+      )}
       {(data.layoutType === "model_village" || data.layoutType === "health") && (
         <VillageHealthSections content={content} />
       )}
@@ -338,16 +343,61 @@ export function ImpactPageView({ data }: { data: ImpactPageData }) {
   );
 }
 
-/** Education galleries, and Skills galleries set to "Separate gallery page", live at /{slug}/gallery. */
+/** True when CMS gallery has at least one real image and should expose /{slug}/gallery. */
 export function hasGalleryPage(data: ImpactPageData): boolean {
   const gallery = obj(data.content.gallery);
   if (!gallery) return false;
+  const images = photos(gallery.images, "Gallery photo");
+  if (images.length === 0) return false;
   if (data.layoutType === "education") return true;
   return data.layoutType === "skills_employment" && str(gallery.displayMode) === "page";
 }
 
-export function ImpactGalleryView({ data }: { data: ImpactPageData }) {
+/** Gallery CTA only when the separate gallery page can actually render images. */
+export function galleryPageButton(
+  data: Pick<ImpactPageData, "layoutType" | "content" | "slug">,
+): { label: string; href: string } | undefined {
+  if (!hasGalleryPage(data as ImpactPageData)) return undefined;
+  const gallery = obj(data.content.gallery);
+  return {
+    label: str(gallery?.ctaLabel, "View All Photos"),
+    href: `/${data.slug}/gallery`,
+  };
+}
+
+/**
+ * Renders the CMS photo gallery.
+ * `withChrome` adds hero + intro for the public /{slug}/gallery page.
+ */
+export function ImpactGalleryView({
+  data,
+  withChrome = false,
+}: {
+  data: ImpactPageData;
+  withChrome?: boolean;
+}) {
   const gallery = obj(data.content.gallery);
   if (!gallery || !hasGalleryPage(data)) return null;
-  return <GallerySection heading={str(gallery.heading, "Gallery")} images={photos(gallery.images, "Gallery photo")} />;
+
+  const intro = obj(data.content.intro);
+  const images = photos(gallery.images, "Gallery photo");
+  if (images.length === 0) return null;
+
+  return (
+    <>
+      {withChrome && (
+        <>
+          <HeroBanner
+            heading={data.heroTitle}
+            description={data.heroDescription}
+            image={data.heroImage}
+            imageMobile={data.heroImageMobile || data.heroImage}
+            imageAlt={data.heroTitle}
+          />
+          {intro && <Intro section={intro} />}
+        </>
+      )}
+      <GallerySection heading={str(gallery.heading, "Gallery")} images={images} />
+    </>
+  );
 }
