@@ -121,8 +121,9 @@ main() {
   log "Starting containers"
   compose up -d --remove-orphans
 
-  if [[ "$reload_nginx" == "true" ]]; then
-    log "Recreating nginx with updated configuration"
+  # Recreate nginx after any app rebuild so upstream DNS is refreshed (avoids 502).
+  if [[ "$reload_nginx" == "true" ]] || ((${#services[@]} > 0)); then
+    log "Recreating nginx (config and/or upstream IPs)"
     compose up -d --force-recreate nginx
   else
     compose exec -T nginx nginx -s reload 2>/dev/null || true
