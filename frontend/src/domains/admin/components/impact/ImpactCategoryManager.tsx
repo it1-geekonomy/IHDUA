@@ -142,14 +142,14 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
   const newHref = `/admin/impact/${def.slug}/new`;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 border-b border-[#E5E0D8] pb-5 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <div className="flex items-center gap-3">
+    <div className="w-full min-w-0 space-y-4 sm:space-y-6">
+      <div className="flex flex-col gap-3 sm:gap-4 border-b border-[#E5E0D8] pb-4 sm:pb-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Typography variant="h4" className="font-lora text-[#0F1C1D]">
               {def.name}
             </Typography>
-            <span className="rounded-full bg-[#1A0F1C]/5 px-2.5 py-0.5 font-figtree font-semibold text-[#1A0F1C]">
+            <span className="rounded-full bg-[#1A0F1C]/5 px-2.5 py-0.5 font-figtree text-xs font-semibold text-[#1A0F1C]">
               {meta.total} {meta.total === 1 ? "page" : "pages"}
             </span>
           </div>
@@ -157,7 +157,7 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
             {def.summary} All pages share the {def.name} layout ({def.sections.length} sections).
           </Typography>
         </div>
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
           <button
             type="button"
             onClick={() => {
@@ -227,9 +227,114 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
         </div>
       </div>
 
-      <div className="rounded-2xl border border-[#E5E0D8] bg-white shadow-2xs overflow-hidden">
+      {/* Mobile cards */}
+      <div className="space-y-3 sm:hidden">
+        {loading && !pages.length ? (
+          <div className="rounded-xl border border-[#E5E0D8] bg-white px-4 py-12 text-center text-[#8A847A]">
+            <Loader2 className="mx-auto h-4 w-4 animate-spin" />
+          </div>
+        ) : pages.length === 0 ? (
+          <div className="rounded-xl border border-[#E5E0D8] bg-white px-4 py-12 text-center text-xs text-[#8A847A]">
+            {query.trim() ? "No pages match your search." : tab === "deleted" ? "Nothing in recently deleted." : (
+              <span>
+                No {def.name} pages yet.{" "}
+                <Link href={newHref} className="font-semibold text-[#9739A8] underline">
+                  Add the first one
+                </Link>
+              </span>
+            )}
+          </div>
+        ) : (
+          pages.map((p) => (
+            <div key={p.id} className="rounded-xl border border-[#E5E0D8] bg-white p-3.5 shadow-2xs">
+              <div className="flex items-start gap-3">
+                <div className="flex h-12 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[#E5E0D8] bg-[#FAF8F4]">
+                  {p.cardImageUrl || p.heroImageUrl ? (
+                    <img src={(p.cardImageUrl || p.heroImageUrl)!} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <FileText className="h-4 w-4 text-[#B5AEA3]" />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-figtree text-sm font-semibold text-[#0F1C1D]">{p.name}</p>
+                  <p className="truncate text-[11px] text-[#8A847A]">/{p.slug}</p>
+                  <p className="mt-1 text-[11px] text-[#5F6C6D]">
+                    Order {p.displayOrder} ·{" "}
+                    {new Date(p.deletedAt || p.updatedAt).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                {tab === "active" ? (
+                  <>
+                    <div className="min-w-0 flex-1">
+                      <AdminSelect<ContentStatus>
+                        value={p.status}
+                        onChange={(s) =>
+                          s !== p.status &&
+                          void run(p.id, () => updateImpactPageStatus(token!, p.id, s), `Status changed to ${s}.`)
+                        }
+                        options={STATUS_OPTIONS}
+                        disabled={busyId === p.id}
+                        dropdownClassName="w-48 z-[100] shadow-2xl"
+                      />
+                    </div>
+                    {p.status === "published" && (
+                      <a
+                        href={`/${p.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="rounded-lg border border-[#D9D3C9] p-2 text-[#5F6C6D] hover:text-[#0F1C1D]"
+                        title="View on website"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </a>
+                    )}
+                    <Link
+                      href={`/admin/impact/${def.slug}/${p.id}`}
+                      className="rounded-lg border border-[#D9D3C9] p-2 text-[#5F6C6D] hover:text-[#9739A8]"
+                      title="Edit page"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => setDeleteTarget(p)}
+                      className="rounded-lg border border-[#D9D3C9] p-2 text-[#5F6C6D] hover:bg-rose-50 hover:text-rose-600 cursor-pointer"
+                      title="Delete page"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className={cn("rounded-full border px-2 py-0.5 text-[11px] font-semibold capitalize", STATUS_STYLES[p.status])}>
+                      {p.status}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={busyId === p.id}
+                      onClick={() => void run(p.id, () => restoreImpactPage(token!, p.id), "Page restored.")}
+                      className="ml-auto inline-flex items-center gap-1 rounded-lg border border-[#D9D3C9] bg-white px-2.5 py-1 text-[11px] font-semibold text-[#0F1C1D] hover:border-[#9739A8] disabled:opacity-50 cursor-pointer"
+                    >
+                      <RotateCcw className="h-3.5 w-3.5" /> Restore
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Desktop / tablet table */}
+      <div className="hidden sm:block rounded-2xl border border-[#E5E0D8] bg-white shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left font-figtree text-xs">
+          <table className="w-full min-w-[640px] text-left font-figtree text-xs">
             <thead className="border-b border-[#E5E0D8] bg-[#FAF8F4] text-[11px] uppercase tracking-wide text-[#8A847A]">
               <tr>
                 <th className="px-5 py-3 font-semibold rounded-tl-2xl">Page</th>
@@ -354,36 +459,36 @@ export function ImpactCategoryManager({ categorySlug }: { categorySlug: string }
           </tbody>
         </table>
         </div>
-
-        {meta.totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-[#E5E0D8] bg-[#FAF8F4] px-4 py-3">
-            <p className="font-figtree text-xs text-[#5F6C6D]">
-              Showing Page <span className="font-semibold text-[#0F1C1D]">{meta.page}</span> of{" "}
-              <span className="font-semibold text-[#0F1C1D]">{meta.totalPages}</span> ({meta.total} total)
-            </p>
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => setPage(meta.page - 1)}
-                disabled={meta.page <= 1 || loading}
-                className="inline-flex h-7 items-center gap-1 rounded-lg border border-[#D9D3C9] bg-white px-2 text-xs font-medium text-[#5F6C6D] hover:text-[#00191B] disabled:opacity-40 transition-colors cursor-pointer"
-              >
-                <ChevronLeft className="h-3.5 w-3.5" />
-                <span>Prev</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setPage(meta.page + 1)}
-                disabled={meta.page >= meta.totalPages || loading}
-                className="inline-flex h-7 items-center gap-1 rounded-lg border border-[#D9D3C9] bg-white px-2 text-xs font-medium text-[#5F6C6D] hover:text-[#00191B] disabled:opacity-40 transition-colors cursor-pointer"
-              >
-                <span>Next</span>
-                <ChevronRight className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          </div>
-        )}
       </div>
+
+      {meta.totalPages > 1 && (
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-[#E5E0D8] bg-[#FAF8F4] px-3 sm:px-4 py-3">
+          <p className="font-figtree text-xs text-[#5F6C6D]">
+            Showing Page <span className="font-semibold text-[#0F1C1D]">{meta.page}</span> of{" "}
+            <span className="font-semibold text-[#0F1C1D]">{meta.totalPages}</span> ({meta.total} total)
+          </p>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setPage(meta.page - 1)}
+              disabled={meta.page <= 1 || loading}
+              className="inline-flex h-7 items-center gap-1 rounded-lg border border-[#D9D3C9] bg-white px-2 text-xs font-medium text-[#5F6C6D] hover:text-[#00191B] disabled:opacity-40 transition-colors cursor-pointer"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+              <span>Prev</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setPage(meta.page + 1)}
+              disabled={meta.page >= meta.totalPages || loading}
+              className="inline-flex h-7 items-center gap-1 rounded-lg border border-[#D9D3C9] bg-white px-2 text-xs font-medium text-[#5F6C6D] hover:text-[#00191B] disabled:opacity-40 transition-colors cursor-pointer"
+            >
+              <span>Next</span>
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">

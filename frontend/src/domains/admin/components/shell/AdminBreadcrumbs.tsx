@@ -58,23 +58,38 @@ export function AdminBreadcrumbs({ pathname }: AdminBreadcrumbsProps) {
   return (
     <nav
       aria-label="Breadcrumbs"
-      className="flex items-center gap-1.5 sm:gap-2 font-figtree text-xs sm:text-sm overflow-x-auto py-1"
+      className="flex min-w-0 items-center gap-1 sm:gap-2 font-figtree text-[11px] sm:text-sm overflow-x-auto no-scrollbar py-1"
     >
-      {breadcrumbs.map((crumb, idx) => (
-        <div key={crumb.href} className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-          {idx > 0 && <ChevronRight className="h-3.5 w-3.5 text-[#8A847A]" />}
-          {crumb.isLast ? (
-            <span className="font-bold text-[#00191B]">{crumb.label}</span>
-          ) : (
-            <Link
-              href={crumb.href}
-              className="font-medium text-[#5F6C6D] transition-colors hover:text-[#9739A8]"
-            >
-              {crumb.label}
-            </Link>
-          )}
-        </div>
-      ))}
+      {breadcrumbs.map((crumb, idx) => {
+        // Drop the root "Admin CMS" crumb below sm — saves space on long impact trails.
+        const hideOnMobile = idx === 0 && breadcrumbs.length > 2;
+        return (
+          <div
+            key={crumb.href}
+            className={`flex min-w-0 items-center gap-1 sm:gap-2 shrink-0 last:min-w-0 last:shrink ${
+              hideOnMobile ? "max-sm:hidden" : ""
+            }`}
+          >
+            {idx > 0 && (
+              <ChevronRight
+                className={`h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-[#8A847A] ${
+                  idx === 1 && breadcrumbs.length > 2 ? "max-sm:hidden" : ""
+                }`}
+              />
+            )}
+            {crumb.isLast ? (
+              <span className="truncate font-bold text-[#00191B]">{crumb.label}</span>
+            ) : (
+              <Link
+                href={crumb.href}
+                className="font-medium text-[#5F6C6D] transition-colors hover:text-[#9739A8]"
+              >
+                {crumb.label}
+              </Link>
+            )}
+          </div>
+        );
+      })}
     </nav>
   );
 }

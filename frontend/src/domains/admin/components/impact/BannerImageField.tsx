@@ -25,7 +25,7 @@ export function BannerImageField({
   currentUrl,
   file,
   onFileChange,
-  aspect = "aspect-[16/7]",
+  aspect = "aspect-[2/1] sm:aspect-[16/7]",
 }: BannerImageFieldProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -54,7 +54,7 @@ export function BannerImageField({
   const shown = preview || currentUrl;
 
   return (
-    <div>
+    <div className="min-w-0">
       <FieldLabel label={label} required={required} />
       <button
         type="button"
