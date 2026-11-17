@@ -99,7 +99,10 @@ def build_multi_queries(query: str, intents: set[str], original: str = "") -> li
     if "health" in intents:
         queries.append("Free medical camps healthcare doctor awareness diagnostics")
     if "donate" in intents:
-        queries.append("How to donate online 80G tax benefit receipt recurring donation")
+        queries.append(
+            "How to donate online project-based funding projects component breakup "
+            "general donation 80G tax benefit receipt recurring donation /donate"
+        )
     if "model_village" in intents:
         queries.append("Model village rejuvenation increase the green cover tree plantation sanitation")
     if "contact" in intents:

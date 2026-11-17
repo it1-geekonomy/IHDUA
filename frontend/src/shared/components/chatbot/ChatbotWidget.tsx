@@ -656,6 +656,7 @@ export function ChatbotWidget() {
                                 const isDonate =
                                   s.url === "#donate" ||
                                   s.url === "/#donate" ||
+                                  s.url === "/donate" ||
                                   s.url === "#cta-donate" ||
                                   s.url === "/#cta-donate" ||
                                   s.title?.toLowerCase().includes("donate");
@@ -667,6 +668,10 @@ export function ChatbotWidget() {
                                       type="button"
                                       onClick={() => {
                                         setOpen(false);
+                                        if (s.url === "/donate") {
+                                          router.push("/donate");
+                                          return;
+                                        }
                                         if (isHomePath(pathname)) {
                                           void scrollToDonateSection();
                                         } else {
