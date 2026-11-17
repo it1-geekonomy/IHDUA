@@ -93,6 +93,15 @@ main() {
 
   if has_change '^nginx/'; then reload_nginx=true; fi
 
+  # Host git can be ahead of running images (e.g. git pull without rebuild).
+  # If repo package.json has seed:funding:prod but the live container does not, force rebuild.
+  if [[ "$rebuild_backend" != "true" ]] && grep -q 'seed:funding:prod' backend/package.json 2>/dev/null; then
+    if ! compose exec -T backend node -e "process.exit(require('./package.json').scripts['seed:funding:prod']?0:1)" >/dev/null 2>&1; then
+      warn "Backend image is stale (missing seed:funding:prod). Forcing backend rebuild."
+      rebuild_backend=true
+    fi
+  fi
+
   local services=()
   if [[ "$rebuild_ai" == "true" ]]; then services+=(ai-chatbot); fi
   if [[ "$rebuild_backend" == "true" ]]; then services+=(backend); fi
