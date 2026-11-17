@@ -10,7 +10,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -23,7 +22,6 @@ import {
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { SubscribeNewsletterDto } from './dto/subscribe-newsletter.dto';
 import { UpdateNewsletterSubscriberDto } from './dto/update-newsletter-subscriber.dto';
 import { NewsletterSubscriber } from './entities/newsletter-subscriber.entity';
@@ -54,7 +52,6 @@ export class NewsletterSubscribersController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List all newsletter subscribers (CMS)',
@@ -71,7 +68,6 @@ export class NewsletterSubscribersController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get subscriber by ID (CMS)',
@@ -88,11 +84,11 @@ export class NewsletterSubscribersController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Update subscriber (CMS)',
-    description: 'Updates subscriber details or active status. Requires Bearer token.',
+    description:
+      'Updates subscriber details or active status. Requires Bearer token.',
   })
   @ApiOkResponse({ type: NewsletterSubscriber })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
@@ -108,7 +104,6 @@ export class NewsletterSubscribersController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Soft-delete subscriber (CMS)',
@@ -124,11 +119,11 @@ export class NewsletterSubscribersController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Restore soft-deleted subscriber (CMS)',
-    description: 'Restores a previously soft-deleted subscriber. Requires Bearer token.',
+    description:
+      'Restores a previously soft-deleted subscriber. Requires Bearer token.',
   })
   @ApiOkResponse({ type: NewsletterSubscriber })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })

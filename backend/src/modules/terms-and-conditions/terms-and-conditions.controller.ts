@@ -9,7 +9,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -20,7 +19,6 @@ import {
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateTermsAndConditionsDto } from './dto/create-terms-and-conditions.dto';
 import { UpdateTermsAndConditionsDto } from './dto/update-terms-and-conditions.dto';
 import { TermsAndConditions } from './entities/terms-and-conditions.entity';
@@ -52,7 +50,6 @@ export class TermsAndConditionsController {
   }
 
   @Get('deleted')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List soft-deleted terms and conditions (Admin)',
@@ -66,7 +63,6 @@ export class TermsAndConditionsController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new terms and conditions entry (Admin)' })
   @ApiResponse({
@@ -83,7 +79,6 @@ export class TermsAndConditionsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary:
@@ -98,7 +93,6 @@ export class TermsAndConditionsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get terms and conditions by id (Admin)' })
   @ApiResponse({
@@ -115,7 +109,6 @@ export class TermsAndConditionsController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Restore soft-deleted terms and conditions (Admin)',
@@ -134,7 +127,6 @@ export class TermsAndConditionsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update terms and conditions entry by id (Admin)' })
   @ApiResponse({
@@ -154,7 +146,6 @@ export class TermsAndConditionsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Soft-delete terms and conditions entry by id (Admin)',
