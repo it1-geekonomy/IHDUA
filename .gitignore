@@ -1,0 +1,19 @@
+# Production secrets / local env (keep on the server only)
+.env
+.env.prod
+.env.local
+.env.*.local
+
+# Certbot / Let's Encrypt (created on the droplet)
+certbot/www/**
+certbot/conf/**
+!certbot/www/.gitkeep
+!certbot/conf/.gitkeep
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+
+# Scratch
+scratch/
