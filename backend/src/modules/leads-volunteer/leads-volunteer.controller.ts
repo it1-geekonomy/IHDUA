@@ -10,7 +10,6 @@ import {
   Post,
   Query,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -29,7 +28,6 @@ import { Public } from '../../common/decorators/public.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { UserRole } from '../../common/enums/user-role.enum';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CdnFile } from '../../common/storage/cdn.service';
 import { CreateLeadVolunteerDto } from './dto/create-lead-volunteer.dto';
 import {
@@ -53,7 +51,8 @@ export class LeadsVolunteerController {
   @UseInterceptors(FileInterceptor('resume'))
   @ApiOperation({
     summary: 'Submit volunteer inquiry (website)',
-    description: 'Public endpoint for website volunteer modal submissions with resume upload.',
+    description:
+      'Public endpoint for website volunteer modal submissions with resume upload.',
   })
   @ApiCreatedResponse({ type: LeadVolunteer })
   async create(
@@ -68,7 +67,6 @@ export class LeadsVolunteerController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List all volunteer leads (CMS)',
@@ -87,7 +85,6 @@ export class LeadsVolunteerController {
   }
 
   @Get('deleted')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List recently deleted volunteer leads (CMS trash)',
@@ -107,7 +104,6 @@ export class LeadsVolunteerController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get volunteer inquiry by id (CMS)' })
   @ApiOkResponse({ type: LeadVolunteer })
@@ -123,7 +119,6 @@ export class LeadsVolunteerController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateLeadVolunteerMultipartDto })
@@ -146,11 +141,11 @@ export class LeadsVolunteerController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Restore soft-deleted volunteer inquiry (CMS)',
-    description: 'Clears deletedAt so the inquiry shows again in the CMS inbox.',
+    description:
+      'Clears deletedAt so the inquiry shows again in the CMS inbox.',
   })
   @ApiOkResponse({ type: LeadVolunteer })
   @ApiUnauthorizedResponse({
@@ -165,7 +160,6 @@ export class LeadsVolunteerController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Soft-delete volunteer inquiry (CMS)',

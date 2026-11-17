@@ -9,7 +9,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -22,7 +21,6 @@ import {
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateMilestoneDto } from './dto/create-milestone.dto';
 import { UpdateMilestoneDto } from './dto/update-milestone.dto';
 import { Milestone } from './entities/milestone.entity';
@@ -53,7 +51,6 @@ export class MilestonesController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Create a milestone (CMS Admin)',
@@ -71,7 +68,6 @@ export class MilestonesController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List all milestones (CMS Admin)',
@@ -90,7 +86,6 @@ export class MilestonesController {
   }
 
   @Get('deleted')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List soft-deleted milestones (CMS trash)',
@@ -109,7 +104,6 @@ export class MilestonesController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get milestone by id (CMS Admin)' })
   @ApiOkResponse({ type: Milestone })
@@ -125,7 +119,6 @@ export class MilestonesController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update milestone (CMS Admin)' })
   @ApiOkResponse({ type: Milestone })
@@ -144,7 +137,6 @@ export class MilestonesController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Restore soft-deleted milestone (CMS Admin)',
@@ -162,7 +154,6 @@ export class MilestonesController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Soft-delete milestone (CMS Admin)',

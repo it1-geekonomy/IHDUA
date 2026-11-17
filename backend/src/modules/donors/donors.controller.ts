@@ -9,7 +9,6 @@ import {
   ParseUUIDPipe,
   Post,
   Req,
-  UseGuards,
   type RawBodyRequest,
 } from '@nestjs/common';
 import type { Request } from 'express';
@@ -25,7 +24,6 @@ import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { UserRole } from '../../common/enums/user-role.enum';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateDonationOrderDto } from './dto/create-donation-order.dto';
 import { VerifyDonationPaymentDto } from './dto/verify-donation-payment.dto';
 import { DonationSubscriptionsService } from './donation-subscriptions.service';
@@ -94,7 +92,6 @@ export class DonorsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'List all donations (admin)' })
   @ApiOkResponse({
@@ -114,7 +111,6 @@ export class DonorsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get donation by id (admin)',
