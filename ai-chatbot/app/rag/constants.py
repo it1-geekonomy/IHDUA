@@ -1,5 +1,5 @@
 # --- Public website routes ---
-DONATE_URL = "/#donate"
+DONATE_URL = "/donate"
 ABOUT_URL = "/about"
 EDUCATION_URL = "/education"
 VINAYAKA_URL = "/vinayakagnana-vidyashale-mysore"

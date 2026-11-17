@@ -35,7 +35,18 @@ def hybrid_retrieve(
     if "governance" in intents:
         keywords.extend(["12a", "80g", "fcra", "trust deed", "certificate", "documents"])
     if "donate" in intents:
-        keywords.extend(["donate", "80g", "tax", "exemption"])
+        keywords.extend(
+            [
+                "donate",
+                "80g",
+                "tax",
+                "exemption",
+                "project",
+                "funding",
+                "breakup",
+                "component",
+            ]
+        )
     if "health" in intents:
         keywords.extend(["health", "camp", "medical"])
     if "model_village" in intents:

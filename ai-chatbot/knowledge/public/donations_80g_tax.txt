@@ -1,12 +1,23 @@
 Title: How to Donate to IHDUA
-Source: IHDUA website donation form (how the live donation system works)
-Website: /#donate
+Source: IHDUA website donation form and /donate funding projects page
+Website: /donate
 
 Donating online
-- Donations are made through the Donate form on the IHDUA website. Payments are processed securely by Razorpay; the payment options shown depend on what Razorpay offers for the chosen currency.
+- Donations are made through the IHDUA website. Payments are processed securely by Razorpay; the payment options shown depend on what Razorpay offers for the chosen currency.
 - Donors choose an amount and a cause, then enter their details (name, phone and email; Indian donors can also add their PAN and address).
 - Donors in India donate in INR. Donors outside India can choose their country and donate in a supported foreign currency.
-- After a successful payment, the donor receives a donation receipt by email.
+- After a successful payment, the donor receives a donation certificate by email. Indian donors who enter a PAN also receive an 80G tax receipt.
+
+Project-based donations
+- Yes, donors can donate project-wise. Open the Donate page at /donate to see IHDUA funding projects seeking support.
+- Each project shows a total amount sought and a component-wise funding breakup (line items).
+- Donors can:
+  1. Choose a specific component (line item) and donate that amount.
+  2. Support a full project.
+  3. Make a general donation that is not tied to one project component.
+- On /donate, use “Browse projects” to review breakups, or “General donation” to give without picking a project line item.
+- Examples of projects that may appear (published projects are managed in the CMS and can change): School Essentials; Rural School Transformation; Watershed Development; Organic Farming Programme; Prevention of Child Marriage; Solid Waste Management; Support for Persons with Disabilities; Millet Processing & Food Unit; Edible Oil Processing Unit.
+- The donation category recorded for a project gift is usually the project title, or “Project title — Component name” when a line item is chosen.
 
 Tax benefit for Indian donors
 - Donations from India in INR are eligible for the Section 80G tax benefit. Donors should enter their PAN in the form so it is recorded for the 80G receipt.
