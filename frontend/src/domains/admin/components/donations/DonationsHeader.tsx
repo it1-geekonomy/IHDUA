@@ -1,6 +1,6 @@
 "use client";
 
-import { HandCoins, RotateCw } from "lucide-react";
+import { HandCoins, Plus, RotateCw } from "lucide-react";
 import Typography from "@/lib/Typography";
 import { ADMIN_COPY } from "@/domains/admin/constants";
 
@@ -9,6 +9,7 @@ interface DonationsHeaderProps {
   totalRaisedINR: number;
   loading: boolean;
   onRefresh: () => void;
+  onAddOffline?: () => void;
 }
 
 export function DonationsHeader({
@@ -16,6 +17,7 @@ export function DonationsHeader({
   totalRaisedINR,
   loading,
   onRefresh,
+  onAddOffline,
 }: DonationsHeaderProps) {
   const formattedRaised = new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -55,6 +57,16 @@ export function DonationsHeader({
           <RotateCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
           <span>Refresh</span>
         </button>
+        {onAddOffline && (
+          <button
+            type="button"
+            onClick={onAddOffline}
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#9739A8] px-3 text-xs font-figtree font-semibold text-white shadow-2xs hover:opacity-95 transition-opacity cursor-pointer"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>Issue offline PDFs</span>
+          </button>
+        )}
       </div>
     </div>
   );

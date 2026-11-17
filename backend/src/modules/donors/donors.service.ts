@@ -11,12 +11,16 @@ import { Repository } from 'typeorm';
 import { DonationStatus } from '../../common/enums/donation-status.enum';
 import { DonationCategory } from '../../common/enums/donation-category.enum';
 import { RazorpayService } from '../../common/payments/razorpay.service';
+import { DonationCertificateService } from '../email/donation-certificate.service';
+import { DonationReceiptService } from '../email/donation-receipt.service';
+import { EmailService } from '../email/email.service';
 import { DonationEmailQueueService } from './donation-email-queue.service';
 import { Donor } from './entities/donor.entity';
 import {
   CreateDonationOrderDto,
   DonationCurrencyCode,
 } from './dto/create-donation-order.dto';
+import { CreateManualDonationDto } from './dto/create-manual-donation.dto';
 import { VerifyDonationPaymentDto } from './dto/verify-donation-payment.dto';
 
 type OrderNotes = {
@@ -43,6 +47,9 @@ export class DonorsService {
     private readonly donorsRepository: Repository<Donor>,
     private readonly razorpay: RazorpayService,
     private readonly emailQueue: DonationEmailQueueService,
+    private readonly certificates: DonationCertificateService,
+    private readonly receipts: DonationReceiptService,
+    private readonly email: EmailService,
   ) {}
 
   private assertPaymentSignature(dto: VerifyDonationPaymentDto) {
@@ -255,6 +262,107 @@ export class DonorsService {
       amount: saved.amount,
       currency: saved.currency,
       donationCategory: saved.donationCategory,
+    };
+  }
+
+  /**
+   * Admin: issue certificate (+ 80G when PAN is present) for an offline donor.
+   * Does not store a donors row — PDFs are returned for download / optional email.
+   */
+  async issueOfflineDocuments(dto: CreateManualDonationDto) {
+    const d = this.prepareDonation({
+      fullName: dto.fullName,
+      phone: dto.phone,
+      email: dto.email,
+      amount: dto.amount,
+      currency: dto.currency ?? 'INR',
+      donationCategory: dto.donationCategory,
+      pan: dto.pan,
+      address: dto.address,
+      city: dto.city,
+      message: dto.message,
+      countryCode: 'IN',
+      countryName: 'India',
+    });
+
+    let donatedAt = new Date();
+    if (dto.donatedAt) {
+      donatedAt = new Date(dto.donatedAt);
+      if (Number.isNaN(donatedAt.getTime())) {
+        throw new BadRequestException('donatedAt must be a valid date');
+      }
+    }
+
+    const paymentMode = dto.paymentMode ?? 'cash';
+    const offlineRef = dto.offlineReference?.trim() || '';
+    const donorId = randomUUID();
+    const receiptNumber = this.buildReceiptNumber(donorId);
+    const message = [
+      d.message,
+      `Offline donation (${paymentMode}${offlineRef ? `: ${offlineRef}` : ''})`,
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    // In-memory shape only — certificate/receipt builders read these fields.
+    const donor = {
+      id: donorId,
+      fullName: d.fullName,
+      phone: d.phone,
+      email: d.email,
+      pan: d.pan || null,
+      address: d.address || null,
+      city: d.city || null,
+      message: message || null,
+      donationCategory: d.donationCategory,
+      amount: d.amount,
+      currency: d.currency,
+      receiptNumber,
+      status: DonationStatus.PAID,
+      createdAt: donatedAt,
+      updatedAt: donatedAt,
+    } as Donor;
+
+    const certificate = await this.certificates.buildPdf(donor);
+    const receipt = d.pan ? await this.receipts.buildPdf(donor) : null;
+
+    let emailStatus: 'sent' | 'skipped' | 'error' | 'quota' | null = null;
+    let emailDetail: string | null = null;
+    if (dto.sendEmail !== false) {
+      const result = await this.email.sendDonationReceipt(donor, {
+        certificate,
+        receipt,
+      });
+      emailStatus = result.status;
+      emailDetail =
+        result.status === 'skipped'
+          ? result.reason
+          : result.status === 'error'
+            ? result.message
+            : result.status === 'quota'
+              ? `Resend ${result.scope} quota`
+              : null;
+    }
+
+    this.logger.log(
+      `Offline donation docs issued receipt=${receiptNumber} email=${emailStatus ?? 'none'}`,
+    );
+
+    return {
+      receiptNumber,
+      fullName: d.fullName,
+      email: d.email,
+      amount: d.amount,
+      currency: d.currency,
+      donationCategory: d.donationCategory,
+      pan: d.pan || null,
+      donatedAt: donatedAt.toISOString(),
+      hasCertificate: true,
+      hasReceipt: Boolean(receipt),
+      certificateBase64: certificate.toString('base64'),
+      receiptBase64: receipt ? receipt.toString('base64') : null,
+      emailStatus,
+      emailDetail,
     };
   }
 
