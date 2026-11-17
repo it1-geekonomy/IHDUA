@@ -28,6 +28,7 @@ import { ImpactCategoriesModule } from './modules/impact-categories/impact-categ
 import { ImpactInitiativesModule } from './modules/impact-initiatives/impact-initiatives.module';
 import { NewsletterSubscribersModule } from './modules/newsletter-subscribers/newsletter-subscribers.module';
 import { HomeBannersModule } from './modules/home-banners/home-banners.module';
+import { FundingProjectsModule } from './modules/funding-projects/funding-projects.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -61,6 +62,7 @@ import { UsersModule } from './modules/users/users.module';
     ImpactInitiativesModule,
     NewsletterSubscribersModule,
     HomeBannersModule,
+    FundingProjectsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -20,4 +20,5 @@ export const ApiTagsConst = {
   IMPACT_INITIATIVES: 'impact-initiatives',
   NEWSLETTER_SUBSCRIBERS: 'newsletter-subscribers',
   HOME_BANNERS: 'home-banners',
+  FUNDING_PROJECTS: 'funding-projects',
 } as const;
