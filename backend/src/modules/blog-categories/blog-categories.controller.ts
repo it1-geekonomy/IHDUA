@@ -10,7 +10,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -23,7 +22,6 @@ import {
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { BlogCategoriesService } from './blog-categories.service';
 import { CreateBlogCategoryDto } from './dto/create-blog-category.dto';
 import { UpdateBlogCategoryDto } from './dto/update-blog-category.dto';
@@ -32,9 +30,7 @@ import { BlogCategory } from './entities/blog-category.entity';
 @ApiTags(ApiTagsConst.BLOG_CATEGORIES)
 @Controller('blog-categories')
 export class BlogCategoriesController {
-  constructor(
-    private readonly blogCategoriesService: BlogCategoriesService,
-  ) {}
+  constructor(private readonly blogCategoriesService: BlogCategoriesService) {}
 
   @Public()
   @Get()
@@ -53,7 +49,6 @@ export class BlogCategoriesController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new blog category (Admin)' })
   @ApiCreatedResponse({
@@ -72,7 +67,6 @@ export class BlogCategoriesController {
   }
 
   @Get('deleted')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'List soft-deleted blog categories (CMS trash)' })
   @ApiOkResponse({ description: 'Paginated trash list' })
@@ -88,7 +82,6 @@ export class BlogCategoriesController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get blog category by id (Admin)' })
   @ApiOkResponse({
@@ -107,7 +100,6 @@ export class BlogCategoriesController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Restore soft-deleted blog category (Admin)' })
   @ApiOkResponse({
@@ -126,7 +118,6 @@ export class BlogCategoriesController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update blog category by id (Admin)' })
   @ApiOkResponse({
@@ -149,7 +140,6 @@ export class BlogCategoriesController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Soft-delete blog category by id (Admin)' })
   @ApiUnauthorizedResponse({

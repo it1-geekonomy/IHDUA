@@ -10,7 +10,6 @@ import {
   Post,
   Query,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -27,7 +26,6 @@ import {
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CdnFile } from '../../common/storage/cdn.service';
 import {
   CreateLeadershipMemberMultipartDto,
@@ -64,7 +62,6 @@ export class LeadershipMembersController {
   }
 
   @Get('deleted')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List soft-deleted leadership members (CMS Trash)',
@@ -83,7 +80,6 @@ export class LeadershipMembersController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateLeadershipMemberMultipartDto })
@@ -112,7 +108,6 @@ export class LeadershipMembersController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List all leadership members with filtering (CMS)',
@@ -132,7 +127,6 @@ export class LeadershipMembersController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get leadership member by id (CMS)',
@@ -154,7 +148,6 @@ export class LeadershipMembersController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateLeadershipMemberMultipartDto })
@@ -184,7 +177,6 @@ export class LeadershipMembersController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Restore soft-deleted leadership member (CMS)',
@@ -206,7 +198,6 @@ export class LeadershipMembersController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Soft-delete leadership member (CMS)',
