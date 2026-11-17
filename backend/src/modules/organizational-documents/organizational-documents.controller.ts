@@ -10,7 +10,6 @@ import {
   Post,
   Query,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -27,7 +26,6 @@ import {
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CdnFile } from '../../common/storage/cdn.service';
 import { CreateOrganizationalDocumentDto } from './dto/create-organizational-document.dto';
 import {
@@ -41,9 +39,7 @@ import { OrganizationalDocumentsService } from './organizational-documents.servi
 @ApiTags(ApiTagsConst.ORGANIZATIONAL_DOCUMENTS)
 @Controller('organizational-documents')
 export class OrganizationalDocumentsController {
-  constructor(
-    private readonly service: OrganizationalDocumentsService,
-  ) {}
+  constructor(private readonly service: OrganizationalDocumentsService) {}
 
   @Public()
   @Get('published')
@@ -65,7 +61,6 @@ export class OrganizationalDocumentsController {
   }
 
   @Get('deleted')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List soft-deleted organizational documents (CMS Trash)',
@@ -84,7 +79,6 @@ export class OrganizationalDocumentsController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateOrganizationalDocumentMultipartDto })
@@ -113,7 +107,6 @@ export class OrganizationalDocumentsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List all organizational documents with filtering (CMS)',
@@ -133,7 +126,6 @@ export class OrganizationalDocumentsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get organizational document by id (CMS)',
@@ -155,7 +147,6 @@ export class OrganizationalDocumentsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: UpdateOrganizationalDocumentMultipartDto })
@@ -185,7 +176,6 @@ export class OrganizationalDocumentsController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Restore soft-deleted organizational document (CMS)',
@@ -207,7 +197,6 @@ export class OrganizationalDocumentsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Soft-delete organizational document (CMS)',

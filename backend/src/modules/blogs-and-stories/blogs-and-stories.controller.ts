@@ -10,7 +10,6 @@ import {
   Post,
   Query,
   UploadedFiles,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -27,7 +26,6 @@ import {
 } from '@nestjs/swagger';
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import {
   BlogAndStoryFiles,
   BlogsAndStoriesService,
@@ -49,7 +47,6 @@ export class BlogsAndStoriesController {
   ) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data', 'application/json')
   @ApiBody({ type: CreateBlogAndStoryMultipartDto })
@@ -80,7 +77,6 @@ export class BlogsAndStoriesController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List all blogs and stories (CMS)',
@@ -100,7 +96,6 @@ export class BlogsAndStoriesController {
   }
 
   @Get('deleted')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List recently deleted blogs and stories (CMS trash)',
@@ -209,7 +204,6 @@ export class BlogsAndStoriesController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get blog or story by id (CMS, any status)' })
   @ApiOkResponse({ type: BlogAndStory })
@@ -225,7 +219,6 @@ export class BlogsAndStoriesController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Restore soft-deleted blog or story (CMS / super-admin)',
@@ -245,7 +238,6 @@ export class BlogsAndStoriesController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiConsumes('multipart/form-data', 'application/json')
   @ApiBody({ type: UpdateBlogAndStoryMultipartDto })
@@ -277,7 +269,6 @@ export class BlogsAndStoriesController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Soft-delete blog or story (CMS / super-admin)',

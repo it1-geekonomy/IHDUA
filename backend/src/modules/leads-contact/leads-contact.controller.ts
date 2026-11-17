@@ -9,7 +9,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -21,14 +20,16 @@ import {
 } from '@nestjs/swagger';
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../common/enums/user-role.enum';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateLeadContactDto } from './dto/create-lead-contact.dto';
 import { UpdateLeadContactDto } from './dto/update-lead-contact.dto';
 import { LeadContact } from './entities/lead-contact.entity';
 import { LeadsContactService } from './leads-contact.service';
 
 @ApiTags(ApiTagsConst.LEADS_CONTACT)
+@Roles(UserRole.ADMIN)
 @Controller('leads-contact')
 export class LeadsContactController {
   constructor(private readonly service: LeadsContactService) {}
@@ -49,7 +50,6 @@ export class LeadsContactController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List all contact leads (CMS)',
@@ -68,7 +68,6 @@ export class LeadsContactController {
   }
 
   @Get('deleted')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List recently deleted contact leads (CMS trash)',
@@ -88,7 +87,6 @@ export class LeadsContactController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get contact lead by id (CMS)' })
   @ApiOkResponse({ type: LeadContact })
@@ -104,7 +102,6 @@ export class LeadsContactController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update contact lead (CMS)' })
   @ApiOkResponse({ type: LeadContact })
@@ -123,7 +120,6 @@ export class LeadsContactController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Restore soft-deleted contact lead (CMS)',
@@ -142,7 +138,6 @@ export class LeadsContactController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Soft-delete contact lead (CMS)',

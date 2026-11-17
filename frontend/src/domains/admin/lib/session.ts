@@ -8,10 +8,13 @@ export const ADMIN_SAVED_EMAIL_KEY = "ihdua_admin_saved_email";
 export const SESSION_EXPIRED_EVENT = "ihdua:admin:session_expired";
 export const SESSION_LOGOUT_EVENT = "ihdua:admin:logout";
 
+export type AdminUserRole = "ADMIN" | "CONTENT";
+
 export type AdminUser = {
   id: string;
   fullName: string;
   email: string;
+  role?: AdminUserRole;
 };
 
 export type LogoutReason =
@@ -32,11 +35,33 @@ function setCookie(name: string, value: string, maxAgeSeconds?: number) {
 }
 
 /**
- * Clears a cookie by expiring it immediately.
+ * Clears a cookie across all possible paths and security flags to guarantee removal.
  */
 function deleteCookie(name: string) {
   if (typeof document === "undefined") return;
-  document.cookie = `${name}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
+  const paths = ["/", "/admin", ""];
+  const expires = "Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0";
+  
+  for (const path of paths) {
+    const pathPart = path ? `; Path=${path}` : "";
+    document.cookie = `${name}=; ${expires}${pathPart}; SameSite=Lax`;
+    document.cookie = `${name}=; ${expires}${pathPart}; SameSite=Lax; Secure`;
+    document.cookie = `${name}=; ${expires}${pathPart}`;
+  }
+
+  // Also try clearing with domain if applicable
+  try {
+    const hostname = window.location.hostname;
+    if (hostname && hostname !== "localhost") {
+      for (const path of paths) {
+        const pathPart = path ? `; Path=${path}` : "";
+        document.cookie = `${name}=; ${expires}${pathPart}; Domain=${hostname}`;
+        document.cookie = `${name}=; ${expires}${pathPart}; Domain=.${hostname}`;
+      }
+    }
+  } catch {
+    /* ignore */
+  }
 }
 
 /**
@@ -160,9 +185,16 @@ export function clearSession() {
   try {
     localStorage.removeItem(ADMIN_TOKEN_KEY);
     localStorage.removeItem(ADMIN_USER_KEY);
+    localStorage.removeItem(ADMIN_REMEMBER_KEY);
     sessionStorage.removeItem(ADMIN_TOKEN_KEY);
     sessionStorage.removeItem(ADMIN_USER_KEY);
+
+    // Expire cookies for admin tokens
     deleteCookie(ADMIN_TOKEN_KEY);
+    deleteCookie(ADMIN_USER_KEY);
+    deleteCookie("token");
+    deleteCookie("jwt");
+    deleteCookie("accessToken");
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
       console.error("Failed to clear session:", error);

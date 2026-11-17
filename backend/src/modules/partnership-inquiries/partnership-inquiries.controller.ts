@@ -9,7 +9,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -21,14 +20,16 @@ import {
 } from '@nestjs/swagger';
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../common/enums/user-role.enum';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreatePartnershipInquiryDto } from './dto/create-partnership-inquiry.dto';
 import { UpdatePartnershipInquiryDto } from './dto/update-partnership-inquiry.dto';
 import { PartnershipInquiry } from './entities/partnership-inquiry.entity';
 import { PartnershipInquiriesService } from './partnership-inquiries.service';
 
 @ApiTags(ApiTagsConst.PARTNERSHIP_INQUIRIES)
+@Roles(UserRole.ADMIN)
 @Controller('partnership-inquiries')
 export class PartnershipInquiriesController {
   constructor(private readonly service: PartnershipInquiriesService) {}
@@ -49,7 +50,6 @@ export class PartnershipInquiriesController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List all partnership inquiries (CMS)',
@@ -68,7 +68,6 @@ export class PartnershipInquiriesController {
   }
 
   @Get('deleted')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List recently deleted partnership inquiries (CMS trash)',
@@ -88,7 +87,6 @@ export class PartnershipInquiriesController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get partnership inquiry by id (CMS)' })
   @ApiOkResponse({ type: PartnershipInquiry })
@@ -104,7 +102,6 @@ export class PartnershipInquiriesController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update partnership inquiry (CMS)' })
   @ApiOkResponse({ type: PartnershipInquiry })
@@ -123,11 +120,11 @@ export class PartnershipInquiriesController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Restore soft-deleted partnership inquiry (CMS)',
-    description: 'Clears deletedAt so the inquiry shows again in the CMS inbox.',
+    description:
+      'Clears deletedAt so the inquiry shows again in the CMS inbox.',
   })
   @ApiOkResponse({ type: PartnershipInquiry })
   @ApiUnauthorizedResponse({
@@ -142,7 +139,6 @@ export class PartnershipInquiriesController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Soft-delete partnership inquiry (CMS)',

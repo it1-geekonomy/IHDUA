@@ -8,7 +8,6 @@ import {
   ParseUUIDPipe,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -19,7 +18,8 @@ import {
 } from '@nestjs/swagger';
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../common/enums/user-role.enum';
 import { DonationSubscriptionsService } from './donation-subscriptions.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { ListSubscriptionsQueryDto } from './dto/list-subscriptions-query.dto';
@@ -27,6 +27,7 @@ import { VerifySubscriptionDto } from './dto/verify-subscription.dto';
 import { DonationSubscription } from './entities/donation-subscription.entity';
 
 @ApiTags(ApiTagsConst.DONATION_SUBSCRIPTIONS)
+@Roles(UserRole.ADMIN)
 @Controller('donation-subscriptions')
 export class DonationSubscriptionsController {
   constructor(private readonly service: DonationSubscriptionsService) {}
@@ -66,7 +67,6 @@ export class DonationSubscriptionsController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'List recurring donations (admin)' })
   @ApiOkResponse({ description: 'Paginated list' })
@@ -83,7 +83,6 @@ export class DonationSubscriptionsController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get recurring donation with its charges (admin)' })
   @ApiOkResponse({ type: DonationSubscription })
@@ -100,7 +99,6 @@ export class DonationSubscriptionsController {
   }
 
   @Post(':id/cancel')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Cancel recurring donation now (admin)' })
@@ -115,7 +113,6 @@ export class DonationSubscriptionsController {
   }
 
   @Post(':id/pause')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Pause recurring donation (admin)' })
@@ -130,7 +127,6 @@ export class DonationSubscriptionsController {
   }
 
   @Post(':id/resume')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Resume a paused recurring donation (admin)' })
@@ -145,7 +141,6 @@ export class DonationSubscriptionsController {
   }
 
   @Post(':id/sync')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh status from Razorpay (admin)' })

@@ -36,12 +36,29 @@ export type LoginResponse = {
   user: AdminUser;
 };
 
+export type AdminUserRole = "ADMIN" | "CONTENT";
+
 export type AdminUserRow = {
   id: string;
   fullName: string;
   email: string;
+  role?: AdminUserRole;
   createdAt: string;
   updatedAt: string;
+};
+
+export type CreateUserPayload = {
+  fullName: string;
+  email: string;
+  password: string;
+  role?: AdminUserRole;
+};
+
+export type UpdateUserPayload = {
+  fullName?: string;
+  email?: string;
+  password?: string;
+  role?: AdminUserRole;
 };
 
 export type DonationStatus = "pending" | "paid" | "failed" | "refunded";
@@ -320,6 +337,45 @@ export async function fetchAdminMe(token: string): Promise<AdminUser> {
 export async function fetchUsers(token: string): Promise<AdminUserRow[]> {
   return apiRequest<AdminUserRow[]>("/users", {
     token,
+  });
+}
+
+/**
+ * Creates a new user (admin).
+ */
+export async function createUser(
+  token: string,
+  payload: CreateUserPayload,
+): Promise<AdminUserRow> {
+  return apiRequest<AdminUserRow>("/users", {
+    token,
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Updates an existing user's details, role, or password (admin).
+ */
+export async function updateUser(
+  token: string,
+  id: string,
+  payload: UpdateUserPayload,
+): Promise<AdminUserRow> {
+  return apiRequest<AdminUserRow>(`/users/${id}`, {
+    token,
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Deletes a user by id (admin).
+ */
+export async function deleteUser(token: string, id: string): Promise<void> {
+  await apiRequest<void>(`/users/${id}`, {
+    token,
+    method: "DELETE",
   });
 }
 

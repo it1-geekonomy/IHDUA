@@ -10,7 +10,6 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -22,7 +21,6 @@ import {
 } from '@nestjs/swagger';
 import { ApiTagsConst } from '../../common/constants/api-tags';
 import { Public } from '../../common/decorators/public.decorator';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CreateImpactCategoryDto } from './dto/create-impact-category.dto';
 import { ImpactCategoryQueryDto } from './dto/impact-category-query.dto';
 import { ImpactNavigationCategoryDto } from './dto/impact-navigation.dto';
@@ -93,7 +91,6 @@ export class ImpactCategoriesController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Create new impact category (CMS Admin)',
@@ -114,7 +111,6 @@ export class ImpactCategoriesController {
   }
 
   @Get('deleted')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List recently deleted impact categories (CMS Trash)',
@@ -133,7 +129,6 @@ export class ImpactCategoriesController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List all impact categories with pagination & search (CMS Admin)',
@@ -153,7 +148,6 @@ export class ImpactCategoriesController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get impact category by id (CMS Admin)' })
   @ApiOkResponse({ type: ImpactCategory })
@@ -169,7 +163,6 @@ export class ImpactCategoriesController {
   }
 
   @Patch(':id/restore')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Restore soft-deleted impact category (CMS Admin)',
@@ -187,7 +180,6 @@ export class ImpactCategoriesController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Update impact category (CMS Admin)',
@@ -210,7 +202,6 @@ export class ImpactCategoriesController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Soft-delete impact category (CMS Admin)',
