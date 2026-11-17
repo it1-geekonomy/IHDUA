@@ -1875,6 +1875,140 @@ export async function restoreMilestone(
 }
 
 // ─────────────────────────────────────────────────────────────
+// Funding Projects (donation breakups)
+// ─────────────────────────────────────────────────────────────
+
+export interface FundingComponentItem {
+  name: string;
+  amountLabel: string;
+  amountDigits?: string;
+}
+
+export interface FundingProjectItem {
+  id: string;
+  slug: string;
+  projectNumber: string;
+  title: string;
+  summary: string;
+  totalLabel: string;
+  cause: string;
+  highlights: string[];
+  components: FundingComponentItem[];
+  sortOrder: number;
+  status: ContentStatus;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}
+
+export interface FundingProjectQueryParams {
+  page?: number;
+  limit?: number;
+  status?: ContentStatus;
+  search?: string;
+}
+
+export interface PaginatedFundingProjectsResponse {
+  data: FundingProjectItem[];
+  meta: PaginationMeta;
+}
+
+export type CreateFundingProjectInput = {
+  slug: string;
+  projectNumber: string;
+  title: string;
+  summary: string;
+  totalLabel: string;
+  cause: string;
+  highlights?: string[];
+  components?: FundingComponentItem[];
+  sortOrder?: number;
+  status?: ContentStatus;
+};
+
+export type UpdateFundingProjectInput = Partial<CreateFundingProjectInput>;
+
+export async function fetchFundingProjects(
+  token: string,
+  params: FundingProjectQueryParams = {},
+): Promise<PaginatedFundingProjectsResponse> {
+  const q = new URLSearchParams();
+  if (params.page) q.set("page", String(params.page));
+  if (params.limit) q.set("limit", String(params.limit));
+  if (params.status) q.set("status", params.status);
+  if (params.search) q.set("search", params.search);
+  const qs = q.toString();
+  return apiRequest<PaginatedFundingProjectsResponse>(
+    `/funding-projects${qs ? `?${qs}` : ""}`,
+    { token },
+  );
+}
+
+export async function fetchDeletedFundingProjects(
+  token: string,
+  params: FundingProjectQueryParams = {},
+): Promise<PaginatedFundingProjectsResponse> {
+  const q = new URLSearchParams();
+  if (params.page) q.set("page", String(params.page));
+  if (params.limit) q.set("limit", String(params.limit));
+  if (params.search) q.set("search", params.search);
+  const qs = q.toString();
+  return apiRequest<PaginatedFundingProjectsResponse>(
+    `/funding-projects/deleted${qs ? `?${qs}` : ""}`,
+    { token },
+  );
+}
+
+export async function fetchPublishedFundingProjects(): Promise<
+  FundingProjectItem[]
+> {
+  return apiRequest<FundingProjectItem[]>("/funding-projects/published", {
+    method: "GET",
+    isPublic: true,
+  });
+}
+
+export async function createFundingProject(
+  token: string,
+  input: CreateFundingProjectInput,
+): Promise<FundingProjectItem> {
+  return apiRequest<FundingProjectItem>("/funding-projects", {
+    method: "POST",
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
+export async function updateFundingProject(
+  token: string,
+  id: string,
+  input: UpdateFundingProjectInput,
+): Promise<FundingProjectItem> {
+  return apiRequest<FundingProjectItem>(`/funding-projects/${id}`, {
+    method: "PATCH",
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
+export async function deleteFundingProject(
+  token: string,
+  id: string,
+): Promise<void> {
+  await apiRequest(`/funding-projects/${id}`, { method: "DELETE", token });
+}
+
+export async function restoreFundingProject(
+  token: string,
+  id: string,
+): Promise<FundingProjectItem> {
+  return apiRequest<FundingProjectItem>(`/funding-projects/${id}/restore`, {
+    method: "PATCH",
+    token,
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
 // Home Banners
 // ─────────────────────────────────────────────────────────────
 

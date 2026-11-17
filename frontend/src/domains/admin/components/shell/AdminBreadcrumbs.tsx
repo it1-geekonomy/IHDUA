@@ -21,6 +21,7 @@ const PATH_LABELS: Record<string, string> = {
   "organizational-documents": "Organizational Documents",
   "annual-reports": "Annual Reports",
   milestones: "Key Milestones",
+  "funding-projects": "Funding Projects",
   "terms-and-conditions": "Terms & Conditions",
   "privacy-policy": "Privacy Policy",
   impact: "Our Impact",
