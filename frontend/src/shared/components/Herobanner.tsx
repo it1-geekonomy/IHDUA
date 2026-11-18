@@ -16,7 +16,9 @@ export interface HeroBannerProps {
 
 const FLUID_PADDING_X = "px-[clamp(1rem,9.3vw_-_1.2rem,10rem)]";
 const FLUID_GAP_Y = "mt-[clamp(0.25rem,0.4vw_+_0.1rem,0.5rem)]";
-const DESKTOP_MEDIA = "(min-width: 640px)";
+// md = 768px. Mobile image below md, desktop image from md (md, lg, xl, 2xl...) up.
+const DESKTOP_MEDIA = "(min-width: 768px)";
+const MOBILE_MEDIA = "(max-width: 767px)";
 
 export default function HeroBanner({
   heading,
@@ -29,27 +31,43 @@ export default function HeroBanner({
 }: HeroBannerProps) {
   const shared = { alt: imageAlt, sizes: "100vw", priority: true } as const;
 
+  // REAL file sizes: desktop 2302x766, mobile 402x212.
+  // These only reserve space before load; the final height comes from the image itself.
   const {
     props: { srcSet: desktopSrcSet },
-  } = getImageProps({ ...shared, src: image, width: 1920, height: 490 });
+  } = getImageProps({ ...shared, src: image, width: 2302, height: 766 });
 
   const {
     props: { srcSet: mobileSrcSet, ...fallbackImgProps },
-  } = getImageProps({ ...shared, src: imageMobile, width: 780, height: 400 });
+  } = getImageProps({ ...shared, src: imageMobile, width: 402, height: 212 });
 
   return (
     <section
       className={cn(
-        "relative grid w-full aspect-[780/400] sm:aspect-[1920/490] sm:min-h-[15rem] md:min-h-[19rem] lg:min-h-0 bg-[#9739A8]",
+        // No aspect-ratio here: the image itself sets the height, so it can never be
+        // cropped or leave bands, whatever the real file ratio is.
+        "relative grid w-full bg-[#9739A8]",
         className,
       )}
     >
-      <picture className="absolute inset-0 block overflow-hidden">
-        <source media={DESKTOP_MEDIA} srcSet={desktopSrcSet} />
-        <source srcSet={mobileSrcSet} />
+      <picture className="col-start-1 row-start-1 block w-full">
+        <source
+          media={DESKTOP_MEDIA}
+          srcSet={desktopSrcSet}
+          sizes="100vw"
+          width={2302}
+          height={766}
+        />
+        <source
+          media={MOBILE_MEDIA}
+          srcSet={mobileSrcSet}
+          sizes="100vw"
+          width={402}
+          height={212}
+        />
         <img
           {...fallbackImgProps}
-          className="block h-full w-full object-cover object-center"
+          className="block h-auto w-full object-contain"
         />
       </picture>
 
