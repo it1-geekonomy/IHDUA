@@ -264,7 +264,7 @@ export default function BlogDetailClient({
                         <Typography
                           variant="caption"
                           as="p"
-                          className="mt-1 font-figtree font-normal text-[#1E1E1E]/40 sm:mt-1.5"
+                          className="mt-1 font-figtree font-normal normal-case tracking-normal text-[#1E1E1E]/40 sm:mt-1.5"
                         >
                           {story.date}
                         </Typography>
