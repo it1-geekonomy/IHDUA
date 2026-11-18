@@ -44,13 +44,14 @@ export default function HeroBanner({
   return (
     <section
       className={cn(
-        // No aspect-ratio here: the image itself sets the height, so it can never be
-        // cropped or leave bands, whatever the real file ratio is.
+        // The row height is the taller of the image and the text overlay.
+        // The image stretches to fill the whole row (object-cover + object-top),
+        // so there are no purple bands and the top of the image is never cropped.
         "relative grid w-full bg-[#9739A8]",
         className,
       )}
     >
-      <picture className="col-start-1 row-start-1 block w-full">
+      <picture className="col-start-1 row-start-1 block h-full w-full">
         <source
           media={DESKTOP_MEDIA}
           srcSet={desktopSrcSet}
@@ -67,7 +68,7 @@ export default function HeroBanner({
         />
         <img
           {...fallbackImgProps}
-          className="block h-auto w-full object-contain"
+          className="block h-full min-h-full w-full object-cover object-top"
         />
       </picture>
 
