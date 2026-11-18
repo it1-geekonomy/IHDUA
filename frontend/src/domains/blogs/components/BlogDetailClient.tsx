@@ -118,7 +118,17 @@ export default function BlogDetailClient({
         <div className="mt-6 flex flex-col sm:mt-8 lg:flex-row lg:gap-8 xl:gap-12 2xl:gap-14">
           {/* Left Column: banner + full article */}
           <article className="flex w-full min-w-0 flex-col lg:flex-1">
-            {post.image && (
+            {post.video ? (
+              <div className="relative aspect-[64.9375/33.5625] w-full max-w-[64.9375rem] overflow-hidden rounded-[0.375rem] bg-black shadow-xs">
+                <video
+                  src={post.video}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            ) : post.image ? (
               <div className="relative aspect-[64.9375/33.5625] w-full max-w-[64.9375rem] overflow-hidden rounded-[0.375rem] bg-neutral-100 shadow-xs">
                 <Image
                   src={post.image}
@@ -129,7 +139,7 @@ export default function BlogDetailClient({
                   className="object-cover"
                 />
               </div>
-            )}
+            ) : null}
 
             {/* Article body (HTML from the CMS) */}
             <div className="mt-6">
@@ -254,7 +264,7 @@ export default function BlogDetailClient({
                         <Typography
                           variant="caption"
                           as="p"
-                          className="mt-1 font-figtree font-normal text-[#1E1E1E]/40 sm:mt-1.5"
+                          className="mt-1 font-figtree font-normal normal-case tracking-normal text-[#1E1E1E]/40 sm:mt-1.5"
                         >
                           {story.date}
                         </Typography>
