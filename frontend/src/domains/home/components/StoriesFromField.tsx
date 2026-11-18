@@ -154,12 +154,9 @@ export default function StoriesFromField() {
         ) : (
           <div className="mt-8 grid grid-cols-1 gap-6 lg:mt-10 lg:grid-cols-12 lg:items-stretch lg:gap-x-5 lg:gap-y-5 xl:gap-x-8 2xl:gap-x-10">
             <div className="order-1 contents lg:col-span-12 lg:row-start-1 lg:flex lg:items-stretch lg:gap-5 xl:contents">
-              {/* Featured image */}
+              {/* Featured image (not clickable; only the button redirects) */}
               <div className="lg:w-[58%] lg:shrink-0 xl:w-auto xl:col-span-8 xl:row-start-1">
-                <Link
-                  href={featured.href}
-                  className="group relative block aspect-2/1 w-full overflow-hidden bg-[#E8E6E0] lg:aspect-auto lg:aspect-video xl:aspect-2/1 lg:h-full xl:h-auto cursor-pointer"
-                >
+                <div className="relative block aspect-2/1 w-full overflow-hidden bg-[#E8E6E0] lg:aspect-auto lg:aspect-video xl:aspect-2/1 lg:h-full xl:h-auto">
                   {list.map((story, index) => {
                     const active = story.id === featured.id;
                     return (
@@ -177,7 +174,7 @@ export default function StoriesFromField() {
                         }}
                         style={{
                           zIndex: active ? 1 : 0,
-                          pointerEvents: active ? "auto" : "none",
+                          pointerEvents: "none",
                           willChange: "opacity, transform",
                         }}
                         aria-hidden={!active}
@@ -186,14 +183,14 @@ export default function StoriesFromField() {
                           src={story.image}
                           alt={active ? story.title : ""}
                           fill
-                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          className="object-cover"
                           sizes="(max-width: 1024px) 100vw, 66vw"
                           priority={index === 0}
                         />
                       </motion.div>
                     );
                   })}
-                </Link>
+                </div>
               </div>
 
               {/* Side stories */}
@@ -271,16 +268,14 @@ export default function StoriesFromField() {
                   </motion.div>
 
                   <motion.div variants={copyReveal}>
-                    <Link href={featured.href} className="group inline-block">
-                      <Typography
-                        variant="h3"
-                        className={`mt-2 max-w-2xl font-lora font-normal text-[#00191B] transition-colors group-hover:text-[#9739A8] ${
-                          isKn ? "leading-normal" : "leading-snug"
-                        }`}
-                      >
-                        {featured.title}
-                      </Typography>
-                    </Link>
+                    <Typography
+                      variant="h3"
+                      className={`mt-2 w-full font-lora font-normal text-[#00191B] ${
+                        isKn ? "leading-normal" : "leading-snug"
+                      }`}
+                    >
+                      {featured.title}
+                    </Typography>
                   </motion.div>
 
                   {/* Short Summary from the CMS (full text) */}
@@ -288,7 +283,7 @@ export default function StoriesFromField() {
                     <motion.div variants={copyReveal}>
                       <Typography
                         variant="body-lg"
-                        className="mt-2 max-w-xl font-figtree leading-relaxed text-[#5F6C6D]"
+                        className="mt-2 w-full font-figtree leading-relaxed text-[#5F6C6D]"
                       >
                         {featured.description}
                       </Typography>
