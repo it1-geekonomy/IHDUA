@@ -1,52 +1,11 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import { ChevronRight, Clock, FileCheck, ShieldAlert } from "lucide-react";
+import { usePrivacyPolicy } from "@/domains/privacy-policy/hooks/usePrivacyPolicy";
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
-  "http://localhost:6061/api";
-
-type PublishedPolicyResponse = {
-  statusCode: number;
-  data: {
-    id: string;
-    title: string;
-    content: string;
-    status: string;
-    metaTitle: string | null;
-    metaDescription: string | null;
-    schemaCode: string | null;
-    createdAt: string;
-    updatedAt: string;
-  };
-};
-
-async function getPublishedPolicy(): Promise<PublishedPolicyResponse["data"] | null> {
-  try {
-    const res = await fetch(`${API_BASE}/privacy-policy/published`, {
-      cache: "no-store",
-    });
-    if (!res.ok) return null;
-    const json = await res.json();
-    return json.data || null;
-  } catch {
-    return null;
-  }
-}
-
-export async function generateMetadata(): Promise<Metadata> {
-  const policy = await getPublishedPolicy();
-
-  return {
-    title: policy?.metaTitle || policy?.title || "Privacy Policy | IHDUA",
-    description:
-      policy?.metaDescription ||
-      "Read IHDUA's privacy policy explaining how we collect, protect, and handle your personal data.",
-  };
-}
-
-export default async function PrivacyPolicyPublicPage() {
-  const policy = await getPublishedPolicy();
+export default function PrivacyPolicyClient() {
+  const { policy, loading } = usePrivacyPolicy();
 
   return (
     <main className="min-h-screen bg-[#FDFCF9] text-[#140816]">
@@ -99,7 +58,17 @@ export default async function PrivacyPolicyPublicPage() {
       {/* Main Content */}
       <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="rounded-3xl border border-stone-200/80 bg-white p-6 sm:p-10 lg:p-14 shadow-sm">
-          {policy ? (
+          {loading ? (
+            <div className="animate-pulse space-y-4" aria-busy="true">
+              <div className="h-6 w-1/3 rounded bg-stone-200" />
+              <div className="h-4 w-full rounded bg-stone-100" />
+              <div className="h-4 w-11/12 rounded bg-stone-100" />
+              <div className="h-4 w-10/12 rounded bg-stone-100" />
+              <div className="h-6 w-1/4 rounded bg-stone-200 mt-8" />
+              <div className="h-4 w-full rounded bg-stone-100" />
+              <div className="h-4 w-9/12 rounded bg-stone-100" />
+            </div>
+          ) : policy ? (
             <article
               className="policy-content font-figtree text-[#27272A] leading-relaxed
                 [&>h1]:font-outfit [&>h1]:text-2xl [&>h1]:sm:text-3xl [&>h1]:font-bold [&>h1]:text-[#0B5D51] [&>h1]:mt-8 [&>h1]:mb-4
