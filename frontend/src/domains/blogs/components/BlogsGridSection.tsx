@@ -5,10 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import Typography from "@/lib/Typography";
 import { useBlogsList } from "@/domains/blogs/hooks/useBlogsList";
+import type { BlogSort } from "@/domains/home/lib/blogs";
 
 const ITEMS_PER_PAGE = 6;
-
-type SortOrder = "newest" | "oldest";
 
 type Option = { value: string; label: string };
 
@@ -102,13 +101,14 @@ const SORT_OPTIONS: Option[] = [
 ];
 
 export default function BlogsGridSection() {
-  // posts: null while loading; [] when nothing is published or the API failed
-  const { posts, categories } = useBlogsList();
-
-  const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
+  const [sortOrder, setSortOrder] = useState<BlogSort>("newest");
   const [categoryId, setCategoryId] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const sectionRef = useRef<HTMLElement>(null);
+
+  // Sorting is done by the backend; the hook refetches when sortOrder changes.
+  // posts: null only on the first load; [] when nothing is published or the API failed
+  const { posts, categories, refreshing } = useBlogsList(sortOrder);
 
   const categoryOptions = useMemo<Option[]>(
     () => [
@@ -118,14 +118,14 @@ export default function BlogsGridSection() {
     [categories],
   );
 
-  const visiblePosts = useMemo(() => {
-    const list = (posts ?? []).filter(
-      (p) => categoryId === "all" || p.categoryId === categoryId,
-    );
-    return [...list].sort((a, b) =>
-      sortOrder === "newest" ? b.time - a.time : a.time - b.time,
-    );
-  }, [posts, categoryId, sortOrder]);
+  // Category filter stays on the frontend. No sorting here: backend order is used as is.
+  const visiblePosts = useMemo(
+    () =>
+      (posts ?? []).filter(
+        (p) => categoryId === "all" || p.categoryId === categoryId,
+      ),
+    [posts, categoryId],
+  );
 
   const totalPages = Math.max(1, Math.ceil(visiblePosts.length / ITEMS_PER_PAGE));
   const safePage = Math.min(currentPage, totalPages);
@@ -155,7 +155,7 @@ export default function BlogsGridSection() {
   };
 
   const handleSortChange = (value: string) => {
-    setSortOrder(value as SortOrder);
+    setSortOrder(value as BlogSort);
     setCurrentPage(1);
   };
 
@@ -164,9 +164,10 @@ export default function BlogsGridSection() {
     setCurrentPage(1);
   };
 
-  const loading = posts === null;
-  const nothingPublished = posts !== null && posts.length === 0;
-  const nothingInCategory = !nothingPublished && !loading && visiblePosts.length === 0;
+  const loading = posts === null; // first load only
+  const nothingPublished = posts !== null && posts.length === 0 && !refreshing;
+  const nothingInCategory =
+    !nothingPublished && !loading && !refreshing && visiblePosts.length === 0;
 
   return (
     <section
@@ -256,9 +257,14 @@ export default function BlogsGridSection() {
           </div>
         )}
 
-        {/* Stories Grid */}
+        {/* Stories Grid (dimmed while a new sort order is loading) */}
         {!loading && paginatedPosts.length > 0 && (
-          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+          <div
+            aria-busy={refreshing}
+            className={`mt-8 grid grid-cols-1 gap-6 transition-opacity duration-200 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8 ${
+              refreshing ? "pointer-events-none opacity-50" : "opacity-100"
+            }`}
+          >
             {paginatedPosts.map((post, index) => (
               <Link
                 key={post.id}
