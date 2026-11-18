@@ -15,6 +15,7 @@ export type BlogPostView = {
   /** Article body as HTML (from the CMS editor) */
   contentHtml: string;
   image: string | null;
+  video: string | null;
   imageAlt: string;
   category: string;
   date: string;
@@ -154,6 +155,7 @@ export function mapStoryToPost(
     subtitle,
     contentHtml: body,
     image: story.blogBanner || null,
+    video: story.video || null,
     imageAlt: story.title,
     category: categoryName,
     date: formatBlogDate(story.blogDate ?? story.createdAt),

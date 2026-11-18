@@ -16,6 +16,9 @@ import {
   type BlogStory,
 } from "@/domains/home/lib/blogs";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface BlogSlugPageProps {
   params: Promise<{ slug: string }>;
 }
