@@ -18,29 +18,27 @@ export default function TermsAndConditionsPublicPage() {
       )}
 
       {/* Hero Header Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#0B5D51] to-[#08483F] text-white py-14 sm:py-20 px-4 sm:px-6 lg:px-8">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
-
+      <section className="relative overflow-hidden bg-white text-black border-b border-stone-200 py-14 sm:py-20 px-4 sm:px-6 lg:px-8">
         <div className="relative mx-auto max-w-4xl text-center">
           {/* Breadcrumbs */}
-          <nav className="inline-flex items-center gap-1.5 text-xs text-emerald-200/80 mb-6 font-figtree">
-            <Link href="/" className="hover:text-white transition-colors">
+          <nav className="inline-flex items-center gap-1.5 text-xs text-black/70 mb-6 font-figtree">
+            <Link href="/" className="hover:text-black transition-colors">
               Home
             </Link>
             <ChevronRight className="h-3 w-3" />
-            <span className="text-white font-medium">Terms and Conditions</span>
+            <span className="text-black font-medium">Terms and Conditions</span>
           </nav>
 
-          <h1 className="font-outfit text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">
+          <h1 className="font-outfit text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-black">
             {terms?.title || "Terms and Conditions"}
           </h1>
 
-          <p className="mt-4 font-figtree text-sm sm:text-base text-emerald-100/90 max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-4 font-figtree text-sm sm:text-base text-black max-w-2xl mx-auto leading-relaxed">
             Please read these terms carefully before engaging with our services, making donations, or utilizing our community platform.
           </p>
 
           {terms?.updatedAt && (
-            <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-xs px-3.5 py-1 text-xs text-emerald-100 font-figtree">
+            <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-stone-100 px-3.5 py-1 text-xs text-black font-figtree">
               <Clock className="h-3.5 w-3.5" />
               <span>
                 Last Updated:{" "}
