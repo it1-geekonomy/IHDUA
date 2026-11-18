@@ -275,9 +275,38 @@ export function ChatbotWidget() {
 
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const restoredRef = useRef(false);
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    const panel = panelRef.current;
+    if (!panel || !open) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      const list = listRef.current;
+      if (list && list.contains(e.target as Node)) {
+        const { scrollTop, scrollHeight, clientHeight } = list;
+        const isScrollable = scrollHeight > clientHeight;
+        if (isScrollable) {
+          const atTop = scrollTop <= 0 && e.deltaY < 0;
+          const atBottom =
+            scrollTop + clientHeight >= scrollHeight - 1 && e.deltaY > 0;
+          if (atTop || atBottom) {
+            e.preventDefault();
+          }
+          return;
+        }
+      }
+      e.preventDefault();
+    };
+
+    panel.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      panel.removeEventListener("wheel", handleWheel);
+    };
+  }, [open]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -475,6 +504,7 @@ export function ChatbotWidget() {
       <AnimatePresence>
         {open ? (
           <motion.div
+            ref={panelRef}
             key="chat-panel"
             role="dialog"
             aria-modal="false"
@@ -484,7 +514,7 @@ export function ChatbotWidget() {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 360, damping: 28 }}
             style={{ transformOrigin: "bottom right" }}
-            className="fixed inset-x-3 bottom-3 top-auto z-50 flex h-[min(600px,calc(100dvh-2rem))] flex-col overflow-hidden rounded-[28px] border border-black/5 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)] sm:inset-auto sm:right-6 sm:bottom-[90px] sm:h-[min(600px,calc(100dvh-7rem))] sm:w-[380px]"
+            className="fixed inset-x-3 bottom-3 top-auto z-50 flex h-[min(600px,calc(100dvh-2rem))] flex-col overflow-hidden overscroll-contain rounded-[28px] border border-black/5 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)] sm:inset-auto sm:right-6 sm:bottom-[90px] sm:h-[min(600px,calc(100dvh-7rem))] sm:w-[380px]"
           >
             {/* ────── Gradient Header ────── */}
             <div className="flex shrink-0 items-center justify-between bg-gradient-to-r from-[#B250B5] via-[#DE9FD7] to-[#FCE7D5] px-5 py-3.5 select-none">
@@ -554,7 +584,7 @@ export function ChatbotWidget() {
             <div
               ref={listRef}
               onClick={onMessageLinkClick}
-              className={`flex-1 overflow-y-auto px-5 [scrollbar-width:thin] ${
+              className={`flex-1 overflow-y-auto overscroll-contain px-5 [scrollbar-width:thin] ${
                 isEmpty ? "flex flex-col justify-center py-6" : "space-y-3.5 py-4"
               }`}
             >
