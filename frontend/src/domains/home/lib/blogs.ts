@@ -8,6 +8,7 @@ export type BlogStory = {
   title: string;
   slug: string;
   blogBanner: string | null;
+  video?: string | null;
   blogDate: string | null;
   content: string | null;
   shortDescription: string | null;
@@ -91,8 +92,7 @@ export function fetchPublishedStories(
 
   const request = fetch(`${API_URL}/blogs-and-stories/published?${qs}`, {
     headers: { accept: "application/json" },
-    // On the server, let Next.js cache the response for 60 seconds
-    ...(browser ? {} : { next: { revalidate: 60 } }),
+    cache: "no-store",
   })
     .then(async (res) => {
       if (!res.ok) throw new Error(`Failed to load stories (${res.status})`);
@@ -113,7 +113,7 @@ export function fetchBlogCategories(): Promise<BlogCategory[]> {
 
   const request = fetch(`${API_URL}/blog-categories`, {
     headers: { accept: "application/json" },
-    ...(browser ? {} : { next: { revalidate: 60 } }),
+    cache: "no-store",
   })
     .then(async (res) => {
       if (!res.ok) throw new Error(`Failed to load categories (${res.status})`);
@@ -134,7 +134,7 @@ export function fetchBlogCategories(): Promise<BlogCategory[]> {
 export async function fetchStoryBySlug(slug: string): Promise<BlogDetail | null> {
   const res = await fetch(
     `${API_URL}/blogs-and-stories/published/slug/${encodeURIComponent(slug)}`,
-    { headers: { accept: "application/json" }, next: { revalidate: 60 } },
+    { headers: { accept: "application/json" }, cache: "no-store" },
   );
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`Failed to load story (${res.status})`);
