@@ -12,6 +12,11 @@ export interface HeroBannerProps {
   className?: string;
   /** Optional CTAs under the description (e.g. Donate / Explore on /donate). */
   actions?: ReactNode;
+  /**
+   * On small screens, crop the image to fill the hero (object-cover) so copy
+   * sits on the photo only — no solid brand strip under a short desktop crop.
+   */
+  coverOnMobile?: boolean;
 }
 
 const FLUID_PADDING_X = "px-[clamp(1rem,9.3vw_-_1.2rem,10rem)]";
@@ -28,6 +33,7 @@ export default function HeroBanner({
   imageAlt = "",
   className,
   actions,
+  coverOnMobile = false,
 }: HeroBannerProps) {
   const shared = { alt: imageAlt, sizes: "100vw", priority: true } as const;
 
@@ -47,10 +53,16 @@ export default function HeroBanner({
         // No aspect-ratio here: the image itself sets the height, so it can never be
         // cropped or leave bands, whatever the real file ratio is.
         "relative grid w-full bg-[#9739A8]",
+        coverOnMobile && "min-h-[min(78vw,28rem)] md:min-h-0",
         className,
       )}
     >
-      <picture className="col-start-1 row-start-1 block w-full">
+      <picture
+        className={cn(
+          "col-start-1 row-start-1 block w-full",
+          coverOnMobile && "absolute inset-0 md:relative md:inset-auto",
+        )}
+      >
         <source
           media={DESKTOP_MEDIA}
           srcSet={desktopSrcSet}
@@ -67,7 +79,11 @@ export default function HeroBanner({
         />
         <img
           {...fallbackImgProps}
-          className="block h-auto w-full object-contain"
+          className={cn(
+            "block h-auto w-full object-contain",
+            coverOnMobile &&
+              "h-full min-h-full object-cover object-center md:h-auto md:min-h-0 md:object-contain",
+          )}
         />
       </picture>
 
