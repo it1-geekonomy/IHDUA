@@ -31,7 +31,7 @@ const ENTER_OFFSET_Y = 16; // px the whole card rises while fading in
 const PAGE_FLIP_SECONDS = 0.8; // how long each page takes to swing back down
 const PAGE_GAP = 0.3; // delay between one page and the next inside a card
 const GHOST_PAGES = 0; // extra blank pages before the stat page (0 = only the stat page flips)
-const REPLAY_ON_REENTER = true; // replay the animation every time the section scrolls into view
+const REPLAY_ON_REENTER = false; // entrance plays only once, the first time the section scrolls into view
 
 const PURPLE = "#9739A8";
 const YELLOW = "#F5C93B";
@@ -241,7 +241,7 @@ function CalendarCard({
   const band = BAND_COLORS[slotIndex % BAND_COLORS.length];
 
   // Entrance: pages swing back down onto the pad (reverse of the click flip).
-  // Resets instantly when the section leaves the screen.
+  // Plays once, the first time the section scrolls into view.
   const flipIn = (extraDelay: number) =>
     instant || zero
       ? { duration: 0 }
@@ -462,9 +462,9 @@ export default function StatSection() {
 
   const hasAny = allSheets.length > 0;
 
-  // Plays when the section actually scrolls into view.
-  // With REPLAY_ON_REENTER the cards reset when it leaves the screen,
-  // so the same animation runs every time the section enters again.
+  // Plays when the section first scrolls into view (also after a refresh).
+  // With REPLAY_ON_REENTER = false, inView stays true afterwards, so
+  // scrolling back up/down never resets or replays the entrance.
   const inView = useInView(sectionRef, {
     once: !REPLAY_ON_REENTER,
     amount: 0.3,
