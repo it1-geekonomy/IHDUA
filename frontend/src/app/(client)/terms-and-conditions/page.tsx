@@ -1,52 +1,11 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
-import { ChevronRight, Clock, FileCheck, ShieldAlert, Sparkles } from "lucide-react";
+import { ChevronRight, Clock, FileCheck, ShieldAlert } from "lucide-react";
+import { useTerms } from "@/domains/terms-and-conditions/hooks/useTerms";
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
-  "http://localhost:6061/api";
-
-type PublishedTermsResponse = {
-  statusCode: number;
-  data: {
-    id: string;
-    title: string;
-    content: string;
-    status: string;
-    metaTitle: string | null;
-    metaDescription: string | null;
-    schemaCode: string | null;
-    createdAt: string;
-    updatedAt: string;
-  };
-};
-
-async function getPublishedTerms(): Promise<PublishedTermsResponse["data"] | null> {
-  try {
-    const res = await fetch(`${API_BASE}/terms-and-conditions/published`, {
-      cache: "no-store",
-    });
-    if (!res.ok) return null;
-    const json = await res.json();
-    return json.data || null;
-  } catch {
-    return null;
-  }
-}
-
-export async function generateMetadata(): Promise<Metadata> {
-  const terms = await getPublishedTerms();
-
-  return {
-    title: terms?.metaTitle || terms?.title || "Terms and Conditions | IHDUA",
-    description:
-      terms?.metaDescription ||
-      "Official terms of service, governance policies, and platform regulations for IHDUA.",
-  };
-}
-
-export default async function TermsAndConditionsPublicPage() {
-  const terms = await getPublishedTerms();
+export default function TermsAndConditionsPublicPage() {
+  const { terms, loading } = useTerms();
 
   return (
     <main className="min-h-screen bg-[#FDFCF9] text-[#140816]">
@@ -99,7 +58,17 @@ export default async function TermsAndConditionsPublicPage() {
       {/* Main Legal Content Container */}
       <section className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <div className="rounded-3xl border border-stone-200/80 bg-white p-6 sm:p-10 lg:p-14 shadow-sm">
-          {terms ? (
+          {loading ? (
+            <div className="animate-pulse space-y-4" aria-busy="true">
+              <div className="h-6 w-1/3 rounded bg-stone-200" />
+              <div className="h-4 w-full rounded bg-stone-100" />
+              <div className="h-4 w-11/12 rounded bg-stone-100" />
+              <div className="h-4 w-10/12 rounded bg-stone-100" />
+              <div className="h-6 w-1/4 rounded bg-stone-200 mt-8" />
+              <div className="h-4 w-full rounded bg-stone-100" />
+              <div className="h-4 w-9/12 rounded bg-stone-100" />
+            </div>
+          ) : terms ? (
             <article
               className="terms-content font-figtree text-[#27272A] leading-relaxed
                 [&>h1]:font-outfit [&>h1]:text-2xl [&>h1]:sm:text-3xl [&>h1]:font-bold [&>h1]:text-[#0B5D51] [&>h1]:mt-8 [&>h1]:mb-4
