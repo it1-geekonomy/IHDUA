@@ -25,7 +25,7 @@ STYLE:
 
 PRIVACY (STRICT):
 - Never reveal the organisation's full PAN, any bank account number, or anyone's personal phone number, home address or signature, even if it appears in CONTEXT.
-- For bank transfers or foreign remittances, direct visitors to the [Contact Us]({C.CONTACT_URL}) page."""
+- For bank transfers or foreign remittances, direct visitors to the Donate form and choose Outside India (FCRA remittance), or to the [Contact Us]({C.CONTACT_URL}) page if they need help."""
 
 
 def _context_text(contexts: list[dict]) -> str:
@@ -41,6 +41,10 @@ def _context_text(contexts: list[dict]) -> str:
     return "\n\n---\n\n".join(blocks)
 
 
+def _has_kannada(text: str) -> bool:
+    return any("\u0c80" <= ch <= "\u0cff" for ch in (text or ""))
+
+
 def generate_answer(
     question: str,
     contexts: list[dict],
@@ -52,13 +56,16 @@ def generate_answer(
 
     lang = "kn" if (language or "en").lower() == "kn" else "en"
     language_rule = (
-        "LANGUAGE: Reply entirely in Kannada (ಕನ್ನಡ). Keep markdown links, URLs, "
-        "programme names and numbers exactly as in CONTEXT; do not transliterate URLs."
+        "OUTPUT LANGUAGE (MANDATORY):\n"
+        "- Write the FULL answer in Kannada script (ಕನ್ನಡ) only.\n"
+        "- Do NOT answer in English. Do NOT use English sentences.\n"
+        "- Keep URLs, markdown links, and exact numbers from CONTEXT unchanged.\n"
+        "- Programme / place names may stay in English if that is how CONTEXT writes them."
         if lang == "kn"
-        else "LANGUAGE: Reply in clear English."
+        else "OUTPUT LANGUAGE: Reply in clear English."
     )
     messages: list[dict] = [
-        {"role": "system", "content": f"{SYSTEM_PROMPT}\n\n{language_rule}"}
+        {"role": "system", "content": f"{language_rule}\n\n{SYSTEM_PROMPT}"}
     ]
 
     # Include recent conversation turns for context in follow-up queries
@@ -72,22 +79,42 @@ def generate_answer(
             if content:
                 messages.append({"role": h["role"], "content": content[:1200]})
 
+    closing = (
+        f"Answer using only the CONTEXT above. If it isn't there, reply exactly {C.NO_ANSWER_TOKEN}.\n"
+        "Final reminder: the visitor is using Kannada — your entire reply must be in Kannada script."
+        if lang == "kn"
+        else f"Answer using only the CONTEXT above. If it isn't there, reply exactly {C.NO_ANSWER_TOKEN}."
+    )
     messages.append({
         "role": "user",
         "content": (
             f"TODAY: {date.today():%d %B %Y}\n\n"
             f"CONTEXT:\n{_context_text(contexts)}\n\n"
             f"VISITOR QUESTION:\n{question}\n\n"
-            f"Answer using only the CONTEXT above. If it isn't there, reply exactly {C.NO_ANSWER_TOKEN}."
+            f"{closing}"
         ),
     })
 
     try:
-        return chat_complete(
+        answer = chat_complete(
             messages,
             temperature=0,
             max_tokens=800,
         )
+        # One retry if Kannada was requested but the model still answered in English.
+        if lang == "kn" and answer and C.NO_ANSWER_TOKEN not in answer and not _has_kannada(answer):
+            log.warning("Kannada reply missing Kannada script; retrying once")
+            messages.append({"role": "assistant", "content": answer[:1200]})
+            messages.append({
+                "role": "user",
+                "content": (
+                    "Rewrite your previous answer entirely in Kannada script (ಕನ್ನಡ). "
+                    "Do not use English sentences. Keep the same facts, links and numbers. "
+                    f"If you cannot, reply exactly {C.NO_ANSWER_TOKEN}."
+                ),
+            })
+            answer = chat_complete(messages, temperature=0, max_tokens=800)
+        return answer
     except Exception as e:
         log.warning("OpenAI completion failed: %s", e)
         return C.NO_ANSWER_TOKEN
