@@ -139,7 +139,7 @@ export default function OurConviction() {
               muted
               loop
               playsInline
-              preload="metadata"
+              preload="none"
               aria-label="Artisan shaping clay on a pottery wheel"
             />
 

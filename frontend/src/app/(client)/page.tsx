@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import Developmentpage from "@/domains/home/components/Developmentpage";
-import OurConviction from "@/domains/home/components/Ourconviction";
-import FocusAreaSection from "@/domains/home/components/FocusAreaSection";
-import MovementMarquee from "@/domains/home/components/Movementmarquee";
-import HowCanYouHelpSection from "@/domains/home/components/HowCanYouHelpSection";
 import {
   bannerImageUrls,
   fetchPublishedBanners,
@@ -27,6 +23,32 @@ const Statsection = dynamic(
       <div className="min-h-[28rem] w-full bg-white" aria-hidden />
     ),
   },
+);
+
+const OurConviction = dynamic(
+  () => import("@/domains/home/components/Ourconviction"),
+  {
+    loading: () => (
+      <div className="min-h-[28rem] w-full bg-white" aria-hidden />
+    ),
+  },
+);
+
+const FocusAreaSection = dynamic(
+  () => import("@/domains/home/components/FocusAreaSection"),
+  {
+    loading: () => (
+      <div className="min-h-[28rem] w-full bg-[#FAF9F5]" aria-hidden />
+    ),
+  },
+);
+
+const MovementMarquee = dynamic(
+  () => import("@/domains/home/components/Movementmarquee"),
+);
+
+const HowCanYouHelpSection = dynamic(
+  () => import("@/domains/home/components/HowCanYouHelpSection"),
 );
 
 const Missionsection = dynamic(

@@ -2,7 +2,8 @@ import localFont from "next/font/local";
 
 /**
  * Variable fonts only — one file per family instead of 20+ static cuts.
- * Cuts LCP competition with the hero image and shrinks the preload budget.
+ * Preload only the families needed for first paint (hero uses Lora + Figtree).
+ * Italics and Manrope load on demand so they do not compete with LCP.
  */
 export const figtree = localFont({
   src: [

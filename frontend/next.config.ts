@@ -14,6 +14,9 @@ const nextConfig: NextConfig = {
       { protocol: "http", hostname: "localhost" },
     ],
   },
+  experimental: {
+    optimizePackageImports: ["lucide-react", "framer-motion", "gsap"],
+  },
   async headers() {
     return [
       {
