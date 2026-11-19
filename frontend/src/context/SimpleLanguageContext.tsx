@@ -17,7 +17,6 @@ import {
 import {
   bindKannadaHardNav,
   revealTranslatedPage,
-  watchTranslatedThenReveal,
   whenTranslateReady,
 } from "@/utils/googleTranslate";
 
@@ -36,62 +35,74 @@ declare global {
   }
 }
 
-function injectTranslateScript(): void {
-  if (document.querySelector('script[src*="translate.google.com"]')) return;
+function readClientLanguage(): LanguageCode {
+  if (typeof window === "undefined") return LANGUAGES.ENGLISH;
+  return getCurrentLanguage();
+}
 
-  window.googleTranslateElementInit = () => {
-    try {
-      new window.google.translate.TranslateElement(
-        {
-          pageLanguage: "en",
-          includedLanguages: "en,kn",
-          autoDisplay: false,
-        },
-        "google_translate_element",
-      );
-    } catch {
-      revealTranslatedPage();
-      return;
-    }
-
+function injectTranslateScript(onReady?: (lang: LanguageCode) => void): void {
+  const runReady = () => {
     const lang = getCurrentLanguage();
+    onReady?.(lang);
     if (lang === LANGUAGES.KANNADA) {
-      void whenTranslateReady(LANGUAGES.KANNADA, 3000).then((ok) => {
-        if (!ok) revealTranslatedPage();
-      });
+      // One apply only — repeating pulses caused EN↔KN flicker every second.
+      void whenTranslateReady(LANGUAGES.KANNADA, 4000);
     } else {
       revealTranslatedPage();
     }
   };
 
+  // Boot script already loads GT for Kannada — only nudge apply here.
+  if (document.querySelector('script[src*="translate.google.com"]')) {
+    runReady();
+    return;
+  }
+
+  if (!window.googleTranslateElementInit) {
+    window.googleTranslateElementInit = () => {
+      try {
+        if (!document.getElementById("google_translate_element")) return;
+        new window.google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: "en,kn",
+            autoDisplay: false,
+          },
+          "google_translate_element",
+        );
+      } catch {
+        return;
+      }
+      runReady();
+    };
+  }
+
   const script = document.createElement("script");
   script.src =
     "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
   script.async = true;
-  script.onerror = () => revealTranslatedPage();
   document.head.appendChild(script);
 }
 
 export function SimpleLanguageProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [language, setLanguageState] = useState<LanguageCode>(LANGUAGES.ENGLISH);
+  const [language, setLanguageState] = useState<LanguageCode>(readClientLanguage);
   const [isChanging, setIsChanging] = useState(false);
   const isAdmin = pathname?.startsWith("/admin") ?? false;
 
-  useEffect(() => {
-    setLanguageState(getCurrentLanguage());
-  }, []);
-
-  // Hold → reveal: clear EN flash once Kannada is on the DOM (or failsafe).
   useEffect(() => {
     if (isAdmin) {
       revealTranslatedPage();
       return;
     }
-    return watchTranslatedThenReveal(2800);
+    revealTranslatedPage();
   }, [isAdmin]);
 
-  // Load Google Translate: immediate for Kannada, deferred for English (PSI / LCP).
+  useEffect(() => {
+    if (isAdmin) return;
+    return bindKannadaHardNav();
+  }, [isAdmin]);
+
   useEffect(() => {
     if (typeof window === "undefined" || isAdmin) return;
 
@@ -99,7 +110,7 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
     setLanguageState(lang);
 
     if (lang === LANGUAGES.KANNADA) {
-      injectTranslateScript();
+      injectTranslateScript((readyLang) => setLanguageState(readyLang));
       return;
     }
 
@@ -108,11 +119,15 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
 
     const scheduleDeferred = () => {
       if (typeof window.requestIdleCallback === "function") {
-        idleId = window.requestIdleCallback(() => injectTranslateScript(), {
-          timeout: 4000,
-        });
+        idleId = window.requestIdleCallback(
+          () => injectTranslateScript((readyLang) => setLanguageState(readyLang)),
+          { timeout: 4000 },
+        );
       } else {
-        timeoutId = window.setTimeout(injectTranslateScript, 2500);
+        timeoutId = window.setTimeout(
+          () => injectTranslateScript((readyLang) => setLanguageState(readyLang)),
+          2500,
+        );
       }
     };
 
@@ -131,19 +146,14 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
     };
   }, [isAdmin]);
 
-  // Kannada: full document navigations so googtrans applies cleanly (no EN flash).
-  useEffect(() => {
-    if (isAdmin || language !== LANGUAGES.KANNADA) return;
-    return bindKannadaHardNav();
-  }, [language, isAdmin]);
-
   const setLanguage = useCallback(
     (newLang: LanguageCode) => {
       if (isChanging || newLang === language) return;
       setIsChanging(true);
       setLanguageState(newLang);
-      // Switching into Kannada: load GT before reload so cookie + widget stay in sync.
-      if (newLang === LANGUAGES.KANNADA) injectTranslateScript();
+      if (newLang === LANGUAGES.KANNADA) {
+        injectTranslateScript();
+      }
       reloadWithLanguage(newLang);
     },
     [isChanging, language],
