@@ -11,9 +11,9 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [64, 96, 128, 256, 384],
-    // Qualities used by home banners / lasting-change cards
-    qualities: [65, 70, 75],
+    // Include ~215px for mobile hero pills (PSI LCP display size).
+    imageSizes: [64, 96, 128, 216, 256, 384],
+    qualities: [50, 55, 60, 65, 70, 75],
     remotePatterns: [
       { protocol: "https", hostname: "pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev" },
       { protocol: "https", hostname: "**" },

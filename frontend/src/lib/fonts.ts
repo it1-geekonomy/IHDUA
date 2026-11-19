@@ -1,8 +1,8 @@
 import localFont from "next/font/local";
 
 /**
- * Hero LCP is the banner image (not text). Keep font preloads light so they
- * don't fight the LCP image on Slow 4G — Lora still preloads for the headline.
+ * Hero LCP is the banner image — do not preload fonts that compete with it
+ * on Slow 4G (PSI). swap still paints text once the file arrives.
  */
 export const figtree = localFont({
   src: [
@@ -27,7 +27,7 @@ export const lora = localFont({
   ],
   variable: "--font-lora",
   display: "swap",
-  preload: true,
+  preload: false,
 });
 
 export const manrope = localFont({
