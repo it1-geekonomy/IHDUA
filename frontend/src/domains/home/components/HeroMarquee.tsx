@@ -38,28 +38,27 @@ function MarqueeColumn({
           animationDelay: `-${duration * offset}s`,
         }}
       >
-        {loop.map((src, i) => {
-          const isLcp = !reverse && i === 0;
-          return (
+        {loop.map((src, i) => (
             <li key={i} aria-hidden={i >= images.length} className="pb-3 sm:pb-4">
               <div
                 className={`relative w-full overflow-hidden rounded-full bg-[#EDE9DC] ${PILL_ASPECT}`}
               >
+                {/*
+                  Do not priority-load these on mobile — tall pills were winning LCP
+                  at 6s+ on Slow 4G. Hero headline text is the LCP candidate instead.
+                */}
                 <Image
                   src={src}
                   alt=""
                   fill
-                  priority={isLcp}
-                  fetchPriority={isLcp ? "high" : "auto"}
-                  loading={isLcp ? "eager" : "lazy"}
-                  quality={isLcp ? 70 : 65}
+                  loading="lazy"
+                  quality={60}
                   sizes="(min-width: 1024px) 14vw, (min-width: 768px) 16vw, 42vw"
                   className="object-cover"
                 />
               </div>
             </li>
-          );
-        })}
+          ))}
       </ul>
     </div>
   );
