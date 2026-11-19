@@ -254,6 +254,28 @@ export function getPageSeo(path: string): PageSeo | undefined {
   return PAGE_SEO[normalizePath(path)];
 }
 
+/**
+ * Unique preferred canonical paths from the SEO map.
+ * Blog post URLs (`/blogs/...`) are excluded — those come from the CMS at runtime.
+ */
+export function listStaticSitePaths(): string[] {
+  const seen = new Set<string>();
+  const paths: string[] = [];
+  for (const entry of Object.values(PAGE_SEO)) {
+    const c = entry.canonical || "/";
+    if (seen.has(c)) continue;
+    if (c.startsWith("/blogs/")) continue;
+    seen.add(c);
+    paths.push(c);
+  }
+  return paths;
+}
+
+/** @deprecated Prefer listStaticSitePaths() */
+export function listSeoCanonicalPaths(): string[] {
+  return listStaticSitePaths();
+}
+
 type BuildOpts = {
   /** Route path used for lookup + default canonical, e.g. "/youth" or "youth" */
   path: string;

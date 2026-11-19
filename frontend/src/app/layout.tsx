@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { figtree, lora, manrope } from "@/lib/fonts";
 import { SimpleLanguageProvider } from "@/context/SimpleLanguageContext";
 import { GT_BOOT_SCRIPT } from "@/utils/googleTranslate";
+import { getSiteOrigin } from "@/shared/lib/siteUrl";
 import "./globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ihdua.org";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(getSiteOrigin()),
   title: "IHDUA | Rural Development & Community Empowerment India",
   description:
     "IHDUA drives rural development through women empowerment, education, skill training, healthcare and sustainable initiatives to build stronger communities.",

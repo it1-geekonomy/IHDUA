@@ -5,7 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import Typography from "@/lib/Typography";
 import { useBlogsList } from "@/domains/blogs/hooks/useBlogsList";
-import type { BlogSort } from "@/domains/home/lib/blogs";
+import type { BlogListCard } from "@/domains/blogs/lib/mapStoriesToCards";
+import type { BlogCategory, BlogSort } from "@/domains/home/lib/blogs";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -100,7 +101,13 @@ const SORT_OPTIONS: Option[] = [
   { value: "oldest", label: "Oldest First" },
 ];
 
-export default function BlogsGridSection() {
+export default function BlogsGridSection({
+  initialPosts = null,
+  initialCategories = [],
+}: {
+  initialPosts?: BlogListCard[] | null;
+  initialCategories?: BlogCategory[];
+} = {}) {
   const [sortOrder, setSortOrder] = useState<BlogSort>("newest");
   const [categoryId, setCategoryId] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -112,6 +119,8 @@ export default function BlogsGridSection() {
   const { posts, categories, refreshing } = useBlogsList({
     sort: sortOrder,
     categoryId,
+    initialPosts,
+    initialCategories,
   });
 
   const categoryOptions = useMemo<Option[]>(
