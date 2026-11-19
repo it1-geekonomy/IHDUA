@@ -503,7 +503,7 @@ export function MobileMenu({
         )}
       >
         <div className="min-h-0 overflow-hidden rounded-2xl bg-[#1A0F1C]/85 shadow-[0_30px_70px_-20px_rgba(0,0,0,.75)] ring-1 ring-white/10 backdrop-blur-2xl">
-          <div className="max-h-[calc(100dvh-110px)] overflow-y-auto overscroll-contain px-5 py-2 sm:px-7">
+          <div className="max-h-[calc(100vh-110px)] max-h-[calc(100dvh-110px)] overflow-y-auto overscroll-contain px-5 py-2 sm:px-7">
             <ul className="flex flex-col">
               {links.map((link, i) => (
                 <MobileItem
