@@ -97,7 +97,7 @@ export default function BlogDetailClient({
         <div className="mt-3">
           <Typography
             variant="h3"
-            as="h1"
+            as="p"
             className="font-lora font-normal leading-[1.25] text-[#00191B]"
           >
             {post.title}
