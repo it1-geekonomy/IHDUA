@@ -12,6 +12,7 @@ import {
   buildPaginatedResult,
   PaginatedResult,
 } from '../../common/interfaces/paginated.interface';
+import { ChatbotSyncService } from '../../common/chatbot-sync/chatbot-sync.service';
 import {
   applyDeletedFilter,
   restoreSoftDeleted,
@@ -57,6 +58,7 @@ export class FundingProjectsService {
   constructor(
     @InjectRepository(FundingProject)
     private readonly repo: Repository<FundingProject>,
+    private readonly chatbotSync: ChatbotSyncService,
   ) {}
 
   async create(dto: CreateFundingProjectDto): Promise<FundingProject> {
@@ -70,6 +72,8 @@ export class FundingProjectsService {
     });
     const saved = await this.repo.save(entity);
     this.logger.log(`Created funding project ${saved.slug} (${saved.id})`);
+    this.chatbotSync.notify('funding_projects', saved.id);
+    this.chatbotSync.notify('funding_projects_index', 'all');
     return saved;
   }
 
@@ -157,17 +161,29 @@ export class FundingProjectsService {
       await this.assertSlugAvailable(dto.slug, id);
     }
     Object.assign(entity, dto);
-    return this.repo.save(entity);
+    const saved = await this.repo.save(entity);
+    this.chatbotSync.notify('funding_projects', saved.id);
+    this.chatbotSync.notify('funding_projects_index', 'all');
+    return saved;
   }
 
   async remove(id: string): Promise<void> {
     const entity = await this.findOne(id);
     await this.repo.softRemove(entity);
     this.logger.log(`Soft-deleted funding project ${id}`);
+    this.chatbotSync.notify('funding_projects', id, 'delete');
+    this.chatbotSync.notify('funding_projects_index', 'all');
   }
 
   async restore(id: string): Promise<FundingProject> {
-    return restoreSoftDeleted(this.repo, id, 'FundingProject');
+    const restored = await restoreSoftDeleted(
+      this.repo,
+      id,
+      'FundingProject',
+    );
+    this.chatbotSync.notify('funding_projects', restored.id);
+    this.chatbotSync.notify('funding_projects_index', 'all');
+    return restored;
   }
 
   private async assertSlugAvailable(slug: string, excludeId?: string) {
