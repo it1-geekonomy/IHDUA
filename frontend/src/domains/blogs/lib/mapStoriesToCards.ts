@@ -6,6 +6,7 @@ export type BlogListCard = {
   slug: string;
   title: string;
   image: string | null;
+  video: string | null;
   category: string;
   categoryId: string | null;
   /** Publish timestamp (future-date check only, not used for sorting) */
@@ -33,6 +34,7 @@ export function mapStoriesToCards(
       slug: b.slug,
       title: b.title,
       image: b.blogBanner || null,
+      video: b.video || null,
       category:
         b.category?.name ??
         (b.categoryId ? nameById.get(b.categoryId) : undefined) ??
