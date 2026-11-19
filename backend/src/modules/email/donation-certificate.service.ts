@@ -92,8 +92,8 @@ export class DonationCertificateService {
       color: hex(NAME.color),
     });
 
-    const category = titleCase(
-      donor.donationCategory || DonationCategory.GENERAL_DONATION,
+    const category = this.projectNameOnly(
+      titleCase(donor.donationCategory || DonationCategory.GENERAL_DONATION),
     );
     const sentence = `Has Generously Contributed Towards The ${category} Of IHDUA In Support Of Its Mission To Build Stronger, Self-Reliant Rural Communities.`;
     const sentenceFonts = fontSet('sans', 'value');
@@ -122,7 +122,7 @@ export class DonationCertificateService {
       String(donor.receiptNumber || donor.razorpayPaymentId || '—'),
       donor.pan?.trim().toUpperCase() || '—',
     ];
-    // DONATION FOR can be a long "Project — Component" string. Wrap it instead of
+    // DONATION FOR is the project name only. Wrap a long title instead of
     // shrinking the entire footer row to an unreadable size.
     const CATEGORY_INDEX = 2;
     const CATEGORY_LETTER_SPACING = 0.02;
@@ -194,8 +194,17 @@ export class DonationCertificateService {
   }
 
   /**
+   * Checkout stores "Project — Component". The certificate prints the project
+   * name only; the funding breakup stays off this PDF.
+   */
+  private projectNameOnly(category: string) {
+    const project = category.split(/\s+[—–-]\s+/)[0]?.trim();
+    return project || category;
+  }
+
+  /**
    * Largest size where `text` wraps into at most `maxLines` inside `maxWidth`.
-   * Keeps long donation categories readable instead of a single tiny line.
+   * Keeps a long project name readable instead of a single tiny line.
    */
   private fitCategorySize(
     text: string,
