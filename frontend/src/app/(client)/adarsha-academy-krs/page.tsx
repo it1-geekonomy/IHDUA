@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { buildImpactPageMetadata } from "@/shared/lib/seo";
 import { resolveImpactInitiative, resolveImpactPageData } from "@/domains/impact/cms/resolveImpactPage";
 import { ImpactPageView } from "@/domains/impact/cms/ImpactPageView";
 import NewsletterSection from "@/shared/components/Newsletter";
