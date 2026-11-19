@@ -173,11 +173,24 @@ docker compose --env-file .env.prod -f docker-compose.prod.yml up -d frontend ng
 
 Prerequisites: DNS `A` for `ihdua.org` (and `www` CNAME) already points at the Droplet.
 
-**1. Issue the certificate** (nginx must still answer HTTP on port 80 with the
-ACME location — current `nginx/default.conf` does):
+`nginx/default.conf` always serves the site on **HTTP :80** (plus ACME).  
+`nginx/https.conf` is created by `deploy.sh` **only after** certs exist — enabling
+HTTPS before certs makes nginx crash (that is what broke the nginx-only deploy).
+
+**1. Fix / keep HTTP working** (if nginx is crash-looping on missing certs):
 
 ```bash
 cd /opt/ihdua
+rm -f nginx/https.conf
+# ensure default.conf is the HTTP+ACME version from git
+git checkout -- nginx/default.conf
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --force-recreate nginx
+curl -fsS -o /dev/null http://localhost/ && echo OK
+```
+
+**2. Issue the certificate** (HTTP ACME must work first):
+
+```bash
 mkdir -p certbot/www certbot/conf
 
 docker compose --env-file .env.prod -f docker-compose.prod.yml --profile certbot run --rm certbot \
@@ -186,22 +199,15 @@ docker compose --env-file .env.prod -f docker-compose.prod.yml --profile certbot
   --email info@ihdua.org --agree-tos --no-eff-email
 ```
 
-**2. Deploy HTTPS nginx config** (repo `nginx/default.conf` redirects 80 → 443
-and serves TLS). Pull latest code if needed, then:
+**3. Enable HTTPS nginx + reload** (or just re-run `bash deploy.sh`):
 
 ```bash
+cp nginx/https.conf.example nginx/https.conf
 docker compose --env-file .env.prod -f docker-compose.prod.yml exec nginx nginx -t
-docker compose --env-file .env.prod -f docker-compose.prod.yml exec nginx nginx -s reload
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --force-recreate nginx
 ```
 
-If nginx was started before certs existed and fails to boot after the HTTPS
-config is live:
-
-```bash
-docker compose --env-file .env.prod -f docker-compose.prod.yml up -d nginx
-```
-
-**3. Point the app at HTTPS and rebuild frontend** (`NEXT_PUBLIC_*` are build-time):
+**4. Point the app at HTTPS and rebuild frontend** (`NEXT_PUBLIC_*` are build-time):
 
 ```bash
 # In .env.prod:
