@@ -1,10 +1,20 @@
 from __future__ import annotations
 
+import re
+
 from app.config import settings
 from app.rag import constants as C
 
 
-def rerank(hits: list[dict], intents: set[str]) -> list[dict]:
+def _title_in_question(title: str, question: str) -> bool:
+    q = (question or "").lower()
+    words = [w for w in re.findall(r"[a-z]{4,}", (title or "").lower())]
+    if not words:
+        return False
+    return sum(1 for w in words if w in q) >= max(1, (len(words) + 1) // 2)
+
+
+def rerank(hits: list[dict], intents: set[str], question: str = "") -> list[dict]:
     if not hits:
         return []
 
@@ -15,10 +25,23 @@ def rerank(hits: list[dict], intents: set[str]) -> list[dict]:
 
         title = (h.get("title") or "").lower()
         content = (h.get("content") or "").lower()
+        table = h.get("table") or ""
+
+        # Prefer CMS funding projects when the visitor names that project
+        if table in ("funding_projects", "funding_projects_index"):
+            bonus += 0.05
+            if "donate" in intents:
+                bonus += 0.06
+            if question and _title_in_question(title, question):
+                bonus += 0.16
 
         # Intent tie-breaking bonus (gentle 0.06, never overwhelms true semantic similarity)
         if "education" in intents and any(k in title or k in content for k in ("school", "vidyashale", "adarsha")):
-            bonus += 0.06
+            # Don't let school initiative pages beat a named funding project
+            if table == "funding_projects" and question and _title_in_question(title, question):
+                bonus += 0.06
+            elif table != "funding_projects":
+                bonus += 0.06
         if "women" in intents and any(k in title or k in content for k in ("shg", "women", "federation")):
             bonus += 0.06
         if "farmers" in intents and any(k in title or k in content for k in ("farmer", "agriculture", "crop", "irrigation", "fodder")):
