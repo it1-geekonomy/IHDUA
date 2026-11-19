@@ -46,6 +46,9 @@ const STORAGE_KEY = "ihdua-chat-v1";
 const TEASER_KEY = "ihdua-chat-teaser-dismissed";
 const MAX_MESSAGE_LENGTH = 1000;
 
+/** Stale Turbopack/HMR sessions may still reference this name — keep it wired. */
+const WELCOME_SUGGESTIONS = chatbotCopy("en").suggestions;
+
 function newId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
@@ -593,7 +596,7 @@ export function ChatbotWidget() {
                     <div className="size-16 rounded-full overflow-hidden">
                       <Image
                         src="/chatbot/chatbot-icon.png"
-                        alt="Ai Assistant"
+                        alt={copy.title}
                         width={64}
                         height={64}
                         className="size-full object-cover"
@@ -608,7 +611,7 @@ export function ChatbotWidget() {
 
                   {/* 4 Quick Suggestion Pills */}
                   <div className="w-full space-y-2.5">
-                    {copy.suggestions.map((item) => (
+                    {(copy.suggestions ?? WELCOME_SUGGESTIONS).map((item) => (
                       <button
                         key={item.id}
                         type="button"

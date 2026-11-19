@@ -42,15 +42,18 @@ _INTENT_PATTERNS: dict[str, re.Pattern] = {
     "donate": re.compile(
         r"\b(donate|donations?|donating|80g|tax|taxes|tax-exempt|tax-exemption|501c|501\(c\)\(3\)|"
         r"contribute|contributions?|funds?|funding|receipts?|"
-        r"project[\s-]*based|funding[\s-]*projects?|component[\s-]*wise|breakup)\b",
+        r"project[\s-]*based|funding[\s-]*projects?|component[\s-]*wise|breakup)\b|"
+        r"(ದೇಣಿಗೆ|ದಾನ|ರಸೀದಿ|ತೆರಿಗೆ)",
         re.I,
     ),
     "education": re.compile(
-        r"\b(schools?|education|vinayaka|adarsha|krs|study|students?|teachers?|children)\b",
+        r"\b(schools?|education|vinayaka|adarsha|krs|study|students?|teachers?|children)\b|"
+        r"(ಶಾಲೆ|ಶಿಕ್ಷಣ|ವಿದ್ಯಾರ್ಥಿ|ವಿದ್ಯಾರ್ಥಿಗಳು)",
         re.I,
     ),
     "women": re.compile(
-        r"\b(women|shg|shgs|self[\s-]*help|federations?|empowerment|women['s]?\s*savings)\b",
+        r"\b(women|shg|shgs|self[\s-]*help|federations?|empowerment|women['s]?\s*savings)\b|"
+        r"(ಮಹಿಳೆ|ಮಹಿಳೆಯರ|ಸಬಲೀಕರಣ|ಸ್ವಯಂ\s*ಸಹಾಯ)",
         re.I,
     ),
     "microfinance": re.compile(
@@ -74,7 +77,8 @@ _INTENT_PATTERNS: dict[str, re.Pattern] = {
         re.I,
     ),
     "skills": re.compile(
-        r"\b(youth|nursing|gda|computers?|skills?|vocational|assistants?|general[\s-]*duty)\b",
+        r"\b(youth|nursing|gda|computers?|skills?|vocational|assistants?|general[\s-]*duty)\b|"
+        r"(ಯುವ|ಕೌಶಲ್ಯ|ತರಬೇತಿ|ಕಾರ್ಯಕ್ರಮ)",
         re.I,
     ),
     "governance": re.compile(
@@ -82,11 +86,13 @@ _INTENT_PATTERNS: dict[str, re.Pattern] = {
         re.I,
     ),
     "contact": re.compile(
-        r"\b(contact|address|phones?|emails?|office|locations?|reach|hours|mysore|chicago)\b",
+        r"\b(contact|address|phones?|emails?|office|locations?|reach|hours|mysore|chicago)\b|"
+        r"(ಕಚೇರಿ|ವಿಳಾಸ|ಸಂಪರ್ಕ|ಜಿಲ್ಲೆ)",
         re.I,
     ),
     "volunteer": re.compile(
-        r"\b(volunteers?|volunteering|interns?|internships?|careers?|join|partner(s|ship|ships)?|collaborat\w*|csr|get\s+involved)\b",
+        r"\b(volunteers?|volunteering|interns?|internships?|careers?|join|partner(s|ship|ships)?|collaborat\w*|csr|get\s+involved)\b|"
+        r"(ಸ್ವಯಂಸೇವಕ|ಸ್ವಯಂ\s*ಸೇವಕ)",
         re.I,
     ),
     "leadership": re.compile(
@@ -94,7 +100,8 @@ _INTENT_PATTERNS: dict[str, re.Pattern] = {
         re.I,
     ),
     "about": re.compile(
-        r"\b(about|mission|vision|values?|objectives?|aims?|ngo|non[\s-]*profit|who\s+(are|is)|what\s+is\s+ihdua|purpose)\b",
+        r"\b(about|mission|vision|values?|objectives?|aims?|ngo|non[\s-]*profit|who\s+(are|is)|what\s+is\s+ihdua|purpose)\b|"
+        r"(ಯೋಜನೆ|ಕಾರ್ಯಕ್ರಮಗಳು|ಉದ್ದೇಶ)",
         re.I,
     ),
     "impact": re.compile(

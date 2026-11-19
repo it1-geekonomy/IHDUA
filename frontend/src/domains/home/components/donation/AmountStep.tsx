@@ -8,8 +8,9 @@ import {
   AmountConfirmHint,
   DonationTrustNote,
 } from "./DonationFormPrimitives";
-import { CountrySelect } from "./CountrySelect";
+import { DonationOriginSelect } from "./DonationOriginSelect";
 import type { DonationFormState } from "./useDonationForm";
+import type { DonationOrigin } from "../../constants/donationCountries";
 
 type AmountStepProps = Pick<
   DonationFormState,
@@ -50,6 +51,9 @@ export function AmountStep({
   goToDetails,
   compact = false,
 }: AmountStepProps) {
+  const donationOrigin: DonationOrigin =
+    countryCode === "IN" ? "IN" : "OUT";
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -67,27 +71,11 @@ export function AmountStep({
 
   return (
     <div className={`flex flex-col ${compact ? "mt-2 gap-2" : "mt-4 sm:mt-5 gap-3 sm:gap-3.5"}`}>
-      {/* Country Selection */}
-      <div>
-        <Typography
-          variant="caption"
-          className={`font-bold font-figtree tracking-normal text-[#1E1E1E] !normal-case ${
-            compact ? "text-[12.5px] sm:text-[13px]" : "text-[14px] sm:text-[15px]"
-          }`}
-        >
-          {DONATION_COPY.chooseCountry}
-        </Typography>
-        <div className="mt-1.5">
-          <CountrySelect
-            value={countryCode}
-            onChange={setCountryCode}
-            compact={compact}
-          />
-        </div>
-        <p className="mt-1 font-figtree text-[11px] sm:text-[11.5px] text-[#8A847A]">
-          {DONATION_COPY.internationalNote}
-        </p>
-      </div>
+      {/* India vs Outside India */}
+      <DonationOriginSelect
+        value={donationOrigin}
+        onChange={(origin) => setCountryCode(origin)}
+      />
       {/* Choose Amount */}
       <Typography
         variant="caption"

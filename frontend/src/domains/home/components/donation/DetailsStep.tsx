@@ -91,7 +91,6 @@ export function DetailsStep({
 }: DetailsStepProps) {
   return (
     <div className="w-full font-figtree animate-in fade-in duration-200">
-      {/* Header */}
       <div>
         <p className="text-[11px] sm:text-xs font-bold tracking-[0.15em] text-[#9739A8] uppercase font-figtree">
           DONATE
@@ -104,7 +103,6 @@ export function DetailsStep({
         </p>
       </div>
 
-      {/* Donation Amount Summary Box */}
       <div className="mt-3 rounded-md border border-[#F3EBDD] bg-[#FDFBF7] px-3 py-2 flex items-center justify-between gap-3">
         <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
           <span className="text-lg font-bold leading-none text-[#111827]">
@@ -130,7 +128,6 @@ export function DetailsStep({
         </button>
       </div>
 
-      {/* Donation Frequency */}
       <div className="mt-3">
         <span className="block text-[13px] font-semibold text-[#111827]">
           {DONATION_COPY.chooseFrequency}
@@ -177,8 +174,6 @@ export function DetailsStep({
         )}
       </div>
 
-
-      {/* Form Fields */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -186,7 +181,6 @@ export function DetailsStep({
         }}
         className="mt-4 space-y-4 font-figtree"
       >
-        {/* Row 1: Full Name & Email Address */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormInput
             label="Full Name"
@@ -205,9 +199,9 @@ export function DetailsStep({
           />
         </div>
 
-        {/* Row 2: Mobile Number & PAN (PAN only for donations from India) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <PhoneInputField
+            key={phoneCountryCode}
             label="Mobile Number"
             required
             value={mobile}
@@ -234,7 +228,6 @@ export function DetailsStep({
           )}
         </div>
 
-        {/* Row 3: Address Line */}
         <FormInput
           label="Address Line"
           value={address}
@@ -242,7 +235,6 @@ export function DetailsStep({
           disabled={isPaying}
         />
 
-        {/* Row 4: City */}
         <FormInput
           label="City"
           required
@@ -251,7 +243,6 @@ export function DetailsStep({
           disabled={isPaying}
         />
 
-        {/* Row 5: Message (Optional) */}
         <FormTextarea
           label="Message (Optional)"
           placeholder="Leave a message or words of support..."
@@ -261,7 +252,6 @@ export function DetailsStep({
           rows={3}
         />
 
-        {/* Terms & Conditions Checkbox */}
         <div className="pt-1">
           <label className="flex items-center gap-2.5 cursor-pointer select-none">
             <input
@@ -285,7 +275,6 @@ export function DetailsStep({
           </label>
         </div>
 
-        {/* Status / Notice / Error Message */}
         {statusMessage && (
           <div
             className={cn(
@@ -303,7 +292,6 @@ export function DetailsStep({
           </div>
         )}
 
-        {/* Submit Button */}
         <button
           type="submit"
           disabled={isPaying}
