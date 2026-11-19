@@ -1,9 +1,9 @@
 import localFont from "next/font/local";
 
 /**
- * Variable fonts only — one file per family instead of 20+ static cuts.
- * Preload only the families needed for first paint (hero uses Lora + Figtree).
- * Italics and Manrope load on demand so they do not compete with LCP.
+ * LCP on mobile is the hero headline (Lora). Preload only that normal cut.
+ * Figtree/Manrope + italics load with font-display:swap and must not compete
+ * with LCP on Slow 4G.
  */
 export const figtree = localFont({
   src: [
@@ -12,16 +12,10 @@ export const figtree = localFont({
       weight: "300 900",
       style: "normal",
     },
-    // Italics are not on the LCP path — keep available but do not preload.
-    {
-      path: "../app/Fonts/Figtree-Italic-VariableFont_wght.ttf",
-      weight: "300 900",
-      style: "italic",
-    },
   ],
   variable: "--font-figtree",
   display: "swap",
-  preload: true,
+  preload: false,
 });
 
 export const lora = localFont({
@@ -30,11 +24,6 @@ export const lora = localFont({
       path: "../app/Fonts/Lora-VariableFont_wght.ttf",
       weight: "400 700",
       style: "normal",
-    },
-    {
-      path: "../app/Fonts/Lora-Italic-VariableFont_wght.ttf",
-      weight: "400 700",
-      style: "italic",
     },
   ],
   variable: "--font-lora",

@@ -91,6 +91,7 @@ function OverlayAmountSection({ form, rise, delay }: OverlayAmountProps) {
         <Typography
           id="overlayform-title"
           variant="h4"
+          as="h2"
           className="font-regular font-lora leading-[1.2] text-[#00191B] text-[22px] sm:text-[26px]"
         >
           Strengthening Rural Lives, Building Better Futures

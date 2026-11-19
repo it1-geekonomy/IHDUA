@@ -3,9 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Required for the production Docker image (copies .next/standalone)
   output: "standalone",
-  // Keep title/canonical/meta in <head> for HTML crawlers (Screaming Frog, etc.).
-  // Without this, async generateMetadata streams those tags into <body>.
-  htmlLimitedBots: /.*/,
+  // Block metadata only for HTML-limited crawlers (default list + SEO spiders).
+  // Do NOT use /.*/ — that delayed every visitor's HTML and wrecked mobile LCP.
+  htmlLimitedBots:
+    /[\w-]+-Google|Google-[\w-]+|Googlebot|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight|Screaming Frog|SFCrawl|SemrushBot|AhrefsBot|DotBot|MJ12bot/i,
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
@@ -19,15 +20,6 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion", "gsap"],
-  },
-  async redirects() {
-    return [
-      {
-        source: "/farmer",
-        destination: "/farmers",
-        permanent: true,
-      },
-    ];
   },
   async headers() {
     return [
