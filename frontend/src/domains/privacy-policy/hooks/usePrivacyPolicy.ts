@@ -26,25 +26,5 @@ export function usePrivacyPolicy() {
     };
   }, []);
 
-  // Apply meta title / description from the API once loaded
-  useEffect(() => {
-    if (!policy) return;
-
-    const title = policy.metaTitle || policy.title;
-    if (title) document.title = title;
-
-    if (policy.metaDescription) {
-      let tag = document.querySelector<HTMLMetaElement>(
-        'meta[name="description"]'
-      );
-      if (!tag) {
-        tag = document.createElement("meta");
-        tag.name = "description";
-        document.head.appendChild(tag);
-      }
-      tag.content = policy.metaDescription;
-    }
-  }, [policy]);
-
   return { policy, loading };
 }

@@ -12,6 +12,11 @@ export interface HeroBannerProps {
   className?: string;
   /** Optional CTAs under the description (e.g. Donate / Explore on /donate). */
   actions?: ReactNode;
+  /**
+   * On small screens, ensure a minimum hero height when the mobile crop is short
+   * (e.g. /donate reusing a wide desktop image).
+   */
+  coverOnMobile?: boolean;
 }
 
 const FLUID_PADDING_X = "px-[clamp(1rem,9.3vw_-_1.2rem,10rem)]";
@@ -28,6 +33,7 @@ export default function HeroBanner({
   imageAlt = "",
   className,
   actions,
+  coverOnMobile = false,
 }: HeroBannerProps) {
   const shared = { alt: imageAlt, sizes: "100vw", priority: true } as const;
 
@@ -48,6 +54,7 @@ export default function HeroBanner({
         // The image stretches to fill the whole row (object-cover + object-top),
         // so there are no purple bands and the top of the image is never cropped.
         "relative grid w-full bg-[#9739A8]",
+        coverOnMobile && "min-h-[min(78vw,28rem)] md:min-h-0",
         className,
       )}
     >

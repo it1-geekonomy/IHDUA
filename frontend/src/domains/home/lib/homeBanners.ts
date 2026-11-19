@@ -9,32 +9,30 @@ export type HomeBanner = {
   deletedAt: string | null;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE = (
+  (typeof window === "undefined"
+    ? process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL
+    : process.env.NEXT_PUBLIC_API_URL) || "http://localhost:6061/api"
+).replace(/\/$/, "");
 
 /**
- * Request currently in flight. Strict Mode's second effect run happens
- * before the response arrives, so it reuses this promise (1 call, not 2).
- * It is cleared as soon as the request settles, so the next visit to
- * the Home page always makes a fresh call.
+ * Published home hero banners.
+ * Server: cached briefly for LCP-friendly SSR.
+ * Browser: no-store so CMS edits show up on the next visit.
  */
-let inFlight: Promise<HomeBanner[]> | null = null;
-
-export function fetchPublishedBanners(): Promise<HomeBanner[]> {
-  if (inFlight) return inFlight;
-
-  const request = fetch(`${API_URL}/home-banners/published`, {
+export async function fetchPublishedBanners(): Promise<HomeBanner[]> {
+  const res = await fetch(`${API_BASE}/home-banners/published`, {
     headers: { accept: "application/json" },
-  })
-    .then(async (res) => {
-      if (!res.ok) throw new Error(`Failed to load banners (${res.status})`);
-      const json = await res.json();
-      // Handles both { statusCode, data: [...] } and a bare array
-      return (Array.isArray(json) ? json : (json?.data ?? [])) as HomeBanner[];
-    })
-    .finally(() => {
-      inFlight = null;
-    });
+    ...(typeof window === "undefined"
+      ? { next: { revalidate: 300 } }
+      : { cache: "no-store" as RequestCache }),
+  });
 
-  inFlight = request;
-  return request;
+  if (!res.ok) throw new Error(`Failed to load banners (${res.status})`);
+  const json = await res.json();
+  return (Array.isArray(json) ? json : (json?.data ?? [])) as HomeBanner[];
+}
+
+export function bannerImageUrls(banners: HomeBanner[]): string[] {
+  return banners.map((b) => b.bannerImageUrl).filter(Boolean);
 }

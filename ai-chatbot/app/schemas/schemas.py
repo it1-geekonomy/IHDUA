@@ -38,9 +38,17 @@ class ChatRequest(BaseModel):
     )
     session_id: Optional[str] = Field(None, max_length=100)
     history: Optional[list[ChatTurn]] = Field(None, max_length=10)
+    language: Optional[Literal["en", "kn"]] = Field(
+        "en",
+        description="Reply language: en (default) or kn (Kannada)",
+    )
 
     def resolved_message(self) -> str:
         return (self.message or self.question or "").strip()
+
+    def resolved_language(self) -> str:
+        lang = (self.language or "en").lower()
+        return "kn" if lang == "kn" else "en"
 
 
 class ChatSource(BaseModel):

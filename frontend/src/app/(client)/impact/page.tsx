@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import HeroBanner from "@/shared/components/Herobanner";
 import ImageCardsSection, {
   type ImageCardItem,
@@ -8,6 +9,10 @@ import {
   EDUCATION_TRANSFORMS_BANNER,
 } from "@/domains/impact/education/constants/educationHub";
 import { fetchImpactCategoryCards } from "@/shared/lib/impactApi";
+import { buildPageMetadata } from "@/shared/lib/seo";
+
+/** /impact is the education hub alias — same SEO as /education. */
+export const metadata: Metadata = buildPageMetadata({ path: "/education" });
 
 export const dynamic = "force-dynamic";
 

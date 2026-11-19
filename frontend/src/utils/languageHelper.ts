@@ -69,16 +69,52 @@ function clearGoogtransCookies(): void {
   }
 }
 
+function writeLanguagePrefCookie(targetLang: LanguageCode): void {
+  const hostname = window.location.hostname;
+  const secure = cookieSecuritySuffix();
+  const maxAge = 365 * 24 * 60 * 60;
+  const base = `path=/; max-age=${maxAge}${secure}`;
+
+  // Readable by Next.js SSR/middleware so refresh can hold paint before hydration.
+  document.cookie = `${LANGUAGE_STORAGE_KEY}=${targetLang}; ${base}`;
+
+  const root = getCookieRootDomain(hostname);
+  if (!root) return;
+  document.cookie = `${LANGUAGE_STORAGE_KEY}=${targetLang}; ${base}; domain=${root}`;
+  document.cookie = `${LANGUAGE_STORAGE_KEY}=${targetLang}; ${base}; domain=.${root}`;
+}
+
+function clearLanguagePrefCookie(): void {
+  const hostname = window.location.hostname;
+  const secure = cookieSecuritySuffix();
+  const expired = `expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/${secure}`;
+
+  document.cookie = `${LANGUAGE_STORAGE_KEY}=; ${expired}`;
+  document.cookie = `${LANGUAGE_STORAGE_KEY}=; ${expired}; domain=${hostname}`;
+
+  const root = getCookieRootDomain(hostname);
+  if (root) {
+    document.cookie = `${LANGUAGE_STORAGE_KEY}=; ${expired}; domain=${root}`;
+    document.cookie = `${LANGUAGE_STORAGE_KEY}=; ${expired}; domain=.${root}`;
+  }
+}
+
 export const setGoogleTranslateCookie = (targetLang: LanguageCode): void => {
   try {
     if (targetLang === LANGUAGES.ENGLISH) {
       clearGoogtransCookies();
+      clearLanguagePrefCookie();
     } else {
       // Google Translate expects /source/target
       writeGoogtransCookie(`/en/${targetLang}`, 365 * 24 * 60 * 60);
+      writeLanguagePrefCookie(targetLang);
     }
 
     localStorage.setItem(LANGUAGE_STORAGE_KEY, targetLang);
+    if (targetLang === LANGUAGES.ENGLISH) {
+      // Keep pref cookie in sync for SSR even when clearing GT.
+      writeLanguagePrefCookie(LANGUAGES.ENGLISH);
+    }
   } catch {
     // cookies/localStorage may be unavailable (SSR, privacy mode, etc.)
   }
@@ -108,15 +144,34 @@ function readGoogtransValue(): string {
   }
 }
 
+function readLanguagePrefCookie(): string {
+  try {
+    const parts = document.cookie.split(";");
+    for (const part of parts) {
+      const trimmed = part.trim();
+      if (!trimmed.startsWith(`${LANGUAGE_STORAGE_KEY}=`)) continue;
+      return decodeURIComponent(trimmed.slice(LANGUAGE_STORAGE_KEY.length + 1));
+    }
+  } catch {
+    // ignore
+  }
+  return "";
+}
+
 export const getCurrentLanguage = (): LanguageCode => {
   try {
     const googtrans = readGoogtransValue();
     if (googtrans.includes("/kn")) return LANGUAGES.KANNADA;
 
+    const prefCookie = readLanguagePrefCookie();
+    if (prefCookie === LANGUAGES.KANNADA) return LANGUAGES.KANNADA;
+
     const savedLang = localStorage.getItem(LANGUAGE_STORAGE_KEY) as LanguageCode | null;
     if (savedLang && Object.values(LANGUAGES).includes(savedLang)) {
       return savedLang;
     }
+
+    if (prefCookie === LANGUAGES.ENGLISH) return LANGUAGES.ENGLISH;
 
     return LANGUAGES.ENGLISH;
   } catch {

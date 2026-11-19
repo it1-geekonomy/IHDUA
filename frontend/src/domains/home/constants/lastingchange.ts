@@ -22,17 +22,17 @@ export const LASTING_CHANGE = {
     {
       id: "community",
       label: "Community Empowerment",
-      image: "/home/lasting1.png",
+      image:"https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795073113192-sghyv-frame-75.webp",
     },
     {
       id: "livelihoods",
       label: "Healthcare for All",
-      image: "/home/lasting2.png",
+      image:"https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795073146110-tnknu-frame-76.webp",
     },
     {
       id: "education",
       label: "Education for All",
-      image: "/home/lasting3.png",
+      image:  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795073177289-fg568-frame-77.webp",
     },
   ],
 } as const;

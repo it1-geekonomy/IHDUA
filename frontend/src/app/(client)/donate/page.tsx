@@ -1,12 +1,9 @@
 import type { Metadata } from "next";
 import { FundingPortfolio } from "@/domains/donate/components/FundingPortfolio";
 import { fetchFundingProjectsForDonate } from "@/domains/donate/lib/fundingProjectsApi";
+import { buildPageMetadata } from "@/shared/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Donate | IHDUA Funding Projects",
-  description:
-    "Support IHDUA projects with a clear breakup of donations sought — school essentials, rural education, watershed, organic farming, and more.",
-};
+export const metadata: Metadata = buildPageMetadata({ path: "/donate" });
 
 export const dynamic = "force-dynamic";
 

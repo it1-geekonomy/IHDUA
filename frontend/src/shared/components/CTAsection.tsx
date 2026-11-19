@@ -56,7 +56,7 @@ export default function CTASection() {
           src={DONATION_COPY.bgImage}
           alt="Rural community"
           fill
-          priority
+          loading="lazy"
           className="object-cover"
           sizes="100vw"
         />

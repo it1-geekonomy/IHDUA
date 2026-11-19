@@ -16,6 +16,7 @@ import {
 } from "@/utils/languageHelper";
 import {
   bindKannadaHardNav,
+  revealTranslatedPage,
   whenTranslateReady,
 } from "@/utils/googleTranslate";
 
@@ -34,23 +35,33 @@ declare global {
   }
 }
 
-export function SimpleLanguageProvider({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const [language, setLanguageState] = useState<LanguageCode>(LANGUAGES.ENGLISH);
-  const [isChanging, setIsChanging] = useState(false);
-  const isAdmin = pathname?.startsWith("/admin") ?? false;
+function readClientLanguage(): LanguageCode {
+  if (typeof window === "undefined") return LANGUAGES.ENGLISH;
+  return getCurrentLanguage();
+}
 
-  useEffect(() => {
-    setLanguageState(getCurrentLanguage());
-  }, []);
+function injectTranslateScript(onReady?: (lang: LanguageCode) => void): void {
+  const runReady = () => {
+    const lang = getCurrentLanguage();
+    onReady?.(lang);
+    if (lang === LANGUAGES.KANNADA) {
+      // One apply only — repeating pulses caused EN↔KN flicker every second.
+      void whenTranslateReady(LANGUAGES.KANNADA, 4000);
+    } else {
+      revealTranslatedPage();
+    }
+  };
 
-  // Load Google Translate once on the public site.
-  useEffect(() => {
-    if (typeof window === "undefined" || isAdmin) return;
-    if (document.querySelector('script[src*="translate.google.com"]')) return;
+  // Boot script already loads GT for Kannada — only nudge apply here.
+  if (document.querySelector('script[src*="translate.google.com"]')) {
+    runReady();
+    return;
+  }
 
+  if (!window.googleTranslateElementInit) {
     window.googleTranslateElementInit = () => {
       try {
+        if (!document.getElementById("google_translate_element")) return;
         new window.google.translate.TranslateElement(
           {
             pageLanguage: "en",
@@ -62,33 +73,87 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
       } catch {
         return;
       }
+      runReady();
+    };
+  }
 
-      const lang = getCurrentLanguage();
-      setLanguageState(lang);
-      if (lang === LANGUAGES.KANNADA) {
-        void whenTranslateReady(LANGUAGES.KANNADA, 3000);
+  const script = document.createElement("script");
+  script.src =
+    "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+  script.async = true;
+  document.head.appendChild(script);
+}
+
+export function SimpleLanguageProvider({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const [language, setLanguageState] = useState<LanguageCode>(readClientLanguage);
+  const [isChanging, setIsChanging] = useState(false);
+  const isAdmin = pathname?.startsWith("/admin") ?? false;
+
+  useEffect(() => {
+    if (isAdmin) {
+      revealTranslatedPage();
+      return;
+    }
+    revealTranslatedPage();
+  }, [isAdmin]);
+
+  useEffect(() => {
+    if (isAdmin) return;
+    return bindKannadaHardNav();
+  }, [isAdmin]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || isAdmin) return;
+
+    const lang = getCurrentLanguage();
+    setLanguageState(lang);
+
+    if (lang === LANGUAGES.KANNADA) {
+      injectTranslateScript((readyLang) => setLanguageState(readyLang));
+      return;
+    }
+
+    let idleId: number | undefined;
+    let timeoutId: number | undefined;
+
+    const scheduleDeferred = () => {
+      if (typeof window.requestIdleCallback === "function") {
+        idleId = window.requestIdleCallback(
+          () => injectTranslateScript((readyLang) => setLanguageState(readyLang)),
+          { timeout: 4000 },
+        );
+      } else {
+        timeoutId = window.setTimeout(
+          () => injectTranslateScript((readyLang) => setLanguageState(readyLang)),
+          2500,
+        );
       }
     };
 
-    const script = document.createElement("script");
-    // Absolute https keeps translate working on HTTPS live domains (and localhost).
-    script.src =
-      "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-    script.async = true;
-    document.head.appendChild(script);
-  }, [isAdmin]);
+    if (document.readyState === "complete") {
+      scheduleDeferred();
+    } else {
+      window.addEventListener("load", scheduleDeferred, { once: true });
+    }
 
-  // Kannada: full document navigations so googtrans applies cleanly (no EN flash / blank gate).
-  useEffect(() => {
-    if (isAdmin || language !== LANGUAGES.KANNADA) return;
-    return bindKannadaHardNav();
-  }, [language, isAdmin]);
+    return () => {
+      window.removeEventListener("load", scheduleDeferred);
+      if (idleId !== undefined && typeof window.cancelIdleCallback === "function") {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+    };
+  }, [isAdmin]);
 
   const setLanguage = useCallback(
     (newLang: LanguageCode) => {
       if (isChanging || newLang === language) return;
       setIsChanging(true);
       setLanguageState(newLang);
+      if (newLang === LANGUAGES.KANNADA) {
+        injectTranslateScript();
+      }
       reloadWithLanguage(newLang);
     },
     [isChanging, language],
@@ -97,7 +162,6 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
   return (
     <LanguageContext.Provider value={{ language, setLanguage, isChanging }}>
       {children}
-      {/* Must stay in layout for the widget; visually hidden via CSS, not display:none */}
       {!isAdmin && (
         <div
           id="google_translate_element"

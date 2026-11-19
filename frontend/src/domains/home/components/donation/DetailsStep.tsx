@@ -135,7 +135,7 @@ export function DetailsStep({
         <span className="block text-[13px] font-semibold text-[#111827]">
           {DONATION_COPY.chooseFrequency}
         </span>
-        <div className="mt-1.5 grid grid-cols-4 gap-1.5 sm:gap-2">
+        <div className="mt-1.5 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-2">
           {frequencies.map((item) => {
             const active = frequency === item.id;
             const unavailable = !recurringAvailable && item.id !== "once";
@@ -148,7 +148,7 @@ export function DetailsStep({
                 title={unavailable ? DONATION_COPY.recurringIndiaOnly : undefined}
                 onClick={() => setFrequency(item.id)}
                 className={cn(
-                  "rounded-md border py-1.5 px-1 text-center text-[12.5px] sm:text-[13px] font-semibold whitespace-nowrap transition-all disabled:cursor-not-allowed disabled:opacity-40",
+                  "rounded-md border px-2 py-2 text-center text-[12.5px] sm:text-[13px] font-semibold leading-snug transition-all disabled:cursor-not-allowed disabled:opacity-40",
                   active
                     ? "border-[#9739A8] bg-[#9739A8] text-white shadow-sm"
                     : "border-[#9739A8]/40 bg-transparent text-[#9739A8] enabled:hover:bg-[#9739A8]/10 cursor-pointer",

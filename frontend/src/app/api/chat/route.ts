@@ -76,6 +76,7 @@ export async function POST(req: NextRequest) {
           message: message.trim().slice(0, MAX_MESSAGE_CHARS),
           session_id: typeof body.session_id === "string" ? body.session_id : undefined,
           history: sanitizeHistory(body.history),
+          language: body.language === "kn" ? "kn" : "en",
         }),
         signal: AbortSignal.timeout(20000),
       });

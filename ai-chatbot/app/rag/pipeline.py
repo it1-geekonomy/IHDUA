@@ -19,8 +19,14 @@ def run_chat(
     message: str,
     session_id: str | None = None,
     client_history: list[dict] | None = None,
+    language: str = "en",
 ) -> dict:
-    result = _answer(message, session_id, client_history=client_history)
+    result = _answer(
+        message,
+        session_id,
+        client_history=client_history,
+        language=language,
+    )
     result["answer"] = clean_answer(result["answer"])
     result["sources"] = valid_sources(result.get("sources"))
     return result
@@ -30,13 +36,18 @@ def _answer(
     message: str,
     session_id: str | None,
     client_history: list[dict] | None = None,
+    language: str = "en",
 ) -> dict:
     started = time.perf_counter()
     sid = resolve_session_id(session_id)
     user_message = (message or "").strip()
+    lang = "kn" if (language or "en").lower() == "kn" else "en"
+    fallback = C.localize(C.FALLBACK_ANSWER, lang)
+    out_of_scope = C.localize(C.OUT_OF_SCOPE_ANSWER, lang)
+    setup = C.localize(C.SETUP_ANSWER, lang)
 
     # 1. Fast intents (greeting, thank you, fast contact, fast donate)
-    fast = match_fast_intent(user_message)
+    fast = match_fast_intent(user_message, language=lang)
     if fast:
         append_turn(sid, "user", user_message)
         append_turn(sid, "assistant", fast["answer"])
@@ -50,7 +61,7 @@ def _answer(
     # 2. Nothing indexed yet: never answer from memory
     if vector_store.indexed_count() == 0:
         return {
-            "answer": C.SETUP_ANSWER,
+            "answer": setup,
             "sources": [],
             "session_id": sid,
             "response_time_ms": int((time.perf_counter() - started) * 1000),
@@ -68,8 +79,9 @@ def _answer(
 
     cacheable = not history
     index_ver = vector_store.index_version()
+    cache_key = f"{lang}:{user_message}"
     if cacheable:
-        cached = answer_cache.get(user_message, current_version=index_ver)
+        cached = answer_cache.get(cache_key, current_version=index_ver)
         if cached:
             append_turn(sid, "user", user_message)
             append_turn(sid, "assistant", cached["answer"])
@@ -82,22 +94,26 @@ def _answer(
     # 4. Normalize & rewrite query ("then" / "tell me more" continue the previous question)
     question = search_source = user_message
     previous = last_turn(history, "user")
-    if is_continuation(user_message) and previous and last_turn(history, "assistant") != C.FALLBACK_ANSWER:
+    if is_continuation(user_message) and previous and last_turn(history, "assistant") not in (
+        C.FALLBACK_ANSWER,
+        C.FALLBACK_ANSWER_KN,
+        fallback,
+    ):
         search_source = previous
         question = (
             f"Tell me more about: {previous}. Share details not already given in your previous answer; "
             "if there are none, say briefly that this is all IHDUA has published on it."
         )
     search_text = normalize_for_retrieval(search_source)
-    rewritten = rewrite_query(search_text, history, unanswered=C.FALLBACK_ANSWER)
+    rewritten = rewrite_query(search_text, history, unanswered=fallback)
     intents = detect_intents(f"{search_text} {rewritten}")
 
     # Reject explicit off-topic queries immediately
     if is_explicitly_off_topic(user_message):
         append_turn(sid, "user", user_message)
-        append_turn(sid, "assistant", C.OUT_OF_SCOPE_ANSWER)
+        append_turn(sid, "assistant", out_of_scope)
         return {
-            "answer": C.OUT_OF_SCOPE_ANSWER,
+            "answer": out_of_scope,
             "sources": [],
             "session_id": sid,
             "response_time_ms": int((time.perf_counter() - started) * 1000),
@@ -109,21 +125,27 @@ def _answer(
     ranked = vector_store.with_neighbor_chunks(rerank(hits, intents))
 
     # 6. Generate answer
-    answer = generate_answer(question, ranked, history=history)
+    answer = generate_answer(question, ranked, history=history, language=lang)
     answer = recover_if_needed(clean_answer(answer) or C.NO_ANSWER_TOKEN, question, ranked, intents)
     answer = clean_answer(answer) or C.NO_ANSWER_TOKEN
     sources = pick_sources(ranked, intents, answer)
 
-    if answer.strip() == C.NO_ANSWER_TOKEN or answer.strip() == C.FALLBACK_ANSWER.strip():
-        answer = C.FALLBACK_ANSWER
+    if answer.strip() == C.NO_ANSWER_TOKEN or answer.strip() in (
+        C.FALLBACK_ANSWER.strip(),
+        C.FALLBACK_ANSWER_KN.strip(),
+    ):
+        answer = fallback
         sources = []
-    elif answer.strip() == C.OUT_OF_SCOPE_ANSWER.strip():
+    elif answer.strip() in (
+        C.OUT_OF_SCOPE_ANSWER.strip(),
+        C.OUT_OF_SCOPE_ANSWER_KN.strip(),
+    ):
         sources = []
 
     append_turn(sid, "user", user_message)
     append_turn(sid, "assistant", answer)
     if cacheable:
-        answer_cache.put(user_message, answer, sources, index_ver)
+        answer_cache.put(cache_key, answer, sources, index_ver)
 
     return {
         "answer": answer,

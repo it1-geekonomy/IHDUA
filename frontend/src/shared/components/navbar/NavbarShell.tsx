@@ -129,6 +129,7 @@ export default function NavbarShell() {
                 width={140}
                 height={140}
                 priority
+                fetchPriority="low"
                 className="h-10 w-auto object-contain sm:h-11 md:h-12 xl:h-14"
               />
             </Link>
