@@ -172,7 +172,7 @@ export function BlogsAndStoriesTable({
                           <span className="truncate">/{item.slug}</span>
                           {item.status === "published" && (
                             <Link
-                              href={`/blogs/${item.slug}`}
+                              href={`/blog/${item.slug}`}
                               target="_blank"
                               rel="noreferrer"
                               className="text-[#9739A8] hover:underline inline-flex items-center gap-0.5"

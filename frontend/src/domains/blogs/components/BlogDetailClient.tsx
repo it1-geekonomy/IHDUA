@@ -164,7 +164,7 @@ export default function BlogDetailClient({
             {/* Bottom Bar: Back to all + story navigator */}
             <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-neutral-100 pt-6 sm:mt-12">
               <Link
-                href="/blogs"
+                href="/blog"
                 className="inline-flex items-center gap-2 font-figtree text-sm font-semibold text-[#9739A8] transition hover:text-[#7A2E87]"
               >
                 <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,7 +176,7 @@ export default function BlogDetailClient({
               <div className="inline-flex items-center overflow-hidden rounded-lg border border-[#E0E0E0] bg-white shadow-xs">
                 {prev ? (
                   <Link
-                    href={`/blogs/${prev.slug}`}
+                    href={`/blog/${prev.slug}`}
                     aria-label="Previous story"
                     className="flex size-9 cursor-pointer items-center justify-center border-r border-[#E0E0E0] text-[#1E1E1E] transition hover:bg-neutral-100 active:scale-95 sm:size-10"
                   >
@@ -201,7 +201,7 @@ export default function BlogDetailClient({
 
                 {next ? (
                   <Link
-                    href={`/blogs/${next.slug}`}
+                    href={`/blog/${next.slug}`}
                     aria-label="Next story"
                     className="flex size-9 cursor-pointer items-center justify-center border-l border-[#E0E0E0] text-[#1E1E1E] transition hover:bg-neutral-100 active:scale-95 sm:size-10"
                   >
@@ -239,7 +239,7 @@ export default function BlogDetailClient({
                   {related.map((story) => (
                     <Link
                       key={story.id}
-                      href={`/blogs/${story.slug}`}
+                      href={`/blog/${story.slug}`}
                       className="group flex cursor-pointer flex-row items-start gap-3 transition hover:opacity-90 sm:flex-col sm:items-start lg:flex-row lg:items-start xl:gap-4"
                     >
                       <div className="relative size-20 shrink-0 overflow-hidden rounded-[0.375rem] bg-neutral-200 sm:aspect-[16/10] sm:size-auto sm:w-full lg:size-[5.5rem] lg:aspect-auto xl:size-[6.75rem]">
