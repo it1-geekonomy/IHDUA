@@ -106,13 +106,14 @@ const PAGE_SEO: Record<string, PageSeo> = {
     title: "Farmer Empowerment & Sustainable Agriculture | IHDUA",
     description:
       "IHDUA's farmer initiatives promoting sustainable agriculture, organic farming, modern techniques and better livelihood opportunities for rural farmers in India.",
-    canonical: "/farmer",
+    // Live route is /farmers — keep /farmer as an alias that canonicalises there.
+    canonical: "/farmers",
   },
   "/farmers": {
     title: "Farmer Empowerment & Sustainable Agriculture | IHDUA",
     description:
       "IHDUA's farmer initiatives promoting sustainable agriculture, organic farming, modern techniques and better livelihood opportunities for rural farmers in India.",
-    canonical: "/farmer",
+    canonical: "/farmers",
   },
   "/youth": {
     title: "Youth Empowerment & Skill Development Programs | IHDUA",

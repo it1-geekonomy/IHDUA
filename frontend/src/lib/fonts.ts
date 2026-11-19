@@ -12,6 +12,7 @@ export const figtree = localFont({
       weight: "300 900",
       style: "normal",
     },
+    // Italics are not on the LCP path — keep available but do not preload.
     {
       path: "../app/Fonts/Figtree-Italic-VariableFont_wght.ttf",
       weight: "300 900",

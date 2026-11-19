@@ -5,6 +5,9 @@ const isProd = process.env.NODE_ENV === "production";
 const nextConfig: NextConfig = {
   // Required for the production Docker image (copies .next/standalone)
   output: "standalone",
+  // Keep title/canonical/meta in <head> for HTML crawlers (Screaming Frog, etc.).
+  // Without this, async generateMetadata streams those tags into <body>.
+  htmlLimitedBots: /.*/,
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
@@ -21,8 +24,15 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "framer-motion", "gsap"],
   },
-  // Long-lived immutable caching is for production only.
-  // In `next dev`, it causes stale Turbopack chunks (module factory missing).
+  async redirects() {
+    return [
+      {
+        source: "/farmer",
+        destination: "/farmers",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     if (!isProd) return [];
     return [

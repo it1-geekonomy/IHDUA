@@ -10,17 +10,17 @@ const SkillSection = () => {
         {
           icon: "/Skillsandemployment/h1.png",
           iconBg: "#F1E7F4",
-          title: "Build Confidence",
+          title: "Learn Skills",
         },
         {
           icon: "/Skillsandemployment/h2.png",
           iconBg: "#FFEDCF",
-          title: "Create Opportunities",
+          title: "Gain Experience",
         },
         {
           icon: "/Skillsandemployment/h3.png",
           iconBg: "#F1E7F4",
-          title: "Develop Skills",
+          title: "Find Employment",
         },
       ]}
     />

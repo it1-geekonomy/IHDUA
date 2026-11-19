@@ -18,13 +18,13 @@ export const PILLARS = [
     title: "Strengthen Livelihoods",
     description:
       "Support opportunities for income generation and self-reliance.",
-    image: "/missionsection/strength.png",
+    image:  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795077794641-mced7-rectangle-1687.webp",
   },
   {
     number: "04",
     title: "Support Community Development",
     description:
       "Work towards healthier, more resilient rural communities.",
-    image: "/missionsection/support.png",
+    image: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795077739982-69u84-rectangle-1688.webp",
   },
 ];
