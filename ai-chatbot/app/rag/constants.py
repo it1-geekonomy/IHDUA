@@ -19,9 +19,11 @@ HEALTH_CAMPS_URL = "/health-camps"
 HEALTH_AWARENESS_URL = "/health-awareness"
 CONTACT_URL = "/contact"
 BLOGS_URL = "/blogs"
+GET_INVOLVED_URL = "/#get-involved"
 
 PAGE_LABELS = {
     "/": "Home",
+    GET_INVOLVED_URL: "Get Involved",
     ABOUT_URL: "About Us",
     EDUCATION_URL: "Education Programs",
     VINAYAKA_URL: "Vinayaka Jnana Vidyashale",

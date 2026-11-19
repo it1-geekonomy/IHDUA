@@ -11,6 +11,7 @@ log = logging.getLogger(__name__)
 _KNOWLEDGE_PAGES = {
     "donations_80g_tax": ("/donate", "Donation"),
     "legal_certifications_12a_80g_fcra": ("/about", "Governance"),
+    "get_involved": ("/#get-involved", "Get Involved"),
 }
 
 
