@@ -45,11 +45,21 @@ def generate_answer(
     question: str,
     contexts: list[dict],
     history: list[dict] | None = None,
+    language: str = "en",
 ) -> str:
     if not contexts:
         return C.NO_ANSWER_TOKEN
 
-    messages: list[dict] = [{"role": "system", "content": SYSTEM_PROMPT}]
+    lang = "kn" if (language or "en").lower() == "kn" else "en"
+    language_rule = (
+        "LANGUAGE: Reply entirely in Kannada (ಕನ್ನಡ). Keep markdown links, URLs, "
+        "programme names and numbers exactly as in CONTEXT; do not transliterate URLs."
+        if lang == "kn"
+        else "LANGUAGE: Reply in clear English."
+    )
+    messages: list[dict] = [
+        {"role": "system", "content": f"{SYSTEM_PROMPT}\n\n{language_rule}"}
+    ]
 
     # Include recent conversation turns for context in follow-up queries
     if history:
