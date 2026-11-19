@@ -17,7 +17,7 @@ export const WHO_WE_ARE_PARAGRAPHS = [
 ] as const;
 
 export const WHO_WE_ARE_IMAGE = {
-  src: "/aboutus/whoweare.png",
+  src: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795073351393-0zbpz-rectangle-27.webp",
   alt: "IHDUA team members with community women examining handcrafted textiles",
   sizes:
     "(min-width: 1280px) 36vw, (min-width: 1024px) 40vw, (min-width: 768px) 448px, 384px",

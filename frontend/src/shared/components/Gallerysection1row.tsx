@@ -1,132 +1,273 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Typography from "@/lib/Typography";
-import { GalleryNav, GalleryTile } from "@/shared/components/GalleryParts";
+import { GalleryCarousel, GalleryNav, GalleryTile } from "@/shared/components/GalleryParts";
 import type { GalleryImage } from "@/shared/components/GalleryParts";
+
+export type { GalleryImage } from "@/shared/components/GalleryParts";
+
+const COLUMNS = 4;
+const GAP = "clamp(0.5rem, 1.4vw, 1rem)";
 
 export interface GallerySectionProps {
   heading: string;
   images: GalleryImage[];
+  /**
+   * How many rows the desktop grid shows at once. Default 1.
+   * rows = 1: each arrow click slides the row by ONE image (smooth animation).
+   * rows >= 2: each arrow click moves to the next page.
+   */
+  rows?: number;
   className?: string;
+}
+
+function GalleryGrid({
+  images,
+  visibleCount,
+  singleStep,
+  onTileClick,
+  onPageChange,
+}: {
+  images: GalleryImage[];
+  visibleCount: number;
+  singleStep: boolean;
+  onTileClick: (index: number) => void;
+  onPageChange: () => void;
+}) {
+  // Index of the first visible image
+  const [startIndex, setStartIndex] = useState(0);
+
+  const step = singleStep ? 1 : visibleCount;
+  const maxStart = singleStep
+    ? Math.max(0, images.length - visibleCount)
+    : (Math.max(1, Math.ceil(images.length / visibleCount)) - 1) * visibleCount;
+
+  // Clamp, in case images are removed while a later position is open
+  const start = Math.min(startIndex, maxStart);
+  const end = Math.min(start + visibleCount, images.length);
+
+  const canPrev = start > 0;
+  const canNext = start < maxStart;
+
+  const move = (next: number) => {
+    setStartIndex(Math.max(0, Math.min(maxStart, next)));
+    onPageChange();
+  };
+
+  const tileSizes = "(min-width: 1536px) 18vw, (min-width: 1024px) 22vw, 23vw";
+
+  return (
+    <div className="hidden flex-col gap-[clamp(1.25rem,3vw,2rem)] md:flex">
+      {singleStep ? (
+        // Sliding row: all images sit in one track, and the track moves left or right
+        <div className="overflow-hidden">
+          <div
+            className="flex transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+            style={{
+              gap: GAP,
+              // The track is as wide as the visible area, so 100% here = visible width.
+              // One step = one tile width + one gap.
+              transform: `translateX(calc(${-start} * ((100% - ${COLUMNS - 1} * ${GAP}) / ${COLUMNS} + ${GAP})))`,
+            }}
+          >
+            {images.map((image, i) => {
+              const inView = i >= start && i < end;
+              return (
+                <div
+                  key={i}
+                  className="shrink-0"
+                  style={{ flexBasis: `calc((100% - ${COLUMNS - 1} * ${GAP}) / ${COLUMNS})` }}
+                  aria-hidden={!inView}
+                  // Off-screen tiles can't be tabbed to (that would scroll the hidden track)
+                  ref={(el) => {
+                    if (el) el.toggleAttribute("inert", !inView);
+                  }}
+                >
+                  <GalleryTile
+                    image={image}
+                    aspectClass="aspect-[16/10]"
+                    sizes={tileSizes}
+                    onClick={() => onTileClick(i)}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        // Paged grid: only this page's images are rendered, so a short last page has no empty slots
+        <div
+          key={start}
+          className="grid grid-cols-4 motion-safe:animate-gallery-page-fade"
+          style={{ gap: GAP }}
+        >
+          {images.slice(start, end).map((image, i) => {
+            const realIndex = start + i; // index in the full list, used by the lightbox
+            return (
+              <div key={realIndex}>
+                <GalleryTile
+                  image={image}
+                  aspectClass="aspect-[16/10]"
+                  sizes={tileSizes}
+                  onClick={() => onTileClick(realIndex)}
+                />
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <GalleryNav
+        canPrev={canPrev}
+        canNext={canNext}
+        onPrev={() => move(start - step)}
+        onNext={() => move(start + step)}
+      />
+    </div>
+  );
 }
 
 export default function GallerySection1Row({
   heading,
   images,
+  rows = 1,
   className = "",
 }: GallerySectionProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  
-  const [columns, setColumns] = useState(1);
-  const [offset, setOffset] = useState(0);
-  const [slideDistance, setSlideDistance] = useState(0);
-  
-  const touchStartRef = useRef<number | null>(null);
-  const isEmpty = images.length === 0;
+  const [activeModalIndex, setActiveModalIndex] = useState<number | null>(null);
+  const [loaded, setLoaded] = useState<{ src: string; ratio: number } | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
-  // Measure container and item widths to handle smooth sliding & responsive columns
+  const rowCount = Math.max(1, Math.floor(rows));
+  const visibleCount = rowCount * COLUMNS;
+  const singleStep = rowCount === 1;
+
+  // Scroll so the top of the gallery section sits just below the navbar.
+  // Skipped for a single row: the section is short and the arrows are already in view.
+  const scrollToSectionTop = () => {
+    if (singleStep) return;
+    // Wait one frame so the new page has rendered (a shorter last page changes the height)
+    requestAnimationFrame(() => {
+      const el = sectionRef.current;
+      if (!el) return;
+      const navOffset = window.innerWidth >= 1024 ? 80 : 64;
+      const top = el.getBoundingClientRect().top + window.scrollY - navOffset;
+      window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    });
+  };
+
   useEffect(() => {
-    const container = containerRef.current;
-    const track = trackRef.current;
-    if (!container || !track) return;
+    if (activeModalIndex === null) return;
 
-    const updateDimensions = () => {
-      const containerWidth = container.offsetWidth;
-      let cols = 1;
-      if (containerWidth >= 1024) cols = 4;
-      else if (containerWidth >= 640) cols = 2;
-      
-      setColumns(cols);
+    const html = document.documentElement;
+    const body = document.body;
 
-      const firstChild = track.firstElementChild as HTMLElement;
-      if (firstChild) {
-        const style = window.getComputedStyle(track);
-        const gap = parseFloat(style.gap || style.columnGap || "0");
-        setSlideDistance(firstChild.offsetWidth + gap);
-      }
+    const scrollKeys = new Set([" ", "PageUp", "PageDown", "Home", "End", "ArrowUp", "ArrowDown"]);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setActiveModalIndex(null);
+      else if (scrollKeys.has(e.key)) e.preventDefault(); // no keyboard scrolling of the page
     };
+    // Block mouse wheel / touch scrolling (also works with smooth-scroll libraries)
+    const blockScroll = (e: Event) => e.preventDefault();
 
-    updateDimensions();
-    const observer = new ResizeObserver(updateDimensions);
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, [isEmpty]);
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("wheel", blockScroll, { passive: false });
+    window.addEventListener("touchmove", blockScroll, { passive: false });
 
-  if (isEmpty) return null;
+    const original = {
+      htmlOverflow: html.style.overflow,
+      bodyOverflow: body.style.overflow,
+      bodyPaddingRight: body.style.paddingRight,
+      htmlOverscroll: html.style.overscrollBehavior,
+    };
+    const scrollbarWidth = window.innerWidth - html.clientWidth;
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    html.style.overscrollBehavior = "none";
+    if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
 
-  const maxOffset = Math.max(0, images.length - columns);
-  const current = Math.min(offset, maxOffset);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("wheel", blockScroll);
+      window.removeEventListener("touchmove", blockScroll);
+      html.style.overflow = original.htmlOverflow;
+      body.style.overflow = original.bodyOverflow;
+      body.style.paddingRight = original.bodyPaddingRight;
+      html.style.overscrollBehavior = original.htmlOverscroll;
+    };
+  }, [activeModalIndex]);
 
-  // Touch handlers for mobile swipe (only active below 'sm' screen / < 640px)
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (window.innerWidth >= 640) return;
-    touchStartRef.current = e.touches[0].clientX;
-  };
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    if (window.innerWidth >= 640 || touchStartRef.current === null) return;
-    
-    const touchEnd = e.changedTouches[0].clientX;
-    const diff = touchStartRef.current - touchEnd;
-    const threshold = 40; // minimum swipe distance in pixels
-
-    if (diff > threshold) {
-      // Swiped left -> Next
-      setOffset((prev) => Math.min(maxOffset, prev + 1));
-    } else if (diff < -threshold) {
-      // Swiped right -> Prev
-      setOffset((prev) => Math.max(0, prev - 1));
-    }
-
-    touchStartRef.current = null;
-  };
+  if (images.length === 0) return null;
 
   return (
-    <section
-      aria-label={heading}
-      className={`flex w-full flex-col gap-5 px-6 pt-6 lg:gap-8 lg:px-10 lg:pt-12 2xl:px-40 ${className}`}
-    >
-      <Typography variant="h3" as="h2" className="text-center font-lora leading-tight font-normal text-[#00191B] sm:text-left">
-        {heading}
-      </Typography>
-
-      {/* Viewport container with overflow hidden and touch event listeners */}
-      <div
-        ref={containerRef}
-        className="w-full overflow-hidden"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
+    <>
+      <section
+        ref={sectionRef}
+        aria-label={heading}
+        className={`flex w-full flex-col gap-[clamp(1.25rem,3vw,2.5rem)] px-6 pt-6 lg:px-10 lg:pt-8 xl:pt-14 2xl:px-40 ${className}`}
       >
-        <div
-          ref={trackRef}
-          className="flex gap-2 sm:gap-4 transition-transform duration-300 ease-in-out"
-          style={{
-            transform: `translateX(-${current * slideDistance}px)`,
-          }}
-        >
-          {images.map((image, i) => (
-            <div
-              key={i}
-              className="w-full sm:w-[calc(50%-0.25rem)] lg:w-[calc(25%-0.75rem)] flex-shrink-0"
-            >
-              <GalleryTile
-                image={image}
-                aspectClass="aspect-video"
-                sizes="(min-width: 1024px) 22vw, (min-width: 640px) 45vw, 100vw"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+        <Typography variant="h2" className="text-center font-lora leading-[1.2] text-[#00191B] sm:text-left">
+          {heading}
+        </Typography>
 
-      <GalleryNav
-        canPrev={current > 0}
-        canNext={current < maxOffset}
-        onPrev={() => setOffset(Math.max(0, current - 1))}
-        onNext={() => setOffset(Math.min(maxOffset, current + 1))}
-      />
-    </section>
+        <GalleryGrid
+          images={images}
+          visibleCount={visibleCount}
+          singleStep={singleStep}
+          onTileClick={(index) => setActiveModalIndex(index)}
+          onPageChange={scrollToSectionTop}
+        />
+        <GalleryCarousel images={images} onImageClick={(index) => setActiveModalIndex(index)} />
+      </section>
+
+      {/* Lightbox: centered image, blurred background, X to close, click outside to close */}
+      {activeModalIndex !== null && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Enlarged photo view"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-md motion-safe:animate-gallery-lb-fade sm:p-8"
+          onClick={() => setActiveModalIndex(null)}
+        >
+          {/* Wrapper is exactly the image size, so the X sits on the image's top-right corner */}
+          <div
+            className="relative motion-safe:animate-gallery-lb-pop"
+            style={{
+              width:
+                loaded && loaded.src === images[activeModalIndex].src
+                  ? `min(92vw, 1200px, calc(88vh * ${loaded.ratio}))`
+                  : "min(92vw, 1200px)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Plain <img> at its natural resolution: no compression, stays sharp */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={images[activeModalIndex].src}
+              alt={images[activeModalIndex].alt}
+              onLoad={(e) => {
+                const { naturalWidth, naturalHeight } = e.currentTarget;
+                if (naturalWidth && naturalHeight) {
+                  setLoaded({ src: images[activeModalIndex].src, ratio: naturalWidth / naturalHeight });
+                }
+              }}
+              className="block h-auto w-full rounded-md shadow-2xl"
+            />
+
+            <button
+              type="button"
+              onClick={() => setActiveModalIndex(null)}
+              className="absolute right-1.5 top-1.5 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/90 hover:text-[#FFD638] focus:outline-none sm:right-2 sm:top-2 sm:h-7 sm:w-7 lg:h-8 lg:w-8"
+              aria-label="Close enlarged photo"
+            >
+              <svg className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.4}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

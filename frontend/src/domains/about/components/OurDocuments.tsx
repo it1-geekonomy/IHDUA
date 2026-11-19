@@ -35,10 +35,10 @@ const isViewOnlyGroup = (group: DocumentGroup) =>
   group.title.toLowerCase().includes("organizational");
 
 // Icons (files live in /public/aboutus/)
-const EYE_ICON = "/aboutus/eye.png";
+const EYE_ICON = "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795078459862-0f89k-fi_159604.svg";
 
 // Every Organizational Document (including newly uploaded PDFs) uses this same icon
-const ORG_DOC_ICON = "/aboutus/80G.png";
+const ORG_DOC_ICON = "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795078396644-tw1q7-fi_2258567-2-.svg";
 
 // Open the PDF preview in a new tab
 const openPdf = (url: string) => window.open(url, "_blank", "noopener,noreferrer");
