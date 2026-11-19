@@ -188,8 +188,7 @@ export const isPageShowingKannada = (): boolean => {
     const html = document.documentElement;
     if (
       html.classList.contains("translated-ltr") ||
-      html.classList.contains("translated-rtl") ||
-      html.getAttribute("lang") === "kn"
+      html.classList.contains("translated-rtl")
     ) {
       return true;
     }
@@ -197,9 +196,11 @@ export const isPageShowingKannada = (): boolean => {
       "select.goog-te-combo",
     ) as HTMLSelectElement | null;
     if (combo?.value === "kn") return true;
-    const knChars =
-      document.body?.textContent?.match(/[\u0C80-\u0CFF]/g)?.length ?? 0;
-    return knChars > 40;
+    // lang=kn alone (SSR cookie) is a preference signal, not proof of translation.
+    if (html.getAttribute("lang") === "kn" && getStoredLanguage() === LANGUAGES.KANNADA) {
+      return true;
+    }
+    return false;
   } catch {
     return false;
   }

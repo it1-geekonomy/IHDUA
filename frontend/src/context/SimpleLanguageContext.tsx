@@ -11,11 +11,13 @@ import React, {
 import { usePathname } from "next/navigation";
 import {
   getCurrentLanguage,
+  getStoredLanguage,
   reloadWithLanguage,
   LANGUAGES,
   LanguageCode,
 } from "@/utils/languageHelper";
 import {
+  applyGoogleTranslateLanguage,
   bindKannadaHardNav,
   revealTranslatedPage,
   whenTranslateReady,
@@ -36,39 +38,90 @@ declare global {
   }
 }
 
-function injectTranslateScript(onReady?: (lang: LanguageCode) => void): void {
-  const runReady = () => {
-    const lang = getCurrentLanguage();
-    onReady?.(lang);
-    if (lang === LANGUAGES.KANNADA) {
-      void whenTranslateReady(LANGUAGES.KANNADA, 4000);
-    } else {
+function ensureGtMount(): HTMLElement {
+  let el = document.getElementById("google_translate_element");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "google_translate_element";
+    el.className = "skiptranslate";
+    el.setAttribute("translate", "no");
+    el.style.cssText =
+      "position:absolute;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;opacity:0";
+    (document.body || document.documentElement).appendChild(el);
+  }
+  return el;
+}
+
+function initTranslateElement(): void {
+  try {
+    ensureGtMount();
+    if (!window.google?.translate?.TranslateElement) return;
+    // Avoid double-init into a broken widget.
+    const host = document.getElementById("google_translate_element");
+    if (host && host.querySelector(".goog-te-combo, select.goog-te-combo")) return;
+    new window.google.translate.TranslateElement(
+      {
+        pageLanguage: "en",
+        includedLanguages: "en,kn",
+        autoDisplay: false,
+      },
+      "google_translate_element",
+    );
+  } catch {
+    // ignore
+  }
+}
+
+/** Load GT script and apply Kannada once the combo exists. */
+function ensureKannadaTranslate(): void {
+  const finish = () => {
+    initTranslateElement();
+    void whenTranslateReady(LANGUAGES.KANNADA, 8000).then((ok) => {
+      if (!ok) {
+        // Last resort: poke combo directly a few more times.
+        let tries = 0;
+        const id = window.setInterval(() => {
+          if (applyGoogleTranslateLanguage(LANGUAGES.KANNADA) || ++tries > 40) {
+            window.clearInterval(id);
+          }
+        }, 150);
+      }
       revealTranslatedPage();
-    }
+    });
   };
 
-  if (document.querySelector('script[src*="translate.google.com"]')) {
-    runReady();
+  if (window.google?.translate?.TranslateElement) {
+    finish();
     return;
   }
 
-  if (!window.googleTranslateElementInit) {
-    window.googleTranslateElementInit = () => {
-      try {
-        if (!document.getElementById("google_translate_element")) return;
-        new window.google.translate.TranslateElement(
-          {
-            pageLanguage: "en",
-            includedLanguages: "en,kn",
-            autoDisplay: false,
-          },
-          "google_translate_element",
-        );
-      } catch {
-        return;
+  window.googleTranslateElementInit = () => {
+    finish();
+  };
+
+  const existing = document.querySelector(
+    'script[src*="translate.google.com"]',
+  ) as HTMLScriptElement | null;
+
+  if (existing) {
+    // Script tag present but library may still be loading — wait, don't bail.
+    let n = 0;
+    const wait = window.setInterval(() => {
+      if (window.google?.translate?.TranslateElement) {
+        window.clearInterval(wait);
+        finish();
+      } else if (++n > 80) {
+        window.clearInterval(wait);
+        // Re-append a fresh script once.
+        existing.remove();
+        const s = document.createElement("script");
+        s.src =
+          "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+        s.async = true;
+        document.head.appendChild(s);
       }
-      runReady();
-    };
+    }, 100);
+    return;
   }
 
   const script = document.createElement("script");
@@ -80,12 +133,10 @@ function injectTranslateScript(onReady?: (lang: LanguageCode) => void): void {
 
 export function SimpleLanguageProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  // Always start as EN for SSR/hydration match; sync real pref before paint below.
   const [language, setLanguageState] = useState<LanguageCode>(LANGUAGES.ENGLISH);
   const [isChanging, setIsChanging] = useState(false);
   const isAdmin = pathname?.startsWith("/admin") ?? false;
 
-  // Sync + clear stuck "isChanging" after every navigation/reload.
   useLayoutEffect(() => {
     setIsChanging(false);
     if (isAdmin) return;
@@ -93,10 +144,6 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
   }, [isAdmin, pathname]);
 
   useEffect(() => {
-    if (isAdmin) {
-      revealTranslatedPage();
-      return;
-    }
     revealTranslatedPage();
   }, [isAdmin]);
 
@@ -111,11 +158,11 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
     const sync = () => setLanguageState(getCurrentLanguage());
     sync();
 
-    if (getCurrentLanguage() === LANGUAGES.KANNADA) {
-      injectTranslateScript(sync);
+    // Preference is KN → always drive the widget (boot may have started it too).
+    if (getStoredLanguage() === LANGUAGES.KANNADA) {
+      ensureKannadaTranslate();
     }
 
-    // Keep highlight in sync if GT flips html.translated-ltr.
     const obs = new MutationObserver(sync);
     obs.observe(document.documentElement, {
       attributes: true,
@@ -129,98 +176,20 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
     };
   }, [isAdmin]);
 
-  // Stable document capture listener — GT can strip React onClick on the
-  // footer buttons after translating; this still catches the click.
-  useEffect(() => {
-    if (typeof window === "undefined" || isAdmin) return;
-
-    let locked = false;
-
-    const onClick = (event: MouseEvent) => {
-      const target = event.target;
-      if (!(target instanceof Element)) return;
-      if (!target.closest("[data-lang-toggle]")) return;
-
-      const mobileSwitch = target.closest("[data-mobile-switch]");
-      let next: LanguageCode | null = null;
-
-      if (mobileSwitch) {
-        next =
-          getCurrentLanguage() === LANGUAGES.KANNADA
-            ? LANGUAGES.ENGLISH
-            : LANGUAGES.KANNADA;
-      } else {
-        const btn = target.closest("button[data-lang]");
-        const lang = btn?.getAttribute("data-lang");
-        if (lang === LANGUAGES.ENGLISH || lang === LANGUAGES.KANNADA) {
-          next = lang;
-        }
-      }
-      if (!next || locked) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-
-      locked = true;
-      setIsChanging(true);
-      setLanguageState(next);
-      if (next === LANGUAGES.KANNADA) {
-        injectTranslateScript();
-      }
-      try {
-        reloadWithLanguage(next);
-      } catch {
-        locked = false;
-        setIsChanging(false);
-      }
-      window.setTimeout(() => {
-        locked = false;
-        setIsChanging(false);
-      }, 3000);
-    };
-
-    // Replace any stale HMR listeners.
-    const prev = (window as unknown as { __ihduaLangClick?: EventListener })
-      .__ihduaLangClick;
-    if (prev) document.removeEventListener("click", prev, true);
-    (window as unknown as { __ihduaLangClick?: EventListener }).__ihduaLangClick =
-      onClick as EventListener;
-
-    document.addEventListener("click", onClick, true);
-    return () => {
-      document.removeEventListener("click", onClick, true);
-      const cur = (window as unknown as { __ihduaLangClick?: EventListener })
-        .__ihduaLangClick;
-      if (cur === onClick) {
-        delete (window as unknown as { __ihduaLangClick?: EventListener })
-          .__ihduaLangClick;
-      }
-    };
-  }, [isAdmin]);
-
   const setLanguage = useCallback((newLang: LanguageCode) => {
-    // Always cookie + hard reload. Never no-op on "already selected" —
-    // highlight can be wrong while the page is still the other language.
     setIsChanging(true);
     setLanguageState(newLang);
     if (newLang === LANGUAGES.KANNADA) {
-      injectTranslateScript();
+      ensureKannadaTranslate();
     }
     reloadWithLanguage(newLang);
-    // Safety: if reload is blocked, re-enable after a beat.
     window.setTimeout(() => setIsChanging(false), 2500);
   }, []);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, isChanging }}>
       {children}
-      {!isAdmin && (
-        <div
-          id="google_translate_element"
-          className="skiptranslate"
-          style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}
-        />
-      )}
+      {/* Mount owned by boot/ensureGtMount — no duplicate React node with same id. */}
     </LanguageContext.Provider>
   );
 }
