@@ -45,6 +45,6 @@ export function mapFieldStories(
       title: b.title,
       description: b.shortDescription ?? "",
       image: b.blogBanner as string,
-      href: `/blogs/${b.slug}`,
+      href: `/blog/${b.slug}`,
     }));
 }

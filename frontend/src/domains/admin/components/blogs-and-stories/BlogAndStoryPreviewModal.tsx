@@ -37,7 +37,7 @@ export function BlogAndStoryPreviewModal({
               Story Preview
             </span>
             <span className="font-mono text-[11px] text-[#8A847A]">
-              /blogs/{item.slug}
+              /blog/{item.slug}
             </span>
           </div>
           <button

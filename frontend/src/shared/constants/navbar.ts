@@ -11,5 +11,5 @@ export const NAV_LINKS: NavLink[] = [
     label: "Our Impact",
     children: [],
   },
-  { label: "Blogs & Stories", href: "/blogs" },
+  { label: "Blogs & Stories", href: "/blog" },
 ];

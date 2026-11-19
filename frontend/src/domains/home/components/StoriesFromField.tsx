@@ -193,7 +193,7 @@ export default function StoriesFromField({
           </div>
 
           <Link
-            href="/blogs"
+            href="/blog"
             className={`mx-auto inline-flex w-fit shrink-0 items-center justify-center border border-[#00191B] bg-transparent px-5 py-2.5 ${figmaTypeScale[18]} font-figtree font-semibold transition-opacity hover:opacity-80 sm:mx-0`}
           >
             Browse All Stories
