@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { ICON_SRC, ITEMS } from "@/domains/home/constants/marquee";
 import Typography from "@/lib/Typography";
 
@@ -23,9 +24,11 @@ function MarqueeTrack({ ariaHidden }: MarqueeTrackProps) {
           >
             {label}
           </Typography>
-          <img
+          <Image
             src={ICON_SRC}
             alt=""
+            width={24}
+            height={24}
             aria-hidden="true"
             className="mx-3 sm:mx-4 h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0 block"
           />

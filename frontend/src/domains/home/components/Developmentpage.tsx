@@ -7,7 +7,6 @@ import {
   FOCUS_AREAS_ID,
 } from "@/domains/home/constants/development";
 import Link from "next/link";
-import { useHeroBanners } from "@/domains/home/hooks/useHeroBanners";
 import { smoothScrollToId } from "@/shared/lib/smoothScroll";
 import Typography from "@/lib/Typography";
 import {
@@ -55,7 +54,10 @@ function MarqueeColumn({
           animationDelay: `-${duration * offset}s`,
         }}
       >
-        {loop.map((src, i) => (
+        {loop.map((src, i) => {
+          // Only the first visible pill is the LCP candidate — preload that one.
+          const isLcp = !reverse && i === 0;
+          return (
           <li key={i} aria-hidden={i >= images.length} className="pb-3 sm:pb-4">
             <div
               className={`relative w-full overflow-hidden rounded-full bg-[#EDE9DC] ${PILL_ASPECT}`}
@@ -64,13 +66,16 @@ function MarqueeColumn({
                 src={src}
                 alt=""
                 fill
-                priority={i === 0}
+                priority={isLcp}
+                fetchPriority={isLcp ? "high" : "auto"}
+                loading={isLcp ? "eager" : "lazy"}
                 sizes="(min-width: 1024px) 14vw, (min-width: 768px) 16vw, 40vw"
                 className="object-cover"
               />
             </div>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </div>
   );
@@ -187,21 +192,21 @@ function BottomBlend() {
   );
 }
 
-export default function RuralDevelopmentSection() {
-  // null while loading; [] when nothing is published or the API failed; otherwise CMS banners
-  const banners = useHeroBanners();
-
+export default function RuralDevelopmentSection({
+  bannerImages = [],
+}: {
+  /** SSR banner URLs — required for LCP preload (no client waterfall). */
+  bannerImages?: string[];
+}) {
   // Alternate images between the two columns: 1st, 3rd, 5th ... left; 2nd, 4th, 6th ... right
   const { imagesA, imagesB } = useMemo(() => {
-    const list = banners ?? [];
-    const a = list.filter((_, i) => i % 2 === 0);
-    const b = list.filter((_, i) => i % 2 === 1);
+    const a = bannerImages.filter((_, i) => i % 2 === 0);
+    const b = bannerImages.filter((_, i) => i % 2 === 1);
     // With a single image the right column would be empty, so reuse the left list
     return { imagesA: a, imagesB: b.length > 0 ? b : a };
-  }, [banners]);
+  }, [bannerImages]);
 
-  // Loaded, but nothing is published in the CMS (or the API failed)
-  const noBanners = banners !== null && banners.length === 0;
+  const noBanners = bannerImages.length === 0;
 
   const handleExploreClick = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();

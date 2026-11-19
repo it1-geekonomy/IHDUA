@@ -45,13 +45,12 @@ function SectionLabel({ children }: { children: string }) {
 interface AccordionItemProps {
   area: FocusArea;
   isOpen: boolean;
-  isFirst: boolean;
   onSelect: () => void;
 }
 
 /** Below lg: one expandable card at a time.
  *  Closed item -> tap to open it. Open card -> tap to go to its page. */
-function AccordionItem({ area, isOpen, isFirst, onSelect }: AccordionItemProps) {
+function AccordionItem({ area, isOpen, onSelect }: AccordionItemProps) {
   if (isOpen) {
     return (
       // --card-offset keeps the top padding and the image's negative margin in sync
@@ -69,7 +68,7 @@ function AccordionItem({ area, isOpen, isFirst, onSelect }: AccordionItemProps) 
               fill
               className="object-cover"
               sizes="(max-width: 1023px) 100vw"
-              priority={isFirst}
+              loading="lazy"
             />
           </div>
 
@@ -223,7 +222,6 @@ export default function FocusAreaSection() {
               key={area.title}
               area={area}
               isOpen={openIndex === index}
-              isFirst={index === 0}
               onSelect={() => setOpenIndex(index)}
             />
           ))}

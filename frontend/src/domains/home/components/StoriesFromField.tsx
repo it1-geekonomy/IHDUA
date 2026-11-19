@@ -12,6 +12,7 @@ import {
 } from "@/domains/home/hooks/useFieldStories";
 import { fetchStoryBySlug } from "@/domains/home/lib/blogs";
 
+
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 /* ---------- Side stories (animate only after a click) ---------- */
@@ -55,11 +56,15 @@ const copyReveal: Variants = {
   },
 };
 
-export default function StoriesFromField() {
+export default function StoriesFromField({
+  initialStories = null,
+}: {
+  initialStories?: FieldStoryCard[] | null;
+} = {}) {
   const router = useRouter();
 
-  // null while loading; [] when nothing is published or the API failed
-  const stories = useFieldStories(3);
+  // SSR seed when available; otherwise client fetch
+  const stories = useFieldStories(3, initialStories);
   const list = useMemo(() => stories ?? [], [stories]);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -239,7 +244,7 @@ export default function StoriesFromField() {
                           fill
                           className="object-cover"
                           sizes="(max-width: 1024px) 100vw, 66vw"
-                          priority={index === 0}
+                          loading="lazy"
                         />
                       </motion.div>
                     );

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { figtree, lora, manrope } from "@/lib/fonts";
 import { SimpleLanguageProvider } from "@/context/SimpleLanguageContext";
-import { GT_BOOT_SCRIPT } from "@/utils/googleTranslate";
+import { GT_BOOT_SCRIPT, GT_PENDING_STYLE } from "@/utils/googleTranslate";
 import { getSiteOrigin } from "@/shared/lib/siteUrl";
 import "./globals.css";
 
@@ -43,7 +43,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://translate.google.com" />
         <link rel="preconnect" href="https://translate.googleapis.com" />
-        {/* Keep googtrans cookie in sync with saved preference (no blank gate). */}
+        {/* Hold Kannada first paint until GT rewrites DOM — prevents EN→KN flash. */}
+        <style dangerouslySetInnerHTML={{ __html: GT_PENDING_STYLE }} />
         <script dangerouslySetInnerHTML={{ __html: GT_BOOT_SCRIPT }} />
       </head>
       <body className="font-sans antialiased">
