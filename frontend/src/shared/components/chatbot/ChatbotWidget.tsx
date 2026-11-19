@@ -23,6 +23,8 @@ import {
 } from "lucide-react";
 import { scrollToDonateSection } from "@/domains/home/lib/donation";
 import { isHomePath } from "@/shared/lib/path";
+import { useSimpleLanguage } from "@/context/SimpleLanguageContext";
+import { chatbotCopy } from "@/shared/components/chatbot/copy";
 
 type ChatRole = "bot" | "user";
 
@@ -42,31 +44,7 @@ type ChatMessage = {
 
 const STORAGE_KEY = "ihdua-chat-v1";
 const TEASER_KEY = "ihdua-chat-teaser-dismissed";
-const GREETING = "Namaste! Welcome to IHDUA.\nHow can I help you today?";
 const MAX_MESSAGE_LENGTH = 1000;
-
-const WELCOME_SUGGESTIONS = [
-  {
-    id: "support",
-    label: "How can I support IHDUA?",
-    icon: "❤️",
-  },
-  {
-    id: "programmes",
-    label: "What programmes do you run?",
-    icon: "🧰",
-  },
-  {
-    id: "partner",
-    label: "How can I partner with IHDUA?",
-    icon: "🌾",
-  },
-  {
-    id: "location",
-    label: "Where can I find you?",
-    icon: "📍",
-  },
-];
 
 function newId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -266,6 +244,8 @@ function TypingIndicator() {
 }
 
 export function ChatbotWidget() {
+  const { language } = useSimpleLanguage();
+  const copy = chatbotCopy(language);
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -315,17 +295,28 @@ export function ChatbotWidget() {
     return () => window.clearTimeout(timer);
   }, []);
 
+  // Avoid mixed EN/KN chat after a language toggle (GT used to half-translate the widget).
+  useEffect(() => {
+    setMessages([]);
+    setSessionId(undefined);
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+  }, [language]);
+
   useEffect(() => {
     if (!restoredRef.current) return;
     try {
       sessionStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ messages, sessionId }),
+        JSON.stringify({ messages, sessionId, language: copy.language }),
       );
     } catch {
       // ignore
     }
-  }, [messages, sessionId]);
+  }, [messages, sessionId, copy.language]);
 
   function restoreChat() {
     if (restoredRef.current) return;
@@ -334,6 +325,7 @@ export function ChatbotWidget() {
       const raw = sessionStorage.getItem(STORAGE_KEY);
       if (!raw) return;
       const stored = JSON.parse(raw);
+      if (stored.language && stored.language !== copy.language) return;
       setMessages(stored.messages ?? []);
       setSessionId(stored.sessionId);
     } catch {
@@ -369,9 +361,10 @@ export function ChatbotWidget() {
     }
   }, []);
 
-  async function sendQuestion(question: string) {
+  async function sendQuestion(question: string, displayText?: string) {
     const trimmed = question.trim();
     if (!trimmed || loading) return;
+    const shown = (displayText || trimmed).trim();
 
     setInput("");
     dismissTeaser();
@@ -380,12 +373,12 @@ export function ChatbotWidget() {
     setMessages((prev) => {
       const greeting: ChatMessage[] =
         prev.length === 0
-          ? [{ id: newId(), role: "bot", text: GREETING, at: now }]
+          ? [{ id: newId(), role: "bot", text: copy.greeting, at: now }]
           : [];
       return [
         ...greeting,
         ...prev,
-        { id: newId(), role: "user", text: trimmed, at: now },
+        { id: newId(), role: "user", text: shown, at: now },
       ];
     });
     setLoading(true);
@@ -403,6 +396,7 @@ export function ChatbotWidget() {
           message: trimmed,
           session_id: sessionId,
           history: conversationHistory,
+          language: copy.language,
         }),
       });
 
@@ -414,7 +408,7 @@ export function ChatbotWidget() {
       const answer =
         data.reply ||
         data.answer ||
-        "I could not find an answer. Please check our Contact page for more information.";
+        copy.noAnswer;
 
       const sources: ChatSource[] = Array.isArray(data.sources)
         ? data.sources.map((s: { title?: string; url?: string } | string) =>
@@ -440,7 +434,7 @@ export function ChatbotWidget() {
         {
           id: newId(),
           role: "bot",
-          text: "I could not reach the server right now. Please try again in a moment or visit our Contact page.",
+          text: copy.unreachable,
           at: Date.now(),
         },
       ]);
@@ -499,7 +493,7 @@ export function ChatbotWidget() {
   const isEmpty = messages.length === 0;
 
   return (
-    <div data-chatbot className="contents">
+    <div data-chatbot className="contents notranslate" translate="no">
       {/* ──────────────────────── Chat Panel ──────────────────────── */}
       <AnimatePresence>
         {open ? (
@@ -508,7 +502,7 @@ export function ChatbotWidget() {
             key="chat-panel"
             role="dialog"
             aria-modal="false"
-            aria-label="IHDUA AI Assistant"
+            aria-label={copy.open}
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -523,7 +517,7 @@ export function ChatbotWidget() {
                 <div className="relative size-10 shrink-0 rounded-full overflow-hidden shadow-xs ring-2 ring-white/50">
                   <Image
                     src="/chatbot/chatbot-icon.png"
-                    alt="Ai Assistant"
+                    alt={copy.title}
                     width={40}
                     height={40}
                     className="size-full object-cover"
@@ -531,11 +525,11 @@ export function ChatbotWidget() {
                 </div>
                 <div className="flex flex-col leading-tight">
                   <p className="font-figtree text-[15px] font-bold text-[#1A1A1A]">
-                    Ai Assistant
+                    {copy.title}
                   </p>
                   <p className="flex items-center gap-1.5 font-figtree text-xs font-medium text-[#1A1A1A]">
                     <span className="size-2 rounded-full bg-[#34A853] shadow-xs" />
-                    Online
+                    {copy.online}
                   </p>
                 </div>
               </div>
@@ -546,8 +540,8 @@ export function ChatbotWidget() {
                   <button
                     type="button"
                     onClick={resetChat}
-                    title="New conversation"
-                    aria-label="Reset chat"
+                    title={copy.reset}
+                    aria-label={copy.reset}
                     className="flex size-7 items-center justify-center rounded-full text-[#1A1A1A]/70 hover:bg-black/10 hover:text-[#1A1A1A] transition-colors cursor-pointer"
                   >
                     <RotateCcw className="size-3.5" />
@@ -570,8 +564,8 @@ export function ChatbotWidget() {
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  title="Close chat"
-                  aria-label="Close chat"
+                  title={copy.close}
+                  aria-label={copy.close}
                   className="flex size-7 items-center justify-center rounded-full text-[#1A1A1A] hover:bg-black/10 transition-colors cursor-pointer ml-0.5"
                 >
                   <X className="size-5" strokeWidth={2.2} />
@@ -609,16 +603,16 @@ export function ChatbotWidget() {
 
                   {/* Serif Italic Greeting Heading */}
                   <h3 className="font-lora italic text-[22px] font-medium text-[#1A1A1A] leading-snug mb-6">
-                    Namaste! How can we help you? 👋
+                    {copy.emptyGreeting}
                   </h3>
 
                   {/* 4 Quick Suggestion Pills */}
                   <div className="w-full space-y-2.5">
-                    {WELCOME_SUGGESTIONS.map((item) => (
+                    {copy.suggestions.map((item) => (
                       <button
                         key={item.id}
                         type="button"
-                        onClick={() => void sendQuestion(item.label)}
+                        onClick={() => void sendQuestion(item.query, item.label)}
                         className="group flex w-full items-center justify-between rounded-full bg-[#FAF5FA] hover:bg-[#F3EBF3] px-5 py-3.5 transition-all text-left cursor-pointer border border-transparent hover:border-[#9739A8]/20 shadow-2xs"
                       >
                         <div className="flex items-center gap-3 min-w-0">
@@ -755,13 +749,13 @@ export function ChatbotWidget() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={onInputKeyDown}
                   maxLength={MAX_MESSAGE_LENGTH}
-                  placeholder="Type your message..."
+                  placeholder={copy.placeholder}
                   className="min-w-0 flex-1 bg-transparent py-1.5 font-figtree text-sm text-[#1A1A1A] outline-none placeholder:text-neutral-400"
                 />
                 <button
                   type="submit"
                   disabled={loading || !input.trim()}
-                  aria-label="Send message"
+                  aria-label={copy.send}
                   className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#F6C343] hover:bg-[#EBB533] text-[#1A1A1A] shadow-xs transition-all disabled:opacity-40 disabled:hover:bg-[#F6C343] cursor-pointer"
                 >
                   <Send className="size-4.5 -rotate-12 translate-x-0.5 fill-[#1A1A1A] text-[#1A1A1A]" />
@@ -789,12 +783,14 @@ export function ChatbotWidget() {
                 onClick={toggle}
                 className="text-xs font-figtree font-medium text-[#00191B] hover:text-[#9739A8] cursor-pointer"
               >
-                How can <span className="font-bold text-[#9739A8]">IHDUA</span> help? 👋
+                {copy.teaserBefore}
+                <span className="font-bold text-[#9739A8]">{copy.teaserBrand}</span>
+                {copy.teaserAfter}
               </button>
               <button
                 type="button"
                 onClick={dismissTeaser}
-                aria-label="Dismiss teaser"
+                aria-label={copy.close}
                 className="text-[#8A9596] hover:text-[#00191B] cursor-pointer"
               >
                 <X className="size-3" />
@@ -809,7 +805,7 @@ export function ChatbotWidget() {
           onClick={toggle}
           whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.94 }}
-          aria-label={open ? "Close chat" : "Open IHDUA AI Assistant"}
+          aria-label={open ? copy.close : copy.open}
           className="relative flex size-14 sm:size-16 items-center justify-center rounded-full shadow-2xl transition focus:outline-none cursor-pointer"
         >
           {open ? (
@@ -820,7 +816,7 @@ export function ChatbotWidget() {
             <div className="relative size-full rounded-full overflow-hidden shadow-lg shadow-purple-950/20">
               <Image
                 src="/chatbot/chatbot-icon.png"
-                alt="IHDUA AI Assistant"
+                alt={copy.open}
                 width={64}
                 height={64}
                 className="size-full object-cover"

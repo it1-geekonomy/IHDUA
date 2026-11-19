@@ -4,31 +4,37 @@ import re
 from app.rag import constants as C
 
 _GREETING_RE = re.compile(
-    r"^(hi|hello|hey|greetings|namaste|vanakkam|good morning|good evening|good afternoon|hola)[\s!.]*$",
+    r"^(hi|hello|hey|greetings|namaste|vanakkam|good morning|good evening|good afternoon|hola|"
+    r"ನಮಸ್ಕಾರ|ನಮಸ್ತೆ)[\s!.]*$",
     re.I,
 )
 _THANKS_RE = re.compile(
-    r"^(thanks|thank you|thankyou|thx|much appreciated|great job|awesome)[\s!.]*$",
+    r"^(thanks|thank you|thankyou|thx|much appreciated|great job|awesome|"
+    r"ಧನ್ಯವಾದ|ಧನ್ಯವಾದಗಳು)[\s!.]*$",
     re.I,
 )
 _ACK_RE = re.compile(
-    r"^(no|nope|nah|nothing|no thanks|no thank you|ok|okay|k|fine|cool|great|alright|got it|sure|yes|yeah|hmm+)[\s!.]*$",
+    r"^(no|nope|nah|nothing|no thanks|no thank you|ok|okay|k|fine|cool|great|alright|got it|sure|yes|yeah|hmm+|"
+    r"ಸರಿ|ಹೌದು|ಇಲ್ಲ)[\s!.]*$",
     re.I,
 )
-_BYE_RE = re.compile(r"^(bye|goodbye|see you|tata|good night)[\s!.]*$", re.I)
+_BYE_RE = re.compile(
+    r"^(bye|goodbye|see you|tata|good night|ವಿದಾಯ)[\s!.]*$",
+    re.I,
+)
 
 
-def match_fast_intent(message: str) -> dict | None:
+def match_fast_intent(message: str, language: str = "en") -> dict | None:
     """Only small talk is answered without retrieval; every factual answer comes from indexed content."""
     msg = message.strip()
     if _GREETING_RE.match(msg):
-        return {"answer": C.GREETING_ANSWER, "sources": []}
+        return {"answer": C.localize(C.GREETING_ANSWER, language), "sources": []}
     if _THANKS_RE.match(msg):
-        return {"answer": C.THANKS_ANSWER, "sources": []}
+        return {"answer": C.localize(C.THANKS_ANSWER, language), "sources": []}
     if _BYE_RE.match(msg):
-        return {"answer": C.BYE_ANSWER, "sources": []}
+        return {"answer": C.localize(C.BYE_ANSWER, language), "sources": []}
     if _ACK_RE.match(msg):
-        return {"answer": C.ACK_ANSWER, "sources": []}
+        return {"answer": C.localize(C.ACK_ANSWER, language), "sources": []}
     return None
 
 
