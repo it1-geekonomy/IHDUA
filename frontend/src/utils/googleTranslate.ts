@@ -53,29 +53,23 @@ export const GT_BOOT_SCRIPT = `(function(){
       }
     } catch (e) {}
 
-    // Continuously kill GT’s top banner iframe / gadget if it injects.
-    function killGtChrome() {
+    // Hide only the top banner iframe — never delete the translate widget itself.
+    function pinBodyTop() {
       try {
-        document.querySelectorAll(
-          "iframe.goog-te-banner-frame, .goog-te-banner-frame, .goog-te-balloon-frame, #goog-gt-tt, #goog-gt-vt, .goog-te-ftab-frame, .VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf"
-        ).forEach(function (el) {
-          if (el && el.parentNode) el.parentNode.removeChild(el);
-        });
         document.documentElement.style.top = "0";
         if (document.body) {
           document.body.style.top = "0";
           document.body.style.marginTop = "0";
         }
+        document.querySelectorAll("iframe.goog-te-banner-frame, .goog-te-banner-frame").forEach(function (el) {
+          el.style.setProperty("display", "none", "important");
+          el.style.setProperty("visibility", "hidden", "important");
+          el.style.setProperty("height", "0", "important");
+        });
       } catch (e) {}
     }
-    killGtChrome();
-    setInterval(killGtChrome, 500);
-    try {
-      new MutationObserver(killGtChrome).observe(document.documentElement, {
-        childList: true,
-        subtree: true,
-      });
-    } catch (e) {}
+    pinBodyTop();
+    setInterval(pinBodyTop, 800);
 
     function readWantKn() {
       var ls = "";

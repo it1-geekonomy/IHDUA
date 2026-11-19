@@ -33,15 +33,14 @@ body {
 }
 
 /*
- * Nuke Google Translate UI chrome (top “Translated into…” bar, gadget,
- * tooltips). Keep [data-lang-toggle] alone — do NOT hide bare .skiptranslate.
+ * Hide GT chrome only. Do NOT hide/remove the widget host — translation
+ * needs #google_translate_element + .goog-te-combo in the DOM.
  */
 iframe.goog-te-banner-frame,
 .goog-te-banner-frame,
 .goog-te-banner-frame.skiptranslate,
 .goog-te-balloon-frame,
 .goog-te-ftab-frame,
-.goog-te-menu-frame,
 .goog-te-spinner-pos,
 #goog-gt-tt,
 #goog-gt-vt,
@@ -49,38 +48,29 @@ iframe.goog-te-banner-frame,
 .goog-tooltip:hover,
 .goog-text-highlight,
 .goog-logo-link,
-.goog-logo-link:link,
-.goog-logo-link:visited,
-.goog-logo-link:hover,
-.goog-logo-link:active,
-.goog-te-gadget,
-.goog-te-gadget > span,
-.goog-te-gadget > div,
-#google_translate_element,
 .VIpgJd-ZVi9od-l4eHX-hSRGPd,
-.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
-.VIpgJd-ZVi9od-ORHb-OEVmcd,
-.VIpgJd-ZVi9od-aZ2wEe-wOHMyf-ti6hGc {
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf {
   display: none !important;
   visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
   height: 0 !important;
-  max-height: 0 !important;
   width: 0 !important;
-  max-width: 0 !important;
   border: none !important;
   box-shadow: none !important;
-  position: absolute !important;
-  left: -9999px !important;
-  top: -9999px !important;
 }
 
+/* Keep the translate mount in DOM but off-screen (combo must remain usable). */
 #google_translate_element {
   position: absolute !important;
-  width: 0 !important;
-  height: 0 !important;
+  left: -9999px !important;
+  top: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
   overflow: hidden !important;
+  opacity: 0 !important;
+}
+
+.goog-te-gadget {
+  font-size: 0 !important;
 }
 
 /* GT shoves the page down for its banner — never allow that. */
@@ -88,7 +78,6 @@ html,
 body {
   top: 0 !important;
   margin-top: 0 !important;
-  position: static !important;
 }
 /* Language toggle must stay visible — Google Translate's stylesheet
    hides .skiptranslate (their banner class). We use notranslate only. */
