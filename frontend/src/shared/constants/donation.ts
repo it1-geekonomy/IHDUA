@@ -82,13 +82,13 @@ export const DONATION_COPY = {
     "Provide PAN or Aadhaar to receive an 80G tax exemption certificate (India).",
   internationalNote:
     "Overseas donors use FCRA bank remittance. Online Razorpay checkout is for India (INR) only.",
-  fcraTitle: "FCRA bank remittance",
-  fcraBody:
-    "Foreign contributions must be sent to IHDUA’s designated FCRA account. After you submit, our team will confirm receipt and follow up by email.",
-  fcraSubmit: "Submit remittance details",
-  fcraSubmitting: "Sending your details…",
-  fcraSuccess:
-    "Thank you! Your remittance details were received. Please complete the bank transfer and keep your payment reference ready — our team will email you shortly.",
+  fcraTitle: "Donate via FCRA wire transfer",
+  fcraIntro:
+    "Donations from outside India can be made by wire transfer to IHDUA’s designated FCRA current account with State Bank of India. Account details are below.",
+  fcraForexNote:
+    "When a forex transfer is initiated, INR should not be chosen. Use a currency other than INR (for example USD, EUR, AUD or GBP).",
+  fcraPolicyNote:
+    "The details below are mandatory. Your donation cannot be processed until you send us this information. We do not encourage anonymous donations as a policy.",
   paySecurely: "Pay Securely",
   paying: "Opening secure checkout…",
   verifying: "Confirming payment…",

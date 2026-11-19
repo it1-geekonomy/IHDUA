@@ -4,15 +4,23 @@ import Typography from "@/lib/Typography";
 import { DONATION_COPY } from "@/shared/constants/donation";
 import { AmountStep } from "./AmountStep";
 import { DetailsStep } from "./DetailsStep";
+import { FcraRemittanceStep } from "./FcraRemittanceStep";
 import { DonationReceiptModal } from "./DonationReceiptModal";
 import { useDonationForm } from "./useDonationForm";
 
 export function DonationFormCard() {
   const form = useDonationForm();
+  const isFcraStep = form.step === 2 && !form.isIndia;
 
   return (
     <>
-      <div className="w-full max-w-[480px] sm:max-w-[520px] lg:max-w-[530px] shrink-0 self-center rounded-md sm:rounded-lg bg-[#F7F4EE] p-5 sm:p-7 md:p-8 shadow-2xl">
+      <div
+        className={`w-full shrink-0 self-center rounded-md sm:rounded-lg bg-[#F7F4EE] p-5 sm:p-7 md:p-8 shadow-2xl ${
+          isFcraStep
+            ? "max-w-[560px] sm:max-w-[640px] lg:max-w-[680px]"
+            : "max-w-[480px] sm:max-w-[520px] lg:max-w-[530px]"
+        }`}
+      >
         {form.step === 1 && (
           <>
             <Typography
@@ -47,6 +55,12 @@ export function DonationFormCard() {
             setCause={form.setCause}
             causes={form.causes}
             goToDetails={form.goToDetails}
+          />
+        ) : isFcraStep ? (
+          <FcraRemittanceStep
+            chosenAmount={form.chosenAmount}
+            cause={form.cause}
+            onBack={form.goBackToAmount}
           />
         ) : (
           <DetailsStep {...form} />

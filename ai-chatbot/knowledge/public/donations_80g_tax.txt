@@ -6,10 +6,9 @@ Donating online
 - Donations are made through the IHDUA website Donate form (/donate or the home-page donation card).
 - First step: “Where are you donating from?” — choose India or Outside India.
 - India: donate in INR with Razorpay (UPI, cards, netbanking). Enter name, phone, email, city; PAN is optional for an 80G receipt.
-- Outside India: donate in USD via FCRA bank remittance (not Razorpay). The form shows FCRA account details, then captures the donor’s remittance intent in the CMS. Our team confirms the transfer by email.
-- Phone dial code can still be changed in the details step for both paths.
+- Outside India: after Donate Now, the site shows IHDUA’s SBI FCRA account details for wire transfer (not Razorpay). Donors must email info@ihdua.org or use Contact Us with name, contact number, transaction number, amount, email and postal address so the donation can be processed.
 - After a successful Razorpay payment (India), the donor receives a donation certificate by email. Indian donors who enter a PAN also receive an 80G tax receipt.
-- Overseas donors should complete the bank remittance using the FCRA details shown and keep their payment reference ready for follow-up.
+- Overseas donors should complete the bank remittance using the FCRA details shown, then email or contact IHDUA with the required details.
 
 Project-based donations
 - Yes, donors can donate project-wise. Open the Donate page at /donate to see IHDUA funding projects seeking support.

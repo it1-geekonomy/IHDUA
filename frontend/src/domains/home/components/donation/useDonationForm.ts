@@ -32,7 +32,6 @@ import {
   loadRazorpayScript,
   normalizeAmountDigits,
   openRazorpayCheckout,
-  submitFcraRemittanceLead,
   toAmountDigits,
   verifyDonationPayment,
   verifyDonationSubscription,
@@ -330,61 +329,14 @@ export function useDonationForm() {
     setTermsAccepted(false);
   };
 
-  /** Outside India: capture remittance intent in CMS (no Razorpay). */
-  const submitFcraRemittance = async () => {
-    setStatusMessage(null);
-    setStatusTone(null);
-
-    const fields = collectDonorFields();
-    if (!fields) return;
-
-    const { name, mail, amount, fullPhone } = fields;
-    const leadMessage = [
-      "FCRA remittance donation intent (Outside India)",
-      `Amount: ${currency} ${amount}`,
-      `Cause: ${cause}`,
-      `Country / origin: Outside India`,
-      `Phone country dial: ${phoneCountry.dial} (${phoneCountryCode})`,
-      address.trim() ? `Address: ${address.trim()}` : null,
-      `City: ${city.trim()}`,
-      message.trim() ? `Donor note: ${message.trim()}` : null,
-      "Please confirm FCRA bank receipt and follow up with the donor.",
-    ]
-      .filter(Boolean)
-      .join("\n");
-
-    setIsPaying(true);
-    setStatusMessage(DONATION_COPY.fcraSubmitting);
-
-    try {
-      await submitFcraRemittanceLead({
-        name,
-        email: mail,
-        mobile: fullPhone.slice(0, 20),
-        message: leadMessage,
-      });
-      setStatusTone("ok");
-      setStatusMessage(DONATION_COPY.fcraSuccess);
-      clearDonorForm();
-    } catch (error) {
-      setStatusTone("error");
-      setStatusMessage(
-        error instanceof Error
-          ? error.message
-          : "Could not submit remittance details. Please try again.",
-      );
-    } finally {
-      setIsPaying(false);
-    }
-  };
-
   const paySecurely = async () => {
     setStatusMessage(null);
     setStatusTone(null);
 
-    // Overseas donors: FCRA remittance path (CMS lead), not Razorpay
+    // Overseas donors use the FCRA remittance instructions step (no Razorpay)
     if (!isIndia) {
-      await submitFcraRemittance();
+      setStatusTone("info");
+      setStatusMessage(DONATION_COPY.internationalNote);
       return;
     }
 
