@@ -18,7 +18,8 @@ Project-based donations
   2. Support a full project.
   3. Make a general donation that is not tied to one project component.
 - On /donate, use “Browse projects” to review breakups, or “General donation” to give without picking a project line item.
-- Examples of projects that may appear (published projects are managed in the CMS and can change): School Essentials; Rural School Transformation; Watershed Development; Organic Farming Programme; Prevention of Child Marriage; Solid Waste Management; Support for Persons with Disabilities; Millet Processing & Food Unit; Edible Oil Processing Unit.
+- The list of funding projects (titles, totals, and component breakups) comes from the CMS. Only currently published projects on /donate are real — do not invent project names.
+- For details of a named project, use the CMS funding-project content indexed for that project, or direct the visitor to /donate.
 - The donation category recorded for a project gift is usually the project title, or “Project title — Component name” when a line item is chosen.
 
 Tax benefit for Indian donors

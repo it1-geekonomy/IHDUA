@@ -235,6 +235,98 @@ def _documents_doc(rows: list[dict]) -> dict | None:
     }
 
 
+def _parse_json_list(value: Any) -> list:
+    if isinstance(value, list):
+        return value
+    if isinstance(value, str) and value.strip():
+        try:
+            parsed = json.loads(value)
+            return parsed if isinstance(parsed, list) else []
+        except ValueError:
+            return []
+    return []
+
+
+def _funding_project_doc(row: dict) -> dict:
+    """One published funding project from the Donate page CMS."""
+    title = row["title"]
+    url = "/donate"
+    parts = [
+        _header(title, "Funding Project", url, row),
+        "This is a published IHDUA funding project on the Donate page (/donate).\n",
+        "Donors can support the full project or a specific component (line item).\n",
+    ]
+    if row.get("project_number"):
+        parts.append(f"Project number: {row['project_number']}\n")
+    if row.get("cause"):
+        parts.append(f"Donation category / cause: {row['cause']}\n")
+    if row.get("total_label"):
+        parts.append(f"Total amount sought: {row['total_label']}\n")
+    if row.get("summary"):
+        parts.append(f"\nSummary:\n{plain_text(row['summary'])}\n")
+
+    highlights = _parse_json_list(row.get("highlights"))
+    if highlights:
+        parts.append("\nHighlights:\n")
+        for item in highlights:
+            if isinstance(item, str) and item.strip():
+                parts.append(f"• {item.strip()}\n")
+
+    components = _parse_json_list(row.get("components"))
+    if components:
+        parts.append("\nComponent-wise funding breakup:\n")
+        for item in components:
+            if not isinstance(item, dict):
+                continue
+            name = str(item.get("name") or "").strip()
+            amount = str(item.get("amountLabel") or item.get("amount_label") or "").strip()
+            if name and amount:
+                parts.append(f"• {name}: {amount}\n")
+            elif name:
+                parts.append(f"• {name}\n")
+
+    parts.append(
+        "\nTo donate to this project, open the Donate page at /donate, "
+        "browse projects, and choose this project or one of its components.\n"
+    )
+    return {
+        "table": "funding_projects",
+        "source_id": str(row["id"]),
+        "title": title,
+        "url": url,
+        "category": "Funding Project",
+        "slug": row.get("slug") or "",
+        "content": "".join(parts).strip(),
+    }
+
+
+def _funding_projects_index_doc(rows: list[dict]) -> dict | None:
+    """Short index of all published funding projects for list-style questions."""
+    if not rows:
+        return None
+    title = "IHDUA Funding Projects on Donate"
+    lines = []
+    for r in rows:
+        label = r.get("total_label") or ""
+        line = f"• {r['title']}"
+        if label:
+            line += f" — {label}"
+        lines.append(line)
+    return {
+        "table": "funding_projects_index",
+        "source_id": AGGREGATE_ID,
+        "title": title,
+        "url": "/donate",
+        "category": "Funding Project",
+        "content": _header(title, "Funding Project", "/donate", _latest(rows))
+        + "Published funding projects currently seeking support on the Donate page (/donate). "
+        "Project list is managed in the CMS and can change.\n"
+        + "\n".join(lines)
+        + "\n\nAsk about a project by name for its summary and component breakup, "
+        "or visit /donate to browse and donate.",
+    }
+
+
 _PUBLISHED = "deleted_at IS NULL AND status = 'published'"
 
 # Tables indexed one document per row: (query, id column, builder).
@@ -266,6 +358,13 @@ _ROW_TABLES: dict[str, tuple[str, str, Callable[[dict], dict]]] = {
         "id",
         _legal_doc("terms_and_conditions", "/terms-and-conditions"),
     ),
+    "funding_projects": (
+        "SELECT id, slug, project_number, title, summary, total_label, cause, "
+        "highlights, components, updated_at FROM funding_projects "
+        f"WHERE {_PUBLISHED} ORDER BY sort_order, project_number, created_at",
+        "id",
+        _funding_project_doc,
+    ),
 }
 
 # Small tables indexed as one combined document so "list all ..." questions get every row.
@@ -294,6 +393,11 @@ _AGGREGATE_TABLES: dict[str, tuple[str, Callable[[list[dict]], dict | None]]] = 
         f"SELECT title, updated_at FROM organizational_documents WHERE {_PUBLISHED} "
         "ORDER BY sort_order, created_at",
         _documents_doc,
+    ),
+    "funding_projects_index": (
+        "SELECT title, total_label, updated_at FROM funding_projects "
+        f"WHERE {_PUBLISHED} ORDER BY sort_order, project_number, created_at",
+        _funding_projects_index_doc,
     ),
 }
 
