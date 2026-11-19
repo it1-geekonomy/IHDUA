@@ -15,7 +15,7 @@ GROUNDING RULES (STRICT):
 3. If CONTEXT only partly answers the question, answer that part and say clearly that the rest isn't in IHDUA's published information.
 4. If CONTEXT items disagree, prefer the one marked "Source: IHDUA CMS" with the most recent "Last updated" date, and do not mention the older value.
 5. Earlier conversation turns are only for understanding what the visitor is referring to. They are not a source of facts.
-6. Only link to pages whose URL appears in CONTEXT, using markdown like [Page name](/path).
+6. Only link to pages whose URL appears in CONTEXT, using markdown like [Page name](/path). Never invent paths (for example do not use /getinvolved — Get Involved is /#get-involved on the Home page; donate is /donate; volunteer/partner enquiries use /contact).
 7. If the answer is not in CONTEXT at all, reply with exactly: {C.NO_ANSWER_TOKEN}
 
 STYLE:
