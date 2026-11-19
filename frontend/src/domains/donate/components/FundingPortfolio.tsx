@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type MouseEvent } from "react";
+import { useState } from "react";
 import type { FundingProject } from "@/domains/donate/constants/fundingProjects";
 import { openDonationCheckout } from "@/domains/home/lib/donation";
 import HeroBanner from "@/shared/components/Herobanner";
@@ -36,18 +36,20 @@ function DonateButton({
   amountDigits,
   cause,
   variant = "primary",
+  className,
 }: {
   label: string;
   amountDigits?: string;
   cause: string;
   variant?: "primary" | "ghost";
+  className?: string;
 }) {
   if (variant === "ghost") {
     return (
       <button
         type="button"
         onClick={() => openDonationCheckout(amountDigits || "5000", "IN", 0, cause)}
-        className="inline-flex items-center justify-center border border-[#9739A8]/40 px-3 py-1.5 font-figtree text-xs font-semibold text-[#9739A8] transition hover:bg-[#9739A8]/5"
+        className={`inline-flex items-center justify-center border border-[#9739A8]/40 px-3 py-1.5 font-figtree text-xs font-semibold text-[#9739A8] transition hover:bg-[#9739A8]/5 ${className ?? ""}`}
       >
         {label}
       </button>
@@ -58,7 +60,7 @@ function DonateButton({
     <button
       type="button"
       onClick={() => openDonationCheckout(amountDigits || "5000", "IN", 0, cause)}
-      className="inline-flex w-fit cursor-pointer items-center justify-center rounded bg-[#FFD638] px-6 py-3 font-bold text-[#1E1E1E] transition hover:opacity-90"
+      className={`inline-flex w-full cursor-pointer items-center justify-center rounded bg-[#FFD638] px-6 py-3 font-bold text-[#1E1E1E] transition hover:opacity-90 sm:w-fit ${className ?? ""}`}
     >
       <Typography variant="body-sm" className="font-figtree font-semibold text-[#1E1E1E]">
         {label}
@@ -70,11 +72,11 @@ function DonateButton({
 function ProjectCard({ project }: { project: FundingProject }) {
   return (
     <article className="flex h-full flex-col border border-[#E8E2EC] bg-white p-5 shadow-[0_1px_0_rgba(0,0,0,0.03)] sm:p-6">
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
         <span className="font-figtree text-xs font-semibold tracking-[0.18em] text-[#9739A8]">
           PROJECT {project.number}
         </span>
-        <span className="shrink-0 font-figtree text-sm font-bold text-[#00191B]">
+        <span className="font-figtree text-sm font-bold text-[#00191B] sm:shrink-0 sm:text-right">
           {project.totalLabel}
         </span>
       </div>
@@ -84,11 +86,11 @@ function ProjectCard({ project }: { project: FundingProject }) {
       <p className="mt-3 flex-1 font-figtree text-sm leading-relaxed text-[#3F4A4B]">
         {project.summary}
       </p>
-      <div className="mt-5 flex flex-wrap gap-2">
+      <div className="mt-5 grid grid-cols-1 gap-2 sm:flex sm:flex-wrap">
         <button
           type="button"
           onClick={() => scrollToProject(project.id)}
-          className="inline-flex items-center justify-center border border-[#00191B]/15 px-4 py-2.5 font-figtree text-sm font-semibold text-[#00191B] transition hover:border-[#00191B]/40"
+          className="inline-flex w-full items-center justify-center border border-[#00191B]/15 px-4 py-2.5 font-figtree text-sm font-semibold text-[#00191B] transition hover:border-[#00191B]/40 sm:w-auto"
         >
           View breakup
         </button>
@@ -96,6 +98,7 @@ function ProjectCard({ project }: { project: FundingProject }) {
           label="Donate"
           cause={donationCause(project.title || project.cause)}
           amountDigits="5000"
+          className="!w-full sm:!w-auto"
         />
       </div>
     </article>
@@ -115,10 +118,10 @@ function ProjectDetail({ project, open, onToggle }: {
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-start justify-between gap-4 px-5 py-5 text-left sm:px-7 sm:py-6"
+        className="flex w-full flex-col gap-3 px-5 py-5 text-left sm:flex-row sm:items-start sm:justify-between sm:gap-4 sm:px-7 sm:py-6"
         aria-expanded={open}
       >
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="font-figtree text-xs font-semibold tracking-[0.18em] text-[#9739A8]">
             PROJECT {project.number}
           </p>
@@ -129,8 +132,8 @@ function ProjectDetail({ project, open, onToggle }: {
             {project.summary}
           </p>
         </div>
-        <div className="shrink-0 text-right">
-          <p className="font-figtree text-lg font-bold text-[#00191B] sm:text-xl">
+        <div className="sm:shrink-0 sm:text-right">
+          <p className="font-figtree text-base font-bold text-[#00191B] sm:text-xl">
             {project.totalLabel}
           </p>
           <p className="mt-1 font-figtree text-xs text-[#9739A8]">
@@ -224,15 +227,6 @@ export function FundingPortfolio({ projects }: { projects: FundingProject[] }) {
   const countLabel =
     projects.length === 1 ? "1 project" : `${projects.length} projects`;
 
-  const scrollToProjects = (e: MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    const el = document.getElementById("funding-projects");
-    if (!el) return;
-    const offset = window.innerWidth >= 1024 ? 96 : 80;
-    const top = el.getBoundingClientRect().top + window.scrollY - offset;
-    window.scrollTo({ top, behavior: "smooth" });
-  };
-
   return (
     <div className="w-full">
       <HeroBanner
@@ -241,20 +235,7 @@ export function FundingPortfolio({ projects }: { projects: FundingProject[] }) {
         image={DONATE_BANNER.image}
         imageMobile={DONATE_BANNER.image}
         imageAlt={DONATE_BANNER.imageAlt}
-        actions={
-          <>
-            <a
-              href="#funding-projects"
-              onClick={scrollToProjects}
-              className="inline-flex w-fit cursor-pointer items-center justify-center rounded border border-white bg-white px-6 py-3 font-bold text-[#00191B] transition hover:opacity-90"
-            >
-              <Typography variant="body-sm" className="font-figtree font-semibold text-[#00191B]">
-                Browse projects
-              </Typography>
-            </a>
-            <DonateButton label="General donation" cause="General Donation" />
-          </>
-        }
+        coverOnMobile
       />
 
       <section

@@ -18,7 +18,12 @@ def chat(payload: ChatRequest):
         raise HTTPException(status_code=400, detail="message is required")
 
     client_history = [h.model_dump() for h in payload.history] if payload.history else None
-    result = run_chat(message, payload.session_id, client_history=client_history)
+    result = run_chat(
+        message,
+        payload.session_id,
+        client_history=client_history,
+        language=payload.resolved_language(),
+    )
     return ChatResponse(
         answer=result["answer"],
         sources=[ChatSource(**s) for s in result.get("sources") or []],
