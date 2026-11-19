@@ -53,23 +53,29 @@ export const GT_BOOT_SCRIPT = `(function(){
       }
     } catch (e) {}
 
-    // Hide only the top banner iframe — never delete the translate widget itself.
-    function pinBodyTop() {
+    // Hide GT top banner only — never touch #google_translate_element / combo.
+    function hideGtBanner() {
       try {
         document.documentElement.style.top = "0";
         if (document.body) {
           document.body.style.top = "0";
           document.body.style.marginTop = "0";
         }
-        document.querySelectorAll("iframe.goog-te-banner-frame, .goog-te-banner-frame").forEach(function (el) {
+        var nodes = document.querySelectorAll(
+          "iframe.goog-te-banner-frame, .goog-te-banner-frame, body > .skiptranslate, body > iframe.skiptranslate, .VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf"
+        );
+        for (var i = 0; i < nodes.length; i++) {
+          var el = nodes[i];
+          if (el.id === "google_translate_element") continue;
+          if (el.querySelector && el.querySelector("select.goog-te-combo")) continue;
           el.style.setProperty("display", "none", "important");
           el.style.setProperty("visibility", "hidden", "important");
           el.style.setProperty("height", "0", "important");
-        });
+        }
       } catch (e) {}
     }
-    pinBodyTop();
-    setInterval(pinBodyTop, 800);
+    hideGtBanner();
+    setInterval(hideGtBanner, 800);
 
     function readWantKn() {
       var ls = "";

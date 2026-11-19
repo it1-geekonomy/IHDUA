@@ -13,6 +13,11 @@ export const metadata: Metadata = {
   title: "IHDUA | Rural Development & Community Empowerment India",
   description:
     "IHDUA drives rural development through women empowerment, education, skill training, healthcare and sustainable initiatives to build stronger communities.",
+  // Blocks Chrome’s built-in “Translated into…” bar only.
+  // Our Google Translate Element widget still runs via googtrans + combo.
+  other: {
+    google: "notranslate",
+  },
   alternates: {
     canonical: "/",
   },
