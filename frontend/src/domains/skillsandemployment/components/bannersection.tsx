@@ -4,7 +4,7 @@ export default function BannerSection() {
   return (
     <HeroBanner
       heading="Skills & Employment"
-      description="IHDUA promotes sustainable organic farming practices that support healthier soil, responsible agriculture and stronger rural communities"
+      description="Creating pathways for rural youth through skill development, leadership training and opportunities for meaningful employment."
       image="/Skillsandemployment/banner2.png"
       imageMobile="/Skillsandemployment/mobilebanner.png"
       imageAlt="Skills and Employment"

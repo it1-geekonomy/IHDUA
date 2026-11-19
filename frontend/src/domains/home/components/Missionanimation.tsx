@@ -177,46 +177,76 @@ export function MissionImageStage({
 }) {
   const wipeClass = direction === "down" ? "mission-wipe-down" : "mission-wipe-up";
 
+  // Mobile/tablet (below 1024px): MissionSection passes a className with fixed heights.
+  // Desktop (1024px+): no className, the stage sizes itself from the photo.
+  const isMobileStage = Boolean(className);
+
+  const curtains = animKey > 0 && (
+    <>
+      <div
+        key={`p-${animKey}`}
+        aria-hidden
+        className={`mission-curtain-purple ${wipeClass} pointer-events-none absolute inset-0 z-10 bg-[#9739A8]`}
+      />
+      <div
+        key={`y-${animKey}`}
+        aria-hidden
+        className={`mission-curtain-yellow ${wipeClass} pointer-events-none absolute inset-0 z-[11] bg-[#FFD638]`}
+      />
+    </>
+  );
+
+  /* ---------- Below 1024px: fixed-height box, image fills it (object-cover) ---------- */
+  if (isMobileStage) {
+    return (
+      <div className={`relative overflow-hidden ${className}`}>
+        {/* Previous photo stays underneath so there's never a blank frame */}
+        {prev && (
+          <img
+            src={prev.image}
+            alt=""
+            aria-hidden
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        )}
+
+        {/* Current photo: remounts on each change so the animations replay */}
+        <div key={animKey} className={`absolute inset-0 ${animKey > 0 ? "mission-img-swap" : ""}`}>
+          <img
+            src={active.image}
+            alt={active.title}
+            className={`h-full w-full object-cover ${animKey > 0 ? "mission-img-zoom" : ""}`}
+          />
+        </div>
+
+        {curtains}
+      </div>
+    );
+  }
+
+  /* ---------- 1024px and up: full column width, natural height, no crop ---------- */
   return (
-    <div
-      className={`relative overflow-hidden ${
-        className ? className : "hidden lg:block lg:h-auto"
-      }`}
-    >
-      {/* Previous photo stays underneath so there's never a blank frame */}
+    <div className="relative hidden overflow-hidden bg-white lg:block lg:self-center">
+      {/* Previous photo stays underneath so there's never a blank frame during the wipe */}
       {prev && (
         <img
           src={prev.image}
           alt=""
           aria-hidden
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-contain"
         />
       )}
 
       {/* Current photo: remounts on each change so the animations replay */}
-      <div key={animKey} className={`absolute inset-0 ${animKey > 0 ? "mission-img-swap" : ""}`}>
+      <div key={animKey} className={`relative ${animKey > 0 ? "mission-img-swap" : ""}`}>
         <img
           src={active.image}
           alt={active.title}
-          className={`h-full w-full object-cover ${animKey > 0 ? "mission-img-zoom" : ""}`}
+          className={`block h-auto w-full ${animKey > 0 ? "mission-img-zoom" : ""}`}
         />
       </div>
 
-      {/* Curtains: purple leads, yellow trails */}
-      {animKey > 0 && (
-        <>
-          <div
-            key={`p-${animKey}`}
-            aria-hidden
-            className={`mission-curtain-purple ${wipeClass} pointer-events-none absolute inset-0 z-10 bg-[#9739A8]`}
-          />
-          <div
-            key={`y-${animKey}`}
-            aria-hidden
-            className={`mission-curtain-yellow ${wipeClass} pointer-events-none absolute inset-0 z-[11] bg-[#FFD638]`}
-          />
-        </>
-      )}
+      {curtains}
     </div>
   );
 }
