@@ -279,7 +279,7 @@ export default function BlogsGridSection({
                 className="group flex cursor-pointer flex-col"
               >
                 <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md bg-neutral-100">
-                  {post.image && (
+                  {post.image ? (
                     <Image
                       src={post.image}
                       alt={post.title}
@@ -288,7 +288,25 @@ export default function BlogsGridSection({
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                       priority={safePage === 1 && index < 3}
                     />
-                  )}
+                  ) : post.video ? (
+                    <>
+                      <video
+                        src={`${post.video}#t=0.001`}
+                        preload="metadata"
+                        muted
+                        playsInline
+                        disablePictureInPicture
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20 transition-colors group-hover:bg-black/30">
+                        <div className="flex size-11 items-center justify-center rounded-full bg-white/90 text-[#9739A8] shadow-md backdrop-blur-xs transition-transform duration-200 group-hover:scale-110">
+                          <svg className="ml-0.5 size-5 fill-current" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                      </div>
+                    </>
+                  ) : null}
                 </div>
 
                 <div className="mt-4 flex items-start justify-between gap-3">
