@@ -10,6 +10,9 @@ certbot/conf/**
 !certbot/www/.gitkeep
 !certbot/conf/.gitkeep
 
+# Generated on the droplet when TLS certs exist (from https.conf.example)
+nginx/https.conf
+
 # OS / editor
 .DS_Store
 Thumbs.db

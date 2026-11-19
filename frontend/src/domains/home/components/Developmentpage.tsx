@@ -136,11 +136,18 @@ export default function RuralDevelopmentSection({
   const imagesB = imagesBOdd.length > 0 ? imagesBOdd : imagesA;
   const noBanners = bannerImages.length === 0;
 
+  const lcpSrc = imagesA[0] || null;
+
   return (
     <section
       id="home-top"
       className={`relative overflow-hidden bg-[#FDFBF5] pb-8 lg:pb-12 ${FLUID.sectionPaddingTop}`}
     >
+      {/* Discover LCP image before JS — direct R2 URL, no /_next/image hop. */}
+      {lcpSrc ? (
+        <link rel="preload" as="image" href={lcpSrc} fetchPriority="high" />
+      ) : null}
+
       <HeroBackground />
 
       <div className="relative z-10 mx-auto grid max-w-[1600px] items-center gap-10 px-6 md:grid-cols-[minmax(0,1fr)_auto] md:gap-8 md:px-10 lg:gap-10 2xl:px-16">
