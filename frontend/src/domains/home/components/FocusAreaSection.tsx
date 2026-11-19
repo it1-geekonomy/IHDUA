@@ -203,7 +203,7 @@ export default function FocusAreaSection() {
         {/* Label, heading and description: centered at all screen sizes */}
         <div className="flex flex-col items-center text-center">
           <SectionLabel>OUR FOCUS AREAS</SectionLabel>
-          <Typography variant="display-xl" className={`font-normal font-lora text-[#00191B]`}>
+          <Typography variant="display-xl" as="h2" className={`font-normal font-lora text-[#00191B]`}>
             Building Stronger Rural Communities
           </Typography>
           <Typography

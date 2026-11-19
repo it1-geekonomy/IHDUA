@@ -91,7 +91,7 @@ export const DONATION_COPY = {
   fillRequired: "Please enter your name, mobile number, and email to continue.",
   invalidTaxId: "Enter a valid 10-character PAN (e.g. ABCDE1234F), or leave it blank.",
   invalidPhone: "Enter a valid mobile number for the selected country.",
-  bgImage: "/CTAsection/ctabg-img.png",
+  bgImage:  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795078754023-3m1qi-ctabg-img.webp",
 } as const;
 
 export function isCtaPresetAmount(amount: string): amount is CtaPresetAmount {

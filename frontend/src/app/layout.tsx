@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { cookies, headers } from "next/headers";
 import { figtree, lora, manrope } from "@/lib/fonts";
 import { SimpleLanguageProvider } from "@/context/SimpleLanguageContext";
-import { GT_BOOT_SCRIPT, GT_PENDING_STYLE } from "@/utils/googleTranslate";
+import { GT_BOOT_SCRIPT } from "@/utils/googleTranslate";
 import { LANGUAGE_STORAGE_KEY } from "@/utils/languageHelper";
 import { getSiteOrigin } from "@/shared/lib/siteUrl";
 import "./globals.css";
@@ -64,11 +65,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       suppressHydrationWarning
       className={`${figtree.variable} ${lora.variable} ${manrope.variable}`}
     >
-      <head>
-        <style dangerouslySetInnerHTML={{ __html: GT_PENDING_STYLE }} />
-        <script dangerouslySetInnerHTML={{ __html: GT_BOOT_SCRIPT }} />
-      </head>
+      {/* Do not add a manual <head> — Next owns it; a closed head dumps metadata into <body>. */}
       <body className="font-sans antialiased" suppressHydrationWarning>
+        <Script id="gt-boot" strategy="beforeInteractive">
+          {GT_BOOT_SCRIPT}
+        </Script>
         <SimpleLanguageProvider>{children}</SimpleLanguageProvider>
       </body>
     </html>

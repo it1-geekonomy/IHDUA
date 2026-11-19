@@ -23,6 +23,7 @@ export default function RippleEffectSection() {
 
         <Typography
           variant="display-xl"
+          as="h2"
           className="mt-4 text-center font-lora font-normal text-[#00191B] lg:text-left"
         >
           The Ripple Effect of a Single Opportunity
