@@ -36,6 +36,7 @@ export function CountrySelect({
         !containerRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
+        setSearch("");
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -47,7 +48,10 @@ export function CountrySelect({
       <button
         type="button"
         disabled={disabled}
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => {
+          setIsOpen((prev) => !prev);
+          setSearch("");
+        }}
         className={`flex w-full items-center justify-between rounded-sm sm:rounded-md border bg-[#EDE8E0] ${
           compact
             ? "px-3 py-1.5 sm:py-2 text-[12.5px] sm:text-[13px]"
@@ -76,9 +80,12 @@ export function CountrySelect({
       </button>
 
       {isOpen && (
-        <div className="absolute z-30 mt-1 w-full rounded-sm sm:rounded-md border border-[#D6CFC4] bg-white shadow-xl">
-          <div className="flex items-center gap-2 border-b border-[#EAE6DF] p-2">
-            <Search className="h-4 w-4 text-[#8A847A]" />
+        // left-0 + w-full = exactly as wide as the button.
+        // overflow-hidden keeps the rounded corners clean.
+        <div className="absolute left-0 top-full z-30 mt-1 w-full overflow-hidden rounded-sm sm:rounded-md border border-[#D6CFC4] bg-white shadow-xl">
+          {/* Search row: stays pinned, only the list below scrolls */}
+          <div className="flex items-center gap-2 border-b border-[#EAE6DF] px-2 py-1.5">
+            <Search className="h-4 w-4 shrink-0 text-[#8A847A]" />
             <input
               type="text"
               className="w-full bg-transparent p-1 font-figtree text-[13px] sm:text-[14px] text-[#00191B] outline-none placeholder:text-[#8A847A]"
@@ -89,7 +96,10 @@ export function CountrySelect({
               autoFocus
             />
           </div>
-          <div className="max-h-60 overflow-y-auto py-1">
+
+          {/* List height is capped (about 5 rows) and shrinks on short screens,
+              so the dropdown stays inside the form card. */}
+          <div className="max-h-[min(190px,calc(100dvh-460px))] min-h-[96px] overflow-y-auto overscroll-contain py-1">
             {filtered.length === 0 ? (
               <div className="p-3 text-center font-figtree text-[13px] sm:text-[14px] text-[#8A847A]">
                 No countries found.
@@ -104,7 +114,7 @@ export function CountrySelect({
                     setIsOpen(false);
                     setSearch("");
                   }}
-                  className={`flex w-full items-center gap-3 px-3.5 py-2 text-left font-figtree text-[13px] sm:text-[14px] transition-colors hover:bg-[#FAF8F4] cursor-pointer ${
+                  className={`flex w-full items-center gap-3 px-3.5 py-1.5 text-left font-figtree text-[13px] sm:text-[14px] transition-colors hover:bg-[#FAF8F4] cursor-pointer ${
                     value === c.code
                       ? "bg-[#FAF8F4] font-bold text-[#9739A8]"
                       : "text-[#00191B]"

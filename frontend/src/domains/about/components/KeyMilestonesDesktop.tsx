@@ -177,8 +177,9 @@ function MilestoneItemDesktop({
         )}
         <time
           dateTime={milestone.year}
+          translate="no"
           style={{ "--dm": `${M_DELAYS.text}ms` } as CSSProperties}
-          className={cn("block", reveal)}
+          className={cn("notranslate block", reveal)}
         >
           <Typography
             variant="body-xl"

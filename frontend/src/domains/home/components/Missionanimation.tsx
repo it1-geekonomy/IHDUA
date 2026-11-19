@@ -167,16 +167,22 @@ export function MissionImageStage({
   prev,
   direction,
   animKey,
+  className = "",
 }: {
   active: MissionImageItem;
   prev: MissionImageItem | null;
   direction: "down" | "up";
   animKey: number;
+  className?: string;
 }) {
   const wipeClass = direction === "down" ? "mission-wipe-down" : "mission-wipe-up";
 
   return (
-    <div className="relative h-64 overflow-hidden sm:h-80 md:h-[26rem] lg:h-auto">
+    <div
+      className={`relative overflow-hidden ${
+        className ? className : "hidden lg:block lg:h-auto"
+      }`}
+    >
       {/* Previous photo stays underneath so there's never a blank frame */}
       {prev && (
         <img

@@ -106,9 +106,13 @@ export default function BlogsGridSection() {
   const [currentPage, setCurrentPage] = useState(1);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Sorting is done by the backend; the hook refetches when sortOrder changes.
-  // posts: null only on the first load; [] when nothing is published or the API failed
-  const { posts, categories, refreshing } = useBlogsList(sortOrder);
+  // Sorting and category filtering are done by the backend; the hook refetches
+  // when either changes.
+  // posts: null only on the first load; [] when nothing matches or the API failed
+  const { posts, categories, refreshing } = useBlogsList({
+    sort: sortOrder,
+    categoryId,
+  });
 
   const categoryOptions = useMemo<Option[]>(
     () => [
@@ -118,14 +122,8 @@ export default function BlogsGridSection() {
     [categories],
   );
 
-  // Category filter stays on the frontend. No sorting here: backend order is used as is.
-  const visiblePosts = useMemo(
-    () =>
-      (posts ?? []).filter(
-        (p) => categoryId === "all" || p.categoryId === categoryId,
-      ),
-    [posts, categoryId],
-  );
+  // Already sorted and filtered by the backend, used as is
+  const visiblePosts = useMemo(() => posts ?? [], [posts]);
 
   const totalPages = Math.max(1, Math.ceil(visiblePosts.length / ITEMS_PER_PAGE));
   const safePage = Math.min(currentPage, totalPages);
@@ -165,9 +163,9 @@ export default function BlogsGridSection() {
   };
 
   const loading = posts === null; // first load only
-  const nothingPublished = posts !== null && posts.length === 0 && !refreshing;
-  const nothingInCategory =
-    !nothingPublished && !loading && !refreshing && visiblePosts.length === 0;
+  const noResults = !loading && !refreshing && visiblePosts.length === 0;
+  const nothingPublished = noResults && categoryId === "all";
+  const nothingInCategory = noResults && categoryId !== "all";
 
   return (
     <section
@@ -257,7 +255,7 @@ export default function BlogsGridSection() {
           </div>
         )}
 
-        {/* Stories Grid (dimmed while a new sort order is loading) */}
+        {/* Stories Grid (dimmed while a new sort/category is loading) */}
         {!loading && paginatedPosts.length > 0 && (
           <div
             aria-busy={refreshing}

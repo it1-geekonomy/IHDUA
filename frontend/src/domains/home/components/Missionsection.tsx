@@ -59,33 +59,45 @@ export default function MissionSection() {
               const nudge = pillarTitleNudge(isActive, animKey);
 
               return (
-                <button
-                  key={pillar.number}
-                  type="button"
-                  onClick={(e) => handleSelect(index, e)}
-                  aria-pressed={isActive}
-                  className="group relative flex flex-1 items-center gap-4 overflow-hidden border-l-4 border-[#9739A8] bg-[#FAF9F5] px-4 py-4 text-left sm:gap-6 sm:px-6 sm:py-5"
-                >
-                  <PillarEffects index={index} isActive={isActive} ripple={ripple} />
+                <div key={pillar.number} className="flex flex-col lg:flex-1">
+                  <button
+                    type="button"
+                    onClick={(e) => handleSelect(index, e)}
+                    aria-pressed={isActive}
+                    className="group relative flex flex-1 items-center gap-4 overflow-hidden border-l-4 border-[#9739A8] bg-[#FAF9F5] px-4 py-4 text-left sm:gap-6 sm:px-6 sm:py-5"
+                  >
+                    <PillarEffects index={index} isActive={isActive} ripple={ripple} />
 
-                  <Typography variant="display-2xl" className={pillarNumberClass(isActive)}>
-                    {pillar.number}
-                  </Typography>
+                    <Typography variant="display-2xl" className={pillarNumberClass(isActive)}>
+                      {pillar.number}
+                    </Typography>
 
-                  <div className="relative min-w-0 flex-1">
-                    <div key={nudge.key} className={nudge.className}>
-                      <Typography variant="body-xl" className="font-lora font-normal text-[#383217]">
-                        {pillar.title}
+                    <div className="relative min-w-0 flex-1">
+                      <div key={nudge.key} className={nudge.className}>
+                        <Typography variant="body-xl" className="font-lora font-normal text-[#383217]">
+                          {pillar.title}
+                        </Typography>
+                      </div>
+                      <Typography
+                        variant="body-sm"
+                        className="mt-1.5 leading-relaxed text-[#716B52]/[0.58] font-figtree font-normal"
+                      >
+                        {pillar.description}
                       </Typography>
                     </div>
-                    <Typography
-                      variant="body-sm"
-                      className="mt-1.5 leading-relaxed text-[#716B52]/[0.58] font-figtree font-normal"
-                    >
-                      {pillar.description}
-                    </Typography>
-                  </div>
-                </button>
+                  </button>
+
+                  {/* Mobile view only: show image directly under the active pillar with desktop animation */}
+                  {isActive && (
+                    <MissionImageStage
+                      active={activePillar}
+                      prev={prevPillar}
+                      direction={direction}
+                      animKey={animKey}
+                      className="mt-3 h-64 w-full sm:h-80 md:h-[26rem] lg:hidden"
+                    />
+                  )}
+                </div>
               );
             })}
           </div>

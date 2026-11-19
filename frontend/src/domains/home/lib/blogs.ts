@@ -8,6 +8,7 @@ export type BlogStory = {
   title: string;
   slug: string;
   blogBanner: string | null;
+  video?: string | null;
   blogDate: string | null;
   content: string | null;
   shortDescription: string | null;
@@ -28,6 +29,7 @@ export type BlogSort = "newest" | "oldest";
 export type PublishedQuery = {
   sort?: BlogSort;
   limit?: number;
+  categoryId?: string;
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -54,24 +56,29 @@ function unwrapList<T>(json: unknown): T[] {
  * Browser only: requests currently in flight, keyed by query string.
  * Strict Mode's second effect run happens before the response arrives, so it
  * reuses the same promise (1 call, not 2). Each entry is removed as soon as
- * its request settles, so the next visit or sort change always makes a fresh call.
+ * its request settles, so the next visit, sort change or category change
+ * always makes a fresh call.
  * (Never used on the server, so server renders always get fresh data.)
  */
 const storiesRequests = new Map<string, Promise<BlogStory[]>>();
 let categoriesRequest: Promise<BlogCategory[]> | null = null;
 
 /**
- * `sort` is always sent: the backend's default is "oldest",
- * so callers that pass nothing still get newest first.
+ * `sort` is always sent so the order never depends on the backend default.
+ * `categoryId` is only sent when a category is chosen.
  */
 function buildQuery(q: PublishedQuery): string {
   const params = new URLSearchParams();
   params.set("sort", q.sort ?? "newest");
   if (q.limit) params.set("limit", String(q.limit));
+  if (q.categoryId) params.set("categoryId", q.categoryId);
   return params.toString();
 }
 
-/** Public endpoint: only stories with status "published". Sorted by the backend. */
+/**
+ * Public endpoint: only stories with status "published".
+ * Sorted (and optionally filtered by category) by the backend.
+ */
 export function fetchPublishedStories(
   query: PublishedQuery = {},
 ): Promise<BlogStory[]> {
@@ -85,8 +92,7 @@ export function fetchPublishedStories(
 
   const request = fetch(`${API_URL}/blogs-and-stories/published?${qs}`, {
     headers: { accept: "application/json" },
-    // On the server, let Next.js cache the response for 60 seconds
-    ...(browser ? {} : { next: { revalidate: 60 } }),
+    cache: "no-store",
   })
     .then(async (res) => {
       if (!res.ok) throw new Error(`Failed to load stories (${res.status})`);
@@ -107,7 +113,7 @@ export function fetchBlogCategories(): Promise<BlogCategory[]> {
 
   const request = fetch(`${API_URL}/blog-categories`, {
     headers: { accept: "application/json" },
-    ...(browser ? {} : { next: { revalidate: 60 } }),
+    cache: "no-store",
   })
     .then(async (res) => {
       if (!res.ok) throw new Error(`Failed to load categories (${res.status})`);
@@ -128,7 +134,7 @@ export function fetchBlogCategories(): Promise<BlogCategory[]> {
 export async function fetchStoryBySlug(slug: string): Promise<BlogDetail | null> {
   const res = await fetch(
     `${API_URL}/blogs-and-stories/published/slug/${encodeURIComponent(slug)}`,
-    { headers: { accept: "application/json" }, next: { revalidate: 60 } },
+    { headers: { accept: "application/json" }, cache: "no-store" },
   );
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`Failed to load story (${res.status})`);
