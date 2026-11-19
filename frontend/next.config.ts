@@ -9,9 +9,6 @@ const nextConfig: NextConfig = {
       { protocol: "http", hostname: "**" },
     ],
   },
-  async rewrites() {
-    return [];
-  },
 };
 
 export default nextConfig;
