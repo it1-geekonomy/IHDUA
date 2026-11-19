@@ -33,11 +33,6 @@ declare global {
   interface Window {
     googleTranslateElementInit: () => void;
     google: any;
-    requestIdleCallback?: (
-      cb: IdleRequestCallback,
-      opts?: IdleRequestOptions,
-    ) => number;
-    cancelIdleCallback?: (id: number) => void;
   }
 }
 
@@ -112,7 +107,7 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
     let timeoutId: number | undefined;
 
     const scheduleDeferred = () => {
-      if (window.requestIdleCallback) {
+      if (typeof window.requestIdleCallback === "function") {
         idleId = window.requestIdleCallback(() => injectTranslateScript(), {
           timeout: 4000,
         });
@@ -129,7 +124,7 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
 
     return () => {
       window.removeEventListener("load", scheduleDeferred);
-      if (idleId !== undefined && window.cancelIdleCallback) {
+      if (idleId !== undefined && typeof window.cancelIdleCallback === "function") {
         window.cancelIdleCallback(idleId);
       }
       if (timeoutId !== undefined) window.clearTimeout(timeoutId);
