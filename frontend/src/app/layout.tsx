@@ -41,8 +41,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${figtree.variable} ${lora.variable} ${manrope.variable}`}
     >
       <head>
-        <link rel="preconnect" href="https://translate.google.com" />
-        <link rel="preconnect" href="https://translate.googleapis.com" />
         {/* Hold Kannada first paint until GT rewrites DOM — prevents EN→KN flash. */}
         <style dangerouslySetInnerHTML={{ __html: GT_PENDING_STYLE }} />
         <script dangerouslySetInnerHTML={{ __html: GT_BOOT_SCRIPT }} />

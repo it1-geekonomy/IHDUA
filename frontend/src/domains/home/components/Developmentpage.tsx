@@ -69,7 +69,8 @@ function MarqueeColumn({
                 priority={isLcp}
                 fetchPriority={isLcp ? "high" : "auto"}
                 loading={isLcp ? "eager" : "lazy"}
-                sizes="(min-width: 1024px) 14vw, (min-width: 768px) 16vw, 40vw"
+                quality={isLcp ? 70 : 65}
+                sizes="(min-width: 1024px) 14vw, (min-width: 768px) 16vw, 42vw"
                 className="object-cover"
               />
             </div>

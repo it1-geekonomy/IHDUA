@@ -1,4 +1,8 @@
+import Image from "next/image";
 import { useState, type MouseEvent } from "react";
+
+const MISSION_IMAGE_SIZES = "(max-width: 1023px) 100vw, 48vw";
+const MISSION_IMAGE_QUALITY = 70;
 
 /**
  * Animations
@@ -202,20 +206,26 @@ export function MissionImageStage({
       <div className={`relative overflow-hidden ${className}`}>
         {/* Previous photo stays underneath so there's never a blank frame */}
         {prev && (
-          <img
+          <Image
             src={prev.image}
             alt=""
             aria-hidden
-            className="absolute inset-0 h-full w-full object-cover"
+            fill
+            sizes={MISSION_IMAGE_SIZES}
+            quality={MISSION_IMAGE_QUALITY}
+            className="object-cover"
           />
         )}
 
         {/* Current photo: remounts on each change so the animations replay */}
         <div key={animKey} className={`absolute inset-0 ${animKey > 0 ? "mission-img-swap" : ""}`}>
-          <img
+          <Image
             src={active.image}
             alt={active.title}
-            className={`h-full w-full object-cover ${animKey > 0 ? "mission-img-zoom" : ""}`}
+            fill
+            sizes={MISSION_IMAGE_SIZES}
+            quality={MISSION_IMAGE_QUALITY}
+            className={`object-cover ${animKey > 0 ? "mission-img-zoom" : ""}`}
           />
         </div>
 
@@ -229,20 +239,27 @@ export function MissionImageStage({
     <div className="relative hidden overflow-hidden bg-white lg:block lg:self-center">
       {/* Previous photo stays underneath so there's never a blank frame during the wipe */}
       {prev && (
-        <img
+        <Image
           src={prev.image}
           alt=""
           aria-hidden
-          className="absolute inset-0 h-full w-full object-contain"
+          fill
+          sizes={MISSION_IMAGE_SIZES}
+          quality={MISSION_IMAGE_QUALITY}
+          className="object-contain"
         />
       )}
 
       {/* Current photo: remounts on each change so the animations replay */}
       <div key={animKey} className={`relative ${animKey > 0 ? "mission-img-swap" : ""}`}>
-        <img
+        <Image
           src={active.image}
           alt={active.title}
-          className={`block h-auto w-full ${animKey > 0 ? "mission-img-zoom" : ""}`}
+          width={800}
+          height={560}
+          sizes={MISSION_IMAGE_SIZES}
+          quality={MISSION_IMAGE_QUALITY}
+          className={`h-auto w-full ${animKey > 0 ? "mission-img-zoom" : ""}`}
         />
       </div>
 

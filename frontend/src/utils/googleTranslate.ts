@@ -3,7 +3,7 @@
  * Production-safe: same behavior on localhost and live domains.
  *
  * When Kannada is preferred, first paint is held (visibility:hidden) until GT
- * rewrites the DOM ΓÇö prevents the brief English flash on refresh / hard nav.
+ * rewrites the DOM — prevents the brief English flash on refresh / hard nav.
  */
 
 import {
@@ -18,7 +18,7 @@ export const GT_STORAGE_KEY = LANGUAGE_STORAGE_KEY;
 export const GT_PENDING_ATTR = "data-gt-pending";
 
 /**
- * Inline boot ΓÇö restore googtrans + hold first paint when Kannada is preferred.
+ * Inline boot — restore googtrans + hold first paint when Kannada is preferred.
  * Must run in <head> before body paints.
  */
 export const GT_BOOT_SCRIPT = `(function(){
@@ -57,7 +57,7 @@ export const GT_BOOT_SCRIPT = `(function(){
   } catch (e) {}
 })();`;
 
-/** Critical CSS paired with GT_BOOT_SCRIPT ΓÇö keep in <head> before body. */
+/** Critical CSS paired with GT_BOOT_SCRIPT — keep in <head> before body. */
 export const GT_PENDING_STYLE = `html[${GT_PENDING_ATTR}="1"] body{visibility:hidden!important}`;
 
 export function isGoogleTranslatePending(): boolean {
@@ -111,7 +111,6 @@ export function watchTranslatedThenReveal(timeoutMs = 2800): () => void {
 
   const check = () => {
     if (isPageTranslatedToKannada()) {
-      // One frame so GT finishes swapping text nodes before we show.
       requestAnimationFrame(() => revealTranslatedPage());
     }
   };
@@ -137,7 +136,7 @@ function getTranslateCombo(): HTMLSelectElement | null {
   return document.querySelector<HTMLSelectElement>("select.goog-te-combo");
 }
 
-/** Apply language via the widget select ΓÇö never bounce through the other language. */
+/** Apply language via the widget select — never bounce through the other language. */
 export function applyGoogleTranslateLanguage(lang: LanguageCode): boolean {
   const combo = getTranslateCombo();
   if (!combo) return false;
@@ -147,7 +146,7 @@ export function applyGoogleTranslateLanguage(lang: LanguageCode): boolean {
     combo.value = value;
     combo.dispatchEvent(new Event("change"));
   } else if (isGoogleTranslatePending() && lang === LANGUAGES.KANNADA) {
-    // Value already kn but DOM may still be English ΓÇö nudge GT while paint is held.
+    // Value already kn but DOM may still be English — nudge GT while paint is held.
     combo.dispatchEvent(new Event("change"));
   }
   return true;
@@ -197,7 +196,6 @@ function prefersKannada(): boolean {
 /**
  * Kannada + Google Translate do not reliably rewrite App Router soft navigations.
  * Use a full document navigation so the googtrans cookie is honored from load.
- * Works the same on localhost and the live domain (same-origin assign).
  */
 export function bindKannadaHardNav(): () => void {
   const onClickCapture = (event: MouseEvent) => {
@@ -233,7 +231,6 @@ export function bindKannadaHardNav(): () => void {
 
     if (!prefersKannada()) return;
 
-    // Re-assert cookie before navigation (covers www Γåö apex and lost host-only cookies).
     try {
       const root = getCookieRootDomain(window.location.hostname);
       const secure =
@@ -249,8 +246,6 @@ export function bindKannadaHardNav(): () => void {
       // continue with navigation anyway
     }
 
-    // Persist in-app nav before the hard load so entry popups do not re-open
-    // on every Kannada page change (English soft nav already keeps them closed).
     markClientNav();
 
     event.preventDefault();
