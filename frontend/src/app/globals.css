@@ -27,6 +27,11 @@ body {
   font-family: var(--font-manrope), sans-serif;
 }
 
+/* Leftover paint-hold from older builds — never show it. */
+#gt-page-hold {
+  display: none !important;
+}
+
 /* Hide Google Translate Elements */
 .goog-te-banner-frame,
 .skiptranslate,
