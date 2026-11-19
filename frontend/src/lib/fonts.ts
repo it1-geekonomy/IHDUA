@@ -1,9 +1,8 @@
 import localFont from "next/font/local";
 
 /**
- * LCP on mobile is the hero headline (Lora). Preload only that normal cut.
- * Figtree/Manrope + italics load with font-display:swap and must not compete
- * with LCP on Slow 4G.
+ * Hero LCP is the banner image (not text). Keep font preloads light so they
+ * don't fight the LCP image on Slow 4G — Lora still preloads for the headline.
  */
 export const figtree = localFont({
   src: [
