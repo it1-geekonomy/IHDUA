@@ -90,6 +90,13 @@ body {
   visibility: visible !important;
   opacity: 1 !important;
   pointer-events: auto !important;
+  position: relative;
+  z-index: 60;
+  touch-action: manipulation;
+}
+[data-lang-toggle] button {
+  pointer-events: auto !important;
+  touch-action: manipulation;
 }
 
 /* Hide scrollbars but keep scrolling enabled */
@@ -160,8 +167,15 @@ html.translated-rtl [data-lang-toggle] [data-lang-mobile][data-lang="kn"] {
   font-weight: 700 !important;
   color: #00191b !important;
 }
-html[lang="kn"] [data-lang-toggle] [data-lang-switch] > span,
-html.translated-ltr [data-lang-toggle] [data-lang-switch] > span,
-html.translated-rtl [data-lang-toggle] [data-lang-switch] > span {
-  transform: translateX(1.25rem) !important;
+/* Knob stays inside the track — never overlap ಕನ್ನಡ */
+html[lang="kn"] [data-lang-toggle] [data-lang-knob],
+html.translated-ltr [data-lang-toggle] [data-lang-knob],
+html.translated-rtl [data-lang-toggle] [data-lang-knob],
+[data-lang-toggle][data-active-lang="kn"] [data-lang-knob] {
+  left: 1.375rem !important;
+}
+html[lang="en"]:not(.translated-ltr):not(.translated-rtl)
+  [data-lang-toggle][data-active-lang="en"]
+  [data-lang-knob] {
+  left: 0.125rem !important;
 }
