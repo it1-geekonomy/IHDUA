@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { resolveImpactGalleryPage } from "@/domains/impact/cms/resolveImpactPage";
 import { ImpactGalleryView } from "@/domains/impact/cms/ImpactPageView";
 import NewsletterSection from "@/shared/components/Newsletter";
+import { buildImpactGalleryMetadata } from "@/shared/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -13,13 +14,8 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const loaded = await resolveImpactGalleryPage(slug);
-  if (!loaded) return {};
-  const gallery = (loaded.data.content.gallery || {}) as { heading?: string };
-  const titleBase = loaded.page.metaTitle || `${loaded.data.heroTitle} | IHDUA`;
-  return {
-    title: `${gallery.heading || "Gallery"} · ${titleBase}`,
-    description: loaded.page.metaDescription || loaded.data.heroDescription || undefined,
-  };
+  const gallery = (loaded?.data.content.gallery || {}) as { heading?: string };
+  return buildImpactGalleryMetadata(slug, loaded?.page, gallery.heading);
 }
 
 /** CMS-driven gallery for any initiative that has a separate gallery page. */

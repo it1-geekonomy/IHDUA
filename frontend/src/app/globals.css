@@ -27,6 +27,14 @@ body {
   font-family: var(--font-manrope), sans-serif;
 }
 
+/*
+ * Kannada preferred: hold first paint until Google Translate has rewritten the DOM.
+ * Set/cleared via data-gt-pending on <html> (boot script + reveal helpers).
+ */
+html[data-gt-pending="1"] body {
+  visibility: hidden !important;
+}
+
 /* Hide Google Translate Elements */
 .goog-te-banner-frame,
 .skiptranslate,

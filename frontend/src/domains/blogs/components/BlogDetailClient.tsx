@@ -118,7 +118,19 @@ export default function BlogDetailClient({
         <div className="mt-6 flex flex-col sm:mt-8 lg:flex-row lg:gap-8 xl:gap-12 2xl:gap-14">
           {/* Left Column: banner + full article */}
           <article className="flex w-full min-w-0 flex-col lg:flex-1">
-            {post.image && (
+            {post.video ? (
+              <div className="relative aspect-[64.9375/33.5625] w-full max-w-[64.9375rem] overflow-hidden rounded-[0.375rem] bg-black shadow-xs">
+                <video
+                  src={post.video}
+                  controls
+                  playsInline
+                  disablePictureInPicture
+                  controlsList="nodownload"
+                  preload="metadata"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            ) : post.image ? (
               <div className="relative aspect-[64.9375/33.5625] w-full max-w-[64.9375rem] overflow-hidden rounded-[0.375rem] bg-neutral-100 shadow-xs">
                 <Image
                   src={post.image}
@@ -129,7 +141,7 @@ export default function BlogDetailClient({
                   className="object-cover"
                 />
               </div>
-            )}
+            ) : null}
 
             {/* Article body (HTML from the CMS) */}
             <div className="mt-6">
@@ -231,7 +243,7 @@ export default function BlogDetailClient({
                       className="group flex cursor-pointer flex-row items-start gap-3 transition hover:opacity-90 sm:flex-col sm:items-start lg:flex-row lg:items-start xl:gap-4"
                     >
                       <div className="relative size-20 shrink-0 overflow-hidden rounded-[0.375rem] bg-neutral-200 sm:aspect-[16/10] sm:size-auto sm:w-full lg:size-[5.5rem] lg:aspect-auto xl:size-[6.75rem]">
-                        {story.image && (
+                        {story.image ? (
                           <Image
                             src={story.image}
                             alt={story.title}
@@ -239,7 +251,25 @@ export default function BlogDetailClient({
                             sizes="(max-width: 640px) 80px, (max-width: 1024px) 300px, 160px"
                             className="object-cover transition-transform duration-200 group-hover:scale-105"
                           />
-                        )}
+                        ) : story.video ? (
+                          <>
+                            <video
+                              src={`${story.video}#t=0.001`}
+                              preload="metadata"
+                              muted
+                              playsInline
+                              disablePictureInPicture
+                              className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                            />
+                            <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/20">
+                              <div className="flex size-6 items-center justify-center rounded-full bg-white/90 text-[#9739A8] shadow-xs">
+                                <svg className="ml-0.5 size-3 fill-current" viewBox="0 0 24 24">
+                                  <path d="M8 5v14l11-7z" />
+                                </svg>
+                              </div>
+                            </div>
+                          </>
+                        ) : null}
                       </div>
 
                       {/* Full title shown: no line-clamp, wraps naturally (English + Kannada) */}
@@ -254,7 +284,7 @@ export default function BlogDetailClient({
                         <Typography
                           variant="caption"
                           as="p"
-                          className="mt-1 font-figtree font-normal text-[#1E1E1E]/40 sm:mt-1.5"
+                          className="mt-1 font-figtree font-normal normal-case tracking-normal text-[#1E1E1E]/40 sm:mt-1.5"
                         >
                           {story.date}
                         </Typography>

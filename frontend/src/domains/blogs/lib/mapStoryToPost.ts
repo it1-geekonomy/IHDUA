@@ -15,6 +15,7 @@ export type BlogPostView = {
   /** Article body as HTML (from the CMS editor) */
   contentHtml: string;
   image: string | null;
+  video: string | null;
   imageAlt: string;
   category: string;
   date: string;
@@ -26,6 +27,7 @@ export type StoryLink = {
   slug: string;
   title: string;
   image: string | null;
+  video?: string | null;
   date: string;
 };
 
@@ -52,6 +54,7 @@ export function mapStoryToLink(story: BlogStory): StoryLink {
     slug: story.slug,
     title: story.title,
     image: story.blogBanner || null,
+    video: story.video || null,
     date: formatBlogDate(story.blogDate ?? story.createdAt),
   };
 }
@@ -154,6 +157,7 @@ export function mapStoryToPost(
     subtitle,
     contentHtml: body,
     image: story.blogBanner || null,
+    video: story.video || null,
     imageAlt: story.title,
     category: categoryName,
     date: formatBlogDate(story.blogDate ?? story.createdAt),

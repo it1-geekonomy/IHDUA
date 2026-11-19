@@ -2,8 +2,7 @@ import type { ReactNode } from "react";
 import Navbar from "@/shared/components/navbar/NavbarShell";
 import Footer from "@/shared/components/footer";
 import CTAsection from "@/shared/components/CTAsection";
-import { DonationPopupShell } from "@/shared/components/DonationPopupShell";
-import { ChatbotWidget } from "@/shared/components/chatbot";
+import { ClientChrome } from "@/shared/components/ClientChrome";
 import PageTransition from "@/shared/components/pagetransition";
 
 interface ClientLayoutProps {
@@ -18,9 +17,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       <PageTransition />
       <CTAsection />
       <Footer />
-      <DonationPopupShell />
-      <ChatbotWidget />
+      <ClientChrome />
     </div>
   );
 }
-

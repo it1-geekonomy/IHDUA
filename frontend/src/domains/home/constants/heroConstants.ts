@@ -16,27 +16,11 @@ export const MIN_PILLS_PER_HALF = 4;
 export const FADE_MASK =
   "linear-gradient(to bottom, transparent 0%, #000 14%, #000 84%, transparent 100%)";
 
+// Keyframes only. Height, hover-pause and reduced-motion are Tailwind classes in the component.
 export const MARQUEE_CSS = `
-.hero-marquee { --marquee-h: 26rem; height: var(--marquee-h); }
-@media (min-width: 640px)  { .hero-marquee { --marquee-h: 32rem; } }
-@media (min-width: 768px)  { .hero-marquee { --marquee-h: clamp(26rem, calc(100svh - 8rem), 40rem); } }
-@media (min-width: 1024px) { .hero-marquee { --marquee-h: clamp(30rem, calc(100svh - 8rem), 48rem); } }
-
 @keyframes hero-marquee-up {
   from { transform: translate3d(0, 0, 0); }
   to   { transform: translate3d(0, -50%, 0); }
-}
-.hero-marquee-track {
-  animation-name: hero-marquee-up;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  will-change: transform;
-}
-.hero-marquee-track.is-reverse { animation-direction: reverse; }
-.hero-marquee:hover .hero-marquee-track,
-.hero-marquee:focus-within .hero-marquee-track { animation-play-state: paused; }
-@media (prefers-reduced-motion: reduce) {
-  .hero-marquee-track { animation: none; }
 }
 `;
 

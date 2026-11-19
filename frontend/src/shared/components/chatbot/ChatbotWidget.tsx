@@ -514,7 +514,7 @@ export function ChatbotWidget() {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 360, damping: 28 }}
             style={{ transformOrigin: "bottom right" }}
-            className="fixed inset-x-3 bottom-3 top-auto z-50 flex h-[min(600px,calc(100dvh-2rem))] flex-col overflow-hidden overscroll-contain rounded-[28px] border border-black/5 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)] sm:inset-auto sm:right-6 sm:bottom-[90px] sm:h-[min(600px,calc(100dvh-7rem))] sm:w-[380px]"
+            className="fixed inset-x-3 bottom-3 top-auto z-50 flex h-[min(600px,calc(100vh-2rem))] h-[min(600px,calc(100dvh-2rem))] flex-col overflow-hidden overscroll-contain rounded-[28px] border border-black/5 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)] sm:inset-auto sm:right-6 sm:bottom-[90px] sm:h-[min(600px,calc(100vh-7rem))] sm:h-[min(600px,calc(100dvh-7rem))] sm:w-[380px]"
           >
             {/* ────── Gradient Header ────── */}
             <div className="flex shrink-0 items-center justify-between bg-gradient-to-r from-[#B250B5] via-[#DE9FD7] to-[#FCE7D5] px-5 py-3.5 select-none">
@@ -526,7 +526,6 @@ export function ChatbotWidget() {
                     alt="Ai Assistant"
                     width={40}
                     height={40}
-                    priority
                     className="size-full object-cover"
                   />
                 </div>
@@ -603,7 +602,6 @@ export function ChatbotWidget() {
                         alt="Ai Assistant"
                         width={64}
                         height={64}
-                        priority
                         className="size-full object-cover"
                       />
                     </div>
@@ -825,7 +823,6 @@ export function ChatbotWidget() {
                 alt="IHDUA AI Assistant"
                 width={64}
                 height={64}
-                priority
                 className="size-full object-cover"
               />
             </div>

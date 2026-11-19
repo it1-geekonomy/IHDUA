@@ -181,7 +181,7 @@ export default function Overlayform({ onClose }: OverlayformProps) {
 
       {form.step === 2 ? (
         <div
-          className="relative w-full max-w-[620px] bg-white rounded-xl shadow-2xl p-6 sm:p-9 my-auto overflow-y-auto max-h-[calc(100dvh-2rem)] animate-in fade-in zoom-in-95 duration-200"
+          className="relative w-full max-w-[620px] bg-white rounded-xl shadow-2xl p-6 sm:p-9 my-auto overflow-y-auto max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] animate-in fade-in zoom-in-95 duration-200"
           style={exiting ? { opacity: 0, transform: "scale(0.98)" } : undefined}
         >
           <button
@@ -246,7 +246,6 @@ export default function Overlayform({ onClose }: OverlayformProps) {
                   alt="Family supported by IHDUA"
                   fill
                   className="object-cover object-center lg:hidden"
-                  priority
                   sizes="380px"
                 />
                 <Image
@@ -254,7 +253,6 @@ export default function Overlayform({ onClose }: OverlayformProps) {
                   alt="Family supported by IHDUA"
                   fill
                   className="hidden object-cover object-center lg:block"
-                  priority
                   sizes="(min-width: 1536px) 42vw, 40vw"
                 />
               </div>

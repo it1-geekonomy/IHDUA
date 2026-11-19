@@ -15,6 +15,10 @@ import {
   type BlogCategory,
   type BlogStory,
 } from "@/domains/home/lib/blogs";
+import { buildPageMetadata } from "@/shared/lib/seo";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface BlogSlugPageProps {
   params: Promise<{ slug: string }>;
@@ -36,36 +40,25 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: BlogSlugPageProps) {
   const { slug } = await params;
   const story = await fetchStoryBySlug(slug).catch(() => null);
+  const path = `/blogs/${slug}`;
 
   if (!story) {
-    return { title: "Blog Story | IHDUA" };
+    return buildPageMetadata({
+      path,
+      title: "Blog Story | IHDUA",
+      type: "article",
+    });
   }
 
-  const title = story.metaTitle || `${story.title} | IHDUA`;
-  const description =
-    story.metaDescription || story.shortDescription || "Read this story from IHDUA.";
-  const canonical = `/blogs/${slug}`;
-
-  return {
-    title,
-    description,
-    alternates: { canonical },
-    openGraph: {
-      title,
-      description,
-      url: canonical,
-      type: "article",
-      images: story.blogBanner
-        ? [{ url: story.blogBanner, alt: story.title }]
-        : undefined,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: story.blogBanner ? [story.blogBanner] : undefined,
-    },
-  };
+  return buildPageMetadata({
+    path,
+    title: story.metaTitle || `${story.title} | IHDUA`,
+    description: story.metaDescription || story.shortDescription || "Read this story from IHDUA.",
+    type: "article",
+    images: story.blogBanner
+      ? [{ url: story.blogBanner, alt: story.title }]
+      : undefined,
+  });
 }
 
 export default async function BlogSlugPage({ params }: BlogSlugPageProps) {

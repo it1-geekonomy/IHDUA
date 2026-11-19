@@ -4,7 +4,7 @@ export default function BannerSection() {
   return (
     <HeroBanner
       heading="About Us"
-      description="Working alongside rural communities to create opportunities, strengthen livelihoods, and build brighter futures."
+      description="Discover IHDUA’s journey, mission and commitment to empowering rural communities through inclusive and sustainable development."
       image="/aboutus/aboutbanner1.png"
       imageMobile="/aboutus/aboutusmobilebg.png"
       imageAlt="Smiling children from a rural community"

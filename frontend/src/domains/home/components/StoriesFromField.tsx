@@ -3,12 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import Typography, { figmaTypeScale } from "@/lib/Typography";
 import {
   useFieldStories,
   type FieldStoryCard,
 } from "@/domains/home/hooks/useFieldStories";
+import { fetchStoryBySlug } from "@/domains/home/lib/blogs";
+
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -53,14 +56,27 @@ const copyReveal: Variants = {
   },
 };
 
-export default function StoriesFromField() {
-  // null while loading; [] when nothing is published or the API failed
-  const stories = useFieldStories(3);
+export default function StoriesFromField({
+  initialStories = null,
+}: {
+  initialStories?: FieldStoryCard[] | null;
+} = {}) {
+  const router = useRouter();
+
+  // SSR seed when available; otherwise client fetch
+  const stories = useFieldStories(3, initialStories);
   const list = useMemo(() => stories ?? [], [stories]);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isKn, setIsKn] = useState(false);
+
+  // Freshly fetched copy of the featured story (from the backend, by slug)
+  const [detail, setDetail] = useState<{
+    id: string;
+    title: string;
+    description: string;
+  } | null>(null);
 
   // Detect Kannada (Google Translate sets <html lang="kn"> / googtrans cookie).
   // Used only for typography (letter-spacing / font size), not for layout.
@@ -82,6 +98,44 @@ export default function StoriesFromField() {
     () => list.find((s) => s.id === featuredId) ?? list[0],
     [list, featuredId],
   );
+
+  const featuredKey = featured?.id;
+  const featuredHref = featured?.href;
+
+  // Prefetch the featured story's page every time the featured story changes
+  // (first load + every side-card click), so it never depends on the <Link>
+  // scrolling into view while its entrance animation is running.
+  useEffect(() => {
+    if (featuredHref) router.prefetch(featuredHref);
+  }, [featuredHref, router]);
+
+  // Fetch the featured story from the backend every time it changes
+  // (first load + every side-card click).
+  useEffect(() => {
+    if (!featuredKey || !featuredHref) return;
+
+    const slug = featuredHref.split("/").filter(Boolean).pop();
+    if (!slug) return;
+
+    let cancelled = false;
+
+    fetchStoryBySlug(slug)
+      .then((story) => {
+        if (cancelled || !story) return;
+        setDetail({
+          id: featuredKey,
+          title: story.title,
+          description: story.shortDescription ?? "",
+        });
+      })
+      .catch(() => {
+        // keep showing the list data if this request fails
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [featuredKey, featuredHref]);
 
   /** Always only 2 side stories */
   const sideStories = useMemo(
@@ -109,6 +163,11 @@ export default function StoriesFromField() {
   if (stories === null) {
     return <section aria-hidden className="min-h-[40rem] w-full bg-[#FAF9F5]" />;
   }
+
+  // Use the freshly fetched title/description once it matches the featured story
+  const fresh = featured && detail && detail.id === featured.id ? detail : null;
+  const featuredTitle = fresh?.title || featured?.title;
+  const featuredDescription = fresh ? fresh.description : featured?.description;
 
   return (
     <section className="w-full bg-[#FAF9F5]">
@@ -154,12 +213,9 @@ export default function StoriesFromField() {
         ) : (
           <div className="mt-8 grid grid-cols-1 gap-6 lg:mt-10 lg:grid-cols-12 lg:items-stretch lg:gap-x-5 lg:gap-y-5 xl:gap-x-8 2xl:gap-x-10">
             <div className="order-1 contents lg:col-span-12 lg:row-start-1 lg:flex lg:items-stretch lg:gap-5 xl:contents">
-              {/* Featured image */}
+              {/* Featured image (not clickable; only the button redirects) */}
               <div className="lg:w-[58%] lg:shrink-0 xl:w-auto xl:col-span-8 xl:row-start-1">
-                <Link
-                  href={featured.href}
-                  className="group relative block aspect-2/1 w-full overflow-hidden bg-[#E8E6E0] lg:aspect-auto lg:aspect-video xl:aspect-2/1 lg:h-full xl:h-auto cursor-pointer"
-                >
+                <div className="relative block aspect-2/1 w-full overflow-hidden bg-[#E8E6E0] lg:aspect-auto lg:aspect-video xl:aspect-2/1 lg:h-full xl:h-auto">
                   {list.map((story, index) => {
                     const active = story.id === featured.id;
                     return (
@@ -177,7 +233,7 @@ export default function StoriesFromField() {
                         }}
                         style={{
                           zIndex: active ? 1 : 0,
-                          pointerEvents: active ? "auto" : "none",
+                          pointerEvents: "none",
                           willChange: "opacity, transform",
                         }}
                         aria-hidden={!active}
@@ -186,18 +242,18 @@ export default function StoriesFromField() {
                           src={story.image}
                           alt={active ? story.title : ""}
                           fill
-                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          className="object-cover"
                           sizes="(max-width: 1024px) 100vw, 66vw"
-                          priority={index === 0}
+                          loading="lazy"
                         />
                       </motion.div>
                     );
                   })}
-                </Link>
+                </div>
               </div>
 
               {/* Side stories */}
-              <div className="order-3 mt-6 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:gap-6 lg:order-none lg:mt-0 lg:w-[42%] lg:flex-col lg:justify-between lg:gap-5 xl:col-span-4 xl:row-start-1 xl:w-auto xl:h-full xl:justify-between">
+              <div className="order-3 mt-6 flex flex-col gap-4 sm:flex-row sm:gap-6 sm:mt-0 lg:order-none lg:mt-0 lg:w-[42%] lg:flex-col lg:justify-between lg:gap-5 xl:col-span-4 xl:row-start-1 xl:w-auto xl:h-full xl:justify-between">
                 {sideStories.map((story, i) => (
                   <motion.button
                     key={story.id}
@@ -271,26 +327,24 @@ export default function StoriesFromField() {
                   </motion.div>
 
                   <motion.div variants={copyReveal}>
-                    <Link href={featured.href} className="group inline-block">
-                      <Typography
-                        variant="h3"
-                        className={`mt-2 max-w-2xl font-lora font-normal text-[#00191B] transition-colors group-hover:text-[#9739A8] ${
-                          isKn ? "leading-normal" : "leading-snug"
-                        }`}
-                      >
-                        {featured.title}
-                      </Typography>
-                    </Link>
+                    <Typography
+                      variant="h3"
+                      className={`mt-2 w-full font-lora font-normal text-[#00191B] ${
+                        isKn ? "leading-normal" : "leading-snug"
+                      }`}
+                    >
+                      {featuredTitle}
+                    </Typography>
                   </motion.div>
 
                   {/* Short Summary from the CMS (full text) */}
-                  {featured.description && (
+                  {featuredDescription && (
                     <motion.div variants={copyReveal}>
                       <Typography
                         variant="body-lg"
-                        className="mt-2 max-w-xl font-figtree leading-relaxed text-[#5F6C6D]"
+                        className="mt-2 w-full font-figtree leading-relaxed text-[#5F6C6D]"
                       >
-                        {featured.description}
+                        {featuredDescription}
                       </Typography>
                     </motion.div>
                   )}
