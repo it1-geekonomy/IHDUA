@@ -31,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const url = absoluteUrl(key);
     if (entries.has(url)) return;
     const isHome = key === "/";
-    const isBlog = key.startsWith("/blogs/");
+    const isBlog = key.startsWith("/blog/");
     entries.set(url, {
       url,
       lastModified: now,
@@ -64,7 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       const publishedAt = new Date(story.blogDate || story.createdAt);
       const t = publishedAt.getTime();
       if (Number.isNaN(t) || t > nowMs) continue;
-      add(`/blogs/${story.slug}`, {
+      add(`/blog/${story.slug}`, {
         lastModified: publishedAt,
         changeFrequency: "weekly",
         priority: 0.7,

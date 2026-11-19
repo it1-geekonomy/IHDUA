@@ -53,6 +53,30 @@ export const GT_BOOT_SCRIPT = `(function(){
       }
     } catch (e) {}
 
+    // Continuously kill GT’s top banner iframe / gadget if it injects.
+    function killGtChrome() {
+      try {
+        document.querySelectorAll(
+          "iframe.goog-te-banner-frame, .goog-te-banner-frame, .goog-te-balloon-frame, #goog-gt-tt, #goog-gt-vt, .goog-te-ftab-frame, .VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf"
+        ).forEach(function (el) {
+          if (el && el.parentNode) el.parentNode.removeChild(el);
+        });
+        document.documentElement.style.top = "0";
+        if (document.body) {
+          document.body.style.top = "0";
+          document.body.style.marginTop = "0";
+        }
+      } catch (e) {}
+    }
+    killGtChrome();
+    setInterval(killGtChrome, 500);
+    try {
+      new MutationObserver(killGtChrome).observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+      });
+    } catch (e) {}
+
     function readWantKn() {
       var ls = "";
       try { ls = localStorage.getItem(KEY) || ""; } catch (e) {}

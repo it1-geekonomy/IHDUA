@@ -281,7 +281,7 @@ export function BlogAndStoryEditorModal({
               </div>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-mono text-[#8A847A]">
-                  /blogs/
+                  /blog/
                 </span>
                 <input
                   type="text"

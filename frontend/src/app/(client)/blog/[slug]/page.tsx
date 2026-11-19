@@ -40,7 +40,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: BlogSlugPageProps) {
   const { slug } = await params;
   const story = await fetchStoryBySlug(slug).catch(() => null);
-  const path = `/blogs/${slug}`;
+  const path = `/blog/${slug}`;
 
   if (!story) {
     return buildPageMetadata({
