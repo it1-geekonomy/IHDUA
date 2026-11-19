@@ -26,25 +26,5 @@ export function useTerms() {
     };
   }, []);
 
-  // Apply meta title / description from the API once loaded
-  useEffect(() => {
-    if (!terms) return;
-
-    const title = terms.metaTitle || terms.title;
-    if (title) document.title = title;
-
-    if (terms.metaDescription) {
-      let tag = document.querySelector<HTMLMetaElement>(
-        'meta[name="description"]'
-      );
-      if (!tag) {
-        tag = document.createElement("meta");
-        tag.name = "description";
-        document.head.appendChild(tag);
-      }
-      tag.content = terms.metaDescription;
-    }
-  }, [terms]);
-
   return { terms, loading };
 }

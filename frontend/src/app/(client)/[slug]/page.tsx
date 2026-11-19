@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { resolveImpactInitiative, resolveImpactPageData } from "@/domains/impact/cms/resolveImpactPage";
 import { ImpactPageView } from "@/domains/impact/cms/ImpactPageView";
 import NewsletterSection from "@/shared/components/Newsletter";
+import { buildImpactPageMetadata } from "@/shared/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -13,11 +14,7 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const page = await resolveImpactInitiative(slug);
-  if (!page) return {};
-  return {
-    title: page.metaTitle || `${page.heroTitle || page.name} | IHDUA`,
-    description: page.metaDescription || page.heroDescription || undefined,
-  };
+  return buildImpactPageMetadata(slug, page);
 }
 
 export default async function DynamicImpactInitiativePage({ params }: Props) {

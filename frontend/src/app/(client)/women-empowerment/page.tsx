@@ -7,11 +7,9 @@ import CommunityHealthBanner from "@/shared/components/CommunityHealthBanner";
 import Typography from "@/lib/Typography";
 import { fetchImpactCategoryCards } from "@/shared/lib/impactApi";
 
-export const metadata: Metadata = {
-  title: "Women Empowerment | IHDUA",
-  description:
-    "IHDUA supports rural women through Self-Help Groups, microfinance and vocational training so they can build skills, confidence and economic independence.",
-};
+import { buildPageMetadata } from "@/shared/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({ path: "/women-empowerment" });
 
 export const dynamic = "force-dynamic";
 

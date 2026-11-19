@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { resolveImpactGalleryPage } from "@/domains/impact/cms/resolveImpactPage";
 import { ImpactGalleryView } from "@/domains/impact/cms/ImpactPageView";
 import NewsletterSection from "@/shared/components/Newsletter";
+import { buildImpactGalleryMetadata } from "@/shared/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -11,11 +12,8 @@ const SLUG = "vinayaka-jnana-vidyashale-mysuru";
 
 export async function generateMetadata(): Promise<Metadata> {
   const loaded = await resolveImpactGalleryPage(SLUG);
-  if (!loaded) return {};
-  return {
-    title: `Gallery · ${loaded.page.metaTitle || loaded.data.heroTitle}`,
-    description: loaded.page.metaDescription || loaded.data.heroDescription || undefined,
-  };
+  const gallery = (loaded?.data.content.gallery || {}) as { heading?: string };
+  return buildImpactGalleryMetadata(SLUG, loaded?.page, gallery.heading);
 }
 
 export default async function VinayakaGalleryPage() {
