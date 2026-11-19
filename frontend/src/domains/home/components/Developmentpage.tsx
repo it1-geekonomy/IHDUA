@@ -47,7 +47,9 @@ function MarqueeColumn({
   return (
     <div className="relative h-full min-w-0 flex-1 overflow-hidden">
       <ul
-        className={`hero-marquee-track flex flex-col ${reverse ? "is-reverse" : ""}`}
+        className={`flex animate-[hero-marquee-up_1s_linear_infinite] flex-col will-change-transform group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused] motion-reduce:animate-none ${
+          reverse ? "[animation-direction:reverse]" : ""
+        }`}
         style={{
           animationDuration: `${duration}s`,
           animationDelay: `-${duration * offset}s`,
@@ -283,7 +285,7 @@ export default function RuralDevelopmentSection() {
           </div>
         ) : (
           <div
-            className="hero-marquee mx-auto flex w-full max-w-sm gap-3 sm:gap-4 md:mx-0 md:w-[clamp(14rem,32vw,20rem)] md:max-w-none md:justify-self-end lg:w-[clamp(22rem,27vw,32rem)]"
+            className="group mx-auto flex h-[26rem] w-full max-w-sm gap-3 sm:h-[32rem] sm:gap-4 md:mx-0 md:h-[clamp(26rem,calc(100svh_-_8rem),40rem)] md:w-[clamp(14rem,32vw,20rem)] md:max-w-none md:justify-self-end lg:h-[clamp(30rem,calc(100svh_-_8rem),48rem)] lg:w-[clamp(22rem,27vw,32rem)]"
             style={{ maskImage: FADE_MASK, WebkitMaskImage: FADE_MASK }}
           >
             <MarqueeColumn images={imagesA} duration={DURATION_A} offset={0} />
