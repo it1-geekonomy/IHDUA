@@ -32,9 +32,10 @@ body {
   display: none !important;
 }
 
-/* Hide Google Translate Elements */
+/* Hide Google Translate chrome only — never use bare .skiptranslate
+   (that class also marks our language toggle as "don't translate"). */
 .goog-te-banner-frame,
-.skiptranslate,
+#google_translate_element,
 .goog-te-gadget > span,
 .goog-te-gadget > div {
   display: none !important;
@@ -92,9 +93,15 @@ body {
 .goog-logo-link:active {
   display: none !important;
 }
-.skiptranslate {
-  display: none !important;
+/* Language toggle must stay visible — Google Translate's stylesheet
+   hides .skiptranslate (their banner class). We use notranslate only. */
+[data-lang-toggle] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
 }
+
 /* Hide scrollbars but keep scrolling enabled */
 html,
 body {
@@ -150,4 +157,45 @@ body {
 .goog-tooltip,
 .goog-tooltip:hover {
   display: none !important;
+}
+
+/* Language toggle highlight — driven by html lang / GT class so it
+   stays correct even if React state briefly lags behind translation. */
+html[lang="kn"] [data-lang-toggle] button[data-lang="en"],
+html.translated-ltr [data-lang-toggle] button[data-lang="en"],
+html.translated-rtl [data-lang-toggle] button[data-lang="en"] {
+  font-weight: 400 !important;
+  color: #a9c1c2 !important;
+}
+html[lang="kn"] [data-lang-toggle] button[data-lang="kn"],
+html.translated-ltr [data-lang-toggle] button[data-lang="kn"],
+html.translated-rtl [data-lang-toggle] button[data-lang="kn"] {
+  font-weight: 700 !important;
+  color: #fff !important;
+}
+html[lang="en"]:not(.translated-ltr):not(.translated-rtl) [data-lang-toggle] button[data-lang="en"] {
+  font-weight: 700 !important;
+  color: #fff !important;
+}
+html[lang="en"]:not(.translated-ltr):not(.translated-rtl) [data-lang-toggle] button[data-lang="kn"] {
+  font-weight: 400 !important;
+  color: #a9c1c2 !important;
+}
+/* Mobile EN / ಕನ್ನಡ labels (dark text on yellow bar) */
+html[lang="kn"] [data-lang-toggle] [data-lang-mobile][data-lang="en"],
+html.translated-ltr [data-lang-toggle] [data-lang-mobile][data-lang="en"],
+html.translated-rtl [data-lang-toggle] [data-lang-mobile][data-lang="en"] {
+  font-weight: 400 !important;
+  color: rgb(0 25 27 / 0.7) !important;
+}
+html[lang="kn"] [data-lang-toggle] [data-lang-mobile][data-lang="kn"],
+html.translated-ltr [data-lang-toggle] [data-lang-mobile][data-lang="kn"],
+html.translated-rtl [data-lang-toggle] [data-lang-mobile][data-lang="kn"] {
+  font-weight: 700 !important;
+  color: #00191b !important;
+}
+html[lang="kn"] [data-lang-toggle] [data-lang-switch] > span,
+html.translated-ltr [data-lang-toggle] [data-lang-switch] > span,
+html.translated-rtl [data-lang-toggle] [data-lang-switch] > span {
+  transform: translateX(1.25rem) !important;
 }

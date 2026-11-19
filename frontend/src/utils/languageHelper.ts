@@ -102,8 +102,9 @@ function clearLanguagePrefCookie(): void {
 export const setGoogleTranslateCookie = (targetLang: LanguageCode): void => {
   try {
     if (targetLang === LANGUAGES.ENGLISH) {
+      // Fully clear GT cookies — do not leave /en/kn around.
       clearGoogtransCookies();
-      clearLanguagePrefCookie();
+      writeLanguagePrefCookie(LANGUAGES.ENGLISH);
     } else {
       // Google Translate expects /source/target
       writeGoogtransCookie(`/en/${targetLang}`, 365 * 24 * 60 * 60);
@@ -111,9 +112,10 @@ export const setGoogleTranslateCookie = (targetLang: LanguageCode): void => {
     }
 
     localStorage.setItem(LANGUAGE_STORAGE_KEY, targetLang);
-    if (targetLang === LANGUAGES.ENGLISH) {
-      // Keep pref cookie in sync for SSR even when clearing GT.
-      writeLanguagePrefCookie(LANGUAGES.ENGLISH);
+
+    // Drop leftover GT hash so reload doesn't re-apply Kannada.
+    if (typeof window !== "undefined" && window.location.hash.includes("googtrans")) {
+      history.replaceState(null, "", window.location.pathname + window.location.search);
     }
   } catch {
     // cookies/localStorage may be unavailable (SSR, privacy mode, etc.)
@@ -158,7 +160,8 @@ function readLanguagePrefCookie(): string {
   return "";
 }
 
-export const getCurrentLanguage = (): LanguageCode => {
+/** Cookie / localStorage preference only (no DOM). */
+export const getStoredLanguage = (): LanguageCode => {
   try {
     const googtrans = readGoogtransValue();
     if (googtrans.includes("/kn")) return LANGUAGES.KANNADA;
@@ -167,9 +170,8 @@ export const getCurrentLanguage = (): LanguageCode => {
     if (prefCookie === LANGUAGES.KANNADA) return LANGUAGES.KANNADA;
 
     const savedLang = localStorage.getItem(LANGUAGE_STORAGE_KEY) as LanguageCode | null;
-    if (savedLang && Object.values(LANGUAGES).includes(savedLang)) {
-      return savedLang;
-    }
+    if (savedLang === LANGUAGES.KANNADA) return LANGUAGES.KANNADA;
+    if (savedLang === LANGUAGES.ENGLISH) return LANGUAGES.ENGLISH;
 
     if (prefCookie === LANGUAGES.ENGLISH) return LANGUAGES.ENGLISH;
 
@@ -179,10 +181,67 @@ export const getCurrentLanguage = (): LanguageCode => {
   }
 };
 
+/** True when Google Translate has actually flipped the page to Kannada. */
+export const isPageShowingKannada = (): boolean => {
+  if (typeof document === "undefined") return false;
+  try {
+    const html = document.documentElement;
+    if (
+      html.classList.contains("translated-ltr") ||
+      html.classList.contains("translated-rtl") ||
+      html.getAttribute("lang") === "kn"
+    ) {
+      return true;
+    }
+    const combo = document.querySelector(
+      "select.goog-te-combo",
+    ) as HTMLSelectElement | null;
+    if (combo?.value === "kn") return true;
+    const knChars =
+      document.body?.textContent?.match(/[\u0C80-\u0CFF]/g)?.length ?? 0;
+    return knChars > 40;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Active UI language: prefer live DOM (GT) over stale cookies.
+ * Fixes EN highlight while the page is clearly Kannada.
+ */
+export const getCurrentLanguage = (): LanguageCode => {
+  try {
+    if (isPageShowingKannada()) return LANGUAGES.KANNADA;
+    return getStoredLanguage();
+  } catch {
+    return LANGUAGES.ENGLISH;
+  }
+};
+
 export const reloadWithLanguage = (targetLang: LanguageCode): void => {
   setGoogleTranslateCookie(targetLang);
-  // Let the cookie flush before reload (important on some mobile browsers / CDNs).
-  window.setTimeout(() => {
-    window.location.reload();
-  }, 200);
+  try {
+    document.documentElement.classList.remove("translated-ltr", "translated-rtl");
+    if (targetLang === LANGUAGES.ENGLISH) {
+      document.documentElement.setAttribute("lang", "en");
+    } else {
+      document.documentElement.setAttribute("lang", "kn");
+    }
+    window.dispatchEvent(new Event("ihdua:language"));
+  } catch {
+    // ignore
+  }
+  // Drop any leftover lang cache-bust junk, then hard reload.
+  try {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("_lang");
+    url.searchParams.delete("_t");
+    const clean = url.pathname + url.search + url.hash;
+    if (clean !== window.location.pathname + window.location.search + window.location.hash) {
+      window.history.replaceState(null, "", clean);
+    }
+  } catch {
+    // ignore
+  }
+  window.location.reload();
 };
