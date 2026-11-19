@@ -13,6 +13,10 @@ export const metadata: Metadata = {
   title: "IHDUA | Rural Development & Community Empowerment India",
   description:
     "IHDUA drives rural development through women empowerment, education, skill training, healthcare and sustainable initiatives to build stronger communities.",
+  // Stop Chrome’s own “Translated into…” bar — we handle Kannada ourselves.
+  other: {
+    google: "notranslate",
+  },
   alternates: {
     canonical: "/",
   },
@@ -67,9 +71,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       {/* Do not add a manual <head> — Next owns it; a closed head dumps metadata into <body>. */}
       <body className="font-sans antialiased" suppressHydrationWarning>
-        <Script id="gt-boot" strategy="beforeInteractive">
-          {GT_BOOT_SCRIPT}
-        </Script>
+        <Script
+          id="gt-boot"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: GT_BOOT_SCRIPT }}
+        />
         <SimpleLanguageProvider>{children}</SimpleLanguageProvider>
       </body>
     </html>

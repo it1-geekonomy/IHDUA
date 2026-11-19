@@ -19,7 +19,7 @@ SITE_PAGES = [
     "/health",
     "/model-village",
     "/skills-and-employment",
-    "/getinvolved",
+    "/donate",
     "/contact",
 ]
 
@@ -30,7 +30,7 @@ PAGE_LABELS = {
     "/health": "Health & Well-being",
     "/model-village": "Model Village",
     "/skills-and-employment": "Skills & Employment",
-    "/getinvolved": "Get Involved",
+    "/donate": "Donate",
     "/contact": "Contact Us",
 }
 

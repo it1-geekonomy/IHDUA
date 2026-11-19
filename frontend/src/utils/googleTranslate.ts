@@ -43,6 +43,40 @@ export const GT_BOOT_SCRIPT = `(function(){
     var staleHold = document.getElementById(HOLD);
     if (staleHold && staleHold.parentNode) staleHold.parentNode.removeChild(staleHold);
 
+    // Strip old language cache-bust junk from the address bar.
+    try {
+      var bootUrl = new URL(location.href);
+      if (bootUrl.searchParams.has("_lang") || bootUrl.searchParams.has("_t")) {
+        bootUrl.searchParams.delete("_lang");
+        bootUrl.searchParams.delete("_t");
+        history.replaceState(null, "", bootUrl.pathname + bootUrl.search + bootUrl.hash);
+      }
+    } catch (e) {}
+
+    // Continuously kill GT’s top banner iframe / gadget if it injects.
+    function killGtChrome() {
+      try {
+        document.querySelectorAll(
+          "iframe.goog-te-banner-frame, .goog-te-banner-frame, .goog-te-balloon-frame, #goog-gt-tt, #goog-gt-vt, .goog-te-ftab-frame, .VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf"
+        ).forEach(function (el) {
+          if (el && el.parentNode) el.parentNode.removeChild(el);
+        });
+        document.documentElement.style.top = "0";
+        if (document.body) {
+          document.body.style.top = "0";
+          document.body.style.marginTop = "0";
+        }
+      } catch (e) {}
+    }
+    killGtChrome();
+    setInterval(killGtChrome, 500);
+    try {
+      new MutationObserver(killGtChrome).observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+      });
+    } catch (e) {}
+
     function readWantKn() {
       var ls = "";
       try { ls = localStorage.getItem(KEY) || ""; } catch (e) {}
@@ -63,12 +97,10 @@ export const GT_BOOT_SCRIPT = `(function(){
       return ls === "kn" || pref === "kn" || goog.indexOf("/kn") !== -1;
     }
 
-    if (!readWantKn()) return;
-
     var host = location.hostname;
     var isLocal = host === "localhost" || host === "127.0.0.1" || /\\.localhost$/.test(host);
     var secure = location.protocol === "https:" ? "; Secure; SameSite=Lax" : "; SameSite=Lax";
-    function writeCookies() {
+    function writeKnCookies() {
       var gt = "googtrans=/en/kn; path=/; max-age=31536000" + secure;
       var prefC = KEY + "=kn; path=/; max-age=31536000" + secure;
       document.cookie = gt;
@@ -85,6 +117,69 @@ export const GT_BOOT_SCRIPT = `(function(){
       }
       try { localStorage.setItem(KEY, "kn"); } catch (e) {}
     }
+
+    // Language toggle — always installed (EN and KN pages).
+    var langSwitching = false;
+    function switchLang(next) {
+      if (langSwitching) return;
+      langSwitching = true;
+      try {
+        if (next === "en") {
+          document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/" + secure;
+          document.cookie = KEY + "=en; path=/; max-age=31536000" + secure;
+          try { localStorage.setItem(KEY, "en"); } catch (e) {}
+          document.documentElement.classList.remove("translated-ltr", "translated-rtl");
+          document.documentElement.setAttribute("lang", "en");
+        } else {
+          writeKnCookies();
+          document.documentElement.setAttribute("lang", "kn");
+        }
+      } catch (e) {}
+      try {
+        var cleanUrl = new URL(location.href);
+        cleanUrl.searchParams.delete("_lang");
+        cleanUrl.searchParams.delete("_t");
+        var clean = cleanUrl.pathname + cleanUrl.search + cleanUrl.hash;
+        if (clean !== location.pathname + location.search + location.hash) {
+          history.replaceState(null, "", clean);
+        }
+      } catch (e) {}
+      location.reload();
+    }
+    window.__ihduaPickLang = switchLang;
+
+    document.addEventListener("click", function(ev) {
+      if (ev.button !== 0) return;
+      if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey) return;
+      var t = ev.target;
+      if (!t || !t.closest) return;
+      var toggleRoot = t.closest("[data-lang-toggle]");
+      if (!toggleRoot) return;
+      var nextLang = null;
+      var mobile = t.closest("[data-mobile-switch]");
+      if (mobile) {
+        nextLang = readWantKn() ? "en" : "kn";
+      } else {
+        var langBtn = t.closest("button[data-lang]");
+        var langAttr = langBtn && langBtn.getAttribute("data-lang");
+        if (langAttr === "en" || langAttr === "kn") nextLang = langAttr;
+      }
+      if (!nextLang) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      switchLang(nextLang);
+    }, true);
+
+    // English preferred: strip leftover KN cookies so boot never re-applies Kannada.
+    if (!readWantKn()) {
+      try {
+        document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/" + secure;
+        document.documentElement.classList.remove("translated-ltr", "translated-rtl");
+      } catch (e) {}
+      return;
+    }
+
+    function writeCookies() { writeKnCookies(); }
     writeCookies();
 
     window.__gtLock = function(){};
@@ -172,6 +267,8 @@ export const GT_BOOT_SCRIPT = `(function(){
       if (!readWantKn()) return;
       var t = ev.target;
       if (!t || !t.closest) return;
+      // Don't steal language-toggle clicks (handled above).
+      if (t.closest("[data-lang-toggle]")) return;
       var a = t.closest("a[href]");
       if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
       var next = isInternalNav(a.getAttribute("href"));

@@ -10,13 +10,13 @@ import {
 } from "@/domains/home/lib/blogs";
 import { buildPageMetadata } from "@/shared/lib/seo";
 
-export const metadata: Metadata = buildPageMetadata({ path: "/blogs" });
+export const metadata: Metadata = buildPageMetadata({ path: "/blog" });
 
 export const dynamic = "force-dynamic";
 
 /**
  * Server-render the listing so the first HTML response includes real
- * `/blogs/{slug}` anchors. Discovery of the full corpus (incl. page 2+)
+ * `/blog/{slug}` anchors. Discovery of the full corpus (incl. page 2+)
  * is handled by `/sitemap.xml`, which is rebuilt from the CMS.
  */
 export default async function BlogsPage() {
