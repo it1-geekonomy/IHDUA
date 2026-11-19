@@ -542,8 +542,7 @@ export default function StatSection() {
               'Figtree, "Noto Sans Kannada", "Nirmala UI", "Tunga", sans-serif',
           }}
         >
-          Empowering rural communities through education, sustainable
-          livelihoods, healthcare, and opportunities for a better future.
+          Showcasing the progress and positive outcomes of our work across rural communities.
         </Typography>
       </div>
 

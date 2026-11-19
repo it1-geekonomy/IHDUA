@@ -6,7 +6,7 @@ export const DOCUMENTS_DESCRIPTION =
 // Number of PDFs shown per card. Pagination appears only when a card has more than this.
 export const DOCUMENTS_PAGE_SIZE = 4;
 
-export const PDF_ICON = "/aboutus/pdf.png";
+export const PDF_ICON =  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795078228431-v53uh-fi_337946.svg";
 
 export type DocumentVariant = "organizational" | "annual";
 
@@ -40,18 +40,18 @@ export const DOCUMENT_THEMES: Record<
   organizational: {
     card: "bg-[#FAF6FD] border-[#F5E8FF]",
     headerIconBg: "bg-[#E6D9F0]",
-    headerIcon: "/aboutus/arrowdown1.png",
+    headerIcon:  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795078166424-uxx6n-f7_arrow-down-doc-fill-2-.svg",
     button: "bg-[#E6D9F0]",
-    buttonIcon: "/aboutus/download1.png",
+    buttonIcon:"https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795078491183-80reo-fe_download.svg",
     pageActive: "bg-[#E6D9F0] text-[#311645]",
     pageInactive: "text-[#7E7783] hover:bg-[#E6D9F0]/50",
   },
   annual: {
     card: "bg-[#FEFBF7] border-[#FFF3E3]",
     headerIconBg: "bg-[#E5DACB]",
-    headerIcon: "/aboutus/arrowdown2.png",
+    headerIcon:  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795078194772-mskez-f7_arrow-down-doc-fill-3-.svg",
     button: "bg-[#E5DACB]",
-    buttonIcon: "/aboutus/download2.png",
+    buttonIcon: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795078491183-80reo-fe_download.svg",
     pageActive: "bg-[#E5DACB] text-[#311645]",
     pageInactive: "text-[#7E7783] hover:bg-[#E5DACB]/50",
   },
