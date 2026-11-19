@@ -4,7 +4,7 @@ import re
 from app.rag import constants as C
 
 _GREETING_RE = re.compile(
-    r"^(hi|hello|hey|greetings|namaste|vanakkam|good morning|good evening|good afternoon|hola|"
+    r"^(hi|hy|hello|hey|greetings|namaste|vanakkam|good morning|good evening|good afternoon|hola|"
     r"ನಮಸ್ಕಾರ|ನಮಸ್ತೆ)[\s!.]*$",
     re.I,
 )
