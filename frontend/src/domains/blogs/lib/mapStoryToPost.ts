@@ -27,6 +27,7 @@ export type StoryLink = {
   slug: string;
   title: string;
   image: string | null;
+  video?: string | null;
   date: string;
 };
 
@@ -53,6 +54,7 @@ export function mapStoryToLink(story: BlogStory): StoryLink {
     slug: story.slug,
     title: story.title,
     image: story.blogBanner || null,
+    video: story.video || null,
     date: formatBlogDate(story.blogDate ?? story.createdAt),
   };
 }
