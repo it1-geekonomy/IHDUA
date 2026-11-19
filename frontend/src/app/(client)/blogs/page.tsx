@@ -1,23 +1,11 @@
+import type { Metadata } from "next";
 import HeroBanner from "@/shared/components/Herobanner";
 import NewsletterSection from "@/shared/components/Newsletter";
 import BlogsGridSection from "@/domains/blogs/components/BlogsGridSection";
 import { BLOGS_HERO } from "@/domains/blogs/constants/blogsData";
+import { buildPageMetadata } from "@/shared/lib/seo";
 
-export const metadata = {
-  title: "Blogs & Stories | IHDUA",
-  description:
-    "Discover stories, updates, and inspiring moments from our work with rural communities across Karnataka.",
-  alternates: {
-    canonical: "/blogs",
-  },
-  openGraph: {
-    title: "Blogs & Stories | IHDUA",
-    description:
-      "Discover stories, updates, and inspiring moments from our work with rural communities across Karnataka.",
-    url: "/blogs",
-    type: "website",
-  },
-};
+export const metadata: Metadata = buildPageMetadata({ path: "/blogs" });
 
 export default function BlogsPage() {
   return (

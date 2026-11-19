@@ -18,8 +18,27 @@ const SLUG_ALIASES: Record<string, string[]> = {
     "vinayaka-jnana-vidyashale-mysuru",
     "vinayakagnana-vidyashale-mysore",
   ],
-  "adarsha-academy-krs": ["adarsha-academy-krs"],
+  "adarsha-academy-krs": ["adarsha-academy-krs", "adarsha-academy"],
+  "adarsha-academy": ["adarsha-academy", "adarsha-academy-krs"],
   women: ["women"],
+  farmer: ["farmer", "farmers"],
+  farmers: ["farmers", "farmer"],
+  "self-help-group-and-federation": [
+    "self-help-group-and-federation",
+    "self-help-group-federation",
+  ],
+  "self-help-group-federation": [
+    "self-help-group-federation",
+    "self-help-group-and-federation",
+  ],
+  "micro-finance-initiative": [
+    "micro-finance-initiative",
+    "micro-finance-initiatives",
+  ],
+  "micro-finance-initiatives": [
+    "micro-finance-initiatives",
+    "micro-finance-initiative",
+  ],
 };
 
 function candidatesFor(slug: string): string[] {

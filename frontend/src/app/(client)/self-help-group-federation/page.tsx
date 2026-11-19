@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { buildImpactPageMetadata } from "@/shared/lib/seo";
 import { fetchImpactInitiativePage } from "@/shared/lib/impactApi";
 import { ImpactPageView } from "@/domains/impact/cms/ImpactPageView";
 import NewsletterSection from "@/shared/components/Newsletter";
@@ -10,11 +11,7 @@ const SLUG = "self-help-group-federation";
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await fetchImpactInitiativePage(SLUG);
-  if (!page) return {};
-  return {
-    title: page.metaTitle || `${page.heroTitle || page.name} | IHDUA`,
-    description: page.metaDescription || page.heroDescription || undefined,
-  };
+  return buildImpactPageMetadata(SLUG, page);
 }
 
 export default async function SelfHelpGroupFederationPage() {

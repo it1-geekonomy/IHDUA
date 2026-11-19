@@ -8,8 +8,26 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://ihdua.org";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "International Human Development and Uplifting Academy | IHDUA",
-  description: "IHDUA is a registered not-for-profit organisation working with rural and underserved communities across Karnataka.",
+  title: "IHDUA | Rural Development & Community Empowerment India",
+  description:
+    "IHDUA drives rural development through women empowerment, education, skill training, healthcare and sustainable initiatives to build stronger communities.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "IHDUA | Rural Development & Community Empowerment India",
+    description:
+      "IHDUA drives rural development through women empowerment, education, skill training, healthcare and sustainable initiatives to build stronger communities.",
+    url: "/",
+    type: "website",
+    siteName: "IHDUA",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "IHDUA | Rural Development & Community Empowerment India",
+    description:
+      "IHDUA drives rural development through women empowerment, education, skill training, healthcare and sustainable initiatives to build stronger communities.",
+  },
   icons: {
     icon: [{ url: "/IHDUAFavicon.png", type: "image/png", sizes: "192x192" }],
     apple: "/IHDUAFavicon.png",
