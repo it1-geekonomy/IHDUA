@@ -3,12 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import Typography, { figmaTypeScale } from "@/lib/Typography";
 import {
   useFieldStories,
   type FieldStoryCard,
 } from "@/domains/home/hooks/useFieldStories";
+import { fetchStoryBySlug } from "@/domains/home/lib/blogs";
+
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -53,14 +56,27 @@ const copyReveal: Variants = {
   },
 };
 
-export default function StoriesFromField() {
-  // null while loading; [] when nothing is published or the API failed
-  const stories = useFieldStories(3);
+export default function StoriesFromField({
+  initialStories = null,
+}: {
+  initialStories?: FieldStoryCard[] | null;
+} = {}) {
+  const router = useRouter();
+
+  // SSR seed when available; otherwise client fetch
+  const stories = useFieldStories(3, initialStories);
   const list = useMemo(() => stories ?? [], [stories]);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isKn, setIsKn] = useState(false);
+
+  // Freshly fetched copy of the featured story (from the backend, by slug)
+  const [detail, setDetail] = useState<{
+    id: string;
+    title: string;
+    description: string;
+  } | null>(null);
 
   // Detect Kannada (Google Translate sets <html lang="kn"> / googtrans cookie).
   // Used only for typography (letter-spacing / font size), not for layout.
@@ -82,6 +98,44 @@ export default function StoriesFromField() {
     () => list.find((s) => s.id === featuredId) ?? list[0],
     [list, featuredId],
   );
+
+  const featuredKey = featured?.id;
+  const featuredHref = featured?.href;
+
+  // Prefetch the featured story's page every time the featured story changes
+  // (first load + every side-card click), so it never depends on the <Link>
+  // scrolling into view while its entrance animation is running.
+  useEffect(() => {
+    if (featuredHref) router.prefetch(featuredHref);
+  }, [featuredHref, router]);
+
+  // Fetch the featured story from the backend every time it changes
+  // (first load + every side-card click).
+  useEffect(() => {
+    if (!featuredKey || !featuredHref) return;
+
+    const slug = featuredHref.split("/").filter(Boolean).pop();
+    if (!slug) return;
+
+    let cancelled = false;
+
+    fetchStoryBySlug(slug)
+      .then((story) => {
+        if (cancelled || !story) return;
+        setDetail({
+          id: featuredKey,
+          title: story.title,
+          description: story.shortDescription ?? "",
+        });
+      })
+      .catch(() => {
+        // keep showing the list data if this request fails
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [featuredKey, featuredHref]);
 
   /** Always only 2 side stories */
   const sideStories = useMemo(
@@ -109,6 +163,11 @@ export default function StoriesFromField() {
   if (stories === null) {
     return <section aria-hidden className="min-h-[40rem] w-full bg-[#FAF9F5]" />;
   }
+
+  // Use the freshly fetched title/description once it matches the featured story
+  const fresh = featured && detail && detail.id === featured.id ? detail : null;
+  const featuredTitle = fresh?.title || featured?.title;
+  const featuredDescription = fresh ? fresh.description : featured?.description;
 
   return (
     <section className="w-full bg-[#FAF9F5]">
@@ -185,7 +244,7 @@ export default function StoriesFromField() {
                           fill
                           className="object-cover"
                           sizes="(max-width: 1024px) 100vw, 66vw"
-                          priority={index === 0}
+                          loading="lazy"
                         />
                       </motion.div>
                     );
@@ -194,7 +253,7 @@ export default function StoriesFromField() {
               </div>
 
               {/* Side stories */}
-              <div className="order-3 mt-6 flex flex-col gap-4 sm:mt-0 sm:flex-row sm:gap-6 lg:order-none lg:mt-0 lg:w-[42%] lg:flex-col lg:justify-between lg:gap-5 xl:col-span-4 xl:row-start-1 xl:w-auto xl:h-full xl:justify-between">
+              <div className="order-3 mt-6 flex flex-col gap-4 sm:flex-row sm:gap-6 sm:mt-0 lg:order-none lg:mt-0 lg:w-[42%] lg:flex-col lg:justify-between lg:gap-5 xl:col-span-4 xl:row-start-1 xl:w-auto xl:h-full xl:justify-between">
                 {sideStories.map((story, i) => (
                   <motion.button
                     key={story.id}
@@ -274,18 +333,18 @@ export default function StoriesFromField() {
                         isKn ? "leading-normal" : "leading-snug"
                       }`}
                     >
-                      {featured.title}
+                      {featuredTitle}
                     </Typography>
                   </motion.div>
 
                   {/* Short Summary from the CMS (full text) */}
-                  {featured.description && (
+                  {featuredDescription && (
                     <motion.div variants={copyReveal}>
                       <Typography
                         variant="body-lg"
                         className="mt-2 w-full font-figtree leading-relaxed text-[#5F6C6D]"
                       >
-                        {featured.description}
+                        {featuredDescription}
                       </Typography>
                     </motion.div>
                   )}

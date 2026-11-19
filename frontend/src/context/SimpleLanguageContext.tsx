@@ -16,6 +16,8 @@ import {
 } from "@/utils/languageHelper";
 import {
   bindKannadaHardNav,
+  revealTranslatedPage,
+  watchTranslatedThenReveal,
   whenTranslateReady,
 } from "@/utils/googleTranslate";
 
@@ -44,6 +46,15 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
     setLanguageState(getCurrentLanguage());
   }, []);
 
+  // Hold → reveal: clear EN flash once Kannada is on the DOM (or failsafe).
+  useEffect(() => {
+    if (isAdmin) {
+      revealTranslatedPage();
+      return;
+    }
+    return watchTranslatedThenReveal(2800);
+  }, [isAdmin]);
+
   // Load Google Translate once on the public site.
   useEffect(() => {
     if (typeof window === "undefined" || isAdmin) return;
@@ -60,13 +71,19 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
           "google_translate_element",
         );
       } catch {
+        revealTranslatedPage();
         return;
       }
 
       const lang = getCurrentLanguage();
       setLanguageState(lang);
       if (lang === LANGUAGES.KANNADA) {
-        void whenTranslateReady(LANGUAGES.KANNADA, 3000);
+        void whenTranslateReady(LANGUAGES.KANNADA, 3000).then((ok) => {
+          if (!ok) revealTranslatedPage();
+          // translated class / lang=kn is watched separately; nudge apply is enough here
+        });
+      } else {
+        revealTranslatedPage();
       }
     };
 
@@ -75,10 +92,11 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
     script.src =
       "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
     script.async = true;
+    script.onerror = () => revealTranslatedPage();
     document.head.appendChild(script);
   }, [isAdmin]);
 
-  // Kannada: full document navigations so googtrans applies cleanly (no EN flash / blank gate).
+  // Kannada: full document navigations so googtrans applies cleanly (no EN flash).
   useEffect(() => {
     if (isAdmin || language !== LANGUAGES.KANNADA) return;
     return bindKannadaHardNav();
