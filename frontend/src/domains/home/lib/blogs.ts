@@ -28,6 +28,7 @@ export type BlogSort = "newest" | "oldest";
 export type PublishedQuery = {
   sort?: BlogSort;
   limit?: number;
+  categoryId?: string;
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -54,24 +55,29 @@ function unwrapList<T>(json: unknown): T[] {
  * Browser only: requests currently in flight, keyed by query string.
  * Strict Mode's second effect run happens before the response arrives, so it
  * reuses the same promise (1 call, not 2). Each entry is removed as soon as
- * its request settles, so the next visit or sort change always makes a fresh call.
+ * its request settles, so the next visit, sort change or category change
+ * always makes a fresh call.
  * (Never used on the server, so server renders always get fresh data.)
  */
 const storiesRequests = new Map<string, Promise<BlogStory[]>>();
 let categoriesRequest: Promise<BlogCategory[]> | null = null;
 
 /**
- * `sort` is always sent: the backend's default is "oldest",
- * so callers that pass nothing still get newest first.
+ * `sort` is always sent so the order never depends on the backend default.
+ * `categoryId` is only sent when a category is chosen.
  */
 function buildQuery(q: PublishedQuery): string {
   const params = new URLSearchParams();
   params.set("sort", q.sort ?? "newest");
   if (q.limit) params.set("limit", String(q.limit));
+  if (q.categoryId) params.set("categoryId", q.categoryId);
   return params.toString();
 }
 
-/** Public endpoint: only stories with status "published". Sorted by the backend. */
+/**
+ * Public endpoint: only stories with status "published".
+ * Sorted (and optionally filtered by category) by the backend.
+ */
 export function fetchPublishedStories(
   query: PublishedQuery = {},
 ): Promise<BlogStory[]> {

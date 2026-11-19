@@ -171,8 +171,9 @@ function MilestoneItemMobile({
 
       <time
         dateTime={milestone.year}
+        translate="no"
         style={{ "--dm": `${M_DELAYS.text}ms` } as CSSProperties}
-        className={cn("col-start-1 row-start-1 block text-right", reveal)}
+        className={cn("notranslate col-start-1 row-start-1 block text-right", reveal)}
       >
         <Typography
           variant="body-xl"

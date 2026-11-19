@@ -13,8 +13,8 @@ export interface HeroBannerProps {
   /** Optional CTAs under the description (e.g. Donate / Explore on /donate). */
   actions?: ReactNode;
   /**
-   * On small screens, crop the image to fill the hero (object-cover) so copy
-   * sits on the photo only — no solid brand strip under a short desktop crop.
+   * On small screens, ensure a minimum hero height when the mobile crop is short
+   * (e.g. /donate reusing a wide desktop image).
    */
   coverOnMobile?: boolean;
 }
@@ -50,19 +50,15 @@ export default function HeroBanner({
   return (
     <section
       className={cn(
-        // No aspect-ratio here: the image itself sets the height, so it can never be
-        // cropped or leave bands, whatever the real file ratio is.
+        // The row height is the taller of the image and the text overlay.
+        // The image stretches to fill the whole row (object-cover + object-top),
+        // so there are no purple bands and the top of the image is never cropped.
         "relative grid w-full bg-[#9739A8]",
         coverOnMobile && "min-h-[min(78vw,28rem)] md:min-h-0",
         className,
       )}
     >
-      <picture
-        className={cn(
-          "col-start-1 row-start-1 block w-full",
-          coverOnMobile && "absolute inset-0 md:relative md:inset-auto",
-        )}
-      >
+      <picture className="col-start-1 row-start-1 block h-full w-full">
         <source
           media={DESKTOP_MEDIA}
           srcSet={desktopSrcSet}
@@ -79,11 +75,7 @@ export default function HeroBanner({
         />
         <img
           {...fallbackImgProps}
-          className={cn(
-            "block h-auto w-full object-contain",
-            coverOnMobile &&
-              "h-full min-h-full object-cover object-center md:h-auto md:min-h-0 md:object-contain",
-          )}
+          className="block h-full min-h-full w-full object-cover object-top"
         />
       </picture>
 
