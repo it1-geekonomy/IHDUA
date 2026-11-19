@@ -11,6 +11,10 @@ export const DURATION_B = 46;
 
 export const PILL_ASPECT = "aspect-[8/15]";
 
+/** Matches ~214px mobile LCP display width from PageSpeed. */
+export const HERO_PILL_SIZES =
+  "(max-width: 767px) 215px, (max-width: 1023px) 16vw, 14vw";
+
 export const MIN_PILLS_PER_HALF = 4;
 
 export const FADE_MASK =

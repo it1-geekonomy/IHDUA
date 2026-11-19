@@ -72,9 +72,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       {/* Do not add a manual <head> — Next owns it; a closed head dumps metadata into <body>. */}
       <body className="font-sans antialiased" suppressHydrationWarning>
+        {/* afterInteractive: keep LCP clear of GT/polyfill work on Slow 4G */}
         <Script
           id="gt-boot"
-          strategy="beforeInteractive"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{ __html: GT_BOOT_SCRIPT }}
         />
         <SimpleLanguageProvider>{children}</SimpleLanguageProvider>

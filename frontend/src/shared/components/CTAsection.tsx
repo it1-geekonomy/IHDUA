@@ -67,6 +67,7 @@ export default function CTASection() {
           <div className="mx-auto flex w-full max-w-xl flex-col items-center text-center lg:mx-0 lg:max-w-lg lg:items-start lg:text-left xl:max-w-xl">
             <Typography
               variant="h1"
+              as="p"
               className="font-lora font-normal leading-tight text-white"
             >
               {DONATION_COPY.sectionTitle}
