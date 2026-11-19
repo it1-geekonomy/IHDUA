@@ -169,12 +169,54 @@ docker compose --env-file .env.prod -f docker-compose.prod.yml build frontend
 docker compose --env-file .env.prod -f docker-compose.prod.yml up -d frontend nginx
 ```
 
-## When you get a domain later
+## Domain + HTTPS (Let's Encrypt)
 
-1. Point DNS A record to `YOUR_IP`.  
-2. Update `PUBLIC_URL=https://yourdomain` and rebuild frontend.  
-3. Issue certs with certbot (profile in compose) and switch `nginx/default.conf`
-   to HTTPS (same pattern as HCG Foundation).
+Prerequisites: DNS `A` for `ihdua.org` (and `www` CNAME) already points at the Droplet.
+
+**1. Issue the certificate** (nginx must still answer HTTP on port 80 with the
+ACME location — current `nginx/default.conf` does):
+
+```bash
+cd /opt/ihdua
+mkdir -p certbot/www certbot/conf
+
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile certbot run --rm certbot \
+  certonly --webroot -w /var/www/certbot \
+  -d ihdua.org -d www.ihdua.org \
+  --email info@ihdua.org --agree-tos --no-eff-email
+```
+
+**2. Deploy HTTPS nginx config** (repo `nginx/default.conf` redirects 80 → 443
+and serves TLS). Pull latest code if needed, then:
+
+```bash
+docker compose --env-file .env.prod -f docker-compose.prod.yml exec nginx nginx -t
+docker compose --env-file .env.prod -f docker-compose.prod.yml exec nginx nginx -s reload
+```
+
+If nginx was started before certs existed and fails to boot after the HTTPS
+config is live:
+
+```bash
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d nginx
+```
+
+**3. Point the app at HTTPS and rebuild frontend** (`NEXT_PUBLIC_*` are build-time):
+
+```bash
+# In .env.prod:
+# PUBLIC_URL=https://ihdua.org
+
+docker compose --env-file .env.prod -f docker-compose.prod.yml build frontend
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d frontend nginx
+```
+
+**Renewal** (cron or manual every ~60 days):
+
+```bash
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile certbot run --rm certbot renew
+docker compose --env-file .env.prod -f docker-compose.prod.yml exec nginx nginx -s reload
+```
 
 ## Useful commands
 
