@@ -13,11 +13,8 @@ export const metadata: Metadata = {
   title: "IHDUA | Rural Development & Community Empowerment India",
   description:
     "IHDUA drives rural development through women empowerment, education, skill training, healthcare and sustainable initiatives to build stronger communities.",
-  // Blocks Chrome’s built-in “Translated into…” bar only.
-  // Our Google Translate Element widget still runs via googtrans + combo.
-  other: {
-    google: "notranslate",
-  },
+  // Do NOT set google=notranslate — it blocks the Translate Element on mobile.
+  // Chrome’s translate bar is hidden in globals.css instead.
   alternates: {
     canonical: "/",
   },
@@ -72,10 +69,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       {/* Do not add a manual <head> — Next owns it; a closed head dumps metadata into <body>. */}
       <body className="font-sans antialiased" suppressHydrationWarning>
-        {/* afterInteractive: keep LCP clear of GT/polyfill work on Slow 4G */}
+        {/* beforeInteractive: language toggle/cookies must be ready on first tap */}
         <Script
           id="gt-boot"
-          strategy="afterInteractive"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: GT_BOOT_SCRIPT }}
         />
         <SimpleLanguageProvider>{children}</SimpleLanguageProvider>
