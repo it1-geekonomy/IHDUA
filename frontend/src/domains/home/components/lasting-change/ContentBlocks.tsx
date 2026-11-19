@@ -38,7 +38,7 @@ export function HeadlineBlock({
 
         <Typography
           variant="body-lg"
-          className="mt-3 font-figtree !text-[13px] !leading-[1.6] text-[#5F6C6D]"
+          className="mt-3 font-figtree text-[#5F6C6D] [html[lang=kn]_&]:!text-[13px] [html[lang=kn]_&]:!leading-[1.6]"
         >
           {LASTING_CHANGE.body}
         </Typography>
@@ -68,11 +68,11 @@ export function HeadlineBlock({
 
         <Typography
           variant="body-lg"
-          className="
-            mt-4 w-full max-w-none font-figtree leading-relaxed text-[#5F6C6D] xl:mt-5
-            xl:max-2xl:!text-[14px]
-            xl:max-2xl:!leading-[1.6]
-          "
+          className={cn(
+            "mt-4 w-full max-w-none font-figtree leading-relaxed text-[#5F6C6D] xl:mt-5",
+            "[html[lang=kn]_&]:xl:max-2xl:!text-[14px]",
+            "[html[lang=kn]_&]:xl:max-2xl:!leading-[1.6]"
+          )}
         >
           {LASTING_CHANGE.body}
         </Typography>
@@ -143,7 +143,7 @@ export function CtaBlock({
       >
         <Typography
           variant="body-lg"
-          className="font-figtree !text-[14px] leading-snug text-[#5F6C6D]"
+          className="font-figtree leading-snug text-[#5F6C6D] [html[lang=kn]_&]:!text-[14px]"
         >
           {LASTING_CHANGE.ctaText}
         </Typography>

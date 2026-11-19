@@ -31,7 +31,7 @@ export default async function WomenEmpowermentPage() {
     <>
       <HeroBanner
         heading="Women Empowerment"
-        description="Creating opportunities to learn, grow and build brighter futures for rural children and communities."
+        description="Empowering rural women through self-help groups, leadership development, financial inclusion and opportunities for sustainable livelihoods."
         image="/womenempowerment/banner-desktop.png"
         imageMobile="/womenempowerment/banner-mobile.png"
         imageAlt="Women from rural communities supported by IHDUA"
