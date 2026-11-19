@@ -109,41 +109,10 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
     const lang = getCurrentLanguage();
     setLanguageState(lang);
 
+    // English: do not preload Google Translate (PSI unused-JS). Load only for Kannada.
     if (lang === LANGUAGES.KANNADA) {
       injectTranslateScript((readyLang) => setLanguageState(readyLang));
-      return;
     }
-
-    let idleId: number | undefined;
-    let timeoutId: number | undefined;
-
-    const scheduleDeferred = () => {
-      if (typeof window.requestIdleCallback === "function") {
-        idleId = window.requestIdleCallback(
-          () => injectTranslateScript((readyLang) => setLanguageState(readyLang)),
-          { timeout: 4000 },
-        );
-      } else {
-        timeoutId = window.setTimeout(
-          () => injectTranslateScript((readyLang) => setLanguageState(readyLang)),
-          2500,
-        );
-      }
-    };
-
-    if (document.readyState === "complete") {
-      scheduleDeferred();
-    } else {
-      window.addEventListener("load", scheduleDeferred, { once: true });
-    }
-
-    return () => {
-      window.removeEventListener("load", scheduleDeferred);
-      if (idleId !== undefined && typeof window.cancelIdleCallback === "function") {
-        window.cancelIdleCallback(idleId);
-      }
-      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
-    };
   }, [isAdmin]);
 
   const setLanguage = useCallback(

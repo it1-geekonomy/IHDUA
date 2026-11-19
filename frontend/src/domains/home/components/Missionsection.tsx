@@ -34,7 +34,7 @@ export default function MissionSection() {
               <span className="h-px w-8 bg-[#9739A8]" />
             </div>
 
-            <Typography variant="display-xl" className="mt-4 font-lora font-normal text-[#00191B]">
+            <Typography variant="display-xl" as="h2" className="mt-4 font-lora font-normal text-[#00191B]">
               The Mission of IHDUA
             </Typography>
           </div>
@@ -68,7 +68,7 @@ export default function MissionSection() {
                   >
                     <PillarEffects index={index} isActive={isActive} ripple={ripple} />
 
-                    <Typography variant="display-2xl" className={pillarNumberClass(isActive)}>
+                    <Typography variant="display-2xl" as="span" className={pillarNumberClass(isActive)}>
                       {pillar.number}
                     </Typography>
 

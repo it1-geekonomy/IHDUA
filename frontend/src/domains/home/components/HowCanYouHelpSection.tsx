@@ -118,6 +118,7 @@ function HelpCard({ item, variants, reduceMotion }: HelpCardProps) {
 
         <Typography
   variant="h4"
+  as="h3"
   className="mt-6 font-lora font-normal text-[#00191B] lg:max-xl:hidden"
 >
   {item.title}
@@ -148,7 +149,7 @@ export default function HowCanYouHelpSection() {
     <section className="w-full bg-white">
       <div className="w-full px-6 pt-6 lg:px-10 lg:pt-8 xl:py-14 2xl:px-40">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-          <Typography variant="display-xl" className="font-lora font-normal text-[#00191B]">
+          <Typography variant="display-xl" as="h2" className="font-lora font-normal text-[#00191B]">
             How can you help?
           </Typography>
           <Typography

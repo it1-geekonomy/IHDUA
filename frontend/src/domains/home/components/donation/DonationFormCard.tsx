@@ -17,6 +17,7 @@ export function DonationFormCard() {
           <>
             <Typography
               variant="h3"
+              as="h2"
               className="text-center font-lora font-normal leading-snug text-[#00191B] text-[26px] sm:text-[30px]"
             >
               {DONATION_COPY.cardTitle}
