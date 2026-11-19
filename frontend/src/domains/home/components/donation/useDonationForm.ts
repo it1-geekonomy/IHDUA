@@ -17,7 +17,9 @@ import {
   formatPresetLabel,
   getCountryByCode,
   getCurrencyMeta,
+  toDonationOrigin,
   type DonationCurrency,
+  type DonationOrigin,
 } from "@/domains/home/constants/donationCountries";
 import {
   amountDigitsFromDisplay,
@@ -30,6 +32,7 @@ import {
   loadRazorpayScript,
   normalizeAmountDigits,
   openRazorpayCheckout,
+  submitFcraRemittanceLead,
   toAmountDigits,
   verifyDonationPayment,
   verifyDonationSubscription,
@@ -100,8 +103,9 @@ export function useDonationForm() {
   const currencyMeta = useMemo(() => getCurrencyMeta(currency), [currency]);
   const country = useMemo(() => getCountryByCode(countryCode), [countryCode]);
   const phoneCountry = useMemo(() => getCountryByCode(phoneCountryCode), [phoneCountryCode]);
-  // PAN (80G receipt) applies only to donations made from India
-  const isIndia = countryCode === "IN";
+  // Donation origin: India (Razorpay) vs Outside India (FCRA remittance)
+  const donationOrigin: DonationOrigin = toDonationOrigin(countryCode);
+  const isIndia = donationOrigin === "IN";
   // Razorpay subscriptions (eMandate / UPI Autopay / cards) are INR-only
   const recurringAvailable = isIndia && currency === "INR";
   const effectiveFrequency: DonationFrequencyOption = recurringAvailable
@@ -142,28 +146,35 @@ export function useDonationForm() {
     setEditingAmount(false);
   }, []);
 
-  const applyCountry = useCallback((code: string) => {
-    setCountryCodeState(code);
-    setPhoneCountryCode(code);
-    if (code !== "IN") setTaxId("");
+  const applyOrigin = useCallback((origin: DonationOrigin) => {
+    setCountryCodeState(origin);
+    if (origin === "IN") {
+      setPhoneCountryCode("IN");
+    } else {
+      // OUT is not a dial code — keep phone country editable in details
+      setPhoneCountryCode((prev) =>
+        prev === "IN" || prev === "OUT" ? "US" : prev,
+      );
+      setTaxId("");
+    }
   }, []);
 
   const setCountryCode = useCallback((code: string) => {
-    const next = getCountryByCode(code);
-    applyCountry(next.code);
-    setCurrency(next.currency);
-  }, [applyCountry, setCurrency]);
+    const origin = toDonationOrigin(code);
+    applyOrigin(origin);
+    setCurrency(origin === "IN" ? "INR" : "USD");
+  }, [applyOrigin, setCurrency]);
 
   const applyExternalAmount = useCallback((
     amount: string,
     extCountryCode?: string,
     nextCause?: string,
   ) => {
-    // External CTAs can optionally specify country, else fallback to India
-    const nextCode = extCountryCode || "IN";
-    const nextCountry = getCountryByCode(nextCode);
-    applyCountry(nextCountry.code);
-    setCurrencyState(nextCountry.currency);
+    // External CTAs can optionally specify country; non-IN maps to Outside India
+    const origin = toDonationOrigin(extCountryCode || "IN");
+    const nextCurrency: DonationCurrency = origin === "IN" ? "INR" : "USD";
+    applyOrigin(origin);
+    setCurrencyState(nextCurrency);
 
     if (nextCause?.trim()) {
       setCause(nextCause.trim() as DonationCause);
@@ -172,8 +183,8 @@ export function useDonationForm() {
     const digits = normalizeAmountDigits(toAmountDigits(amount));
     if (!digits) return;
 
-    const presets = getCurrencyMeta(nextCountry.currency).presets;
-    if (presets.includes(digits) || (nextCountry.currency === "INR" && ["999", "5000", "10000", "18000", "25000"].includes(digits))) {
+    const presets = getCurrencyMeta(nextCurrency).presets;
+    if (presets.includes(digits) || (nextCurrency === "INR" && ["999", "5000", "10000", "18000", "25000"].includes(digits))) {
       setSelectedDigits(digits);
       setUsingCustom(false);
       setCustomDigits("");
@@ -183,8 +194,7 @@ export function useDonationForm() {
     }
     setEditingAmount(false);
     setStep(2);
-  }, [applyCountry]);
-
+  }, [applyOrigin]);
   useEffect(() => {
     const onCheckout = (event: Event) => {
       const detail = (event as CustomEvent<DonateCheckoutDetail>).detail;
@@ -251,9 +261,132 @@ export function useDonationForm() {
     setStatusTone(null);
   }, []);
 
+  const collectDonorFields = () => {
+    const name = fullName.trim();
+    const localPhone = mobile.trim();
+    const mail = email.trim();
+    const panOrAadhaar = isIndia
+      ? taxId.trim().replace(/\s/g, "").toUpperCase()
+      : "";
+    const amount = amountDigitsFromDisplay(chosenAmount);
+    const dial = phoneCountry.dial === "+" ? "+" : phoneCountry.dial;
+    const dialDigits = dial.replace(/\D/g, "");
+    const typedDigits = localPhone.replace(/\D/g, "");
+    const nationalDigits =
+      localPhone.startsWith("+") && dialDigits && typedDigits.startsWith(dialDigits)
+        ? typedDigits.slice(dialDigits.length)
+        : typedDigits;
+    const fullPhone = `${dial}${nationalDigits}`.slice(0, 20);
+
+    if (!name || !localPhone || !mail || !amount) {
+      setStatusTone("error");
+      setStatusMessage(DONATION_COPY.fillRequired);
+      return null;
+    }
+
+    if (!city.trim()) {
+      setStatusTone("error");
+      setStatusMessage("Please enter your city.");
+      return null;
+    }
+
+    if (!termsAccepted) {
+      setStatusTone("error");
+      setStatusMessage("Please agree to the Terms & Conditions to continue.");
+      return null;
+    }
+
+    if (!isValidPhone(nationalDigits, phoneCountryCode)) {
+      setStatusTone("error");
+      setStatusMessage(DONATION_COPY.invalidPhone);
+      return null;
+    }
+
+    if (isIndia && panOrAadhaar && !isValidTaxId(panOrAadhaar)) {
+      setStatusTone("error");
+      setStatusMessage(DONATION_COPY.invalidTaxId);
+      return null;
+    }
+
+    return {
+      name,
+      localPhone,
+      mail,
+      panOrAadhaar,
+      amount,
+      fullPhone,
+      nationalDigits,
+    };
+  };
+
+  const clearDonorForm = () => {
+    setFullName("");
+    setMobile("");
+    setEmail("");
+    setTaxId("");
+    setAddress("");
+    setCity("");
+    setMessage("");
+    setTermsAccepted(false);
+  };
+
+  /** Outside India: capture remittance intent in CMS (no Razorpay). */
+  const submitFcraRemittance = async () => {
+    setStatusMessage(null);
+    setStatusTone(null);
+
+    const fields = collectDonorFields();
+    if (!fields) return;
+
+    const { name, mail, amount, fullPhone } = fields;
+    const leadMessage = [
+      "FCRA remittance donation intent (Outside India)",
+      `Amount: ${currency} ${amount}`,
+      `Cause: ${cause}`,
+      `Country / origin: Outside India`,
+      `Phone country dial: ${phoneCountry.dial} (${phoneCountryCode})`,
+      address.trim() ? `Address: ${address.trim()}` : null,
+      `City: ${city.trim()}`,
+      message.trim() ? `Donor note: ${message.trim()}` : null,
+      "Please confirm FCRA bank receipt and follow up with the donor.",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    setIsPaying(true);
+    setStatusMessage(DONATION_COPY.fcraSubmitting);
+
+    try {
+      await submitFcraRemittanceLead({
+        name,
+        email: mail,
+        mobile: fullPhone.slice(0, 20),
+        message: leadMessage,
+      });
+      setStatusTone("ok");
+      setStatusMessage(DONATION_COPY.fcraSuccess);
+      clearDonorForm();
+    } catch (error) {
+      setStatusTone("error");
+      setStatusMessage(
+        error instanceof Error
+          ? error.message
+          : "Could not submit remittance details. Please try again.",
+      );
+    } finally {
+      setIsPaying(false);
+    }
+  };
+
   const paySecurely = async () => {
     setStatusMessage(null);
     setStatusTone(null);
+
+    // Overseas donors: FCRA remittance path (CMS lead), not Razorpay
+    if (!isIndia) {
+      await submitFcraRemittance();
+      return;
+    }
 
     // Backend payment gateway integration check
     if (!IS_PAYMENT_ENABLED) {
@@ -267,52 +400,10 @@ export function useDonationForm() {
       return;
     }
 
-    const name = fullName.trim();
-    const localPhone = mobile.trim();
-    const mail = email.trim();
-    const panOrAadhaar = isIndia
-      ? taxId.trim().replace(/\s/g, "").toUpperCase()
-      : "";
-    const amount = amountDigitsFromDisplay(chosenAmount);
-    const dial = phoneCountry.dial === "+" ? "+" : phoneCountry.dial;
-    // Picking a country in the phone field pre-fills its dial code into the input
-    const dialDigits = dial.replace(/\D/g, "");
-    const typedDigits = localPhone.replace(/\D/g, "");
-    const nationalDigits =
-      localPhone.startsWith("+") && dialDigits && typedDigits.startsWith(dialDigits)
-        ? typedDigits.slice(dialDigits.length)
-        : typedDigits;
-    const fullPhone = `${dial}${nationalDigits}`.slice(0, 20);
+    const fields = collectDonorFields();
+    if (!fields) return;
 
-    if (!name || !localPhone || !mail || !amount) {
-      setStatusTone("error");
-      setStatusMessage(DONATION_COPY.fillRequired);
-      return;
-    }
-
-    if (!city.trim()) {
-      setStatusTone("error");
-      setStatusMessage("Please enter your city.");
-      return;
-    }
-
-    if (!termsAccepted) {
-      setStatusTone("error");
-      setStatusMessage("Please agree to the Terms & Conditions to continue.");
-      return;
-    }
-
-    if (!isValidPhone(nationalDigits, phoneCountryCode)) {
-      setStatusTone("error");
-      setStatusMessage(DONATION_COPY.invalidPhone);
-      return;
-    }
-
-    if (isIndia && panOrAadhaar && !isValidTaxId(panOrAadhaar)) {
-      setStatusTone("error");
-      setStatusMessage(DONATION_COPY.invalidTaxId);
-      return;
-    }
+    const { name, mail, panOrAadhaar, amount, fullPhone } = fields;
 
     setIsPaying(true);
     setStatusMessage(DONATION_COPY.paying);
@@ -419,14 +510,7 @@ export function useDonationForm() {
               paymentId: response.razorpay_payment_id,
               recurringEvery: recurring?.every,
             });
-            setFullName("");
-            setMobile("");
-            setEmail("");
-            setTaxId("");
-            setAddress("");
-            setCity("");
-            setMessage("");
-            setTermsAccepted(false);
+            clearDonorForm();
           } catch (error) {
             setStatusTone("error");
             setStatusMessage(
@@ -476,6 +560,7 @@ export function useDonationForm() {
     recurring,
     editingAmount,
     countryCode,
+    donationOrigin,
     phoneCountryCode,
     phoneCountryDial: phoneCountry.dial,
     isIndia,

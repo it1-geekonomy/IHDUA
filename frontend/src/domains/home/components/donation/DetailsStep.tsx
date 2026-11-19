@@ -8,6 +8,10 @@ import {
   FormTextarea,
   PhoneInputField,
 } from "@/shared/components/form";
+import {
+  FCRA_BANK_DETAILS,
+  FCRA_HAS_PUBLIC_ACCOUNT,
+} from "@/domains/home/constants/fcraRemittance";
 import type { DonationFormState } from "./useDonationForm";
 
 type DetailsStepProps = Pick<
@@ -89,6 +93,15 @@ export function DetailsStep({
   goBackToAmount,
   paySecurely,
 }: DetailsStepProps) {
+  const fcraRows: Array<{ label: string; value: string }> = [
+    { label: "Account name", value: FCRA_BANK_DETAILS.accountName },
+    { label: "Account number", value: FCRA_BANK_DETAILS.accountNumber },
+    { label: "Bank", value: FCRA_BANK_DETAILS.bankName },
+    { label: "Branch", value: FCRA_BANK_DETAILS.branch },
+    { label: "IFSC", value: FCRA_BANK_DETAILS.ifsc },
+    { label: "SWIFT", value: FCRA_BANK_DETAILS.swift },
+  ];
+
   return (
     <div className="w-full font-figtree animate-in fade-in duration-200">
       {/* Header */}
@@ -100,9 +113,45 @@ export function DetailsStep({
           Your Details
         </h2>
         <p className="mt-1 font-figtree text-[13px] sm:text-[14px] text-[#6B7280]">
-          Tell us a little about yourself to continue your donation.
+          {isIndia
+            ? "Tell us a little about yourself to continue your donation."
+            : "Share your details for FCRA remittance. You can still change your phone dial code below."}
         </p>
       </div>
+
+      {!isIndia && (
+        <div className="mt-3 rounded-md border border-[#9739A8]/25 bg-[#FAF5FC] px-3.5 py-3">
+          <p className="text-[13px] font-semibold text-[#9739A8]">
+            {DONATION_COPY.fcraTitle}
+          </p>
+          <p className="mt-1 text-[12px] leading-snug text-[#4B5563]">
+            {DONATION_COPY.fcraBody}
+          </p>
+          <dl className="mt-3 space-y-1.5">
+            {fcraRows.map((row) => (
+              <div
+                key={row.label}
+                className="flex flex-col gap-0.5 sm:flex-row sm:gap-3"
+              >
+                <dt className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[#6B7280] sm:w-28">
+                  {row.label}
+                </dt>
+                <dd className="text-[13px] font-medium text-[#111827] break-all">
+                  {row.value}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          {!FCRA_HAS_PUBLIC_ACCOUNT && (
+            <p className="mt-2 text-[11px] leading-snug text-[#6B7280]">
+              The full account number will be confirmed by email after you
+              submit your details.
+            </p>
+          )}
+
+        </div>
+      )}
+
 
       {/* Donation Amount Summary Box */}
       <div className="mt-3 rounded-md border border-[#F3EBDD] bg-[#FDFBF7] px-3 py-2 flex items-center justify-between gap-3">
@@ -208,6 +257,7 @@ export function DetailsStep({
         {/* Row 2: Mobile Number & PAN (PAN only for donations from India) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <PhoneInputField
+            key={phoneCountryCode}
             label="Mobile Number"
             required
             value={mobile}
@@ -312,11 +362,17 @@ export function DetailsStep({
           {isPaying ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin text-[#111827]" />
-              <span className="text-[15px]">Processing Payment...</span>
+              <span className="text-[15px]">
+                {isIndia ? "Processing Payment..." : DONATION_COPY.fcraSubmitting}
+              </span>
             </>
           ) : (
             <span className="text-[15px]">
-              {recurring ? recurring.button : "Continue to Payment"}
+              {isIndia
+                ? recurring
+                  ? recurring.button
+                  : "Continue to Payment"
+                : DONATION_COPY.fcraSubmit}
             </span>
           )}
         </button>

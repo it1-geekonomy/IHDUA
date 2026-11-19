@@ -75,7 +75,18 @@ function buildCountryList(): DonationCountry[] {
 
 export const DONATION_COUNTRIES = buildCountryList();
 
-export const DEFAULT_COUNTRY = DONATION_COUNTRIES.find(c => c.code === "IN") || DONATION_COUNTRIES[0];
+/** Donation origin: India (Razorpay INR) vs overseas (FCRA remittance). */
+export type DonationOrigin = "IN" | "OUT";
+
+export const OUTSIDE_INDIA_COUNTRY: DonationCountry = {
+  code: "OUT",
+  name: "Outside India",
+  dial: "+1",
+  currency: "USD",
+};
+
+export const DEFAULT_COUNTRY =
+  DONATION_COUNTRIES.find((c) => c.code === "IN") || DONATION_COUNTRIES[0];
 export const DEFAULT_CURRENCY: DonationCurrency = "INR";
 
 export function getCurrencyMeta(code: DonationCurrency) {
@@ -85,7 +96,15 @@ export function getCurrencyMeta(code: DonationCurrency) {
 }
 
 export function getCountryByCode(code: string) {
-  return DONATION_COUNTRIES.find((c) => c.code === code) ?? DEFAULT_COUNTRY;
+  const normalized = code.trim().toUpperCase();
+  if (normalized === "OUT" || normalized === "OTHER" || normalized === "XX") {
+    return OUTSIDE_INDIA_COUNTRY;
+  }
+  return DONATION_COUNTRIES.find((c) => c.code === normalized) ?? DEFAULT_COUNTRY;
+}
+
+export function toDonationOrigin(code: string): DonationOrigin {
+  return code.trim().toUpperCase() === "IN" ? "IN" : "OUT";
 }
 
 export function formatPresetLabel(digits: string, currency: DonationCurrency) {

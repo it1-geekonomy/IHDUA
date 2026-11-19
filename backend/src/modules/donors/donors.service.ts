@@ -121,6 +121,13 @@ export class DonorsService {
   async createOrder(dto: CreateDonationOrderDto) {
     const d = this.prepareDonation(dto);
 
+    // Razorpay foreign NGO payments are disabled; overseas donors use FCRA remittance.
+    if (!d.isIndianDonation || d.currency !== 'INR') {
+      throw new BadRequestException(
+        'Online checkout is available for India (INR) only. Overseas donors should use FCRA bank remittance.',
+      );
+    }
+
     try {
       const order = await this.razorpay.createOrder({
         amountPaise: d.amountMinor,
