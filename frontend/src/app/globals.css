@@ -33,8 +33,8 @@ body {
 }
 
 /*
- * Hide GT chrome only. Do NOT hide/remove the widget host — translation
- * needs #google_translate_element + .goog-te-combo in the DOM.
+ * Hide GT top bar / tooltips. Keep #google_translate_element + combo alive.
+ * Do NOT use bare .skiptranslate — that hides our footer language toggle.
  */
 iframe.goog-te-banner-frame,
 .goog-te-banner-frame,
@@ -48,17 +48,22 @@ iframe.goog-te-banner-frame,
 .goog-tooltip:hover,
 .goog-text-highlight,
 .goog-logo-link,
+body > .skiptranslate:not(#google_translate_element),
+body > iframe.skiptranslate,
 .VIpgJd-ZVi9od-l4eHX-hSRGPd,
-.VIpgJd-ZVi9od-aZ2wEe-wOHMyf {
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf-ti6hGc {
   display: none !important;
   visibility: hidden !important;
   height: 0 !important;
+  max-height: 0 !important;
   width: 0 !important;
   border: none !important;
   box-shadow: none !important;
 }
 
-/* Keep the translate mount in DOM but off-screen (combo must remain usable). */
+/* Widget host stays in DOM (off-screen) so select.goog-te-combo still works. */
 #google_translate_element {
   position: absolute !important;
   left: -9999px !important;
@@ -73,7 +78,6 @@ iframe.goog-te-banner-frame,
   font-size: 0 !important;
 }
 
-/* GT shoves the page down for its banner — never allow that. */
 html,
 body {
   top: 0 !important;
