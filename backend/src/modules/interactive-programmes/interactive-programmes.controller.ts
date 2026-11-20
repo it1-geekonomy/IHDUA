@@ -20,6 +20,7 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -60,11 +61,32 @@ export class InteractiveProgrammesController {
   @Get('slug/:slug')
   @ApiOperation({
     summary: 'Get published interactive programme by slug (public detail)',
-    description: 'Full programme including content.',
+    description:
+      'Full programme including content, plus relatedEvents (other published programmes as card summaries).',
   })
   @ApiOkResponse({ type: InteractiveProgramme })
-  async findPublishedBySlug(@Param('slug') slug: string) {
-    const data = await this.service.findPublishedBySlug(slug);
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Number of related events to return (default: 3)',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number for related events (default: 1)',
+  })
+  async findPublishedBySlug(
+    @Param('slug') slug: string,
+    @Query('limit') limit?: string,
+    @Query('page') page?: string,
+  ) {
+    const data = await this.service.findPublishedBySlug(
+      slug,
+      limit ? parseInt(limit, 10) : undefined,
+      page ? parseInt(page, 10) : undefined,
+    );
     return { statusCode: HttpStatus.OK, data };
   }
 
