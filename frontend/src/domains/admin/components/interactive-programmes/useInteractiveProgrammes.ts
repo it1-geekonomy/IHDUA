@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useAdminAuth } from "@/domains/admin/components/AdminAuthProvider";
+import type { ContentStatus, PaginationMeta } from "@/domains/admin/lib/api";
 import {
   createInteractiveProgramme,
   deleteInteractiveProgramme,
@@ -10,10 +11,8 @@ import {
   fetchInteractiveProgrammes,
   restoreInteractiveProgramme,
   updateInteractiveProgramme,
-  type ContentStatus,
   type InteractiveProgrammeItem,
-  type PaginationMeta,
-} from "@/domains/admin/lib/api";
+} from "@/domains/admin/lib/interactiveProgrammesApi";
 import type { InteractiveProgrammeFormValues } from "./types";
 
 export function useInteractiveProgrammes() {
