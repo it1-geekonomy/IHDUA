@@ -21,6 +21,9 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
+    // Tailwind-only CSS: inline to remove Slow-4G render-blocking stylesheet waterfall.
+    // No UI/behavior change — config only.
+    inlineCss: true,
     optimizePackageImports: ["lucide-react", "framer-motion", "gsap"],
   },
   async headers() {
