@@ -206,34 +206,38 @@ export default function RuralDevelopmentSection({
             </Typography>
           </div>
         ) : (
-          /*
-            LCP is server-rendered here — not inside the client marquee.
-            That guarantees eager + fetchpriority=high in the initial HTML,
-            correctly sized via /_next/image, and unaffected by marquee JS.
-          */
           <div className="relative mx-auto h-[22rem] w-full max-w-[16rem] sm:h-[32rem] sm:max-w-sm md:mx-0 md:h-[clamp(26rem,calc(100svh_-_8rem),40rem)] md:w-[clamp(14rem,32vw,20rem)] md:max-w-none md:justify-self-end lg:h-[clamp(30rem,calc(100svh_-_8rem),48rem)] lg:w-[clamp(22rem,27vw,32rem)]">
             {lcpSrc ? (
-              <div
-                id="hero-lcp-overlay"
-                className="pointer-events-none absolute left-0 top-0 z-[2] w-[calc(50%-0.375rem)] transition-opacity duration-200 sm:w-[calc(50%-0.5rem)]"
-              >
+              <>
+                {/* Direct R2 preload — skip /_next/image hop on Slow 4G LCP. */}
+                <link
+                  rel="preload"
+                  as="image"
+                  href={lcpSrc}
+                  fetchPriority="high"
+                />
                 <div
-                  className={`relative w-full overflow-hidden rounded-full bg-[#EDE9DC] ${PILL_ASPECT}`}
+                  id="hero-lcp-overlay"
+                  className="pointer-events-none absolute left-0 top-0 z-[2] w-[calc(50%-0.375rem)] transition-opacity duration-200 sm:w-[calc(50%-0.5rem)]"
                 >
-                  <Image
-                    src={lcpSrc}
-                    alt=""
-                    fill
-                    priority
-                    fetchPriority="high"
-                    loading="eager"
-                    decoding="async"
-                    quality={50}
-                    sizes={HERO_PILL_SIZES}
-                    className="object-cover"
-                  />
+                  <div
+                    className={`relative w-full overflow-hidden rounded-full bg-[#EDE9DC] ${PILL_ASPECT}`}
+                  >
+                    <Image
+                      src={lcpSrc}
+                      alt=""
+                      fill
+                      unoptimized
+                      priority
+                      fetchPriority="high"
+                      loading="eager"
+                      decoding="async"
+                      sizes={HERO_PILL_SIZES}
+                      className="object-cover"
+                    />
+                  </div>
                 </div>
-              </div>
+              </>
             ) : null}
             <HeroMarquee
               imagesA={imagesA}
