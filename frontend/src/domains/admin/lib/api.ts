@@ -2804,6 +2804,23 @@ export interface InteractiveProgrammeItem {
   deletedAt?: string | null;
 }
 
+/** Public list card — content omitted; use fetchInteractiveProgrammeBySlug for detail. */
+export interface InteractiveProgrammePublishedListItem {
+  id: string;
+  slug: string;
+  title: string;
+  eventMediaUrl: string | null;
+  eventDate: string | null;
+  eventLocation: string | null;
+  eventTime: string | null;
+  status: ContentStatus;
+}
+
+export interface PaginatedPublishedInteractiveProgrammesResponse {
+  data: InteractiveProgrammePublishedListItem[];
+  meta: PaginationMeta;
+}
+
 export interface InteractiveProgrammeQueryParams {
   page?: number;
   limit?: number;
@@ -2870,11 +2887,25 @@ export async function fetchInteractiveProgrammeById(
   });
 }
 
-export async function fetchPublishedInteractiveProgrammes(): Promise<
-  InteractiveProgrammeItem[]
-> {
-  return apiRequest<InteractiveProgrammeItem[]>(
-    "/interactive-programmes/published",
+export async function fetchPublishedInteractiveProgrammes(
+  params: InteractiveProgrammeQueryParams = {},
+): Promise<PaginatedPublishedInteractiveProgrammesResponse> {
+  const q = new URLSearchParams();
+  if (params.page) q.set("page", String(params.page));
+  if (params.limit) q.set("limit", String(params.limit));
+  if (params.search) q.set("search", params.search);
+  const qs = q.toString();
+  return apiRequest<PaginatedPublishedInteractiveProgrammesResponse>(
+    `/interactive-programmes/published${qs ? `?${qs}` : ""}`,
+    { method: "GET", isPublic: true },
+  );
+}
+
+export async function fetchInteractiveProgrammeBySlug(
+  slug: string,
+): Promise<InteractiveProgrammeItem> {
+  return apiRequest<InteractiveProgrammeItem>(
+    `/interactive-programmes/slug/${encodeURIComponent(slug)}`,
     { method: "GET", isPublic: true },
   );
 }

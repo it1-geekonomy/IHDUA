@@ -45,10 +45,26 @@ export class InteractiveProgrammesController {
 
   @Public()
   @Get('published')
-  @ApiOperation({ summary: 'Published interactive programmes (public)' })
-  @ApiOkResponse({ type: [InteractiveProgramme] })
-  async findPublished() {
-    const data = await this.service.findPublished();
+  @ApiOperation({
+    summary: 'Published interactive programmes (public list)',
+    description:
+      'Paginated card summary only (id, slug, title, media, date, location, time, status). Use GET /interactive-programmes/slug/:slug for full detail including content.',
+  })
+  @ApiOkResponse({ description: 'Paginated published programme cards' })
+  async findPublished(@Query() query: PaginationQueryDto) {
+    const result = await this.service.findPublished(query);
+    return { statusCode: HttpStatus.OK, ...result };
+  }
+
+  @Public()
+  @Get('slug/:slug')
+  @ApiOperation({
+    summary: 'Get published interactive programme by slug (public detail)',
+    description: 'Full programme including content.',
+  })
+  @ApiOkResponse({ type: InteractiveProgramme })
+  async findPublishedBySlug(@Param('slug') slug: string) {
+    const data = await this.service.findPublishedBySlug(slug);
     return { statusCode: HttpStatus.OK, data };
   }
 

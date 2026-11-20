@@ -35,6 +35,17 @@ def rerank(hits: list[dict], intents: set[str], question: str = "") -> list[dict
             if question and _title_in_question(title, question):
                 bonus += 0.16
 
+        # Prefer CMS interactive programmes / events when named or event-related
+        if table in ("interactive_programmes", "interactive_programmes_index"):
+            bonus += 0.05
+            if any(
+                k in (question or "").lower()
+                for k in ("event", "programme", "program", "camp", "workshop")
+            ):
+                bonus += 0.06
+            if question and _title_in_question(title, question):
+                bonus += 0.16
+
         # Intent tie-breaking bonus (gentle 0.06, never overwhelms true semantic similarity)
         if "education" in intents and any(k in title or k in content for k in ("school", "vidyashale", "adarsha")):
             # Don't let school initiative pages beat a named funding project

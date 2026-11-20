@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ChatbotSyncService } from '../../common/chatbot-sync/chatbot-sync.service';
 import { PaginationQueryDto } from '../../common/dto/pagination-query.dto';
 import { ContentStatus } from '../../common/enums/content-status.enum';
 import {
@@ -23,6 +24,29 @@ import { InteractiveProgramme } from './entities/interactive-programme.entity';
 
 const CDN_FOLDER = 'interactive-programmes';
 
+/** Public list card — no content (use GET slug/:slug for full detail). */
+export type InteractiveProgrammePublishedListItem = {
+  id: string;
+  slug: string;
+  title: string;
+  eventMediaUrl: string | null;
+  eventDate: string | null;
+  eventLocation: string | null;
+  eventTime: string | null;
+  status: ContentStatus;
+};
+
+const PUBLISHED_LIST_COLUMNS = [
+  'id',
+  'slug',
+  'title',
+  'eventMediaUrl',
+  'eventDate',
+  'eventLocation',
+  'eventTime',
+  'status',
+] as const;
+
 export interface InteractiveProgrammeFiles {
   eventMedia?: CdnFile[];
 }
@@ -39,6 +63,7 @@ export class InteractiveProgrammesService {
     @InjectRepository(InteractiveProgramme)
     private readonly repo: Repository<InteractiveProgramme>,
     private readonly cdn: CdnService,
+    private readonly chatbotSync: ChatbotSyncService,
   ) {}
 
   async create(
@@ -73,6 +98,8 @@ export class InteractiveProgrammesService {
       this.logger.log(
         `Created interactive programme ${saved.slug} (${saved.id})`,
       );
+      this.chatbotSync.notify('interactive_programmes', saved.id);
+      this.chatbotSync.notify('interactive_programmes_index', 'all');
       return saved;
     } catch (err) {
       if (mediaFile && eventMediaUrl) {
@@ -82,11 +109,58 @@ export class InteractiveProgrammesService {
     }
   }
 
-  async findPublished(): Promise<InteractiveProgramme[]> {
-    return this.repo.find({
-      where: { status: ContentStatus.PUBLISHED },
-      order: { eventDate: 'ASC', createdAt: 'DESC' },
+  async findPublished(
+    query: PaginationQueryDto = {},
+  ): Promise<PaginatedResult<InteractiveProgrammePublishedListItem>> {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+
+    const qb = this.repo
+      .createQueryBuilder('entity')
+      .select(PUBLISHED_LIST_COLUMNS.map((column) => `entity.${column}`))
+      .where('entity.status = :status', { status: ContentStatus.PUBLISHED })
+      .orderBy('entity.eventDate', 'ASC', 'NULLS LAST')
+      .addOrderBy('entity.createdAt', 'DESC');
+
+    if (query.search) {
+      qb.andWhere(
+        '(entity.title ILIKE :search OR entity.slug ILIKE :search OR entity.eventLocation ILIKE :search)',
+        { search: `%${query.search}%` },
+      );
+    }
+
+    const total = await qb.clone().getCount();
+    const entities = await qb
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getMany();
+
+    const data: InteractiveProgrammePublishedListItem[] = entities.map(
+      (entity) => ({
+        id: entity.id,
+        slug: entity.slug,
+        title: entity.title,
+        eventMediaUrl: entity.eventMediaUrl,
+        eventDate: entity.eventDate,
+        eventLocation: entity.eventLocation,
+        eventTime: entity.eventTime,
+        status: entity.status,
+      }),
+    );
+
+    return buildPaginatedResult(data, total, page, limit);
+  }
+
+  async findPublishedBySlug(slug: string): Promise<InteractiveProgramme> {
+    const entity = await this.repo.findOne({
+      where: { slug, status: ContentStatus.PUBLISHED },
     });
+    if (!entity) {
+      throw new NotFoundException(
+        `Published interactive programme not found for slug "${slug}".`,
+      );
+    }
+    return entity;
   }
 
   async findAll(
@@ -174,17 +248,29 @@ export class InteractiveProgrammesService {
       entity.eventMediaUrl = dto.eventMediaUrl || null;
     }
 
-    return this.repo.save(entity);
+    const saved = await this.repo.save(entity);
+    this.chatbotSync.notify('interactive_programmes', saved.id);
+    this.chatbotSync.notify('interactive_programmes_index', 'all');
+    return saved;
   }
 
   async remove(id: string): Promise<void> {
     const entity = await this.findOne(id);
     await this.repo.softRemove(entity);
     this.logger.log(`Soft-deleted interactive programme ${id}`);
+    this.chatbotSync.notify('interactive_programmes', id, 'delete');
+    this.chatbotSync.notify('interactive_programmes_index', 'all');
   }
 
   async restore(id: string): Promise<InteractiveProgramme> {
-    return restoreSoftDeleted(this.repo, id, 'InteractiveProgramme');
+    const restored = await restoreSoftDeleted(
+      this.repo,
+      id,
+      'InteractiveProgramme',
+    );
+    this.chatbotSync.notify('interactive_programmes', restored.id);
+    this.chatbotSync.notify('interactive_programmes_index', 'all');
+    return restored;
   }
 
   private async assertSlugAvailable(slug: string, excludeId?: string) {
