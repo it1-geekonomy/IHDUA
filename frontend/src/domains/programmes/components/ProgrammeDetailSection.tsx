@@ -150,7 +150,7 @@ export default function ProgrammeDetailSection({ programme, related }: Props) {
 
             <ShareThisBar
               className="mt-8 sm:mt-10"
-              label="Share this event"
+              label="Share this programme"
               title={programme.title}
               url={absoluteUrl(`/programmes/${programme.slug}`)}
             />
