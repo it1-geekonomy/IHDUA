@@ -179,3 +179,10 @@ html[lang="en"]:not(.translated-ltr):not(.translated-rtl)
   [data-lang-knob] {
   left: 0.125rem !important;
 }
+/* Mobile: hide footer language switch while chatbot panel is open (it was z-60 over the chat input). */
+@media (max-width: 1023px) {
+  body.ihdua-chat-open [data-lang-toggle] {
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
