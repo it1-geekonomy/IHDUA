@@ -38,14 +38,32 @@ function StatusBadge({ status }: { status: ContentStatus }) {
   );
 }
 
-function formatDate(value: string | null) {
-  if (!value) return "—";
-  return value.slice(0, 10);
+function formatDisplayDate(dateStr: string | null) {
+  if (!dateStr) return "Not set";
+  try {
+    return new Date(dateStr).toLocaleDateString("en-IN", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
 }
 
-function formatTime(value: string | null) {
+function formatDisplayTime(value: string | null) {
   if (!value) return "";
-  return value.slice(0, 5);
+  const hhmm = value.slice(0, 5);
+  const [hStr, mStr] = hhmm.split(":");
+  const h = Number(hStr);
+  const m = Number(mStr);
+  if (Number.isNaN(h) || Number.isNaN(m)) return hhmm;
+  const d = new Date();
+  d.setHours(h, m, 0, 0);
+  return d.toLocaleTimeString("en-IN", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 export function InteractiveProgrammesManager() {
@@ -56,10 +74,11 @@ export function InteractiveProgrammesManager() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="font-lora text-2xl text-[#0F1C1D]">
-            Interactive Programmes
+            Programmes
           </h1>
           <p className="mt-1 text-sm text-[#5F6C6D]">
-            Manage events and interactive programmes ({m.meta.total} total).
+            Manage programmes and events shown on the website ({m.meta.total}{" "}
+            total).
           </p>
         </div>
         <div className="flex gap-2">
@@ -173,11 +192,11 @@ export function InteractiveProgrammesManager() {
                       <p className="text-[10px] text-[#5F6C6D]">{item.slug}</p>
                     </td>
                     <td className="px-4 py-3">
-                      {formatDate(item.eventDate)}
+                      <span>{formatDisplayDate(item.eventDate)}</span>
                       {item.eventTime ? (
                         <span className="text-[#5F6C6D]">
                           {" "}
-                          · {formatTime(item.eventTime)}
+                          · {formatDisplayTime(item.eventTime)}
                         </span>
                       ) : null}
                     </td>

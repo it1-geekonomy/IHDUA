@@ -7,6 +7,7 @@ export const FOOTER_WHAT_WE_DO: FooterLink[] = [
   { label: "Home", href: "/" },
   { label: "About us", href: "/about" },
   { label: "Our Impact", href: "/#our-impact" },
+  { label: "Programmes", href: "/programmes" },
   { label: "Blogs & Stories", href: "/blog" },
   { label: "Contact Us", href: "/contact" },
 ];
