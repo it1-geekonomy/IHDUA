@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Typography from "@/lib/Typography";
 import ProgrammeCard from "@/domains/programmes/components/ProgrammeCard";
+import ShareThisBar from "@/shared/components/ShareThisBar";
+import { absoluteUrl } from "@/shared/lib/siteUrl";
 import {
   formatProgrammeDetailDate,
   formatProgrammeTime,
@@ -145,6 +147,13 @@ export default function ProgrammeDetailSection({ programme, related }: Props) {
             <div className="mt-6 sm:mt-8">
               <ContentBody content={programme.content} />
             </div>
+
+            <ShareThisBar
+              className="mt-8 sm:mt-10"
+              label="Share this event"
+              title={programme.title}
+              url={absoluteUrl(`/programmes/${programme.slug}`)}
+            />
           </div>
 
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-neutral-100 lg:aspect-auto lg:min-h-[22rem]">
