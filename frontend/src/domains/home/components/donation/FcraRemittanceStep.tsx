@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Mail, Phone } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+// TEMP: restore FCRA UI imports when international remittance goes live
+// import { Mail, Phone } from "lucide-react";
 import { DONATION_COPY } from "@/shared/constants/donation";
-import {
-  FCRA_BANK_DETAILS,
-  FCRA_CONTACT_EMAIL,
-  FCRA_DONOR_DETAIL_FIELDS,
-  FCRA_HAS_PUBLIC_ACCOUNT,
-} from "@/domains/home/constants/fcraRemittance";
+// import {
+//   FCRA_BANK_DETAILS,
+//   FCRA_CONTACT_EMAIL,
+//   FCRA_DONOR_DETAIL_FIELDS,
+//   FCRA_HAS_PUBLIC_ACCOUNT,
+// } from "@/domains/home/constants/fcraRemittance";
 
 type Props = {
   chosenAmount?: string;
@@ -16,20 +18,56 @@ type Props = {
   onBack: () => void;
 };
 
-const ACCOUNT_ROWS: Array<{ label: string; value: string }> = [
-  { label: "Account name", value: FCRA_BANK_DETAILS.accountName },
-  {
-    label: "SBI Bank FCRA Account number",
-    value: FCRA_BANK_DETAILS.accountNumber,
-  },
-  { label: "IFSC Code", value: FCRA_BANK_DETAILS.ifsc },
-  { label: "Address", value: FCRA_BANK_DETAILS.branchAddress },
-  { label: "SWIFT Code of SBI Bank", value: FCRA_BANK_DETAILS.swift },
-  { label: "Branch Code", value: FCRA_BANK_DETAILS.branchCode },
-  { label: "Sort Code", value: FCRA_BANK_DETAILS.sortCode },
-];
+/**
+ * Outside India path.
+ * TEMPORARY: FCRA account details are not live yet — show “in progress” only.
+ * Uncomment the FCRA block below when account details are ready for production.
+ */
+export function FcraRemittanceStep({ onBack }: Props) {
+  // --- TEMP: hide full FCRA remittance UI until account details are ready ---
+  return (
+    <div className="w-full font-figtree animate-in fade-in duration-200">
+      <button
+        type="button"
+        onClick={onBack}
+        className="mb-3 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#9739A8] hover:opacity-80 cursor-pointer"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Back
+      </button>
 
-export function FcraRemittanceStep({ chosenAmount, cause, onBack }: Props) {
+      <p className="text-[11px] sm:text-xs font-bold tracking-[0.15em] text-[#9739A8] uppercase">
+        Outside India
+      </p>
+      <h2 className="mt-1 font-lora text-[24px] sm:text-[30px] font-normal text-[#111827] leading-tight">
+        {DONATION_COPY.fcraPendingTitle}
+      </h2>
+      <p className="mt-3 text-[14px] sm:text-[15px] leading-relaxed text-[#4B5563]">
+        {DONATION_COPY.fcraPendingBody}
+      </p>
+      <p className="mt-2 text-[13px] leading-relaxed text-[#6B7280]">
+        {DONATION_COPY.fcraPendingHint}
+      </p>
+
+      <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <button
+          type="button"
+          onClick={onBack}
+          className="inline-flex items-center justify-center rounded-md bg-[#FFD638] px-4 py-3 text-[14px] font-semibold text-[#111827] hover:bg-[#FACC15] transition-colors cursor-pointer"
+        >
+          Donate from India
+        </button>
+        <Link
+          href="/contact"
+          className="inline-flex items-center justify-center rounded-md border border-[#9739A8] px-4 py-3 text-[14px] font-semibold text-[#9739A8] hover:bg-[#FAF5FC] transition-colors"
+        >
+          Contact Us
+        </Link>
+      </div>
+    </div>
+  );
+
+  /* --- LIVE FCRA remittance UI (keep for later; do not delete) ---
   const mailSubject = encodeURIComponent("FCRA / overseas donation — IHDUA");
   const mailBody = encodeURIComponent(
     [
@@ -52,6 +90,19 @@ export function FcraRemittanceStep({ chosenAmount, cause, onBack }: Props) {
       .join("\n"),
   );
   const mailtoHref = `mailto:${FCRA_CONTACT_EMAIL}?subject=${mailSubject}&body=${mailBody}`;
+
+  const ACCOUNT_ROWS: Array<{ label: string; value: string }> = [
+    { label: "Account name", value: FCRA_BANK_DETAILS.accountName },
+    {
+      label: "SBI Bank FCRA Account number",
+      value: FCRA_BANK_DETAILS.accountNumber,
+    },
+    { label: "IFSC Code", value: FCRA_BANK_DETAILS.ifsc },
+    { label: "Address", value: FCRA_BANK_DETAILS.branchAddress },
+    { label: "SWIFT Code of SBI Bank", value: FCRA_BANK_DETAILS.swift },
+    { label: "Branch Code", value: FCRA_BANK_DETAILS.branchCode },
+    { label: "Sort Code", value: FCRA_BANK_DETAILS.sortCode },
+  ];
 
   return (
     <div className="w-full font-figtree animate-in fade-in duration-200">
@@ -166,4 +217,5 @@ export function FcraRemittanceStep({ chosenAmount, cause, onBack }: Props) {
       </div>
     </div>
   );
+  --- end LIVE FCRA UI --- */
 }
