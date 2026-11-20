@@ -31,6 +31,11 @@ export interface InteractiveProgrammePublishedListItem {
   status: ContentStatus;
 }
 
+/** Slug detail response — full programme + related event cards. */
+export interface InteractiveProgrammeDetailItem extends InteractiveProgrammeItem {
+  relatedEvents: InteractiveProgrammePublishedListItem[];
+}
+
 export interface PaginatedPublishedInteractiveProgrammesResponse {
   data: InteractiveProgrammePublishedListItem[];
   meta: PaginationMeta;
@@ -119,9 +124,14 @@ export async function fetchPublishedInteractiveProgrammes(
 
 export async function fetchInteractiveProgrammeBySlug(
   slug: string,
-): Promise<InteractiveProgrammeItem> {
-  return apiRequest<InteractiveProgrammeItem>(
-    `/interactive-programmes/slug/${encodeURIComponent(slug)}`,
+  params: { limit?: number; page?: number } = {},
+): Promise<InteractiveProgrammeDetailItem> {
+  const q = new URLSearchParams();
+  if (params.limit) q.set("limit", String(params.limit));
+  if (params.page) q.set("page", String(params.page));
+  const qs = q.toString();
+  return apiRequest<InteractiveProgrammeDetailItem>(
+    `/interactive-programmes/slug/${encodeURIComponent(slug)}${qs ? `?${qs}` : ""}`,
     { method: "GET", isPublic: true },
   );
 }
