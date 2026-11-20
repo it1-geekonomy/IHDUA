@@ -190,7 +190,7 @@ export function PurpleStatsCard({
       <div className="relative w-full">
         <p
           className={cn(
-            "mb-1 font-figtree font-normal text-white/90",
+            "mb-1 font-figtree font-normal text-white",
             compact ? "text-[11px]" : "text-[12px] xl:text-[14px]"
           )}
         >

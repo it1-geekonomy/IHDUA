@@ -19,7 +19,7 @@ function FooterHeading({ children }: { children: React.ReactNode }) {
   return (
     <Typography
       variant="body-md"
-      className="font-figtree font-bold text-[#FFD638] whitespace-nowrap"
+      className="font-figtree font-bold whitespace-nowrap text-white"
     >
       {children}
     </Typography>
