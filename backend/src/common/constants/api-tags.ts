@@ -21,4 +21,5 @@ export const ApiTagsConst = {
   NEWSLETTER_SUBSCRIBERS: 'newsletter-subscribers',
   HOME_BANNERS: 'home-banners',
   FUNDING_PROJECTS: 'funding-projects',
+  INTERACTIVE_PROGRAMMES: 'interactive-programmes',
 } as const;

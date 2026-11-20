@@ -89,6 +89,12 @@ export const DONATION_COPY = {
     "When a forex transfer is initiated, INR should not be chosen. Use a currency other than INR (for example USD, EUR, AUD or GBP).",
   fcraPolicyNote:
     "The details below are mandatory. Your donation cannot be processed until you send us this information. We do not encourage anonymous donations as a policy.",
+  // TEMP: shown instead of FCRA details until overseas account is ready for live
+  fcraPendingTitle: "International payments are in progress",
+  fcraPendingBody:
+    "Overseas donations are being set up and are not available on the website yet. Please check back soon, or contact us if you would like to contribute from outside India.",
+  fcraPendingHint:
+    "For now, online donations are available for donors in India via Razorpay.",
   paySecurely: "Pay Securely",
   paying: "Opening secure checkout…",
   verifying: "Confirming payment…",

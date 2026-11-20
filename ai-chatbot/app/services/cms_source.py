@@ -327,6 +327,78 @@ def _funding_projects_index_doc(rows: list[dict]) -> dict | None:
     }
 
 
+def _format_event_date(value) -> str:
+    if not value:
+        return ""
+    try:
+        return value.strftime("%d %B %Y")
+    except AttributeError:
+        return str(value)
+
+
+def _format_event_time(value) -> str:
+    if not value:
+        return ""
+    text_value = str(value)
+    return text_value[:5] if len(text_value) >= 5 else text_value
+
+
+def _interactive_programme_doc(row: dict) -> dict:
+    title = row["title"]
+    # Public programme pages are not shipped yet — point visitors to Contact Us.
+    url = "/contact"
+    parts = [_header(title, "Interactive Programme", url, row)]
+    if row.get("event_date"):
+        parts.append(f"Event date: {_format_event_date(row['event_date'])}\n")
+    if row.get("event_time"):
+        parts.append(f"Event time: {_format_event_time(row['event_time'])}\n")
+    if row.get("event_location"):
+        parts.append(f"Location: {row['event_location']}\n")
+    if row.get("content"):
+        parts.append(f"\n{plain_text(row['content'])}\n")
+    parts.append(
+        "\nFor registration or more details about this interactive programme / event, "
+        "contact IHDUA via the Contact Us page at /contact.\n"
+    )
+    return {
+        "table": "interactive_programmes",
+        "source_id": str(row["id"]),
+        "title": title,
+        "url": url,
+        "category": "Interactive Programme",
+        "slug": row.get("slug") or "",
+        "content": "".join(parts).strip(),
+    }
+
+
+def _interactive_programmes_index_doc(rows: list[dict]) -> dict | None:
+    """Short index of published interactive programmes for list-style questions."""
+    if not rows:
+        return None
+    title = "IHDUA Interactive Programmes & Events"
+    lines = []
+    for r in rows:
+        line = f"• {r['title']}"
+        date_label = _format_event_date(r.get("event_date"))
+        location = (r.get("event_location") or "").strip()
+        extras = [p for p in (date_label, location) if p]
+        if extras:
+            line += f" — {', '.join(extras)}"
+        lines.append(line)
+    return {
+        "table": "interactive_programmes_index",
+        "source_id": AGGREGATE_ID,
+        "title": title,
+        "url": "/contact",
+        "category": "Interactive Programme",
+        "content": _header(title, "Interactive Programme", "/contact", _latest(rows))
+        + "Published interactive programmes and events managed in the IHDUA CMS.\n"
+        + "\n".join(lines)
+        + "\n\nAsk about a programme by name for date, location and details, "
+        "or visit /contact to get in touch with IHDUA.",
+    }
+
+
 _PUBLISHED = "deleted_at IS NULL AND status = 'published'"
 
 # Tables indexed one document per row: (query, id column, builder).
@@ -365,6 +437,13 @@ _ROW_TABLES: dict[str, tuple[str, str, Callable[[dict], dict]]] = {
         "id",
         _funding_project_doc,
     ),
+    "interactive_programmes": (
+        "SELECT id, title, slug, event_date, event_location, event_time, content, updated_at "
+        "FROM interactive_programmes "
+        f"WHERE {_PUBLISHED} ORDER BY event_date NULLS LAST, created_at DESC",
+        "id",
+        _interactive_programme_doc,
+    ),
 }
 
 # Small tables indexed as one combined document so "list all ..." questions get every row.
@@ -398,6 +477,11 @@ _AGGREGATE_TABLES: dict[str, tuple[str, Callable[[list[dict]], dict | None]]] = 
         "SELECT title, total_label, updated_at FROM funding_projects "
         f"WHERE {_PUBLISHED} ORDER BY sort_order, project_number, created_at",
         _funding_projects_index_doc,
+    ),
+    "interactive_programmes_index": (
+        "SELECT title, event_date, event_location, updated_at FROM interactive_programmes "
+        f"WHERE {_PUBLISHED} ORDER BY event_date NULLS LAST, created_at DESC",
+        _interactive_programmes_index_doc,
     ),
 }
 
