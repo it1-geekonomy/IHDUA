@@ -76,7 +76,7 @@ export function DonationSelectField({
 
 export function DonationTrustNote() {
   return (
-    <p className="text-center font-figtree text-[12px] text-[#8A847A]">
+    <p className="text-center font-figtree text-[12px] text-[#5F6C6D]">
       {DONATION_COPY.trustLine}
     </p>
   );

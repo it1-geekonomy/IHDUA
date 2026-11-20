@@ -6,6 +6,7 @@ import { IMPACT_ITEMS } from "@/domains/home/constants/overlayform";
 import { useDonationForm } from "@/domains/home/components/donation/useDonationForm";
 import { DetailsStep } from "@/domains/home/components/donation/DetailsStep";
 import { AmountStep } from "@/domains/home/components/donation/AmountStep";
+import { FcraRemittanceStep } from "@/domains/home/components/donation/FcraRemittanceStep";
 import { DonationReceiptModal } from "@/domains/home/components/donation/DonationReceiptModal";
 import Typography from "@/lib/Typography";
 import {
@@ -91,6 +92,7 @@ function OverlayAmountSection({ form, rise, delay }: OverlayAmountProps) {
         <Typography
           id="overlayform-title"
           variant="h4"
+          as="h2"
           className="font-regular font-lora leading-[1.2] text-[#00191B] text-[22px] sm:text-[26px]"
         >
           Strengthening Rural Lives, Building Better Futures
@@ -181,20 +183,30 @@ export default function Overlayform({ onClose }: OverlayformProps) {
 
       {form.step === 2 ? (
         <div
-          className="relative w-full max-w-[620px] bg-white rounded-xl shadow-2xl p-6 sm:p-9 my-auto overflow-y-auto max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] animate-in fade-in zoom-in-95 duration-200"
+          className={`relative w-full bg-white rounded-xl shadow-2xl p-6 sm:p-9 my-auto overflow-y-auto max-h-[calc(100vh-2rem)] max-h-[calc(100dvh-2rem)] animate-in fade-in zoom-in-95 duration-200 ${
+            form.isIndia ? "max-w-[620px]" : "max-w-[720px]"
+          }`}
           style={exiting ? { opacity: 0, transform: "scale(0.98)" } : undefined}
         >
           <button
             type="button"
             aria-label="Close"
             onClick={beginClose}
-            className="absolute right-5 top-5 p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
+            className="absolute right-5 top-5 z-10 p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors cursor-pointer"
           >
             <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" stroke="currentColor" strokeWidth={2}>
               <path d="M6 6l12 12M18 6 6 18" strokeLinecap="round" />
             </svg>
           </button>
-          <DetailsStep {...form} />
+          {form.isIndia ? (
+            <DetailsStep {...form} />
+          ) : (
+            <FcraRemittanceStep
+              chosenAmount={form.chosenAmount}
+              cause={form.cause}
+              onBack={form.goBackToAmount}
+            />
+          )}
         </div>
       ) : (
         <div

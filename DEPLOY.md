@@ -169,12 +169,60 @@ docker compose --env-file .env.prod -f docker-compose.prod.yml build frontend
 docker compose --env-file .env.prod -f docker-compose.prod.yml up -d frontend nginx
 ```
 
-## When you get a domain later
+## Domain + HTTPS (Let's Encrypt)
 
-1. Point DNS A record to `YOUR_IP`.  
-2. Update `PUBLIC_URL=https://yourdomain` and rebuild frontend.  
-3. Issue certs with certbot (profile in compose) and switch `nginx/default.conf`
-   to HTTPS (same pattern as HCG Foundation).
+Prerequisites: DNS `A` for `ihdua.org` (and `www` CNAME) already points at the Droplet.
+
+`nginx/default.conf` always serves the site on **HTTP :80** (plus ACME).  
+`nginx/https.conf` is created by `deploy.sh` **only after** certs exist — enabling
+HTTPS before certs makes nginx crash (that is what broke the nginx-only deploy).
+
+**1. Fix / keep HTTP working** (if nginx is crash-looping on missing certs):
+
+```bash
+cd /opt/ihdua
+rm -f nginx/https.conf
+# ensure default.conf is the HTTP+ACME version from git
+git checkout -- nginx/default.conf
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --force-recreate nginx
+curl -fsS -o /dev/null http://localhost/ && echo OK
+```
+
+**2. Issue the certificate** (HTTP ACME must work first):
+
+```bash
+mkdir -p certbot/www certbot/conf
+
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile certbot run --rm certbot \
+  certonly --webroot -w /var/www/certbot \
+  -d ihdua.org -d www.ihdua.org \
+  --email info@ihdua.org --agree-tos --no-eff-email
+```
+
+**3. Enable HTTPS nginx + reload** (or just re-run `bash deploy.sh`):
+
+```bash
+cp nginx/https.conf.example nginx/https.conf
+docker compose --env-file .env.prod -f docker-compose.prod.yml exec nginx nginx -t
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --force-recreate nginx
+```
+
+**4. Point the app at HTTPS and rebuild frontend** (`NEXT_PUBLIC_*` are build-time):
+
+```bash
+# In .env.prod:
+# PUBLIC_URL=https://ihdua.org
+
+docker compose --env-file .env.prod -f docker-compose.prod.yml build frontend
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d frontend nginx
+```
+
+**Renewal** (cron or manual every ~60 days):
+
+```bash
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile certbot run --rm certbot renew
+docker compose --env-file .env.prod -f docker-compose.prod.yml exec nginx nginx -s reload
+```
 
 ## Useful commands
 

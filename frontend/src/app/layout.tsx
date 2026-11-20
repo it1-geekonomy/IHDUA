@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { cookies, headers } from "next/headers";
 import { figtree, lora, manrope } from "@/lib/fonts";
 import { SimpleLanguageProvider } from "@/context/SimpleLanguageContext";
-import { GT_BOOT_SCRIPT, GT_PENDING_STYLE } from "@/utils/googleTranslate";
+import { GT_BOOT_SCRIPT } from "@/utils/googleTranslate";
 import { LANGUAGE_STORAGE_KEY } from "@/utils/languageHelper";
 import { getSiteOrigin } from "@/shared/lib/siteUrl";
 import "./globals.css";
@@ -12,6 +13,8 @@ export const metadata: Metadata = {
   title: "IHDUA | Rural Development & Community Empowerment India",
   description:
     "IHDUA drives rural development through women empowerment, education, skill training, healthcare and sustainable initiatives to build stronger communities.",
+  // Do NOT set google=notranslate — it blocks the Translate Element on mobile.
+  // Chrome’s translate bar is hidden in globals.css instead.
   alternates: {
     canonical: "/",
   },
@@ -64,11 +67,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       suppressHydrationWarning
       className={`${figtree.variable} ${lora.variable} ${manrope.variable}`}
     >
-      <head>
-        <style dangerouslySetInnerHTML={{ __html: GT_PENDING_STYLE }} />
-        <script dangerouslySetInnerHTML={{ __html: GT_BOOT_SCRIPT }} />
-      </head>
+      {/* Do not add a manual <head> — Next owns it; a closed head dumps metadata into <body>. */}
       <body className="font-sans antialiased" suppressHydrationWarning>
+        {/* beforeInteractive: language toggle/cookies must be ready on first tap */}
+        <Script
+          id="gt-boot"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: GT_BOOT_SCRIPT }}
+        />
         <SimpleLanguageProvider>{children}</SimpleLanguageProvider>
       </body>
     </html>

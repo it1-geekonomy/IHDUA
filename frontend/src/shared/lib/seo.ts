@@ -36,11 +36,11 @@ const PAGE_SEO: Record<string, PageSeo> = {
       "Read IHDUA's terms and conditions to understand the rules, responsibilities and guidelines for accessing and using our website and services.",
     canonical: "/terms-and-conditions",
   },
-  "/blogs": {
+  "/blog": {
     title: "IHDUA Blogs | Rural Development, Education & Empowerment",
     description:
       "Explore IHDUA blogs for insights on rural development, women empowerment, education, healthcare, skill development and sustainable community growth.",
-    canonical: "/blogs",
+    canonical: "/blog",
   },
   "/donate": {
     title: "Donate to IHDUA | Support Rural Development & Empowerment",
@@ -102,17 +102,11 @@ const PAGE_SEO: Record<string, PageSeo> = {
       "IHDUA's women-focused initiatives promoting education, skill development, financial independence and better livelihood opportunities for rural women in India.",
     canonical: "/women",
   },
-  "/farmer": {
-    title: "Farmer Empowerment & Sustainable Agriculture | IHDUA",
-    description:
-      "IHDUA's farmer initiatives promoting sustainable agriculture, organic farming, modern techniques and better livelihood opportunities for rural farmers in India.",
-    canonical: "/farmer",
-  },
   "/farmers": {
     title: "Farmer Empowerment & Sustainable Agriculture | IHDUA",
     description:
       "IHDUA's farmer initiatives promoting sustainable agriculture, organic farming, modern techniques and better livelihood opportunities for rural farmers in India.",
-    canonical: "/farmer",
+    canonical: "/farmers",
   },
   "/youth": {
     title: "Youth Empowerment & Skill Development Programs | IHDUA",
@@ -198,49 +192,49 @@ const PAGE_SEO: Record<string, PageSeo> = {
       "Explore the Vinayaka Jnana Vidyashale gallery featuring school events, student activities, classroom experiences and memorable moments from school life.",
     canonical: "/vinayaka-jnana-vidyashale-mysuru/gallery",
   },
-  "/blogs/womens-leadership-development-programme": {
+  "/blog/womens-leadership-development-programme": {
     title: "Women's Leadership Development Programme | IHDUA",
     description:
       "how IHDUA's Women's Leadership Development Programme empowers rural women with leadership skills, confidence and opportunities to social change.",
-    canonical: "/blogs/womens-leadership-development-programme",
+    canonical: "/blog/womens-leadership-development-programme",
   },
-  "/blogs/implementation-in-bettegowdanahundi-village": {
+  "/blog/implementation-in-bettegowdanahundi-village": {
     title: "Village Development Initiative in Bettegowdanahundi | IHDUA",
     description:
       "IHDUA's development initiatives in Bettegowdanahundi village, promoting rural empowerment, community participation and sustainable development.",
-    canonical: "/blogs/implementation-in-bettegowdanahundi-village",
+    canonical: "/blog/implementation-in-bettegowdanahundi-village",
   },
-  "/blogs/skill-development-programmes-current-projects": {
+  "/blog/skill-development-programmes-current-projects": {
     title: "Skill Development Programmes & Current Projects | IHDUA",
     description:
       "IHDUA's skill development programmes and current projects focused on vocational training, employment opportunities and rural community empowerment.",
-    canonical: "/blogs/skill-development-programmes-current-projects",
+    canonical: "/blog/skill-development-programmes-current-projects",
   },
-  "/blogs/womens-leadership-and-community-participation": {
+  "/blog/womens-leadership-and-community-participation": {
     title: "Women's Leadership & Community Participation | IHDUA",
     description:
       "how IHDUA promotes women's leadership and community participation through empowerment initiatives, skill development and inclusive rural development.",
-    canonical: "/blogs/womens-leadership-and-community-participation",
+    canonical: "/blog/womens-leadership-and-community-participation",
   },
-  "/blogs/skill-development-and-alternative-livelihood-opportunities": {
+  "/blog/skill-development-and-alternative-livelihood-opportunities": {
     title: "Skill Development & Alternative Livelihoods | IHDUA",
     description:
       "IHDUA's skill development initiatives creating alternative livelihood opportunities through vocational training, income generation and rural empowerment.",
-    canonical: "/blogs/skill-development-and-alternative-livelihood-opportunities",
+    canonical: "/blog/skill-development-and-alternative-livelihood-opportunities",
   },
-  "/blogs/economic-empowerment-through-self-help-groups": {
+  "/blog/economic-empowerment-through-self-help-groups": {
     title: "Economic Empowerment Through Self Help Groups | IHDUA",
     description:
       "how IHDUA empowers rural women through self-help groups, promoting financial inclusion, collective savings, entrepreneurship and economic independence.",
-    canonical: "/blogs/economic-empowerment-through-self-help-groups",
+    canonical: "/blog/economic-empowerment-through-self-help-groups",
   },
-  "/blogs/international-human-development-and-upliftment-academy-ihdua-organizational-profile-and-35-years-of-community-development":
+  "/blog/international-human-development-and-upliftment-academy-ihdua-organizational-profile-and-35-years-of-community-development":
     {
       title: "IHDUA's 35 Years of Rural & Community Development",
       description:
         "Learn about IHDUA's 35-year journey in rural development, women empowerment, education and sustainable community growth across underserved regions of India.",
       canonical:
-        "/blogs/international-human-development-and-upliftment-academy-ihdua-organizational-profile-and-35-years-of-community-development",
+        "/blog/international-human-development-and-upliftment-academy-ihdua-organizational-profile-and-35-years-of-community-development",
     },
 };
 
@@ -256,7 +250,7 @@ export function getPageSeo(path: string): PageSeo | undefined {
 
 /**
  * Unique preferred canonical paths from the SEO map.
- * Blog post URLs (`/blogs/...`) are excluded — those come from the CMS at runtime.
+ * Blog post URLs (`/blog/...`) are excluded — those come from the CMS at runtime.
  */
 export function listStaticSitePaths(): string[] {
   const seen = new Set<string>();
@@ -264,7 +258,7 @@ export function listStaticSitePaths(): string[] {
   for (const entry of Object.values(PAGE_SEO)) {
     const c = entry.canonical || "/";
     if (seen.has(c)) continue;
-    if (c.startsWith("/blogs/")) continue;
+    if (c.startsWith("/blog/")) continue;
     seen.add(c);
     paths.push(c);
   }

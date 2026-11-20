@@ -1,16 +1,9 @@
 import type { Metadata } from "next";
 import { buildPageMetadata } from "@/shared/lib/seo";
-import { getPublishedPrivacyPolicy } from "@/domains/privacy-policy/lib/privacyPolicyApi";
 import PrivacyPolicyClient from "./PrivacyPolicyClient";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const policy = await getPublishedPrivacyPolicy();
-  return buildPageMetadata({
-    path: "/privacy-policy",
-    title: policy?.metaTitle,
-    description: policy?.metaDescription,
-  });
-}
+/** Sync metadata so title/canonical stay in <head> without streaming delay. */
+export const metadata: Metadata = buildPageMetadata({ path: "/privacy-policy" });
 
 export default function PrivacyPolicyPage() {
   return <PrivacyPolicyClient />;

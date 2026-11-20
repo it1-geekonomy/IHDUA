@@ -1,24 +1,15 @@
-"use client";
-
-import Image from "next/image";
-import { useMemo, type MouseEvent } from "react";
-import {
-  FLUID,
-  FOCUS_AREAS_ID,
-} from "@/domains/home/constants/development";
 import Link from "next/link";
-import { smoothScrollToId } from "@/shared/lib/smoothScroll";
+import { getImageProps } from "next/image";
+import { FLUID } from "@/domains/home/constants/development";
 import Typography from "@/lib/Typography";
+import { ExploreWorkLink } from "@/domains/home/components/ExploreWorkLink";
+import { HeroMarquee } from "@/domains/home/components/HeroMarquee";
 import {
   BOTTOM_EDGE,
-  DURATION_A,
-  DURATION_B,
-  FADE_MASK,
   GREY,
+  HERO_PILL_SIZES,
   KNOTS,
   LILAC,
-  MARQUEE_CSS,
-  MIN_PILLS_PER_HALF,
   PILL_ASPECT,
   PINK,
   RIBBON,
@@ -26,61 +17,9 @@ import {
   WAVE_MASK,
 } from "@/domains/home/constants/heroConstants";
 
-function MarqueeColumn({
-  images,
-  reverse = false,
-  duration,
-  offset = 0,
-}: {
-  images: string[];
-  reverse?: boolean;
-  duration: number;
-  offset?: number;
-}) {
-  if (images.length === 0) return null;
-
-  const times = Math.max(1, Math.ceil(MIN_PILLS_PER_HALF / images.length));
-  const half = Array.from({ length: times }, () => images).flat();
-  const loop = [...half, ...half];
-
-  return (
-    <div className="relative h-full min-w-0 flex-1 overflow-hidden">
-      <ul
-        className={`flex animate-[hero-marquee-up_1s_linear_infinite] flex-col will-change-transform group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused] motion-reduce:animate-none ${
-          reverse ? "[animation-direction:reverse]" : ""
-        }`}
-        style={{
-          animationDuration: `${duration}s`,
-          animationDelay: `-${duration * offset}s`,
-        }}
-      >
-        {loop.map((src, i) => {
-          // Only the first visible pill is the LCP candidate — preload that one.
-          const isLcp = !reverse && i === 0;
-          return (
-          <li key={i} aria-hidden={i >= images.length} className="pb-3 sm:pb-4">
-            <div
-              className={`relative w-full overflow-hidden rounded-full bg-[#EDE9DC] ${PILL_ASPECT}`}
-            >
-              <Image
-                src={src}
-                alt=""
-                fill
-                priority={isLcp}
-                fetchPriority={isLcp ? "high" : "auto"}
-                loading={isLcp ? "eager" : "lazy"}
-                quality={isLcp ? 70 : 65}
-                sizes="(min-width: 1024px) 14vw, (min-width: 768px) 16vw, 42vw"
-                className="object-cover"
-              />
-            </div>
-          </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
+/** Mobile LCP display ~122×232; 2× for sharpness ≈ 260×490 max needed. */
+const LCP_WIDTH = 260;
+const LCP_HEIGHT = 488;
 
 function curve(ys: number[], u: number) {
   let i = KNOTS.findIndex((k, idx) => idx < KNOTS.length - 1 && u >= k && u <= KNOTS[idx + 1]);
@@ -199,28 +138,29 @@ export default function RuralDevelopmentSection({
   /** SSR banner URLs — required for LCP preload (no client waterfall). */
   bannerImages?: string[];
 }) {
-  // Alternate images between the two columns: 1st, 3rd, 5th ... left; 2nd, 4th, 6th ... right
-  const { imagesA, imagesB } = useMemo(() => {
-    const a = bannerImages.filter((_, i) => i % 2 === 0);
-    const b = bannerImages.filter((_, i) => i % 2 === 1);
-    // With a single image the right column would be empty, so reuse the left list
-    return { imagesA: a, imagesB: b.length > 0 ? b : a };
-  }, [bannerImages]);
-
+  const imagesA = bannerImages.filter((_, i) => i % 2 === 0);
+  const imagesBOdd = bannerImages.filter((_, i) => i % 2 === 1);
+  const imagesB = imagesBOdd.length > 0 ? imagesBOdd : imagesA;
   const noBanners = bannerImages.length === 0;
 
-  const handleExploreClick = (e: MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    smoothScrollToId(FOCUS_AREAS_ID);
-  };
+  const lcpSrc = imagesA[0] || null;
+  const lcpImage = lcpSrc
+    ? getImageProps({
+        src: lcpSrc,
+        alt: "",
+        width: LCP_WIDTH,
+        height: LCP_HEIGHT,
+        quality: 45,
+        sizes: HERO_PILL_SIZES,
+        priority: true,
+      })
+    : null;
 
   return (
     <section
       id="home-top"
       className={`relative overflow-hidden bg-[#FDFBF5] pb-8 lg:pb-12 ${FLUID.sectionPaddingTop}`}
     >
-      <style>{MARQUEE_CSS}</style>
-
       <HeroBackground />
 
       <div className="relative z-10 mx-auto grid max-w-[1600px] items-center gap-10 px-6 md:grid-cols-[minmax(0,1fr)_auto] md:gap-8 md:px-10 lg:gap-10 2xl:px-16">
@@ -234,14 +174,9 @@ export default function RuralDevelopmentSection({
           </div>
 
           <Typography
+            as="h1"
             variant="h3"
-            className="mx-auto max-w-[16.5em] text-balance font-lora font-medium text-[#00191B] md:hidden"
-          >
-            Building Stronger Communities, Creating Lasting Change
-          </Typography>
-          <Typography
-            variant="display-xl"
-            className="hidden font-lora font-normal leading-tight text-[#00191B] md:block md:!max-w-none md:!text-[clamp(1.75rem,0.6rem+3.4vw,4.5rem)] xl:!text-[clamp(3.25rem,2.6rem+0.7vw,3.5rem)]"
+            className="mx-auto max-w-[16.5em] text-balance font-lora font-medium text-[#00191B] md:mx-0 md:max-w-none md:text-[clamp(1.75rem,0.6rem+3.4vw,4.5rem)] md:font-normal md:leading-tight xl:text-[clamp(3.25rem,2.6rem+0.7vw,3.5rem)]"
           >
             Building Stronger Communities, Creating Lasting Change
           </Typography>
@@ -266,15 +201,11 @@ export default function RuralDevelopmentSection({
                 <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
-            <a
-              href={`#${FOCUS_AREAS_ID}`}
-              onClick={handleExploreClick}
-              className="inline-flex w-fit cursor-pointer rounded border border-black bg-white px-6 py-3 font-bold text-[#00191B]"
-            >
+            <ExploreWorkLink className="inline-flex w-fit cursor-pointer rounded border border-black bg-white px-6 py-3 font-bold text-[#00191B]">
               <Typography variant="body-sm" className="font-figtree font-semibold text-[#00191B]">
                 Explore Our Work
               </Typography>
-            </a>
+            </ExploreWorkLink>
           </div>
 
           <WaveRibbon />
@@ -290,12 +221,42 @@ export default function RuralDevelopmentSection({
             </Typography>
           </div>
         ) : (
-          <div
-            className="group mx-auto flex h-[26rem] w-full max-w-sm gap-3 sm:h-[32rem] sm:gap-4 md:mx-0 md:h-[clamp(26rem,calc(100svh_-_8rem),40rem)] md:w-[clamp(14rem,32vw,20rem)] md:max-w-none md:justify-self-end lg:h-[clamp(30rem,calc(100svh_-_8rem),48rem)] lg:w-[clamp(22rem,27vw,32rem)]"
-            style={{ maskImage: FADE_MASK, WebkitMaskImage: FADE_MASK }}
-          >
-            <MarqueeColumn images={imagesA} duration={DURATION_A} offset={0} />
-            <MarqueeColumn images={imagesB} reverse duration={DURATION_B} offset={0.35} />
+          <div className="relative mx-auto h-[22rem] w-full max-w-[16rem] sm:h-[32rem] sm:max-w-sm md:mx-0 md:h-[clamp(26rem,calc(100svh_-_8rem),40rem)] md:w-[clamp(14rem,32vw,20rem)] md:max-w-none md:justify-self-end lg:h-[clamp(30rem,calc(100svh_-_8rem),48rem)] lg:w-[clamp(22rem,27vw,32rem)]">
+            {lcpImage ? (
+              <>
+                {/* Preload the SAME optimized URL the <img> uses (not raw R2). */}
+                <link
+                  rel="preload"
+                  as="image"
+                  imageSrcSet={lcpImage.props.srcSet}
+                  imageSizes={lcpImage.props.sizes}
+                  fetchPriority="high"
+                />
+                <div
+                  id="hero-lcp-overlay"
+                  className="pointer-events-none absolute left-0 top-0 z-[2] w-[calc(50%-0.375rem)] transition-opacity duration-200 sm:w-[calc(50%-0.5rem)]"
+                >
+                  <div
+                    className={`relative w-full overflow-hidden rounded-full bg-[#EDE9DC] ${PILL_ASPECT}`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element -- LCP: match preload srcSet exactly */}
+                    <img
+                      {...lcpImage.props}
+                      alt=""
+                      fetchPriority="high"
+                      loading="eager"
+                      decoding="async"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  </div>
+                </div>
+              </>
+            ) : null}
+            <HeroMarquee
+              imagesA={imagesA}
+              imagesB={imagesB}
+              lcpSrc={lcpSrc}
+            />
           </div>
         )}
       </div>

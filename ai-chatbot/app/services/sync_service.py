@@ -11,6 +11,7 @@ _CURATED_TABLES = {"knowledge", "site"}
 _LEGACY_TABLES = {"static", "website_data"}
 # A change to a parent row (rename, unpublish, delete) affects every child document.
 _PARENT_TABLES = {"impact_categories": "impact_initiatives", "blog_categories": "blogs"}
+# funding_projects_index is rebuilt whenever any funding project changes.
 
 
 def prune_cms_table(table: str, keep_ids: list[str]) -> dict:

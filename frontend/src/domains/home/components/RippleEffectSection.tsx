@@ -23,6 +23,7 @@ export default function RippleEffectSection() {
 
         <Typography
           variant="display-xl"
+          as="h2"
           className="mt-4 text-center font-lora font-normal text-[#00191B] lg:text-left"
         >
           The Ripple Effect of a Single Opportunity
@@ -31,7 +32,7 @@ export default function RippleEffectSection() {
         {/* Image and story */}
         <div className="mt-8 grid grid-cols-1 items-stretch gap-8 sm:mt-10 lg:grid-cols-2 lg:gap-16">
           <Link
-            href="/blogs/the-ripple-effect-of-a-single-opportunity"
+            href="/blog/the-ripple-effect-of-a-single-opportunity"
             className="group relative block h-64 cursor-pointer overflow-hidden rounded-md sm:h-80 md:h-[26rem] lg:h-auto"
           >
             <img
@@ -43,7 +44,7 @@ export default function RippleEffectSection() {
 
           <div className="flex flex-col">
             <Link
-              href="/blogs/the-ripple-effect-of-a-single-opportunity"
+              href="/blog/the-ripple-effect-of-a-single-opportunity"
               className="group block"
             >
               <Typography
@@ -86,7 +87,7 @@ export default function RippleEffectSection() {
 
             {/* Read More button */}
             <Link
-              href="/blogs/the-ripple-effect-of-a-single-opportunity"
+              href="/blog/the-ripple-effect-of-a-single-opportunity"
               className="mx-auto mt-6 flex w-fit max-w-full cursor-pointer items-center justify-center whitespace-nowrap bg-[#FFD638] px-3 py-3 transition-opacity hover:opacity-90 sm:mt-16 sm:px-6 lg:mx-0"
             >
               <Typography

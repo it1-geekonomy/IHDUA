@@ -34,7 +34,7 @@ export default function MissionSection() {
               <span className="h-px w-8 bg-[#9739A8]" />
             </div>
 
-            <Typography variant="display-xl" className="mt-4 font-lora font-normal text-[#00191B]">
+            <Typography variant="display-xl" as="h2" className="mt-4 font-lora font-normal text-[#00191B]">
               The Mission of IHDUA
             </Typography>
           </div>
@@ -68,19 +68,30 @@ export default function MissionSection() {
                   >
                     <PillarEffects index={index} isActive={isActive} ripple={ripple} />
 
-                    <Typography variant="display-2xl" className={pillarNumberClass(isActive)}>
+                    <Typography variant="display-2xl" as="span" className={pillarNumberClass(isActive)}>
                       {pillar.number}
                     </Typography>
 
                     <div className="relative min-w-0 flex-1">
                       <div key={nudge.key} className={nudge.className}>
-                        <Typography variant="body-xl" className="font-lora font-normal text-[#383217]">
+                        <Typography
+                          variant="body-xl"
+                          className={`font-lora font-normal transition-colors duration-500 ${
+                            isActive
+                              ? "text-[#00191B]"
+                              : "text-[#383217] group-hover:text-[#00191B]"
+                          }`}
+                        >
                           {pillar.title}
                         </Typography>
                       </div>
                       <Typography
                         variant="body-sm"
-                        className="mt-1.5 leading-relaxed text-[#716B52]/[0.58] font-figtree font-normal"
+                        className={`mt-1.5 font-figtree font-normal leading-relaxed transition-colors duration-500 ${
+                          isActive
+                            ? "text-[#3D3500]"
+                            : "text-[#5F6C6D] group-hover:text-[#3D3500]"
+                        }`}
                       >
                         {pillar.description}
                       </Typography>

@@ -118,11 +118,24 @@ main() {
     done
   fi
 
+  # Enable HTTPS vhost only when Let's Encrypt certs are present.
+  # Missing certs + https.conf makes nginx crash-loop (deploy healthcheck fails).
+  local cert_live="certbot/conf/live/ihdua.org/fullchain.pem"
+  if [[ -f "$cert_live" ]]; then
+    log "TLS certs found — enabling nginx/https.conf"
+    cp nginx/https.conf.example nginx/https.conf
+  else
+    if [[ -f nginx/https.conf ]]; then
+      warn "No TLS certs yet — removing nginx/https.conf so HTTP keeps working"
+      rm -f nginx/https.conf
+    fi
+  fi
+
   log "Starting containers"
   compose up -d --remove-orphans
 
   # Recreate nginx after any app rebuild so upstream DNS is refreshed (avoids 502).
-  if [[ "$reload_nginx" == "true" ]] || ((${#services[@]} > 0)); then
+  if [[ "$reload_nginx" == "true" ]] || ((${#services[@]} > 0)) || [[ -f "$cert_live" ]]; then
     log "Recreating nginx (config and/or upstream IPs)"
     compose up -d --force-recreate nginx
   else

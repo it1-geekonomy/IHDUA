@@ -12,6 +12,7 @@ from app.rag.normalize import normalize_for_retrieval
 from app.rag.rerank import pick_sources, rerank
 from app.rag.retrieve import hybrid_retrieve
 from app.rag.rewrite import build_multi_queries, is_continuation, last_turn, rewrite_query
+from app.rag.translate_query import has_kannada, to_english_search_query
 from app.services import vector_store
 
 
@@ -92,6 +93,7 @@ def _answer(
             }
 
     # 4. Normalize & rewrite query ("then" / "tell me more" continue the previous question)
+    # Knowledge is English — Kannada questions are translated for retrieval only.
     question = search_source = user_message
     previous = last_turn(history, "user")
     if is_continuation(user_message) and previous and last_turn(history, "assistant") not in (
@@ -104,6 +106,10 @@ def _answer(
             f"Tell me more about: {previous}. Share details not already given in your previous answer; "
             "if there are none, say briefly that this is all IHDUA has published on it."
         )
+
+    if lang == "kn" or has_kannada(search_source):
+        search_source = to_english_search_query(search_source)
+
     search_text = normalize_for_retrieval(search_source)
     rewritten = rewrite_query(search_text, history, unanswered=fallback)
     intents = detect_intents(f"{search_text} {rewritten}")
@@ -122,7 +128,22 @@ def _answer(
     # 5. Multi-query retrieval
     queries = build_multi_queries(rewritten, intents, original=search_text)
     hits = hybrid_retrieve(queries, intents, question=search_text)
-    ranked = vector_store.with_neighbor_chunks(rerank(hits, intents))
+    # If a funding project title clearly matches the question, treat as donate intent
+    if any(
+        (h.get("table") == "funding_projects")
+        and (h.get("title") or "").lower()
+        and all(
+            w in search_text.lower()
+            for w in [
+                t
+                for t in (h.get("title") or "").lower().split()
+                if len(t) >= 4
+            ][:2]
+        )
+        for h in hits
+    ):
+        intents = set(intents) | {"donate"}
+    ranked = vector_store.with_neighbor_chunks(rerank(hits, intents, question=search_text))
 
     # 6. Generate answer
     answer = generate_answer(question, ranked, history=history, language=lang)

@@ -1,0 +1,21 @@
+# Installed as https.conf by deploy.sh when Let's Encrypt certs exist.
+# Do not enable this file before: certbot/conf/live/ihdua.org/fullchain.pem
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name ihdua.org www.ihdua.org;
+
+    ssl_certificate     /etc/letsencrypt/live/ihdua.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/ihdua.org/privkey.pem;
+
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:SSL:10m;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    include /etc/nginx/conf.d/ihdua-proxy.inc;
+}

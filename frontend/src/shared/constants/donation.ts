@@ -59,7 +59,9 @@ export const DONATION_COPY = {
     "Your support helps create opportunities through education, healthcare, sustainable livelihoods and stronger communities.",
   chooseAmountStep: "1. Choose an amount",
   chooseAmount: "Choose an amount",
-  chooseCountry: "Choose your country",
+  chooseCountry: "Where are you donating from?",
+  originIndia: "India",
+  originOutside: "Outside India",
   chooseFrequency: "Choose donation frequency",
   recurringIndiaOnly: "Recurring donations are available for India (INR) only",
   autopayTitle: "AutoPay",
@@ -78,7 +80,15 @@ export const DONATION_COPY = {
   taxId: "PAN / Aadhaar (optional, for 80G)",
   taxIdHint:
     "Provide PAN or Aadhaar to receive an 80G tax exemption certificate (India).",
-  internationalNote: "International cards and wallets are supported via Razorpay.",
+  internationalNote:
+    "Overseas donors use FCRA bank remittance. Online Razorpay checkout is for India (INR) only.",
+  fcraTitle: "Donate via FCRA wire transfer",
+  fcraIntro:
+    "Donations from outside India can be made by wire transfer to IHDUA’s designated FCRA current account with State Bank of India. Account details are below.",
+  fcraForexNote:
+    "When a forex transfer is initiated, INR should not be chosen. Use a currency other than INR (for example USD, EUR, AUD or GBP).",
+  fcraPolicyNote:
+    "The details below are mandatory. Your donation cannot be processed until you send us this information. We do not encourage anonymous donations as a policy.",
   paySecurely: "Pay Securely",
   paying: "Opening secure checkout…",
   verifying: "Confirming payment…",

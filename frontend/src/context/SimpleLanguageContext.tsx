@@ -5,16 +5,19 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useState,
 } from "react";
 import { usePathname } from "next/navigation";
 import {
   getCurrentLanguage,
+  getStoredLanguage,
   reloadWithLanguage,
   LANGUAGES,
   LanguageCode,
 } from "@/utils/languageHelper";
 import {
+  applyGoogleTranslateLanguage,
   bindKannadaHardNav,
   revealTranslatedPage,
   whenTranslateReady,
@@ -35,46 +38,90 @@ declare global {
   }
 }
 
-function readClientLanguage(): LanguageCode {
-  if (typeof window === "undefined") return LANGUAGES.ENGLISH;
-  return getCurrentLanguage();
+function ensureGtMount(): HTMLElement {
+  let el = document.getElementById("google_translate_element");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "google_translate_element";
+    el.className = "skiptranslate";
+    el.setAttribute("translate", "no");
+    el.style.cssText =
+      "position:absolute;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;opacity:0";
+    (document.body || document.documentElement).appendChild(el);
+  }
+  return el;
 }
 
-function injectTranslateScript(onReady?: (lang: LanguageCode) => void): void {
-  const runReady = () => {
-    const lang = getCurrentLanguage();
-    onReady?.(lang);
-    if (lang === LANGUAGES.KANNADA) {
-      // One apply only — repeating pulses caused EN↔KN flicker every second.
-      void whenTranslateReady(LANGUAGES.KANNADA, 4000);
-    } else {
+function initTranslateElement(): void {
+  try {
+    ensureGtMount();
+    if (!window.google?.translate?.TranslateElement) return;
+    // Avoid double-init into a broken widget.
+    const host = document.getElementById("google_translate_element");
+    if (host && host.querySelector(".goog-te-combo, select.goog-te-combo")) return;
+    new window.google.translate.TranslateElement(
+      {
+        pageLanguage: "en",
+        includedLanguages: "en,kn",
+        autoDisplay: false,
+      },
+      "google_translate_element",
+    );
+  } catch {
+    // ignore
+  }
+}
+
+/** Load GT script and apply Kannada once the combo exists. */
+function ensureKannadaTranslate(): void {
+  const finish = () => {
+    initTranslateElement();
+    void whenTranslateReady(LANGUAGES.KANNADA, 8000).then((ok) => {
+      if (!ok) {
+        // Last resort: poke combo directly a few more times.
+        let tries = 0;
+        const id = window.setInterval(() => {
+          if (applyGoogleTranslateLanguage(LANGUAGES.KANNADA) || ++tries > 40) {
+            window.clearInterval(id);
+          }
+        }, 150);
+      }
       revealTranslatedPage();
-    }
+    });
   };
 
-  // Boot script already loads GT for Kannada — only nudge apply here.
-  if (document.querySelector('script[src*="translate.google.com"]')) {
-    runReady();
+  if (window.google?.translate?.TranslateElement) {
+    finish();
     return;
   }
 
-  if (!window.googleTranslateElementInit) {
-    window.googleTranslateElementInit = () => {
-      try {
-        if (!document.getElementById("google_translate_element")) return;
-        new window.google.translate.TranslateElement(
-          {
-            pageLanguage: "en",
-            includedLanguages: "en,kn",
-            autoDisplay: false,
-          },
-          "google_translate_element",
-        );
-      } catch {
-        return;
+  window.googleTranslateElementInit = () => {
+    finish();
+  };
+
+  const existing = document.querySelector(
+    'script[src*="translate.google.com"]',
+  ) as HTMLScriptElement | null;
+
+  if (existing) {
+    // Script tag present but library may still be loading — wait, don't bail.
+    let n = 0;
+    const wait = window.setInterval(() => {
+      if (window.google?.translate?.TranslateElement) {
+        window.clearInterval(wait);
+        finish();
+      } else if (++n > 80) {
+        window.clearInterval(wait);
+        // Re-append a fresh script once.
+        existing.remove();
+        const s = document.createElement("script");
+        s.src =
+          "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+        s.async = true;
+        document.head.appendChild(s);
       }
-      runReady();
-    };
+    }, 100);
+    return;
   }
 
   const script = document.createElement("script");
@@ -86,15 +133,17 @@ function injectTranslateScript(onReady?: (lang: LanguageCode) => void): void {
 
 export function SimpleLanguageProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [language, setLanguageState] = useState<LanguageCode>(readClientLanguage);
+  const [language, setLanguageState] = useState<LanguageCode>(LANGUAGES.ENGLISH);
   const [isChanging, setIsChanging] = useState(false);
   const isAdmin = pathname?.startsWith("/admin") ?? false;
 
+  useLayoutEffect(() => {
+    setIsChanging(false);
+    if (isAdmin) return;
+    setLanguageState(getCurrentLanguage());
+  }, [isAdmin, pathname]);
+
   useEffect(() => {
-    if (isAdmin) {
-      revealTranslatedPage();
-      return;
-    }
     revealTranslatedPage();
   }, [isAdmin]);
 
@@ -106,68 +155,41 @@ export function SimpleLanguageProvider({ children }: { children: React.ReactNode
   useEffect(() => {
     if (typeof window === "undefined" || isAdmin) return;
 
-    const lang = getCurrentLanguage();
-    setLanguageState(lang);
+    const sync = () => setLanguageState(getCurrentLanguage());
+    sync();
 
-    if (lang === LANGUAGES.KANNADA) {
-      injectTranslateScript((readyLang) => setLanguageState(readyLang));
-      return;
+    // Preference is KN → always drive the widget (boot may have started it too).
+    if (getStoredLanguage() === LANGUAGES.KANNADA) {
+      ensureKannadaTranslate();
     }
 
-    let idleId: number | undefined;
-    let timeoutId: number | undefined;
+    const obs = new MutationObserver(sync);
+    obs.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class", "lang"],
+    });
 
-    const scheduleDeferred = () => {
-      if (typeof window.requestIdleCallback === "function") {
-        idleId = window.requestIdleCallback(
-          () => injectTranslateScript((readyLang) => setLanguageState(readyLang)),
-          { timeout: 4000 },
-        );
-      } else {
-        timeoutId = window.setTimeout(
-          () => injectTranslateScript((readyLang) => setLanguageState(readyLang)),
-          2500,
-        );
-      }
-    };
-
-    if (document.readyState === "complete") {
-      scheduleDeferred();
-    } else {
-      window.addEventListener("load", scheduleDeferred, { once: true });
-    }
-
+    window.addEventListener("ihdua:language", sync);
     return () => {
-      window.removeEventListener("load", scheduleDeferred);
-      if (idleId !== undefined && typeof window.cancelIdleCallback === "function") {
-        window.cancelIdleCallback(idleId);
-      }
-      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+      obs.disconnect();
+      window.removeEventListener("ihdua:language", sync);
     };
   }, [isAdmin]);
 
-  const setLanguage = useCallback(
-    (newLang: LanguageCode) => {
-      if (isChanging || newLang === language) return;
-      setIsChanging(true);
-      setLanguageState(newLang);
-      if (newLang === LANGUAGES.KANNADA) {
-        injectTranslateScript();
-      }
-      reloadWithLanguage(newLang);
-    },
-    [isChanging, language],
-  );
+  const setLanguage = useCallback((newLang: LanguageCode) => {
+    setIsChanging(true);
+    setLanguageState(newLang);
+    if (newLang === LANGUAGES.KANNADA) {
+      ensureKannadaTranslate();
+    }
+    reloadWithLanguage(newLang);
+    window.setTimeout(() => setIsChanging(false), 2500);
+  }, []);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, isChanging }}>
       {children}
-      {!isAdmin && (
-        <div
-          id="google_translate_element"
-          style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}
-        />
-      )}
+      {/* Mount owned by boot/ensureGtMount — no duplicate React node with same id. */}
     </LanguageContext.Provider>
   );
 }

@@ -275,7 +275,7 @@ export default function BlogsGridSection({
             {paginatedPosts.map((post, index) => (
               <Link
                 key={post.id}
-                href={`/blogs/${post.slug}`}
+                href={`/blog/${post.slug}`}
                 className="group flex cursor-pointer flex-col"
               >
                 <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md bg-neutral-100">

@@ -43,6 +43,40 @@ export const GT_BOOT_SCRIPT = `(function(){
     var staleHold = document.getElementById(HOLD);
     if (staleHold && staleHold.parentNode) staleHold.parentNode.removeChild(staleHold);
 
+    // Strip old language cache-bust junk from the address bar.
+    try {
+      var bootUrl = new URL(location.href);
+      if (bootUrl.searchParams.has("_lang") || bootUrl.searchParams.has("_t")) {
+        bootUrl.searchParams.delete("_lang");
+        bootUrl.searchParams.delete("_t");
+        history.replaceState(null, "", bootUrl.pathname + bootUrl.search + bootUrl.hash);
+      }
+    } catch (e) {}
+
+    // Hide GT top banner only — never touch #google_translate_element / combo.
+    function hideGtBanner() {
+      try {
+        document.documentElement.style.top = "0";
+        if (document.body) {
+          document.body.style.top = "0";
+          document.body.style.marginTop = "0";
+        }
+        var nodes = document.querySelectorAll(
+          "iframe.goog-te-banner-frame, .goog-te-banner-frame, body > .skiptranslate, body > iframe.skiptranslate, .VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf"
+        );
+        for (var i = 0; i < nodes.length; i++) {
+          var el = nodes[i];
+          if (el.id === "google_translate_element") continue;
+          if (el.querySelector && el.querySelector("select.goog-te-combo")) continue;
+          el.style.setProperty("display", "none", "important");
+          el.style.setProperty("visibility", "hidden", "important");
+          el.style.setProperty("height", "0", "important");
+        }
+      } catch (e) {}
+    }
+    hideGtBanner();
+    setInterval(hideGtBanner, 800);
+
     function readWantKn() {
       var ls = "";
       try { ls = localStorage.getItem(KEY) || ""; } catch (e) {}
@@ -63,12 +97,10 @@ export const GT_BOOT_SCRIPT = `(function(){
       return ls === "kn" || pref === "kn" || goog.indexOf("/kn") !== -1;
     }
 
-    if (!readWantKn()) return;
-
     var host = location.hostname;
     var isLocal = host === "localhost" || host === "127.0.0.1" || /\\.localhost$/.test(host);
     var secure = location.protocol === "https:" ? "; Secure; SameSite=Lax" : "; SameSite=Lax";
-    function writeCookies() {
+    function writeKnCookies() {
       var gt = "googtrans=/en/kn; path=/; max-age=31536000" + secure;
       var prefC = KEY + "=kn; path=/; max-age=31536000" + secure;
       document.cookie = gt;
@@ -85,6 +117,70 @@ export const GT_BOOT_SCRIPT = `(function(){
       }
       try { localStorage.setItem(KEY, "kn"); } catch (e) {}
     }
+
+    // Clear googtrans on host + apex (prod www/non-www). Incomplete clears stick KN forever.
+    function clearGtCookies() {
+      var expired = "expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/" + secure;
+      document.cookie = "googtrans=; " + expired;
+      document.cookie = "googtrans=; " + expired + "; domain=" + host;
+      if (!isLocal && host.indexOf(".") !== -1 && !/^\\d{1,3}(\\.\\d{1,3}){3}$/.test(host)) {
+        var rootClr = host.indexOf("www.") === 0 ? host.slice(4) : host;
+        document.cookie = "googtrans=; " + expired + "; domain=" + rootClr;
+        document.cookie = "googtrans=; " + expired + "; domain=." + rootClr;
+        document.cookie = "googtrans=; " + expired + "; domain=www." + rootClr;
+        document.cookie = "googtrans=; " + expired + "; domain=.www." + rootClr;
+      }
+    }
+
+    // Language toggle — always installed (EN and KN pages).
+    // Uses pointerup so mobile taps work even when GT mutates click handlers.
+    var langSwitching = false;
+    function switchLang(next) {
+      if (langSwitching || window.__ihduaLangBusy) return;
+      langSwitching = true;
+      window.__ihduaLangBusy = true;
+      try {
+        if (next === "en") {
+          clearGtCookies();
+          document.cookie = KEY + "=en; path=/; max-age=31536000" + secure;
+          if (!isLocal && host.indexOf(".") !== -1 && !/^\\d{1,3}(\\.\\d{1,3}){3}$/.test(host)) {
+            var rootEn = host.indexOf("www.") === 0 ? host.slice(4) : host;
+            document.cookie = KEY + "=en; path=/; max-age=31536000" + secure + "; domain=" + rootEn;
+            document.cookie = KEY + "=en; path=/; max-age=31536000" + secure + "; domain=." + rootEn;
+          }
+          try { localStorage.setItem(KEY, "en"); } catch (e) {}
+          document.documentElement.classList.remove("translated-ltr", "translated-rtl");
+          document.documentElement.setAttribute("lang", "en");
+        } else {
+          writeKnCookies();
+          document.documentElement.setAttribute("lang", "kn");
+        }
+      } catch (e) {}
+      try {
+        var cleanUrl = new URL(location.href);
+        cleanUrl.searchParams.delete("_lang");
+        cleanUrl.searchParams.delete("_t");
+        var clean = cleanUrl.pathname + cleanUrl.search + cleanUrl.hash;
+        if (clean !== location.pathname + location.search + location.hash) {
+          history.replaceState(null, "", clean);
+        }
+      } catch (e) {}
+      location.reload();
+    }
+    window.__ihduaPickLang = switchLang;
+    // UI taps are owned by LanguageToggle (React). Boot only exposes switchLang —
+    // a capture pointerup here fought the mobile switch and no-op'd below lg.
+
+    // English preferred: strip leftover KN cookies so boot never re-applies Kannada.
+    if (!readWantKn()) {
+      try {
+        clearGtCookies();
+        document.documentElement.classList.remove("translated-ltr", "translated-rtl");
+      } catch (e) {}
+      return;
+    }
+
+    function writeCookies() { writeKnCookies(); }
     writeCookies();
 
     window.__gtLock = function(){};
@@ -131,7 +227,7 @@ export const GT_BOOT_SCRIPT = `(function(){
         var tries = 0;
         (function waitCombo() {
           if (applyKnOnce()) return;
-          if (++tries < 60) setTimeout(waitCombo, 100);
+          if (++tries < 80) setTimeout(waitCombo, 100);
         })();
       };
       if (!document.querySelector('script[src*="translate.google.com"]')) {
@@ -141,10 +237,29 @@ export const GT_BOOT_SCRIPT = `(function(){
         (document.head || document.documentElement).appendChild(gs);
       } else if (window.google && window.google.translate) {
         window.googleTranslateElementInit();
+      } else {
+        // Script tag exists but library not ready yet — poll then init.
+        var poll = 0;
+        (function waitGoogle() {
+          if (window.google && window.google.translate) {
+            window.googleTranslateElementInit();
+            return;
+          }
+          if (++poll < 80) setTimeout(waitGoogle, 100);
+        })();
       }
     }
     startGt();
     document.addEventListener("DOMContentLoaded", function(){ ensureGtMount(); startGt(); });
+
+    // Mobile Safari bfcache can restore without re-running boot — re-apply KN.
+    window.addEventListener("pageshow", function(ev) {
+      if (!ev.persisted) return;
+      if (!readWantKn()) return;
+      gtStarted = false;
+      knApplied = false;
+      startGt();
+    });
 
     function hardNav(url) {
       writeCookies();
@@ -172,6 +287,8 @@ export const GT_BOOT_SCRIPT = `(function(){
       if (!readWantKn()) return;
       var t = ev.target;
       if (!t || !t.closest) return;
+      // Don't steal language-toggle clicks (handled above).
+      if (t.closest("[data-lang-toggle]")) return;
       var a = t.closest("a[href]");
       if (!a || a.target === "_blank" || a.hasAttribute("download")) return;
       var next = isInternalNav(a.getAttribute("href"));

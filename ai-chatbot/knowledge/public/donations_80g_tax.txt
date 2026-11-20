@@ -3,10 +3,12 @@ Source: IHDUA website donation form and /donate funding projects page
 Website: /donate
 
 Donating online
-- Donations are made through the IHDUA website. Payments are processed securely by Razorpay; the payment options shown depend on what Razorpay offers for the chosen currency.
-- Donors choose an amount and a cause, then enter their details (name, phone and email; Indian donors can also add their PAN and address).
-- Donors in India donate in INR. Donors outside India can choose their country and donate in a supported foreign currency.
-- After a successful payment, the donor receives a donation certificate by email. Indian donors who enter a PAN also receive an 80G tax receipt.
+- Donations are made through the IHDUA website Donate form (/donate or the home-page donation card).
+- First step: “Where are you donating from?” — choose India or Outside India.
+- India: donate in INR with Razorpay (UPI, cards, netbanking). Enter name, phone, email, city; PAN is optional for an 80G receipt.
+- Outside India: after Donate Now, the site shows IHDUA’s SBI FCRA account details for wire transfer (not Razorpay). Donors must email info@ihdua.org or use Contact Us with name, contact number, transaction number, amount, email and postal address so the donation can be processed.
+- After a successful Razorpay payment (India), the donor receives a donation certificate by email. Indian donors who enter a PAN also receive an 80G tax receipt.
+- Overseas donors should complete the bank remittance using the FCRA details shown, then email or contact IHDUA with the required details.
 
 Project-based donations
 - Yes, donors can donate project-wise. Open the Donate page at /donate to see IHDUA funding projects seeking support.
@@ -16,7 +18,8 @@ Project-based donations
   2. Support a full project.
   3. Make a general donation that is not tied to one project component.
 - On /donate, use “Browse projects” to review breakups, or “General donation” to give without picking a project line item.
-- Examples of projects that may appear (published projects are managed in the CMS and can change): School Essentials; Rural School Transformation; Watershed Development; Organic Farming Programme; Prevention of Child Marriage; Solid Waste Management; Support for Persons with Disabilities; Millet Processing & Food Unit; Edible Oil Processing Unit.
+- The list of funding projects (titles, totals, and component breakups) comes from the CMS. Only currently published projects on /donate are real — do not invent project names.
+- For details of a named project, use the CMS funding-project content indexed for that project, or direct the visitor to /donate.
 - The donation category recorded for a project gift is usually the project title, or “Project title — Component name” when a line item is chosen.
 
 Tax benefit for Indian donors

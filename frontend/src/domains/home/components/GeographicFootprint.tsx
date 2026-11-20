@@ -134,20 +134,21 @@ export default function GeographicFootprint() {
                     </g>
                   ))}
 
-                  {/* Invisible hit areas (static, so hover never flickers) */}
+                  {/* Invisible hit areas — role on <g>, not <path> (ARIA-prohibited on path) */}
                   {REGIONS.map((r) => (
-                    <path
+                    <g
                       key={`hit-${r.id}`}
-                      d={r.path}
-                      fill="transparent"
-                      className="cursor-pointer outline-none"
+                      role="button"
                       tabIndex={0}
                       aria-label={r.label}
+                      className="cursor-pointer outline-none"
                       onMouseEnter={() => setActive(r.id)}
                       onMouseLeave={() => setActive(null)}
                       onFocus={() => setActive(r.id)}
                       onBlur={() => setActive(null)}
-                    />
+                    >
+                      <path d={r.path} fill="transparent" />
+                    </g>
                   ))}
                 </g>
               </svg>
@@ -185,6 +186,7 @@ export default function GeographicFootprint() {
 
               <Typography
                 variant="display-xl"
+                as="h2"
                 className="mx-auto mt-5 max-w-3xl text-center leading-tight font-normal font-lora lg:max-w-none lg:w-full xl:mx-0 xl:w-auto xl:max-w-4xl xl:text-left"
               >
                 Rooted in communities. Creating change where it matters.

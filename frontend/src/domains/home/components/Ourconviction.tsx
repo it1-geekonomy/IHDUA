@@ -114,6 +114,7 @@ export default function OurConviction() {
 
             <Typography
               variant="display-xl"
+              as="h2"
               className="mt-5 w-full text-center leading-tight text-[#00191B] font-normal font-lora xl:max-w-xl xl:text-left"
             >
               Development begins with opportunity.
