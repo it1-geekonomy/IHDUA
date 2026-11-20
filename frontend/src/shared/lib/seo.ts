@@ -42,6 +42,12 @@ const PAGE_SEO: Record<string, PageSeo> = {
       "Explore IHDUA blogs for insights on rural development, women empowerment, education, healthcare, skill development and sustainable community growth.",
     canonical: "/blog",
   },
+  "/programmes": {
+    title: "IHDUA Programmes | Community Events & Interactive Initiatives",
+    description:
+      "Discover upcoming IHDUA programmes, community activities and opportunities to create lasting change across rural communities in Karnataka.",
+    canonical: "/programmes",
+  },
   "/donate": {
     title: "Donate to IHDUA | Support Rural Development & Empowerment",
     description:

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CalendarDays, Loader2, UploadCloud, X } from "lucide-react";
 import { AdminSelect, type AdminSelectOption } from "@/domains/admin/components/AdminSelect";
+import { AdminTimeSelect } from "@/domains/admin/components/AdminTimeSelect";
 import type {
   ContentStatus,
   InteractiveProgrammeFormValues,
@@ -18,9 +19,13 @@ interface Props {
 }
 
 const STATUS_OPTIONS: AdminSelectOption<ContentStatus>[] = [
-  { value: "draft", label: "Draft", dotColor: "bg-amber-500" },
-  { value: "published", label: "Published", dotColor: "bg-emerald-500" },
-  { value: "archived", label: "Archived", dotColor: "bg-neutral-400" },
+  { value: "draft", label: "Draft (Private in CMS)", dotColor: "bg-amber-500" },
+  {
+    value: "published",
+    label: "Published (Visible on live website)",
+    dotColor: "bg-emerald-500",
+  },
+  { value: "archived", label: "Archived (Unpublished)", dotColor: "bg-neutral-400" },
 ];
 
 function slugify(value: string) {
@@ -42,6 +47,13 @@ function toTimeInput(value: string | null | undefined) {
   if (!value) return "";
   return value.slice(0, 5);
 }
+
+function getTodayIsoDate(): string {
+  return new Date().toISOString().split("T")[0];
+}
+
+const FIELD_CLS =
+  "w-full h-10 rounded-lg border border-[#D9D3C9] bg-white px-3.5 py-2 font-figtree text-xs text-[#0F1C1D] placeholder:text-[#8A847A] focus:border-[#9739A8] focus:outline-hidden";
 
 export function InteractiveProgrammeEditorModal({
   isOpen,
@@ -69,7 +81,11 @@ export function InteractiveProgrammeEditorModal({
     if (editingItem) {
       setLockedSlug(editingItem.slug);
       setTitle(editingItem.title);
-      setEventDate(editingItem.eventDate?.slice(0, 10) || "");
+      setEventDate(
+        editingItem.eventDate
+          ? editingItem.eventDate.split("T")[0]
+          : getTodayIsoDate(),
+      );
       setEventLocation(editingItem.eventLocation || "");
       setEventTime(toTimeInput(editingItem.eventTime));
       setContent(editingItem.content || "");
@@ -80,7 +96,7 @@ export function InteractiveProgrammeEditorModal({
     } else {
       setLockedSlug(null);
       setTitle("");
-      setEventDate("");
+      setEventDate(getTodayIsoDate());
       setEventLocation("");
       setEventTime("");
       setContent("");
@@ -183,15 +199,17 @@ export function InteractiveProgrammeEditorModal({
               </p>
             )}
 
-            <label className="block text-xs font-semibold">
-              Title *
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-[#0F1C1D]">
+                Title <span className="text-rose-600">*</span>
+              </label>
               <input
-                className="mt-1 w-full rounded-lg border border-[#D9D3C9] px-3 py-2"
+                className={FIELD_CLS}
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Rural Health Awareness Camp 2026"
               />
-            </label>
+            </div>
 
             {lockedSlug && (
               <p className="text-[10px] text-[#5F6C6D]">
@@ -199,44 +217,56 @@ export function InteractiveProgrammeEditorModal({
               </p>
             )}
 
-            <div className="grid gap-3 sm:grid-cols-3">
-              <label className="text-xs font-semibold">
-                Event date
+            {/* Date & Status — same 2-col pattern as Blogs editor */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold text-[#0F1C1D]">
+                  Event Date
+                </label>
                 <input
                   type="date"
-                  className="mt-1 w-full rounded-lg border border-[#D9D3C9] px-3 py-2"
                   value={eventDate}
                   onChange={(e) => setEventDate(e.target.value)}
+                  className={FIELD_CLS}
                 />
-              </label>
-              <label className="text-xs font-semibold">
-                Event time
-                <input
-                  type="time"
-                  className="mt-1 w-full rounded-lg border border-[#D9D3C9] px-3 py-2"
-                  value={eventTime}
-                  onChange={(e) => setEventTime(e.target.value)}
-                />
-              </label>
+              </div>
               <div>
-                <p className="mb-1.5 text-xs font-semibold">Status</p>
+                <label className="mb-1.5 block text-xs font-semibold text-[#0F1C1D]">
+                  Publication Status
+                </label>
                 <AdminSelect
                   value={status}
                   onChange={setStatus}
                   options={STATUS_OPTIONS}
+                  size="md"
+                  className="w-full"
+                  dropdownClassName="w-full"
                 />
               </div>
             </div>
 
-            <label className="block text-xs font-semibold">
-              Location
-              <input
-                className="mt-1 w-full rounded-lg border border-[#D9D3C9] px-3 py-2"
-                value={eventLocation}
-                onChange={(e) => setEventLocation(e.target.value)}
-                placeholder="IHDUA Center, Mysore"
-              />
-            </label>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold text-[#0F1C1D]">
+                  Event Time
+                </label>
+                <AdminTimeSelect
+                  value={eventTime}
+                  onChange={setEventTime}
+                />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold text-[#0F1C1D]">
+                  Location
+                </label>
+                <input
+                  className={FIELD_CLS}
+                  value={eventLocation}
+                  onChange={(e) => setEventLocation(e.target.value)}
+                  placeholder="IHDUA Center, Mysore"
+                />
+              </div>
+            </div>
 
             <div>
               <p className="mb-1.5 text-xs font-semibold">
