@@ -29,6 +29,7 @@ import { ImpactInitiativesModule } from './modules/impact-initiatives/impact-ini
 import { NewsletterSubscribersModule } from './modules/newsletter-subscribers/newsletter-subscribers.module';
 import { HomeBannersModule } from './modules/home-banners/home-banners.module';
 import { FundingProjectsModule } from './modules/funding-projects/funding-projects.module';
+import { InteractiveProgrammesModule } from './modules/interactive-programmes/interactive-programmes.module';
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
@@ -63,6 +64,7 @@ import { UsersModule } from './modules/users/users.module';
     NewsletterSubscribersModule,
     HomeBannersModule,
     FundingProjectsModule,
+    InteractiveProgrammesModule,
   ],
   controllers: [AppController],
   providers: [

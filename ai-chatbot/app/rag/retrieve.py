@@ -126,6 +126,11 @@ def hybrid_retrieve(
             overlap = _title_overlap_score(kh.get("title") or "", question)
             if kh.get("table") in ("funding_projects", "funding_projects_index") and overlap >= 0.5:
                 kh = {**kh, "similarity": max(float(kh.get("similarity") or 0), 0.72 + 0.2 * overlap)}
+            if (
+                kh.get("table") in ("interactive_programmes", "interactive_programmes_index")
+                and overlap >= 0.5
+            ):
+                kh = {**kh, "similarity": max(float(kh.get("similarity") or 0), 0.72 + 0.2 * overlap)}
             if cid not in all_hits or kh["similarity"] > all_hits[cid]["similarity"]:
                 all_hits[cid] = kh
 
