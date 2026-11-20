@@ -29,7 +29,8 @@ export function FooterLegalBar() {
             </Typography>
           </a>
 
-          <div className="order-1 flex w-full items-center justify-between gap-3 pr-16 lg:order-3 lg:w-auto lg:justify-end lg:gap-4 lg:pr-0">
+          {/* pr-* clears the fixed chatbot FAB (64px + right offset) on all breakpoints */}
+          <div className="order-1 flex w-full items-center justify-between gap-3 pr-20 sm:pr-24 lg:order-3 lg:w-auto lg:justify-end lg:gap-4 lg:pr-24">
             <div className="flex items-center gap-4">
               <Link
                 href="/privacy-policy"
@@ -48,7 +49,6 @@ export function FooterLegalBar() {
                 </Typography>
               </Link>
             </div>
-            {/* pr-16 clears the fixed chatbot FAB that was eating mobile taps */}
             <LanguageToggle />
           </div>
         </div>
