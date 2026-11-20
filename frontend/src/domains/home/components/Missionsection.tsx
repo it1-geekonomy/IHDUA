@@ -74,13 +74,24 @@ export default function MissionSection() {
 
                     <div className="relative min-w-0 flex-1">
                       <div key={nudge.key} className={nudge.className}>
-                        <Typography variant="body-xl" className="font-lora font-normal text-[#383217]">
+                        <Typography
+                          variant="body-xl"
+                          className={`font-lora font-normal transition-colors duration-500 ${
+                            isActive
+                              ? "text-[#00191B]"
+                              : "text-[#383217] group-hover:text-[#00191B]"
+                          }`}
+                        >
                           {pillar.title}
                         </Typography>
                       </div>
                       <Typography
                         variant="body-sm"
-                        className="mt-1.5 leading-relaxed text-[#716B52]/[0.58] font-figtree font-normal"
+                        className={`mt-1.5 font-figtree font-normal leading-relaxed transition-colors duration-500 ${
+                          isActive
+                            ? "text-[#3D3500]"
+                            : "text-[#5F6C6D] group-hover:text-[#3D3500]"
+                        }`}
                       >
                         {pillar.description}
                       </Typography>

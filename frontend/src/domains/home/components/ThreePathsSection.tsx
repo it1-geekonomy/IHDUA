@@ -51,11 +51,11 @@ export default function ThreePathsSection() {
       <div className="w-full px-6 pt-6 pb-6 sm:px-10 lg:pt-8 lg:pb-8 lg:px-10 xl:py-14 2xl:px-40">
         {/* Label: centered below sm (640px), left-aligned from sm up */}
         <div className="flex items-center justify-center gap-3 sm:justify-start">
-          <span className="h-px w-8 bg-[#9739A8]" />
-          <Typography variant="caption" className="font-bold font-figtree text-[#9739A8]">
+          <span className="h-px w-8 bg-[#5C1870]" />
+          <Typography variant="caption" className="font-bold font-figtree text-[#5C1870]">
             Get Involved
           </Typography>
-          <span className="h-px w-8 bg-[#9739A8]" />
+          <span className="h-px w-8 bg-[#5C1870]" />
         </div>
 
         {/* Heading: centered below sm (640px), left-aligned from sm up */}
