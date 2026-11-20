@@ -54,6 +54,11 @@ export const ADMIN_NAV_SECTIONS = [
       { href: "/admin/annual-reports", label: "Annual Reports", icon: "reports" as const },
       { href: "/admin/milestones", label: "Key Milestones", icon: "milestones" as const },
       { href: "/admin/funding-projects", label: "Funding Projects", icon: "fundingProjects" as const },
+      {
+        href: "/admin/interactive-programmes",
+        label: "Interactive Programmes",
+        icon: "interactiveProgrammes" as const,
+      },
       { href: "/admin/terms-and-conditions", label: "Terms & Conditions", icon: "terms" as const },
       { href: "/admin/privacy-policy", label: "Privacy Policy", icon: "privacy" as const },
     ],
@@ -83,6 +88,11 @@ export const ADMIN_NAV = [
   { href: "/admin/annual-reports", label: "Annual Reports", icon: "reports" as const },
   { href: "/admin/milestones", label: "Key Milestones", icon: "milestones" as const },
   { href: "/admin/funding-projects", label: "Funding Projects", icon: "fundingProjects" as const },
+  {
+    href: "/admin/interactive-programmes",
+    label: "Interactive Programmes",
+    icon: "interactiveProgrammes" as const,
+  },
   { href: "/admin/terms-and-conditions", label: "Terms & Conditions", icon: "terms" as const },
   { href: "/admin/privacy-policy", label: "Privacy Policy", icon: "privacy" as const },
   { href: "/admin/users", label: "Users", icon: "users" as const },
