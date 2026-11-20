@@ -11,9 +11,12 @@ export const DURATION_B = 46;
 
 export const PILL_ASPECT = "aspect-[8/15]";
 
-/** Matches ~214px mobile LCP display width from PageSpeed. */
+/**
+ * Real mobile pill width ≈122px (max-w-16rem column split in half).
+ * Oversizing here makes LCP download a bigger file than needed.
+ */
 export const HERO_PILL_SIZES =
-  "(max-width: 767px) 215px, (max-width: 1023px) 16vw, 14vw";
+  "(max-width: 767px) 130px, (max-width: 1023px) 16vw, 14vw";
 
 export const MIN_PILLS_PER_HALF = 4;
 

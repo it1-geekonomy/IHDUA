@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import { FLUID } from "@/domains/home/constants/development";
 import Typography from "@/lib/Typography";
 import { ExploreWorkLink } from "@/domains/home/components/ExploreWorkLink";
@@ -16,6 +16,10 @@ import {
   TOP_EDGE,
   WAVE_MASK,
 } from "@/domains/home/constants/heroConstants";
+
+/** Mobile LCP display ~122×232; 2× for sharpness ≈ 260×490 max needed. */
+const LCP_WIDTH = 260;
+const LCP_HEIGHT = 488;
 
 function curve(ys: number[], u: number) {
   let i = KNOTS.findIndex((k, idx) => idx < KNOTS.length - 1 && u >= k && u <= KNOTS[idx + 1]);
@@ -140,6 +144,17 @@ export default function RuralDevelopmentSection({
   const noBanners = bannerImages.length === 0;
 
   const lcpSrc = imagesA[0] || null;
+  const lcpImage = lcpSrc
+    ? getImageProps({
+        src: lcpSrc,
+        alt: "",
+        width: LCP_WIDTH,
+        height: LCP_HEIGHT,
+        quality: 45,
+        sizes: HERO_PILL_SIZES,
+        priority: true,
+      })
+    : null;
 
   return (
     <section
@@ -207,13 +222,14 @@ export default function RuralDevelopmentSection({
           </div>
         ) : (
           <div className="relative mx-auto h-[22rem] w-full max-w-[16rem] sm:h-[32rem] sm:max-w-sm md:mx-0 md:h-[clamp(26rem,calc(100svh_-_8rem),40rem)] md:w-[clamp(14rem,32vw,20rem)] md:max-w-none md:justify-self-end lg:h-[clamp(30rem,calc(100svh_-_8rem),48rem)] lg:w-[clamp(22rem,27vw,32rem)]">
-            {lcpSrc ? (
+            {lcpImage ? (
               <>
-                {/* Direct R2 preload — skip /_next/image hop on Slow 4G LCP. */}
+                {/* Preload the SAME optimized URL the <img> uses (not raw R2). */}
                 <link
                   rel="preload"
                   as="image"
-                  href={lcpSrc}
+                  imageSrcSet={lcpImage.props.srcSet}
+                  imageSizes={lcpImage.props.sizes}
                   fetchPriority="high"
                 />
                 <div
@@ -223,17 +239,14 @@ export default function RuralDevelopmentSection({
                   <div
                     className={`relative w-full overflow-hidden rounded-full bg-[#EDE9DC] ${PILL_ASPECT}`}
                   >
-                    <Image
-                      src={lcpSrc}
+                    {/* eslint-disable-next-line @next/next/no-img-element -- LCP: match preload srcSet exactly */}
+                    <img
+                      {...lcpImage.props}
                       alt=""
-                      fill
-                      unoptimized
-                      priority
                       fetchPriority="high"
                       loading="eager"
                       decoding="async"
-                      sizes={HERO_PILL_SIZES}
-                      className="object-cover"
+                      className="absolute inset-0 h-full w-full object-cover"
                     />
                   </div>
                 </div>
