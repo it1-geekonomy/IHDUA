@@ -1,8 +1,5 @@
-import type {
-  ContentStatus,
-  InteractiveProgrammeItem,
-  PaginationMeta,
-} from "@/domains/admin/lib/api";
+import type { ContentStatus, PaginationMeta } from "@/domains/admin/lib/api";
+import type { InteractiveProgrammeItem } from "@/domains/admin/lib/interactiveProgrammesApi";
 
 export type { ContentStatus, InteractiveProgrammeItem, PaginationMeta };
 

@@ -119,7 +119,10 @@ export function AdminSelect<T extends string = string>({
 
     updatePosition();
 
-    const handleScrollOrResize = () => {
+    const handleScrollOrResize = (e: Event) => {
+      // Keep open when scrolling inside the dropdown list itself
+      const target = e.target as Node | null;
+      if (target && dropdownRef.current?.contains(target)) return;
       setIsOpen(false);
     };
 
@@ -157,6 +160,12 @@ export function AdminSelect<T extends string = string>({
 
   const isFullWidth = className?.includes("w-full");
 
+  // Portal is position:fixed — `w-full` would be 100vw and stretch across the screen.
+  const portalDropdownClassName = dropdownClassName
+    ?.split(/\s+/)
+    .filter((c) => c && c !== "w-full" && c !== "w-max")
+    .join(" ");
+
   const dropdownPortal =
     isOpen && dropdownPos && typeof document !== "undefined"
       ? createPortal(
@@ -167,12 +176,14 @@ export function AdminSelect<T extends string = string>({
               top: dropdownPos.top !== undefined ? `${dropdownPos.top}px` : undefined,
               bottom: dropdownPos.bottom !== undefined ? `${dropdownPos.bottom}px` : undefined,
               left: `${dropdownPos.left}px`,
+              width: `${dropdownPos.minWidth}px`,
               minWidth: `${dropdownPos.minWidth}px`,
+              maxWidth: "min(100vw - 24px, 28rem)",
               zIndex: 99999,
             }}
             className={cn(
-              "w-max rounded-xl border border-[#E5E0D8] bg-white p-1 shadow-2xl animate-in fade-in-50 zoom-in-95 duration-150 font-figtree",
-              dropdownClassName,
+              "rounded-xl border border-[#E5E0D8] bg-white p-1 shadow-2xl animate-in fade-in-50 zoom-in-95 duration-150 font-figtree",
+              portalDropdownClassName,
             )}
           >
             {searchable && (
@@ -207,13 +218,13 @@ export function AdminSelect<T extends string = string>({
                         setSearchQuery("");
                       }}
                       className={cn(
-                        "flex w-full items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-left text-xs font-medium transition-colors cursor-pointer whitespace-nowrap",
+                        "flex w-full items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-left text-xs font-medium transition-colors cursor-pointer",
                         isSelected
                           ? "bg-[#FAF5FC] font-semibold text-[#9739A8]"
                           : "text-[#0F1C1D] hover:bg-[#FAF8F4] hover:text-[#9739A8]",
                       )}
                     >
-                      <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex min-w-0 items-center gap-2">
                         {opt.dotColor && (
                           <span
                             className={cn(
@@ -222,7 +233,7 @@ export function AdminSelect<T extends string = string>({
                             )}
                           />
                         )}
-                        <span className="whitespace-nowrap">{opt.label}</span>
+                        <span className="break-words">{opt.label}</span>
                       </div>
                       {isSelected && (
                         <Check className="h-3.5 w-3.5 shrink-0 text-[#9739A8] ml-2" />
