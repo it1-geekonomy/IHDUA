@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Typography from "@/lib/Typography";
+import ShareThisBar from "@/shared/components/ShareThisBar";
 import type { BlogPostView, StoryLink } from "@/domains/blogs/lib/mapStoryToPost";
 
 interface BlogDetailClientProps {
@@ -97,7 +98,7 @@ export default function BlogDetailClient({
         <div className="mt-3">
           <Typography
             variant="h3"
-            as="h1"
+            as="p"
             className="font-lora font-normal leading-[1.25] text-[#00191B]"
           >
             {post.title}
@@ -160,6 +161,13 @@ export default function BlogDetailClient({
                 </Typography>
               )}
             </div>
+
+            <ShareThisBar
+              className="mt-8 sm:mt-10"
+              label="Share this story"
+              title={post.title}
+              url={`/blog/${post.slug}`}
+            />
 
             {/* Bottom Bar: Back to all + story navigator */}
             <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-neutral-100 pt-6 sm:mt-12">

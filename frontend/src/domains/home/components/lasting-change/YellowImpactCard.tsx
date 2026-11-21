@@ -137,7 +137,7 @@ export function YellowImpactCard({
 
         <Typography
           variant="body-lg"
-          className="relative !mt-2 !max-w-none font-figtree text-[#7B6100] [overflow-wrap:anywhere] [html[lang=kn]_&]:!text-[13px] [html[lang=kn]_&]:!leading-[1.5]"
+          className="relative !mt-2 !max-w-none font-figtree text-[#3D3500] [overflow-wrap:anywhere] [html[lang=kn]_&]:!text-[13px] [html[lang=kn]_&]:!leading-[1.5]"
         >
           {LASTING_CHANGE.yellowCard.description}
         </Typography>

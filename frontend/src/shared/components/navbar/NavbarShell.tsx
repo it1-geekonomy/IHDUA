@@ -128,6 +128,8 @@ export default function NavbarShell() {
                 alt="IHDUA logo"
                 width={140}
                 height={140}
+                loading="lazy"
+                fetchPriority="low"
                 // Do not priority-preload — steals bandwidth from hero LCP image.
                 className="h-10 w-auto object-contain sm:h-11 md:h-12 xl:h-14"
               />

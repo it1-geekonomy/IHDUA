@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getImageProps } from "next/image";
 import { FLUID } from "@/domains/home/constants/development";
 import Typography from "@/lib/Typography";
 import { ExploreWorkLink } from "@/domains/home/components/ExploreWorkLink";
@@ -6,13 +7,19 @@ import { HeroMarquee } from "@/domains/home/components/HeroMarquee";
 import {
   BOTTOM_EDGE,
   GREY,
+  HERO_PILL_SIZES,
   KNOTS,
   LILAC,
+  PILL_ASPECT,
   PINK,
   RIBBON,
   TOP_EDGE,
   WAVE_MASK,
 } from "@/domains/home/constants/heroConstants";
+
+/** Mobile LCP display ~122×232; 2× for sharpness ≈ 260×490 max needed. */
+const LCP_WIDTH = 260;
+const LCP_HEIGHT = 488;
 
 function curve(ys: number[], u: number) {
   let i = KNOTS.findIndex((k, idx) => idx < KNOTS.length - 1 && u >= k && u <= KNOTS[idx + 1]);
@@ -137,17 +144,23 @@ export default function RuralDevelopmentSection({
   const noBanners = bannerImages.length === 0;
 
   const lcpSrc = imagesA[0] || null;
+  const lcpImage = lcpSrc
+    ? getImageProps({
+        src: lcpSrc,
+        alt: "",
+        width: LCP_WIDTH,
+        height: LCP_HEIGHT,
+        quality: 45,
+        sizes: HERO_PILL_SIZES,
+        priority: true,
+      })
+    : null;
 
   return (
     <section
       id="home-top"
       className={`relative overflow-hidden bg-[#FDFBF5] pb-8 lg:pb-12 ${FLUID.sectionPaddingTop}`}
     >
-      {/* Discover LCP image before JS — direct R2 URL, no /_next/image hop. */}
-      {lcpSrc ? (
-        <link rel="preload" as="image" href={lcpSrc} fetchPriority="high" />
-      ) : null}
-
       <HeroBackground />
 
       <div className="relative z-10 mx-auto grid max-w-[1600px] items-center gap-10 px-6 md:grid-cols-[minmax(0,1fr)_auto] md:gap-8 md:px-10 lg:gap-10 2xl:px-16">
@@ -208,7 +221,43 @@ export default function RuralDevelopmentSection({
             </Typography>
           </div>
         ) : (
-          <HeroMarquee imagesA={imagesA} imagesB={imagesB} />
+          <div className="relative mx-auto h-[22rem] w-full max-w-[16rem] sm:h-[32rem] sm:max-w-sm md:mx-0 md:h-[clamp(26rem,calc(100svh_-_8rem),40rem)] md:w-[clamp(14rem,32vw,20rem)] md:max-w-none md:justify-self-end lg:h-[clamp(30rem,calc(100svh_-_8rem),48rem)] lg:w-[clamp(22rem,27vw,32rem)]">
+            {lcpImage ? (
+              <>
+                {/* Preload the SAME optimized URL the <img> uses (not raw R2). */}
+                <link
+                  rel="preload"
+                  as="image"
+                  imageSrcSet={lcpImage.props.srcSet}
+                  imageSizes={lcpImage.props.sizes}
+                  fetchPriority="high"
+                />
+                <div
+                  id="hero-lcp-overlay"
+                  className="pointer-events-none absolute left-0 top-0 z-[2] w-[calc(50%-0.375rem)] transition-opacity duration-200 sm:w-[calc(50%-0.5rem)]"
+                >
+                  <div
+                    className={`relative w-full overflow-hidden rounded-full bg-[#EDE9DC] ${PILL_ASPECT}`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element -- LCP: match preload srcSet exactly */}
+                    <img
+                      {...lcpImage.props}
+                      alt=""
+                      fetchPriority="high"
+                      loading="eager"
+                      decoding="async"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                  </div>
+                </div>
+              </>
+            ) : null}
+            <HeroMarquee
+              imagesA={imagesA}
+              imagesB={imagesB}
+              lcpSrc={lcpSrc}
+            />
+          </div>
         )}
       </div>
 

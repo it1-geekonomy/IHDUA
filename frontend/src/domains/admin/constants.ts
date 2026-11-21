@@ -35,6 +35,16 @@ export const ADMIN_NAV_SECTIONS = [
     ],
   },
   {
+    title: "Programmes",
+    items: [
+      {
+        href: "/admin/interactive-programmes",
+        label: "Programmes",
+        icon: "interactiveProgrammes" as const,
+      },
+    ],
+  },
+  {
     title: "Our Impact",
     items: [
       { href: "/admin/impact/education", label: "Education", icon: "impactEducation" as const },
@@ -76,6 +86,11 @@ export const ADMIN_NAV = [
   { href: "/admin/newsletter-subscribers", label: "Newsletter Subscribers", icon: "newsletter" as const },
   { href: "/admin/blog-categories", label: "Blog Categories", icon: "categories" as const },
   { href: "/admin/blogs-and-stories", label: "Blogs & Stories", icon: "blogs" as const },
+  {
+    href: "/admin/interactive-programmes",
+    label: "Programmes",
+    icon: "interactiveProgrammes" as const,
+  },
   { href: "/admin/home-banners", label: "Home Banners", icon: "homeBanners" as const },
   { href: "/admin/impact-stats", label: "Impact Stats", icon: "impactStats" as const },
   { href: "/admin/leadership-members", label: "Leadership & Team", icon: "leadership" as const },

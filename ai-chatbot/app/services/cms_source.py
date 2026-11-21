@@ -235,6 +235,170 @@ def _documents_doc(rows: list[dict]) -> dict | None:
     }
 
 
+def _parse_json_list(value: Any) -> list:
+    if isinstance(value, list):
+        return value
+    if isinstance(value, str) and value.strip():
+        try:
+            parsed = json.loads(value)
+            return parsed if isinstance(parsed, list) else []
+        except ValueError:
+            return []
+    return []
+
+
+def _funding_project_doc(row: dict) -> dict:
+    """One published funding project from the Donate page CMS."""
+    title = row["title"]
+    url = "/donate"
+    parts = [
+        _header(title, "Funding Project", url, row),
+        "This is a published IHDUA funding project on the Donate page (/donate).\n",
+        "Donors can support the full project or a specific component (line item).\n",
+    ]
+    if row.get("project_number"):
+        parts.append(f"Project number: {row['project_number']}\n")
+    if row.get("cause"):
+        parts.append(f"Donation category / cause: {row['cause']}\n")
+    if row.get("total_label"):
+        parts.append(f"Total amount sought: {row['total_label']}\n")
+    if row.get("summary"):
+        parts.append(f"\nSummary:\n{plain_text(row['summary'])}\n")
+
+    highlights = _parse_json_list(row.get("highlights"))
+    if highlights:
+        parts.append("\nHighlights:\n")
+        for item in highlights:
+            if isinstance(item, str) and item.strip():
+                parts.append(f"• {item.strip()}\n")
+
+    components = _parse_json_list(row.get("components"))
+    if components:
+        parts.append("\nComponent-wise funding breakup:\n")
+        for item in components:
+            if not isinstance(item, dict):
+                continue
+            name = str(item.get("name") or "").strip()
+            amount = str(item.get("amountLabel") or item.get("amount_label") or "").strip()
+            if name and amount:
+                parts.append(f"• {name}: {amount}\n")
+            elif name:
+                parts.append(f"• {name}\n")
+
+    parts.append(
+        "\nTo donate to this project, open the Donate page at /donate, "
+        "browse projects, and choose this project or one of its components.\n"
+    )
+    return {
+        "table": "funding_projects",
+        "source_id": str(row["id"]),
+        "title": title,
+        "url": url,
+        "category": "Funding Project",
+        "slug": row.get("slug") or "",
+        "content": "".join(parts).strip(),
+    }
+
+
+def _funding_projects_index_doc(rows: list[dict]) -> dict | None:
+    """Short index of all published funding projects for list-style questions."""
+    if not rows:
+        return None
+    title = "IHDUA Funding Projects on Donate"
+    lines = []
+    for r in rows:
+        label = r.get("total_label") or ""
+        line = f"• {r['title']}"
+        if label:
+            line += f" — {label}"
+        lines.append(line)
+    return {
+        "table": "funding_projects_index",
+        "source_id": AGGREGATE_ID,
+        "title": title,
+        "url": "/donate",
+        "category": "Funding Project",
+        "content": _header(title, "Funding Project", "/donate", _latest(rows))
+        + "Published funding projects currently seeking support on the Donate page (/donate). "
+        "Project list is managed in the CMS and can change.\n"
+        + "\n".join(lines)
+        + "\n\nAsk about a project by name for its summary and component breakup, "
+        "or visit /donate to browse and donate.",
+    }
+
+
+def _format_event_date(value) -> str:
+    if not value:
+        return ""
+    try:
+        return value.strftime("%d %B %Y")
+    except AttributeError:
+        return str(value)
+
+
+def _format_event_time(value) -> str:
+    if not value:
+        return ""
+    text_value = str(value)
+    return text_value[:5] if len(text_value) >= 5 else text_value
+
+
+def _interactive_programme_doc(row: dict) -> dict:
+    title = row["title"]
+    # Public programme pages are not shipped yet — point visitors to Contact Us.
+    url = "/contact"
+    parts = [_header(title, "Interactive Programme", url, row)]
+    if row.get("event_date"):
+        parts.append(f"Event date: {_format_event_date(row['event_date'])}\n")
+    if row.get("event_time"):
+        parts.append(f"Event time: {_format_event_time(row['event_time'])}\n")
+    if row.get("event_location"):
+        parts.append(f"Location: {row['event_location']}\n")
+    if row.get("content"):
+        parts.append(f"\n{plain_text(row['content'])}\n")
+    parts.append(
+        "\nFor registration or more details about this interactive programme / event, "
+        "contact IHDUA via the Contact Us page at /contact.\n"
+    )
+    return {
+        "table": "interactive_programmes",
+        "source_id": str(row["id"]),
+        "title": title,
+        "url": url,
+        "category": "Interactive Programme",
+        "slug": row.get("slug") or "",
+        "content": "".join(parts).strip(),
+    }
+
+
+def _interactive_programmes_index_doc(rows: list[dict]) -> dict | None:
+    """Short index of published interactive programmes for list-style questions."""
+    if not rows:
+        return None
+    title = "IHDUA Interactive Programmes & Events"
+    lines = []
+    for r in rows:
+        line = f"• {r['title']}"
+        date_label = _format_event_date(r.get("event_date"))
+        location = (r.get("event_location") or "").strip()
+        extras = [p for p in (date_label, location) if p]
+        if extras:
+            line += f" — {', '.join(extras)}"
+        lines.append(line)
+    return {
+        "table": "interactive_programmes_index",
+        "source_id": AGGREGATE_ID,
+        "title": title,
+        "url": "/contact",
+        "category": "Interactive Programme",
+        "content": _header(title, "Interactive Programme", "/contact", _latest(rows))
+        + "Published interactive programmes and events managed in the IHDUA CMS.\n"
+        + "\n".join(lines)
+        + "\n\nAsk about a programme by name for date, location and details, "
+        "or visit /contact to get in touch with IHDUA.",
+    }
+
+
 _PUBLISHED = "deleted_at IS NULL AND status = 'published'"
 
 # Tables indexed one document per row: (query, id column, builder).
@@ -266,6 +430,20 @@ _ROW_TABLES: dict[str, tuple[str, str, Callable[[dict], dict]]] = {
         "id",
         _legal_doc("terms_and_conditions", "/terms-and-conditions"),
     ),
+    "funding_projects": (
+        "SELECT id, slug, project_number, title, summary, total_label, cause, "
+        "highlights, components, updated_at FROM funding_projects "
+        f"WHERE {_PUBLISHED} ORDER BY sort_order, project_number, created_at",
+        "id",
+        _funding_project_doc,
+    ),
+    "interactive_programmes": (
+        "SELECT id, title, slug, event_date, event_location, event_time, content, updated_at "
+        "FROM interactive_programmes "
+        f"WHERE {_PUBLISHED} ORDER BY event_date NULLS LAST, created_at DESC",
+        "id",
+        _interactive_programme_doc,
+    ),
 }
 
 # Small tables indexed as one combined document so "list all ..." questions get every row.
@@ -294,6 +472,16 @@ _AGGREGATE_TABLES: dict[str, tuple[str, Callable[[list[dict]], dict | None]]] = 
         f"SELECT title, updated_at FROM organizational_documents WHERE {_PUBLISHED} "
         "ORDER BY sort_order, created_at",
         _documents_doc,
+    ),
+    "funding_projects_index": (
+        "SELECT title, total_label, updated_at FROM funding_projects "
+        f"WHERE {_PUBLISHED} ORDER BY sort_order, project_number, created_at",
+        _funding_projects_index_doc,
+    ),
+    "interactive_programmes_index": (
+        "SELECT title, event_date, event_location, updated_at FROM interactive_programmes "
+        f"WHERE {_PUBLISHED} ORDER BY event_date NULLS LAST, created_at DESC",
+        _interactive_programmes_index_doc,
     ),
 }
 

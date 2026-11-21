@@ -103,6 +103,10 @@ def build_multi_queries(query: str, intents: set[str], original: str = "") -> li
             "How to donate online project-based funding projects component breakup "
             "general donation 80G tax benefit receipt recurring donation /donate"
         )
+        queries.append(
+            "IHDUA funding projects Donate page published project summary "
+            "total amount sought component-wise funding breakup"
+        )
     if "model_village" in intents:
         queries.append("Model village rejuvenation increase the green cover tree plantation sanitation")
     if "contact" in intents:

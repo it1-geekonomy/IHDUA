@@ -23,6 +23,7 @@ const PATH_LABELS: Record<string, string> = {
   "annual-reports": "Annual Reports",
   milestones: "Key Milestones",
   "funding-projects": "Funding Projects",
+  "interactive-programmes": "Programmes",
   "terms-and-conditions": "Terms & Conditions",
   "privacy-policy": "Privacy Policy",
   impact: "Our Impact",

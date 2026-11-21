@@ -128,7 +128,22 @@ def _answer(
     # 5. Multi-query retrieval
     queries = build_multi_queries(rewritten, intents, original=search_text)
     hits = hybrid_retrieve(queries, intents, question=search_text)
-    ranked = vector_store.with_neighbor_chunks(rerank(hits, intents))
+    # If a funding project title clearly matches the question, treat as donate intent
+    if any(
+        (h.get("table") == "funding_projects")
+        and (h.get("title") or "").lower()
+        and all(
+            w in search_text.lower()
+            for w in [
+                t
+                for t in (h.get("title") or "").lower().split()
+                if len(t) >= 4
+            ][:2]
+        )
+        for h in hits
+    ):
+        intents = set(intents) | {"donate"}
+    ranked = vector_store.with_neighbor_chunks(rerank(hits, intents, question=search_text))
 
     # 6. Generate answer
     answer = generate_answer(question, ranked, history=history, language=lang)

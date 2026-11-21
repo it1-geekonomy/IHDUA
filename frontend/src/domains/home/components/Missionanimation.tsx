@@ -157,7 +157,9 @@ export function PillarEffects({
 /* ===== 4. Class helpers for the number and title ===== */
 export const pillarNumberClass = (isActive: boolean) =>
   `relative inline-block font-lora font-normal leading-none transition-colors duration-500 ${
-    isActive ? "mission-number-pop text-[#9739A8]" : "text-[#6D3F76]/[0.37]"
+    isActive
+      ? "mission-number-pop text-[#6B1F7A]"
+      : "text-[#6D3F76]/70 group-hover:text-[#6B1F7A]"
   }`;
 
 export const pillarTitleNudge = (isActive: boolean, animKey: number) => ({

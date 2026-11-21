@@ -1,7 +1,59 @@
 from __future__ import annotations
 
+import re
+
 from app.config import settings
 from app.services import vector_store
+
+_STOP = {
+    "the",
+    "and",
+    "for",
+    "what",
+    "is",
+    "are",
+    "about",
+    "explain",
+    "tell",
+    "me",
+    "please",
+    "with",
+    "your",
+    "how",
+    "can",
+    "find",
+    "who",
+    "where",
+    "when",
+    "does",
+    "ihdua",
+    "project",
+    "projects",
+    "funding",
+    "donate",
+    "donation",
+}
+
+
+def _question_tokens(question: str) -> list[str]:
+    return [
+        t.lower()
+        for t in re.findall(r"[A-Za-z][A-Za-z0-9\-]{2,}", question or "")
+        if t.lower() not in _STOP
+    ]
+
+
+def _title_overlap_score(title: str, question: str) -> float:
+    q = (question or "").lower()
+    words = [
+        w
+        for w in re.findall(r"[a-z]{3,}", (title or "").lower())
+        if w not in _STOP
+    ]
+    if not words:
+        return 0.0
+    matched = sum(1 for w in words if w in q)
+    return matched / len(words)
 
 
 def hybrid_retrieve(
@@ -45,6 +97,7 @@ def hybrid_retrieve(
                 "funding",
                 "breakup",
                 "component",
+                "essentials",
             ]
         )
     if "health" in intents:
@@ -60,11 +113,25 @@ def hybrid_retrieve(
     if "history" in intents:
         keywords.extend(["milestones", "annual reports"])
 
+    # Always match significant question words against document titles
+    # (fixes "explain about School Essentials" missing donate intent).
+    keywords.extend(_question_tokens(question))
+
     if keywords:
-        kw_hits = vector_store.get_by_title_keywords(keywords)
+        # de-dupe while preserving order
+        keywords = list(dict.fromkeys(keywords))
+        kw_hits = vector_store.get_by_title_keywords(keywords, limit=16)
         for kh in kw_hits:
             cid = kh["id"]
-            if cid not in all_hits:
+            overlap = _title_overlap_score(kh.get("title") or "", question)
+            if kh.get("table") in ("funding_projects", "funding_projects_index") and overlap >= 0.5:
+                kh = {**kh, "similarity": max(float(kh.get("similarity") or 0), 0.72 + 0.2 * overlap)}
+            if (
+                kh.get("table") in ("interactive_programmes", "interactive_programmes_index")
+                and overlap >= 0.5
+            ):
+                kh = {**kh, "similarity": max(float(kh.get("similarity") or 0), 0.72 + 0.2 * overlap)}
+            if cid not in all_hits or kh["similarity"] > all_hits[cid]["similarity"]:
                 all_hits[cid] = kh
 
     return list(all_hits.values())

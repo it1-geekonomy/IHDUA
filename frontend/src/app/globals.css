@@ -33,15 +33,14 @@ body {
 }
 
 /*
- * Nuke Google Translate UI chrome (top “Translated into…” bar, gadget,
- * tooltips). Keep [data-lang-toggle] alone — do NOT hide bare .skiptranslate.
+ * Hide GT top bar / tooltips. Keep #google_translate_element + combo alive.
+ * Do NOT use bare .skiptranslate — that hides our footer language toggle.
  */
 iframe.goog-te-banner-frame,
 .goog-te-banner-frame,
 .goog-te-banner-frame.skiptranslate,
 .goog-te-balloon-frame,
 .goog-te-ftab-frame,
-.goog-te-menu-frame,
 .goog-te-spinner-pos,
 #goog-gt-tt,
 #goog-gt-vt,
@@ -49,46 +48,40 @@ iframe.goog-te-banner-frame,
 .goog-tooltip:hover,
 .goog-text-highlight,
 .goog-logo-link,
-.goog-logo-link:link,
-.goog-logo-link:visited,
-.goog-logo-link:hover,
-.goog-logo-link:active,
-.goog-te-gadget,
-.goog-te-gadget > span,
-.goog-te-gadget > div,
-#google_translate_element,
+body > .skiptranslate:not(#google_translate_element),
+body > iframe.skiptranslate,
 .VIpgJd-ZVi9od-l4eHX-hSRGPd,
 .VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
 .VIpgJd-ZVi9od-ORHb-OEVmcd,
 .VIpgJd-ZVi9od-aZ2wEe-wOHMyf-ti6hGc {
   display: none !important;
   visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
   height: 0 !important;
   max-height: 0 !important;
   width: 0 !important;
-  max-width: 0 !important;
   border: none !important;
   box-shadow: none !important;
-  position: absolute !important;
-  left: -9999px !important;
-  top: -9999px !important;
 }
 
+/* Widget host stays in DOM (off-screen) so select.goog-te-combo still works. */
 #google_translate_element {
   position: absolute !important;
-  width: 0 !important;
-  height: 0 !important;
+  left: -9999px !important;
+  top: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
   overflow: hidden !important;
+  opacity: 0 !important;
 }
 
-/* GT shoves the page down for its banner — never allow that. */
+.goog-te-gadget {
+  font-size: 0 !important;
+}
+
 html,
 body {
   top: 0 !important;
   margin-top: 0 !important;
-  position: static !important;
 }
 /* Language toggle must stay visible — Google Translate's stylesheet
    hides .skiptranslate (their banner class). We use notranslate only. */
@@ -97,6 +90,13 @@ body {
   visibility: visible !important;
   opacity: 1 !important;
   pointer-events: auto !important;
+  position: relative;
+  z-index: 60;
+  touch-action: manipulation;
+}
+[data-lang-toggle] button {
+  pointer-events: auto !important;
+  touch-action: manipulation;
 }
 
 /* Hide scrollbars but keep scrolling enabled */
@@ -167,8 +167,22 @@ html.translated-rtl [data-lang-toggle] [data-lang-mobile][data-lang="kn"] {
   font-weight: 700 !important;
   color: #00191b !important;
 }
-html[lang="kn"] [data-lang-toggle] [data-lang-switch] > span,
-html.translated-ltr [data-lang-toggle] [data-lang-switch] > span,
-html.translated-rtl [data-lang-toggle] [data-lang-switch] > span {
-  transform: translateX(1.25rem) !important;
+/* Knob stays inside the track — never overlap ಕನ್ನಡ */
+html[lang="kn"] [data-lang-toggle] [data-lang-knob],
+html.translated-ltr [data-lang-toggle] [data-lang-knob],
+html.translated-rtl [data-lang-toggle] [data-lang-knob],
+[data-lang-toggle][data-active-lang="kn"] [data-lang-knob] {
+  left: 1.375rem !important;
+}
+html[lang="en"]:not(.translated-ltr):not(.translated-rtl)
+  [data-lang-toggle][data-active-lang="en"]
+  [data-lang-knob] {
+  left: 0.125rem !important;
+}
+/* Mobile: hide footer language switch while chatbot panel is open (it was z-60 over the chat input). */
+@media (max-width: 1023px) {
+  body.ihdua-chat-open [data-lang-toggle] {
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
 }

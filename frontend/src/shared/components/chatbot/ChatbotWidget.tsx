@@ -298,16 +298,12 @@ export function ChatbotWidget() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  // Avoid mixed EN/KN chat after a language toggle (GT used to half-translate the widget).
+  // Restore once on mount so history survives in-app navigations (e.g. source → About Us).
+  // Do NOT clear storage when `language` re-syncs on route change — that was wiping chats.
   useEffect(() => {
-    setMessages([]);
-    setSessionId(undefined);
-    try {
-      sessionStorage.removeItem(STORAGE_KEY);
-    } catch {
-      // ignore
-    }
-  }, [language]);
+    restoreChat();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only restore
+  }, []);
 
   useEffect(() => {
     if (!restoredRef.current) return;
@@ -327,10 +323,20 @@ export function ChatbotWidget() {
     try {
       const raw = sessionStorage.getItem(STORAGE_KEY);
       if (!raw) return;
-      const stored = JSON.parse(raw);
-      if (stored.language && stored.language !== copy.language) return;
-      setMessages(stored.messages ?? []);
-      setSessionId(stored.sessionId);
+      const stored = JSON.parse(raw) as {
+        messages?: ChatMessage[];
+        sessionId?: string;
+        language?: string;
+      };
+      // Explicit EN↔KN switch does a hard reload; drop the other locale's thread.
+      if (stored.language && stored.language !== copy.language) {
+        sessionStorage.removeItem(STORAGE_KEY);
+        return;
+      }
+      if (Array.isArray(stored.messages) && stored.messages.length > 0) {
+        setMessages(stored.messages);
+      }
+      if (stored.sessionId) setSessionId(stored.sessionId);
     } catch {
       // ignore
     }
@@ -353,6 +359,13 @@ export function ChatbotWidget() {
       window.clearTimeout(timer);
       window.removeEventListener("keydown", onKey);
     };
+  }, [open]);
+
+  // Footer language toggle is z-60 (above the chat FAB). Hide it while the
+  // panel is open so it does not float over the mobile chat input.
+  useEffect(() => {
+    document.body.classList.toggle("ihdua-chat-open", open);
+    return () => document.body.classList.remove("ihdua-chat-open");
   }, [open]);
 
   const dismissTeaser = useCallback(() => {
@@ -472,6 +485,11 @@ export function ChatbotWidget() {
     setMessages([]);
     setSessionId(undefined);
     setInput("");
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // ignore
+    }
     inputRef.current?.focus();
   }
 
@@ -511,7 +529,7 @@ export function ChatbotWidget() {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 360, damping: 28 }}
             style={{ transformOrigin: "bottom right" }}
-            className="fixed inset-x-3 bottom-3 top-auto z-50 flex h-[min(600px,calc(100vh-2rem))] h-[min(600px,calc(100dvh-2rem))] flex-col overflow-hidden overscroll-contain rounded-[28px] border border-black/5 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)] sm:inset-auto sm:right-6 sm:bottom-[90px] sm:h-[min(600px,calc(100vh-7rem))] sm:h-[min(600px,calc(100dvh-7rem))] sm:w-[380px]"
+            className="fixed inset-x-3 bottom-3 top-auto z-[70] flex h-[min(600px,calc(100vh-2rem))] h-[min(600px,calc(100dvh-2rem))] flex-col overflow-hidden overscroll-contain rounded-[28px] border border-black/5 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)] sm:inset-auto sm:right-6 sm:bottom-[90px] sm:h-[min(600px,calc(100vh-7rem))] sm:h-[min(600px,calc(100dvh-7rem))] sm:w-[380px]"
           >
             {/* ────── Gradient Header ────── */}
             <div className="flex shrink-0 items-center justify-between bg-gradient-to-r from-[#B250B5] via-[#DE9FD7] to-[#FCE7D5] px-5 py-3.5 select-none">
@@ -716,6 +734,10 @@ export function ChatbotWidget() {
                                   <Link
                                     key={idx}
                                     href={s.url || "/about"}
+                                    onClick={() => {
+                                      // Keep session in storage; close panel so the page is readable
+                                      setOpen(false);
+                                    }}
                                     className="inline-flex items-center gap-1 rounded-md bg-[#FAF7FB] px-1.5 py-0.5 text-[10px] font-medium text-[#9739A8] hover:bg-[#9739A8] hover:text-white transition"
                                   >
                                     {s.title}
@@ -770,7 +792,7 @@ export function ChatbotWidget() {
       </AnimatePresence>
 
       {/* ──────────────────────── Floating Launcher ──────────────────────── */}
-      <div className="fixed bottom-6 right-4 z-50 flex flex-col items-end gap-2.5 sm:bottom-6 sm:right-6">
+      <div className="fixed bottom-27 right-4 z-[70] flex flex-col items-end gap-2.5 sm:bottom-6 sm:right-6">
         {/* Subtle Teaser */}
         <AnimatePresence>
           {showTeaser && !open ? (
