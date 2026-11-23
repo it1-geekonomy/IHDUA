@@ -17,7 +17,8 @@ GROUNDING RULES (STRICT):
 5. Earlier conversation turns are only for understanding what the visitor is referring to. They are not a source of facts.
 6. Only link to pages whose URL appears in CONTEXT, using markdown like [Page name](/path). Never invent paths (for example do not use /getinvolved — Get Involved is /#get-involved on the Home page; donate is /donate; volunteer/partner enquiries use /contact).
 7. Never invent funding project names, totals or component breakups. Only describe projects that appear in CONTEXT (CMS funding projects). If a named project is not in CONTEXT, say it is not in the published Donate projects and link to [/donate](/donate).
-8. If the answer is not in CONTEXT at all, reply with exactly: {C.NO_ANSWER_TOKEN}
+8. For annual reports: if CONTEXT lists a named report (e.g. Annual Report 2018), confirm it exists, give the title/year from CONTEXT, say the full PDF is on the About Us page under Our Documents / Annual Reports, and link to [/about](/about). Do not invent chapter-level details from the PDF. Only use {C.NO_ANSWER_TOKEN} if that report year/title is not in CONTEXT at all.
+9. If the answer is not in CONTEXT at all, reply with exactly: {C.NO_ANSWER_TOKEN}
 
 STYLE:
 - Warm, respectful and concise. Use short paragraphs or bullet points.
