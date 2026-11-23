@@ -151,7 +151,15 @@ export class InteractiveProgrammesService {
     return buildPaginatedResult(data, total, page, limit);
   }
 
-  async findPublishedBySlug(slug: string): Promise<InteractiveProgramme> {
+  async findPublishedBySlug(
+    slug: string,
+    relatedLimit = 3,
+    relatedPage = 1,
+  ): Promise<
+    InteractiveProgramme & {
+      relatedEvents: InteractiveProgrammePublishedListItem[];
+    }
+  > {
     const entity = await this.repo.findOne({
       where: { slug, status: ContentStatus.PUBLISHED },
     });
@@ -160,7 +168,38 @@ export class InteractiveProgrammesService {
         `Published interactive programme not found for slug "${slug}".`,
       );
     }
-    return entity;
+
+    const take = Number(relatedLimit) || 3;
+    const skip = ((Number(relatedPage) || 1) - 1) * take;
+
+    const related = await this.repo
+      .createQueryBuilder('entity')
+      .select(PUBLISHED_LIST_COLUMNS.map((column) => `entity.${column}`))
+      .where('entity.status = :status', { status: ContentStatus.PUBLISHED })
+      .andWhere('entity.id != :id', { id: entity.id })
+      .orderBy('entity.eventDate', 'ASC', 'NULLS LAST')
+      .addOrderBy('entity.createdAt', 'DESC')
+      .skip(skip)
+      .take(take)
+      .getMany();
+
+    const relatedEvents: InteractiveProgrammePublishedListItem[] = related.map(
+      (row) => ({
+        id: row.id,
+        slug: row.slug,
+        title: row.title,
+        eventMediaUrl: row.eventMediaUrl,
+        eventDate: row.eventDate,
+        eventLocation: row.eventLocation,
+        eventTime: row.eventTime,
+        status: row.status,
+      }),
+    );
+
+    return {
+      ...entity,
+      relatedEvents,
+    };
   }
 
   async findAll(

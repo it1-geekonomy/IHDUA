@@ -32,7 +32,7 @@ function ContentBody({ content }: { content: string | null }) {
     .filter(Boolean);
 
   return (
-    <div className="space-y-4 font-figtree text-[1.0625rem] font-normal leading-relaxed text-[#5F6C6D] sm:text-[1.125rem]">
+    <div className="space-y-4 font-figtree text-[1.0625rem] font-normal leading-[1.75] text-[#5F6C6D] sm:text-[1.125rem]">
       {paragraphs.map((p, i) => (
         <p key={i}>{p}</p>
       ))}
@@ -43,14 +43,16 @@ function ContentBody({ content }: { content: string | null }) {
 export default function ProgrammeDetailSection({ programme, related }: Props) {
   const dateLabel = formatProgrammeDetailDate(programme.eventDate);
   const timeLabel = formatProgrammeTime(programme.eventTime);
+  const dateLine = [dateLabel, timeLabel].filter(Boolean).join(" · ");
   const mediaIsVideo = isVideoUrl(programme.eventMediaUrl);
-  const hasMeta = Boolean(dateLabel || timeLabel || programme.eventLocation);
+  const hasMeta = Boolean(dateLine || programme.eventLocation);
 
   return (
     <section className="w-full bg-white px-6 py-10 sm:py-12 lg:px-12 lg:py-16 2xl:px-32">
       <div className="mx-auto w-full max-w-[100rem]">
+        {/* Mobile: image above content. Desktop: text left, image right. */}
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16">
-          <div>
+          <div className="order-2 min-w-0 lg:order-1">
             <Typography
               variant="h3"
               as="h1"
@@ -60,8 +62,8 @@ export default function ProgrammeDetailSection({ programme, related }: Props) {
             </Typography>
 
             {hasMeta && (
-              <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[#9739A8]">
-                {dateLabel && (
+              <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-[#9739A8]">
+                {dateLine && (
                   <div className="flex items-center gap-1.5">
                     <svg
                       className="size-4 shrink-0"
@@ -81,31 +83,7 @@ export default function ProgrammeDetailSection({ programme, related }: Props) {
                       variant="body-sm"
                       className="font-figtree font-medium text-[#9739A8]"
                     >
-                      {dateLabel}
-                    </Typography>
-                  </div>
-                )}
-                {timeLabel && (
-                  <div className="flex items-center gap-1.5">
-                    <svg
-                      className="size-4 shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={1.75}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <Typography
-                      variant="body-sm"
-                      className="font-figtree font-medium text-[#9739A8]"
-                    >
-                      {timeLabel}
+                      {dateLine}
                     </Typography>
                   </div>
                 )}
@@ -147,30 +125,33 @@ export default function ProgrammeDetailSection({ programme, related }: Props) {
             </div>
           </div>
 
-          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-neutral-100 lg:aspect-auto lg:min-h-[22rem]">
-            {programme.eventMediaUrl && !mediaIsVideo ? (
-              <Image
-                src={programme.eventMediaUrl}
-                alt={programme.title}
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-                priority
-              />
-            ) : programme.eventMediaUrl && mediaIsVideo ? (
-              <video
-                src={programme.eventMediaUrl}
-                controls
-                playsInline
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full min-h-[16rem] w-full items-center justify-center bg-[#F5F0F7]">
-                <span className="font-figtree text-sm text-[#9739A8]/50">
-                  No media
-                </span>
-              </div>
-            )}
+          {/* Figma ~592×559, radius 6 — responsive, not locked to desktop px */}
+          <div className="relative order-1 mx-auto w-full max-w-[37rem] overflow-hidden rounded-[6px] bg-neutral-100 lg:order-2 lg:mx-0 lg:justify-self-end">
+            <div className="relative aspect-[592/559] w-full">
+              {programme.eventMediaUrl && !mediaIsVideo ? (
+                <Image
+                  src={programme.eventMediaUrl}
+                  alt={programme.title}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 592px"
+                  className="object-cover"
+                  priority
+                />
+              ) : programme.eventMediaUrl && mediaIsVideo ? (
+                <video
+                  src={programme.eventMediaUrl}
+                  controls
+                  playsInline
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full min-h-[16rem] w-full items-center justify-center bg-[#F5F0F7]">
+                  <span className="font-figtree text-sm text-[#9739A8]/50">
+                    No media
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
