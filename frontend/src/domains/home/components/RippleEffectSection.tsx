@@ -36,7 +36,7 @@ export default function RippleEffectSection() {
             className="group relative block h-64 cursor-pointer overflow-hidden rounded-md sm:h-80 md:h-[26rem] lg:h-auto"
           >
             <img
-              src="/rippleeffect/shanthamma1.png"
+              src= "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795415785335-3wezk-shanthamma1.webp"
               alt="Shanthamma standing in her farm field"
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105 lg:absolute lg:inset-0"
             />
