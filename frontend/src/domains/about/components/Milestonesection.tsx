@@ -25,6 +25,12 @@ export interface KeyMilestonesProps {
 const DEFAULT_EMPTY_MESSAGE =
   "New milestones and updates will be displayed here soon.";
 
+const MOBILE_QUERY = "(max-width: 767px)";
+const BAND_LOW = 0.35; // lock when the section's center is between 35%...
+const BAND_HIGH = 0.65; // ...and 65% of the viewport height
+const REARM_MARGIN = 0.1; // after a release, scroll this far (x viewport) out of the band to lock again
+const MOBILE_SETTLE_MS = 140; // list scroll is "stopped" after this much silence
+
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
@@ -38,6 +44,103 @@ function toPixels(event: WheelEvent, delta: number): number {
       return delta;
   }
 }
+
+/**
+ * The range of window.scrollY where the section's center sits in the middle
+ * band of the viewport (BAND_LOW..BAND_HIGH of its height). The page locks the
+ * moment scrolling enters this band, so it stops right where the user is.
+ */
+function lockBand(el: HTMLElement) {
+  const r = el.getBoundingClientRect();
+  const centerAbs = window.scrollY + r.top + r.height / 2;
+  const vh = window.innerHeight;
+  return {
+    lo: Math.max(centerAbs - vh * BAND_HIGH, 0),
+    hi: Math.max(centerAbs - vh * BAND_LOW, 0),
+  };
+}
+
+/**
+ * Did the page scroll between prevY and y (including a one-frame jump over it)
+ * pass through the lock band? A fast scroll can therefore never skip the section.
+ */
+function crossedSection(el: HTMLElement, prevY: number, y: number) {
+  const { lo, hi } = lockBand(el);
+  return Math.max(prevY, y) >= lo && Math.min(prevY, y) <= hi;
+}
+
+/** Scrolled far enough out of the lock band (in either direction) to lock again? */
+function leftBand(el: HTMLElement) {
+  const { lo, hi } = lockBand(el);
+  const y = window.scrollY;
+  const margin = window.innerHeight * REARM_MARGIN;
+  return y < lo - margin || y > hi + margin;
+}
+
+/** Where to lock: right where the user is, or the nearest band edge if a fast scroll overshot. */
+function lockTarget(el: HTMLElement) {
+  const { lo, hi } = lockBand(el);
+  return clamp(window.scrollY, lo, hi);
+}
+
+/**
+ * Freeze native page scrolling (kills wheel/touch momentum, keyboard and
+ * scrollbar scrolling) without moving the page. Returns an undo function.
+ */
+function lockPageScroll() {
+  const root = document.documentElement;
+  const body = document.body;
+  const prev = {
+    rootOverflow: root.style.overflow,
+    bodyOverflow: body.style.overflow,
+    gutter: root.style.scrollbarGutter,
+    rootOb: root.style.overscrollBehavior,
+    bodyOb: body.style.overscrollBehavior,
+  };
+  // keep the scrollbar's space reserved so the layout doesn't shift
+  root.style.scrollbarGutter = "stable";
+  root.style.overflow = "hidden";
+  body.style.overflow = "hidden";
+  root.style.overscrollBehavior = "none";
+  body.style.overscrollBehavior = "none";
+  return () => {
+    root.style.overflow = prev.rootOverflow;
+    body.style.overflow = prev.bodyOverflow;
+    root.style.scrollbarGutter = prev.gutter;
+    root.style.overscrollBehavior = prev.rootOb;
+    body.style.overscrollBehavior = prev.bodyOb;
+  };
+}
+
+/** Eased window scroll driven by rAF (ignores CSS scroll-behavior). Returns a cancel fn. */
+function animateScrollTo(to: number, onDone?: () => void) {
+  const from = window.scrollY;
+  const dist = to - from;
+  if (Math.abs(dist) < 2) {
+    onDone?.();
+    return () => {};
+  }
+  const duration = clamp(Math.abs(dist) * 0.8, 200, 450);
+  const t0 = performance.now();
+  let id = 0;
+  const step = (now: number) => {
+    const p = Math.min((now - t0) / duration, 1);
+    const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+    window.scrollTo({ top: from + dist * eased, behavior: "instant" as ScrollBehavior });
+    if (p < 1) id = requestAnimationFrame(step);
+    else onDone?.();
+  };
+  id = requestAnimationFrame(step);
+  return () => cancelAnimationFrame(id);
+}
+
+/**
+ * Desktop: vertical wheel / touch drives the horizontal timeline.
+ * The moment the section comes into view (slow OR fast, wheel, trackpad,
+ * keyboard, scrollbar) native page scrolling is frozen, the page glides to the
+ * section, and all input drives the timeline. At either end the next fresh
+ * scroll gesture releases the page. The section keeps its natural height.
+ */
 function useScrollCapture(
   sectionRef: RefObject<HTMLElement | null>,
   viewportRef: RefObject<HTMLElement | null>,
@@ -54,6 +157,12 @@ function useScrollCapture(
     const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY);
 
     let listening = false;
+    let locked = false;
+    let armed = true; // re-armed when the section fully leaves the viewport
+    let animating = false;
+    let cancelGlide: (() => void) | null = null;
+    let undoPageLock: (() => void) | null = null;
+    let lastY = window.scrollY;
     let steps = 0;
     let maxShiftPercent = 0;
     let target = 0;
@@ -93,7 +202,6 @@ function useScrollCapture(
 
     const consume = (delta: number): boolean => {
       if (delta === 0 || steps <= 0) return false;
-
       if ((delta > 0 && target >= 1) || (delta < 0 && target <= 0)) return false;
 
       const perStep = clamp(
@@ -103,17 +211,58 @@ function useScrollCapture(
       );
       target = clamp(target + delta / (perStep * steps), 0, 1);
 
+      // reached an end: swallow the momentum tail of this gesture
       if (target <= 0 || target >= 1) swallowing = true;
 
       if (!frame) frame = requestAnimationFrame(tick);
       return true;
     };
 
+    const lock = () => {
+      locked = true;
+      armed = false;
+      animating = true;
+      swallowing = true; // ignore the tail of the flick that brought us here
+      undoPageLock = lockPageScroll();
+      cancelGlide = animateScrollTo(lockTarget(section), () => {
+        animating = false;
+        cancelGlide = null;
+      });
+    };
+
+    const unlock = () => {
+      cancelGlide?.();
+      cancelGlide = null;
+      animating = false;
+      locked = false;
+      swallowing = false;
+      undoPageLock?.();
+      undoPageLock = null;
+    };
+
+    const onScroll = () => {
+      const y = window.scrollY;
+      const prev = lastY;
+      lastY = y;
+      if (locked || steps <= 0) return;
+      if (!armed) {
+        // re-arm in BOTH directions once the user has scrolled out of the band
+        if (leftBand(section)) armed = true;
+        return;
+      }
+      if (crossedSection(section, prev, y)) lock();
+    };
+
     const onWheel = (event: WheelEvent) => {
-      if (event.ctrlKey) return;
+      if (!locked || event.ctrlKey) return;
 
       const gap = event.timeStamp - lastWheelTime;
       lastWheelTime = event.timeStamp;
+
+      if (animating) {
+        event.preventDefault();
+        return;
+      }
 
       if (swallowing) {
         if (gap > GESTURE_GAP_MS) {
@@ -130,6 +279,7 @@ function useScrollCapture(
           : event.deltaY;
 
       if (consume(toPixels(event, raw))) event.preventDefault();
+      else unlock(); // fresh push past an end -> let the page go
     };
 
     const onTouchStart = (event: TouchEvent) => {
@@ -137,31 +287,61 @@ function useScrollCapture(
     };
 
     const onTouchMove = (event: TouchEvent) => {
+      if (!locked) return;
       const y = event.touches[0]?.clientY ?? touchY;
       const dy = touchY - y;
       touchY = y;
-      if (event.cancelable && consume(dy)) event.preventDefault();
+      if (!event.cancelable || dy === 0) return;
+      if (animating) {
+        event.preventDefault();
+        return;
+      }
+      if (consume(dy)) event.preventDefault();
+      else unlock();
     };
+
+    // Fully off screen: re-arm, and park the timeline at the end the user will
+    // come back from (invisible, so nothing jumps).
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry || entry.isIntersecting) return;
+        if (locked) unlock();
+        armed = true;
+        swallowing = false;
+        const below = entry.boundingClientRect.top > 0;
+        target = current = below ? 0 : 1;
+        cancelAnimationFrame(frame);
+        frame = lastTime = 0;
+        paint();
+      },
+      { threshold: [0] },
+    );
 
     const listen = () => {
       if (listening) return;
       listening = true;
+      lastY = window.scrollY;
       viewport.scrollLeft = 0;
-      section.addEventListener("wheel", onWheel, { passive: false });
-      section.addEventListener("touchstart", onTouchStart, { passive: true });
-      section.addEventListener("touchmove", onTouchMove, { passive: false });
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("wheel", onWheel, { passive: false });
+      window.addEventListener("touchstart", onTouchStart, { passive: true });
+      window.addEventListener("touchmove", onTouchMove, { passive: false });
+      io.observe(section);
     };
 
     const unlisten = () => {
       if (!listening) return;
       listening = false;
-      section.removeEventListener("wheel", onWheel);
-      section.removeEventListener("touchstart", onTouchStart);
-      section.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      io.disconnect();
+      unlock();
       cancelAnimationFrame(frame);
       frame = lastTime = 0;
       target = current = 0;
-      swallowing = false;
+      armed = true;
       track.style.transform = "";
     };
 
@@ -186,6 +366,159 @@ function useScrollCapture(
       unlisten();
     };
   }, [sectionRef, viewportRef, trackRef, count]);
+}
+
+/**
+ * Mobile: the list scrolls vertically. The moment the section comes into view
+ * the page is frozen and glides to it; the list then scrolls natively. The page
+ * is released when the list stops at its far end, when the user swipes outward
+ * at an edge, or touches outside the list.
+ */
+function useMobileScrollLock(
+  sectionRef: RefObject<HTMLElement | null>,
+  viewportRef: RefObject<HTMLElement | null>,
+  count: number,
+) {
+  useEffect(() => {
+    const section = sectionRef.current;
+    const list = viewportRef.current;
+    if (!section || !list || count === 0) return;
+
+    const mobile = window.matchMedia(MOBILE_QUERY);
+
+    let engaged = false;
+    let armed = true;
+    let entry = 1; // 1 = entered scrolling down (exit = bottom), -1 = scrolling up
+    let touching = false;
+    let pushingOut = false;
+    let lastTouchY = 0;
+    let stopTimer = 0;
+    let lastScrollY = window.scrollY;
+    let cancelGlide: (() => void) | null = null;
+    let undoPageLock: (() => void) | null = null;
+
+    const atTop = () => list.scrollTop <= 1;
+    const atBottom = () =>
+      list.scrollTop + list.clientHeight >= list.scrollHeight - 1;
+
+    const engage = (dir: number) => {
+      engaged = true;
+      armed = false;
+      entry = dir;
+      pushingOut = false;
+      list.style.overscrollBehaviorY = "contain";
+      undoPageLock = lockPageScroll(); // stops page momentum immediately
+      cancelGlide = animateScrollTo(lockTarget(section));
+    };
+
+    const release = () => {
+      if (!engaged) return;
+      engaged = false;
+      pushingOut = false;
+      cancelGlide?.();
+      cancelGlide = null;
+      clearTimeout(stopTimer);
+      undoPageLock?.();
+      undoPageLock = null;
+      list.style.overscrollBehaviorY = "";
+    };
+
+    // The list has stopped moving: decide whether to let the page go
+    const settle = () => {
+      if (!engaged || touching) return;
+      const atExit = entry > 0 ? atBottom() : atTop();
+      if (atExit || pushingOut) release();
+      pushingOut = false;
+    };
+
+    const scheduleSettle = () => {
+      clearTimeout(stopTimer);
+      stopTimer = window.setTimeout(settle, MOBILE_SETTLE_MS);
+    };
+
+    const onPageScroll = () => {
+      const y = window.scrollY;
+      const prev = lastScrollY;
+      lastScrollY = y;
+      if (engaged || !mobile.matches || y === prev) return;
+      if (!armed) {
+        if (leftBand(section)) armed = true;
+        return;
+      }
+      if (crossedSection(section, prev, y)) engage(Math.sign(y - prev));
+    };
+
+    const onListScroll = () => {
+      if (engaged) scheduleSettle();
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      touching = true;
+      pushingOut = false;
+      lastTouchY = e.touches[0]?.clientY ?? 0;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!engaged) return;
+      const y = e.touches[0]?.clientY ?? lastTouchY;
+      const dy = lastTouchY - y; // > 0: content moving down
+      lastTouchY = y;
+      if ((atTop() && dy < 0) || (atBottom() && dy > 0)) pushingOut = true;
+    };
+
+    const onTouchEnd = () => {
+      touching = false;
+      if (engaged) scheduleSettle();
+    };
+
+    // Touching anywhere outside the list means the user wants to leave
+    const onDocTouchMove = (e: TouchEvent) => {
+      if (!engaged || list.contains(e.target as Node)) return;
+      if (e.cancelable) e.preventDefault();
+      release();
+    };
+
+    // Off screen: release, re-arm, and park the list at the edge the user will
+    // come back from (invisible, so no jump).
+    const io = new IntersectionObserver(
+      ([obs]) => {
+        if (!obs || obs.isIntersecting) return;
+        release();
+        armed = true;
+        if (!mobile.matches) return;
+        list.scrollTop = obs.boundingClientRect.top > 0 ? 0 : list.scrollHeight;
+      },
+      { threshold: [0] },
+    );
+
+    const onMediaChange = () => {
+      if (!mobile.matches) release();
+    };
+
+    window.addEventListener("scroll", onPageScroll, { passive: true });
+    list.addEventListener("scroll", onListScroll, { passive: true });
+    list.addEventListener("touchstart", onTouchStart, { passive: true });
+    list.addEventListener("touchmove", onTouchMove, { passive: true });
+    list.addEventListener("touchend", onTouchEnd, { passive: true });
+    list.addEventListener("touchcancel", onTouchEnd, { passive: true });
+    document.addEventListener("touchmove", onDocTouchMove, { passive: false });
+    mobile.addEventListener("change", onMediaChange);
+    io.observe(section);
+
+    return () => {
+      release();
+      clearTimeout(stopTimer);
+      io.disconnect();
+      window.removeEventListener("scroll", onPageScroll);
+      list.removeEventListener("scroll", onListScroll);
+      list.removeEventListener("touchstart", onTouchStart);
+      list.removeEventListener("touchmove", onTouchMove);
+      list.removeEventListener("touchend", onTouchEnd);
+      list.removeEventListener("touchcancel", onTouchEnd);
+      document.removeEventListener("touchmove", onDocTouchMove);
+      mobile.removeEventListener("change", onMediaChange);
+    };
+  }, [sectionRef, viewportRef, count]);
 }
 
 function useSequentialReveal(count: number) {
@@ -252,6 +585,7 @@ export default function KeyMilestones({
 
   // Hooks must run on every render, so they stay above the early returns below
   useScrollCapture(sectionRef, viewportRef, trackRef, count);
+  useMobileScrollLock(sectionRef, viewportRef, count);
   const { revealed, setRowVisible } = useSequentialReveal(count);
 
   // Still loading: render nothing, so the message doesn't flash before the data arrives
@@ -322,13 +656,13 @@ export default function KeyMilestones({
         <EdgeFade side="right" />
 
         <div
-  ref={trackRef}
-  className={cn(
-    "relative w-[calc(var(--count)/var(--visible)*100%)] max-md:w-full lg:will-change-transform",
-    // Wrap only at word boundaries, never split a word (both languages)
-    "[&_*]:[overflow-wrap:normal]! [&_*]:[word-break:normal]! [&_*]:hyphens-none! [&_*]:text-pretty",
-  )}
->
+          ref={trackRef}
+          className={cn(
+            "relative w-[calc(var(--count)/var(--visible)*100%)] max-md:w-full lg:will-change-transform",
+            // Wrap only at word boundaries, never split a word (both languages)
+            "[&_*]:[overflow-wrap:normal]! [&_*]:[word-break:normal]! [&_*]:hyphens-none! [&_*]:text-pretty",
+          )}
+        >
           <MilestoneListDesktop
             milestones={milestones}
             revealed={revealed}
