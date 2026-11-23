@@ -19,7 +19,6 @@ export default function ProgrammeCard({
 }: ProgrammeCardProps) {
   const dateLabel = formatProgrammeCardDate(programme.eventDate);
   const timeLabel = formatProgrammeTime(programme.eventTime);
-  const dateTimeLine = [dateLabel, timeLabel].filter(Boolean).join(" · ");
   const mediaIsVideo = isVideoUrl(programme.eventMediaUrl);
 
   return (
@@ -74,28 +73,56 @@ export default function ProgrammeCard({
         </Typography>
 
         <div className="mt-auto flex items-end justify-between gap-3">
-          {dateTimeLine ? (
-            <div className="flex min-w-0 items-center gap-1.5 text-[#7A8889]">
-              <svg
-                className="size-3.5 shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.75}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              <Typography
-                variant="caption"
-                className="truncate font-figtree font-normal normal-case tracking-normal text-[#7A8889]"
-              >
-                {dateLabel ? `Event Date: ${dateTimeLine}` : timeLabel}
-              </Typography>
+          {dateLabel || timeLabel ? (
+            <div className="flex min-w-0 flex-col gap-0.5 text-[#7A8889]">
+              {dateLabel && (
+                <div className="flex items-center gap-1.5">
+                  <svg
+                    className="size-3.5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.75}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <Typography
+                    variant="caption"
+                    className="truncate font-figtree font-normal normal-case tracking-normal text-[#7A8889]"
+                  >
+                    Event Date: {dateLabel}
+                  </Typography>
+                </div>
+              )}
+              {timeLabel && (
+                <div className="flex items-center gap-1.5">
+                  <svg
+                    className="size-3.5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.75}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <Typography
+                    variant="caption"
+                    className="truncate font-figtree font-normal normal-case tracking-normal text-[#7A8889]"
+                  >
+                    {timeLabel}
+                  </Typography>
+                </div>
+              )}
             </div>
           ) : (
             <span />
