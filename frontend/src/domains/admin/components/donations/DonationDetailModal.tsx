@@ -150,11 +150,19 @@ export function DonationDetailModal({
                   </div>
                 </div>
                 <div>
-                  <span className="text-[11px] text-[#8A847A] block">Location</span>
+                  <span className="text-[11px] text-[#8A847A] block">Country</span>
                   <div className="flex items-center gap-1.5 text-[#0F1C1D]">
                     <MapPin className="h-3.5 w-3.5 text-[#8A847A]" />
-                    <span>{donation.city || "—"}</span>
+                    <span>
+                      {donation.countryName
+                        ? `${donation.countryName}${donation.countryCode ? ` (${donation.countryCode})` : ""}`
+                        : donation.countryCode || "—"}
+                    </span>
                   </div>
+                </div>
+                <div>
+                  <span className="text-[11px] text-[#8A847A] block">City</span>
+                  <span className="text-[#0F1C1D]">{donation.city || "—"}</span>
                 </div>
                 {donation.address && (
                   <div className="sm:col-span-2">

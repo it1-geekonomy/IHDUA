@@ -2,13 +2,15 @@
 
 import { Search, X } from "lucide-react";
 import { AdminSelect, type AdminSelectOption } from "@/domains/admin/components/AdminSelect";
-import type { StatusFilter } from "./types";
+import type { OriginFilter, StatusFilter } from "./types";
 
 interface DonationsToolbarProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   statusFilter: StatusFilter;
   onStatusFilterChange: (status: StatusFilter) => void;
+  originFilter: OriginFilter;
+  onOriginFilterChange: (origin: OriginFilter) => void;
   limit: number;
   onLimitChange: (limit: number) => void;
 }
@@ -19,6 +21,12 @@ const STATUS_OPTIONS: AdminSelectOption<StatusFilter>[] = [
   { value: "pending", label: "Pending", dotColor: "bg-[#8A6A00]" },
   { value: "failed", label: "Failed", dotColor: "bg-[#A33B3B]" },
   { value: "refunded", label: "Refunded", dotColor: "bg-[#667085]" },
+];
+
+const ORIGIN_OPTIONS: AdminSelectOption<OriginFilter>[] = [
+  { value: "all", label: "All origins" },
+  { value: "india", label: "India" },
+  { value: "outside", label: "Outside India" },
 ];
 
 const LIMIT_OPTIONS: AdminSelectOption<string>[] = [
@@ -32,6 +40,8 @@ export function DonationsToolbar({
   onSearchChange,
   statusFilter,
   onStatusFilterChange,
+  originFilter,
+  onOriginFilterChange,
   limit,
   onLimitChange,
 }: DonationsToolbarProps) {
@@ -60,7 +70,14 @@ export function DonationsToolbar({
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2">
-        {/* Status Filter */}
+        <AdminSelect<OriginFilter>
+          value={originFilter}
+          onChange={onOriginFilterChange}
+          options={ORIGIN_OPTIONS}
+          size="sm"
+          dropdownClassName="w-44"
+        />
+
         <AdminSelect<StatusFilter>
           value={statusFilter}
           onChange={onStatusFilterChange}
@@ -69,7 +86,6 @@ export function DonationsToolbar({
           dropdownClassName="w-40"
         />
 
-        {/* Rows per page */}
         <AdminSelect<string>
           value={String(limit)}
           onChange={(val) => onLimitChange(Number(val))}

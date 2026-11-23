@@ -3,6 +3,10 @@
 import { useEffect, useState } from "react";
 import { Loader2, X } from "lucide-react";
 import { AdminSelect, type AdminSelectOption } from "@/domains/admin/components/AdminSelect";
+import {
+  DONATION_COUNTRIES,
+  getCountryByCode,
+} from "@/domains/home/constants/donationCountries";
 import type {
   CreateManualDonationInput,
   OfflinePaymentMode,
@@ -15,6 +19,24 @@ interface Props {
   onSave: (values: CreateManualDonationInput) => Promise<void> | void;
 }
 
+type DonorOrigin = "IN" | "OUT";
+
+const ORIGIN_OPTIONS: AdminSelectOption<DonorOrigin>[] = [
+  { value: "IN", label: "India" },
+  { value: "OUT", label: "Outside India (foreign)" },
+];
+
+const CURRENCY_OPTIONS: AdminSelectOption<string>[] = [
+  { value: "USD", label: "USD ($)" },
+  { value: "EUR", label: "EUR (€)" },
+  { value: "GBP", label: "GBP (£)" },
+  { value: "AED", label: "AED" },
+  { value: "SGD", label: "SGD" },
+  { value: "AUD", label: "AUD" },
+  { value: "CAD", label: "CAD" },
+  { value: "INR", label: "INR (₹)" },
+];
+
 const PAYMENT_MODES: AdminSelectOption<OfflinePaymentMode>[] = [
   { value: "cash", label: "Cash" },
   { value: "cheque", label: "Cheque" },
@@ -23,11 +45,18 @@ const PAYMENT_MODES: AdminSelectOption<OfflinePaymentMode>[] = [
   { value: "other", label: "Other" },
 ];
 
+const FOREIGN_COUNTRY_OPTIONS: AdminSelectOption<string>[] = DONATION_COUNTRIES
+  .filter((c) => c.code !== "IN")
+  .map((c) => ({ value: c.code, label: c.name }));
+
 const emptyForm = () => ({
+  origin: "IN" as DonorOrigin,
+  countryCode: "",
   fullName: "",
   phone: "",
   email: "",
   amount: "",
+  currency: "INR",
   donationCategory: "General Donation",
   pan: "",
   address: "",
@@ -36,7 +65,7 @@ const emptyForm = () => ({
   paymentMode: "cash" as OfflinePaymentMode,
   offlineReference: "",
   donatedAt: new Date().toISOString().slice(0, 10),
-  sendEmail: true,
+  sendEmail: false,
 });
 
 export function ManualDonationModal({
@@ -54,12 +83,41 @@ export function ManualDonationModal({
     setError(null);
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  const isIndia = form.origin === "IN";
+  const amountNum = Number(form.amount) || 0;
+  const panAddressRequired = isIndia && amountNum >= 2000;
+  const selectedCountry = form.countryCode
+    ? getCountryByCode(form.countryCode)
+    : null;
 
   const set =
     <K extends keyof typeof form>(key: K) =>
     (value: (typeof form)[K]) =>
       setForm((prev) => ({ ...prev, [key]: value }));
+
+  const setOrigin = (origin: DonorOrigin) => {
+    setForm((prev) => ({
+      ...prev,
+      origin,
+      countryCode: origin === "IN" ? "" : prev.countryCode,
+      currency:
+        origin === "IN"
+          ? "INR"
+          : prev.currency === "INR"
+            ? "USD"
+            : prev.currency,
+      pan: origin === "IN" ? prev.pan : "",
+    }));
+  };
+
+  const setCountry = (code: string) => {
+    const country = getCountryByCode(code);
+    setForm((prev) => ({
+      ...prev,
+      countryCode: code,
+      currency: country.currency === "INR" ? "USD" : country.currency,
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,19 +126,39 @@ export function ManualDonationModal({
     const email = form.email.trim();
     const amount = form.amount.trim();
     const pan = form.pan.trim().toUpperCase();
+    const address = form.address.trim();
 
     if (!fullName || !phone || !email || !amount) {
       setError("Name, phone, email, and amount are required.");
       return;
     }
     if (!/^[1-9]\d*$/.test(amount)) {
-      setError("Amount must be a positive whole number (INR).");
+      setError("Amount must be a positive whole number.");
       return;
     }
-    if (pan && pan.length < 10) {
-      setError("PAN / Aadhaar must be at least 10 characters for 80G.");
+    if (!isIndia && !form.countryCode) {
+      setError("Select the donor's country.");
       return;
     }
+    if (isIndia && panAddressRequired) {
+      if (!pan || !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) {
+        setError("PAN Card No. is required for India donations of ₹2,000 or more.");
+        return;
+      }
+      if (!address) {
+        setError("Address is required for India donations of ₹2,000 or more.");
+        return;
+      }
+    }
+    if (isIndia && pan && !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) {
+      setError("Enter a valid 10-character PAN (e.g. ABCDE1234F).");
+      return;
+    }
+
+    const countryName = isIndia
+      ? "India"
+      : selectedCountry?.name || "Outside India";
+    const countryCode = isIndia ? "IN" : form.countryCode;
 
     setError(null);
     try {
@@ -89,10 +167,12 @@ export function ManualDonationModal({
         phone,
         email,
         amount,
-        currency: "INR",
+        currency: isIndia ? "INR" : form.currency,
+        countryCode,
+        countryName,
         donationCategory: form.donationCategory.trim() || "General Donation",
-        ...(pan ? { pan } : {}),
-        ...(form.address.trim() ? { address: form.address.trim() } : {}),
+        ...(isIndia && pan ? { pan } : {}),
+        ...(address ? { address } : {}),
         ...(form.city.trim() ? { city: form.city.trim() } : {}),
         ...(form.message.trim() ? { message: form.message.trim() } : {}),
         paymentMode: form.paymentMode,
@@ -107,6 +187,8 @@ export function ManualDonationModal({
     }
   };
 
+  if (!isOpen) return null;
+
   const fieldCls =
     "h-10 w-full rounded-xl border border-[#D9D3C9] bg-white px-3 text-xs text-[#0F1C1D] placeholder:text-[#8A847A] shadow-2xs focus:border-[#9739A8] focus:outline-none focus:ring-2 focus:ring-[#9739A8]/20";
 
@@ -115,12 +197,10 @@ export function ManualDonationModal({
       <div className="relative flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-[#E5E0D8] bg-white shadow-2xl font-figtree">
         <div className="flex items-center justify-between border-b border-[#E5E0D8] px-5 py-4">
           <div>
-            <h2 className="font-lora text-lg text-[#0F1C1D]">
-              Issue offline certificate / 80G
-            </h2>
+            <h2 className="font-lora text-lg text-[#0F1C1D]">Add donor</h2>
             <p className="text-xs text-[#5F6C6D]">
-              Generates PDFs for download (and optional email). Does not add a row
-              to the donations ledger.
+              Saves to the ledger with certificate on the record. India: 80G
+              when PAN is set. Open the donor later to download PDFs.
             </p>
           </div>
           <button
@@ -142,6 +222,39 @@ export function ManualDonationModal({
             )}
 
             <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5 sm:col-span-2">
+                <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5F6C6D]">
+                  Donor from *
+                </span>
+                <AdminSelect
+                  value={form.origin}
+                  onChange={setOrigin}
+                  options={ORIGIN_OPTIONS}
+                />
+                {!isIndia && (
+                  <p className="text-[10px] text-[#8A847A]">
+                    Foreign donations get a thank-you certificate only. 80G tax
+                    receipt is for India donors with PAN.
+                  </p>
+                )}
+              </div>
+
+              {!isIndia && (
+                <div className="space-y-1.5 sm:col-span-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5F6C6D]">
+                    Country *
+                  </span>
+                  <AdminSelect
+                    value={form.countryCode || ("" as string)}
+                    onChange={setCountry}
+                    options={FOREIGN_COUNTRY_OPTIONS}
+                    placeholder="Select country"
+                    searchable
+                    dropdownClassName="w-full max-w-md"
+                  />
+                </div>
+              )}
+
               <label className="block space-y-1.5 sm:col-span-2">
                 <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5F6C6D]">
                   Donor name *
@@ -162,7 +275,7 @@ export function ManualDonationModal({
                   className={fieldCls}
                   value={form.phone}
                   onChange={(e) => set("phone")(e.target.value)}
-                  placeholder="+9198…"
+                  placeholder={isIndia ? "+9198…" : "+1…"}
                   required
                 />
               </label>
@@ -181,27 +294,53 @@ export function ManualDonationModal({
               </label>
               <label className="block space-y-1.5">
                 <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5F6C6D]">
-                  Amount (INR) *
+                  Amount{isIndia ? " (INR)" : ""} *
                 </span>
                 <input
                   className={fieldCls}
                   value={form.amount}
                   onChange={(e) => set("amount")(e.target.value.replace(/\D/g, ""))}
-                  placeholder="5000"
+                  placeholder={isIndia ? "5000" : "100"}
                   required
                 />
               </label>
-              <label className="block space-y-1.5">
-                <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5F6C6D]">
-                  Donation date
-                </span>
-                <input
-                  type="date"
-                  className={fieldCls}
-                  value={form.donatedAt}
-                  onChange={(e) => set("donatedAt")(e.target.value)}
-                />
-              </label>
+              {isIndia ? (
+                <label className="block space-y-1.5">
+                  <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5F6C6D]">
+                    Donation date
+                  </span>
+                  <input
+                    type="date"
+                    className={fieldCls}
+                    value={form.donatedAt}
+                    onChange={(e) => set("donatedAt")(e.target.value)}
+                  />
+                </label>
+              ) : (
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5F6C6D]">
+                    Currency *
+                  </span>
+                  <AdminSelect
+                    value={form.currency}
+                    onChange={(v) => set("currency")(v)}
+                    options={CURRENCY_OPTIONS}
+                  />
+                </div>
+              )}
+              {!isIndia && (
+                <label className="block space-y-1.5">
+                  <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5F6C6D]">
+                    Donation date
+                  </span>
+                  <input
+                    type="date"
+                    className={fieldCls}
+                    value={form.donatedAt}
+                    onChange={(e) => set("donatedAt")(e.target.value)}
+                  />
+                </label>
+              )}
               <label className="block space-y-1.5 sm:col-span-2">
                 <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5F6C6D]">
                   Donation for (category)
@@ -213,22 +352,26 @@ export function ManualDonationModal({
                   placeholder="School Essentials — Lunch bag or exam fees"
                 />
               </label>
-              <label className="block space-y-1.5">
-                <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5F6C6D]">
-                  PAN / Aadhaar (for 80G)
-                </span>
-                <input
-                  className={fieldCls}
-                  value={form.pan}
-                  onChange={(e) => set("pan")(e.target.value.toUpperCase())}
-                  placeholder="ABCDE1234F"
-                  maxLength={20}
-                />
-                <span className="block text-[10px] text-[#8A847A]">
-                  Certificate always generated. 80G receipt only when PAN is filled.
-                </span>
-              </label>
-              <div className="space-y-1.5">
+              {isIndia && (
+                <label className="block space-y-1.5">
+                  <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5F6C6D]">
+                    PAN Card No.{panAddressRequired ? " *" : " (for 80G)"}
+                  </span>
+                  <input
+                    className={fieldCls}
+                    value={form.pan}
+                    onChange={(e) => set("pan")(e.target.value.toUpperCase())}
+                    placeholder="ABCDE1234F"
+                    maxLength={10}
+                  />
+                  <span className="block text-[10px] text-[#8A847A]">
+                    {panAddressRequired
+                      ? "Required for ₹2,000 or more. Enables 80G receipt."
+                      : "Certificate always generated. 80G receipt only when PAN is filled."}
+                  </span>
+                </label>
+              )}
+              <div className={`space-y-1.5 ${isIndia ? "" : "sm:col-span-1"}`}>
                 <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5F6C6D]">
                   Payment mode
                 </span>
@@ -257,18 +400,18 @@ export function ManualDonationModal({
                   className={fieldCls}
                   value={form.city}
                   onChange={(e) => set("city")(e.target.value)}
-                  placeholder="Bengaluru"
+                  placeholder={isIndia ? "Bengaluru" : "City"}
                 />
               </label>
               <label className="block space-y-1.5 sm:col-span-2">
                 <span className="text-[11px] font-semibold uppercase tracking-wide text-[#5F6C6D]">
-                  Address
+                  Address{panAddressRequired ? " *" : ""}
                 </span>
                 <input
                   className={fieldCls}
                   value={form.address}
                   onChange={(e) => set("address")(e.target.value)}
-                  placeholder="Optional"
+                  placeholder={panAddressRequired ? "Required" : "Optional"}
                 />
               </label>
               <label className="block space-y-1.5 sm:col-span-2">
@@ -279,7 +422,7 @@ export function ManualDonationModal({
                   className="min-h-[72px] w-full rounded-xl border border-[#D9D3C9] bg-white px-3 py-2 text-xs text-[#0F1C1D] placeholder:text-[#8A847A] shadow-2xs focus:border-[#9739A8] focus:outline-none focus:ring-2 focus:ring-[#9739A8]/20"
                   value={form.message}
                   onChange={(e) => set("message")(e.target.value)}
-                  placeholder="Collected at event, handed by volunteer…"
+                  placeholder="Collected at event, wire transfer from overseas…"
                 />
               </label>
             </div>
@@ -295,7 +438,8 @@ export function ManualDonationModal({
                 <span className="font-semibold">Email certificate to donor</span>
                 <span className="mt-0.5 block text-[11px] text-[#5F6C6D]">
                   Sends thank-you email with certificate PDF
-                  {form.pan.trim() ? " and 80G receipt" : ""} after create.
+                  {isIndia && form.pan.trim() ? " and 80G receipt" : ""}
+                  {!isIndia ? " (no 80G for foreign donors)" : ""}.
                 </span>
               </span>
             </label>
@@ -321,7 +465,7 @@ export function ManualDonationModal({
                   Creating…
                 </>
               ) : (
-                "Generate PDFs"
+                "Add donor"
               )}
             </button>
           </div>
