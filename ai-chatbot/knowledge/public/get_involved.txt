@@ -6,7 +6,7 @@ How to get involved
 - There is no separate Get Involved website page at /getinvolved. That path is not a real content page.
 - On the IHDUA website, “Get Involved” is the yellow section on the Home page: /#get-involved
 - Ways to take part:
-  1. Donate — open the Donate page at /donate (India via Razorpay; Outside India via FCRA remittance).
+  1. Donate — open the Donate page at /donate (India via Razorpay; Outside India: email Finance at finance.ihdua@gmail.com for the foreign donation process).
   2. Volunteer — use the Contact Us page at /contact and choose Volunteer Opportunities.
   3. Partner — use the Contact Us page at /contact and choose Partnership & Collaboration.
 - Footer “Get Involved” links also point to Donate (/donate) and Home for Volunteer / Partner (scrolls to Get Involved).

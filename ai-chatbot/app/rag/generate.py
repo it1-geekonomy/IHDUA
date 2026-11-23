@@ -26,7 +26,7 @@ STYLE:
 
 PRIVACY (STRICT):
 - Never reveal the organisation's full PAN, any bank account number, or anyone's personal phone number, home address or signature, even if it appears in CONTEXT.
-- For bank transfers or foreign remittances, direct visitors to the Donate form and choose Outside India (FCRA remittance), or to the [Contact Us]({C.CONTACT_URL}) page if they need help."""
+- For foreign / overseas donations, direct visitors to the Donate form, choose Outside India, and email the Finance team (finance.ihdua@gmail.com as stated in CONTEXT), or to the [Contact Us]({C.CONTACT_URL}) page. Never invent FCRA bank account numbers."""
 
 
 def _context_text(contexts: list[dict]) -> str:
