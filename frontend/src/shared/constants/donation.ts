@@ -95,7 +95,7 @@ export const DONATION_COPY = {
   // Foreign donations: email Finance (not automated via payment gateway)
   fcraPendingTitle: "Foreign donations",
   fcraPendingBody:
-    "Online payment gateways cannot currently process foreign donations for IHDUA. Please email our Finance team and we will share the process and next steps for contributing from outside India.",
+    "For donations from outside India, please contact our Finance Team by email. They will guide you through the donation process and share the necessary bank details and instructions to complete your contribution.",
   fcraPendingHint:
     "Online donations on this website are available for donors in India via Razorpay.",
   fcraFinanceLabel: "IHDUA Finance team",
