@@ -82,6 +82,9 @@ def build_multi_queries(query: str, intents: set[str], original: str = "") -> li
         queries.append("IHDUA impact numbers statistics villages reached people trained")
     if "history" in intents:
         queries.append("IHDUA milestones history journey by year annual reports")
+        queries.append(
+            "IHDUA Annual Report PDF About Us Transparency Our Documents download"
+        )
     if "stories" in intents:
         queries.append("IHDUA blogs field stories articles")
     if "education" in intents:
