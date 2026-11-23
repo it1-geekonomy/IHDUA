@@ -3,14 +3,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAdminAuth } from "@/domains/admin/components/AdminAuthProvider";
 import {
-  downloadBase64Pdf,
   fetchDonations,
   fetchDonationById,
   issueOfflineDonationDocs,
   type AdminDonationRow,
   type CreateManualDonationInput,
 } from "@/domains/admin/lib/api";
-import type { StatusFilter } from "./types";
+import type { OriginFilter, StatusFilter } from "./types";
 
 export function useDonations() {
   const { token, ready } = useAdminAuth();
@@ -23,6 +22,7 @@ export function useDonations() {
   // Filters & pagination
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [originFilter, setOriginFilter] = useState<OriginFilter>("all");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
@@ -60,6 +60,16 @@ export function useDonations() {
   const filteredDonations = useMemo(() => {
     let result = rawDonations;
 
+    if (originFilter !== "all") {
+      result = result.filter((item) => {
+        const code = item.countryCode?.toUpperCase();
+        const isIndia = code
+          ? code === "IN"
+          : !item.currency || item.currency.toUpperCase() === "INR";
+        return originFilter === "india" ? isIndia : !isIndia;
+      });
+    }
+
     if (statusFilter !== "all") {
       result = result.filter((item) => {
         if (statusFilter === "paid") {
@@ -85,7 +95,7 @@ export function useDonations() {
     }
 
     return result;
-  }, [rawDonations, statusFilter, searchTerm]);
+  }, [rawDonations, originFilter, statusFilter, searchTerm]);
 
   // Paginated rows
   const totalItems = filteredDonations.length;
@@ -154,31 +164,22 @@ export function useDonations() {
     setError(null);
     try {
       const docs = await issueOfflineDonationDocs(token, input);
-      downloadBase64Pdf(
-        docs.certificateBase64,
-        `IHDUA-Donation-Certificate-${docs.receiptNumber}.pdf`,
-      );
-      if (docs.receiptBase64) {
-        downloadBase64Pdf(
-          docs.receiptBase64,
-          `IHDUA-Donation-Receipt-${docs.receiptNumber}.pdf`,
-        );
-      }
-      setIsManualOpen(false);
       const emailNote =
-        input.sendEmail === false
+        !input.sendEmail
           ? ""
-          : docs.emailStatus === "sent"
-            ? " Email sent."
+          : docs.emailStatus === "queued"
+            ? " Receipt email queued."
             : docs.emailStatus
-              ? ` Email ${docs.emailStatus}${docs.emailDetail ? `: ${docs.emailDetail}` : ""}.`
+              ? ` Email ${docs.emailStatus}.`
               : "";
       setSuccessMessage(
-        `PDFs ready for ${docs.fullName} (${docs.receiptNumber}). Not saved to donations ledger.${emailNote}`,
+        `Donor added: ${docs.fullName} (${docs.receiptNumber}). Certificate saved on the record.${emailNote}`,
       );
+      setIsManualOpen(false);
+      await loadDonations();
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Failed to issue offline donation docs.";
+        err instanceof Error ? err.message : "Failed to add donor.";
       setError(message);
       throw err instanceof Error ? err : new Error(message);
     } finally {
@@ -188,6 +189,11 @@ export function useDonations() {
 
   const handleStatusFilterChange = (val: StatusFilter) => {
     setStatusFilter(val);
+    setPage(1);
+  };
+
+  const handleOriginFilterChange = (val: OriginFilter) => {
+    setOriginFilter(val);
     setPage(1);
   };
 
@@ -209,6 +215,8 @@ export function useDonations() {
     onSearchChange: handleSearchChange,
     statusFilter,
     onStatusFilterChange: handleStatusFilterChange,
+    originFilter,
+    onOriginFilterChange: handleOriginFilterChange,
     totalRaisedINR,
     loading,
     error,

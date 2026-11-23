@@ -11,9 +11,7 @@ import { Repository } from 'typeorm';
 import { DonationStatus } from '../../common/enums/donation-status.enum';
 import { DonationCategory } from '../../common/enums/donation-category.enum';
 import { RazorpayService } from '../../common/payments/razorpay.service';
-import { DonationCertificateService } from '../email/donation-certificate.service';
-import { DonationReceiptService } from '../email/donation-receipt.service';
-import { EmailService } from '../email/email.service';
+import { DonationDocumentsService } from './donation-documents.service';
 import { DonationEmailQueueService } from './donation-email-queue.service';
 import { Donor } from './entities/donor.entity';
 import {
@@ -47,9 +45,7 @@ export class DonorsService {
     private readonly donorsRepository: Repository<Donor>,
     private readonly razorpay: RazorpayService,
     private readonly emailQueue: DonationEmailQueueService,
-    private readonly certificates: DonationCertificateService,
-    private readonly receipts: DonationReceiptService,
-    private readonly email: EmailService,
+    private readonly documents: DonationDocumentsService,
   ) {}
 
   private assertPaymentSignature(dto: VerifyDonationPaymentDto) {
@@ -98,12 +94,34 @@ export class DonorsService {
     const isIndianDonation =
       (!countryCode || countryCode === 'IN') && currency === 'INR';
 
+    const pan = isIndianDonation ? dto.pan?.trim().toUpperCase() || '' : '';
+    const address = dto.address?.trim() || '';
+    const amountMajor = Number(dto.amount);
+
+    // Donations of ₹2,000 or more need PAN + address.
+    if (
+      isIndianDonation &&
+      Number.isFinite(amountMajor) &&
+      amountMajor >= 2000
+    ) {
+      if (!pan || !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) {
+        throw new BadRequestException(
+          'PAN Card No. is required for donations of ₹2,000 or more.',
+        );
+      }
+      if (!address) {
+        throw new BadRequestException(
+          'Address is required for donations of ₹2,000 or more.',
+        );
+      }
+    }
+
     return {
       fullName: dto.fullName.trim(),
       phone: dto.phone.trim(),
       email: dto.email.trim().toLowerCase(),
-      pan: isIndianDonation ? dto.pan?.trim().toUpperCase() || '' : '',
-      address: dto.address?.trim() || '',
+      pan,
+      address,
       city: dto.city?.trim() || '',
       message: dto.message?.trim() || '',
       donationCategory:
@@ -245,7 +263,9 @@ export class DonorsService {
       email: notes.email || '',
       pan: notes.pan || null,
       address: notes.address || null,
-      city: notes.city || notes.countryName || notes.countryCode || null,
+      city: notes.city || null,
+      countryCode: notes.countryCode?.trim().toUpperCase() || null,
+      countryName: notes.countryName?.trim() || null,
       message: notes.message || null,
       donationCategory:
         (notes.donationCategory as DonationCategory) ||
@@ -273,23 +293,30 @@ export class DonorsService {
   }
 
   /**
-   * Admin: issue certificate (+ 80G when PAN is present) for an offline donor.
-   * Does not store a donors row — PDFs are returned for download / optional email.
+   * Admin: add an offline / foreign / cash donor. Saves the ledger row and
+   * stores certificate (+ 80G when PAN) on the donor — same as online paid flow.
    */
   async issueOfflineDocuments(dto: CreateManualDonationDto) {
+    const countryCode = dto.countryCode?.trim().toUpperCase() || 'IN';
+    const isIndia = countryCode === 'IN';
+    const currency = (dto.currency ??
+      (isIndia ? 'INR' : 'USD')) as DonationCurrencyCode;
+
+    // Foreign donations never use Indian PAN / 80G path.
     const d = this.prepareDonation({
       fullName: dto.fullName,
       phone: dto.phone,
       email: dto.email,
       amount: dto.amount,
-      currency: dto.currency ?? 'INR',
+      currency,
       donationCategory: dto.donationCategory,
-      pan: dto.pan,
+      pan: isIndia ? dto.pan : undefined,
       address: dto.address,
       city: dto.city,
       message: dto.message,
-      countryCode: 'IN',
-      countryName: 'India',
+      countryCode,
+      countryName:
+        dto.countryName?.trim() || (isIndia ? 'India' : 'Outside India'),
     });
 
     let donatedAt = new Date();
@@ -304,72 +331,72 @@ export class DonorsService {
     const offlineRef = dto.offlineReference?.trim() || '';
     const donorId = randomUUID();
     const receiptNumber = this.buildReceiptNumber(donorId);
+    const countryLabel =
+      d.countryName || (isIndia ? 'India' : 'Outside India');
+    const originNote = isIndia
+      ? 'India'
+      : `Foreign / ${countryLabel}${countryCode && countryCode !== 'OUT' ? ` (${countryCode})` : ''}`;
     const message = [
       d.message,
-      `Offline donation (${paymentMode}${offlineRef ? `: ${offlineRef}` : ''})`,
+      `Offline donation (${originNote}, ${paymentMode}${offlineRef ? `: ${offlineRef}` : ''})`,
     ]
       .filter(Boolean)
       .join('\n');
 
-    // In-memory shape only — certificate/receipt builders read these fields.
-    const donor = {
+    const wantEmail = dto.sendEmail === true;
+    const donor = this.donorsRepository.create({
       id: donorId,
       fullName: d.fullName,
       phone: d.phone,
       email: d.email,
-      pan: d.pan || null,
+      pan: isIndia && d.pan ? d.pan : null,
       address: d.address || null,
       city: d.city || null,
+      countryCode: isIndia ? 'IN' : countryCode || null,
+      countryName: countryLabel,
       message: message || null,
       donationCategory: d.donationCategory,
       amount: d.amount,
       currency: d.currency,
       receiptNumber,
+      razorpayOrderId: null,
+      razorpayPaymentId: null,
       status: DonationStatus.PAID,
-      createdAt: donatedAt,
-      updatedAt: donatedAt,
-    } as Donor;
+      ...(wantEmail ? DonationEmailQueueService.queuedFields() : {}),
+    });
 
-    const certificate = await this.certificates.buildPdf(donor);
-    const receipt = d.pan ? await this.receipts.buildPdf(donor) : null;
+    const saved = await this.donorsRepository.save(donor);
 
-    let emailStatus: 'sent' | 'skipped' | 'error' | 'quota' | null = null;
-    let emailDetail: string | null = null;
-    if (dto.sendEmail !== false) {
-      const result = await this.email.sendDonationReceipt(donor, {
-        certificate,
-        receipt,
-      });
-      emailStatus = result.status;
-      emailDetail =
-        result.status === 'skipped'
-          ? result.reason
-          : result.status === 'error'
-            ? result.message
-            : result.status === 'quota'
-              ? `Resend ${result.scope} quota`
-              : null;
+    // Honour admin-chosen donation date on the ledger row.
+    if (dto.donatedAt) {
+      await this.donorsRepository.update(saved.id, { createdAt: donatedAt });
+      saved.createdAt = donatedAt;
+    }
+
+    // Build + store PDFs on the donor (R2 URLs), same path the email queue uses.
+    await this.documents.prepare(saved);
+
+    if (wantEmail) {
+      this.emailQueue.kick();
     }
 
     this.logger.log(
-      `Offline donation docs issued receipt=${receiptNumber} email=${emailStatus ?? 'none'}`,
+      `Offline donor saved id=${saved.id} receipt=${receiptNumber} email=${wantEmail ? 'queued' : 'none'}`,
     );
 
     return {
+      donorId: saved.id,
       receiptNumber,
       fullName: d.fullName,
       email: d.email,
       amount: d.amount,
       currency: d.currency,
       donationCategory: d.donationCategory,
-      pan: d.pan || null,
-      donatedAt: donatedAt.toISOString(),
-      hasCertificate: true,
-      hasReceipt: Boolean(receipt),
-      certificateBase64: certificate.toString('base64'),
-      receiptBase64: receipt ? receipt.toString('base64') : null,
-      emailStatus,
-      emailDetail,
+      pan: saved.pan,
+      donatedAt: (saved.createdAt ?? donatedAt).toISOString(),
+      certificateUrl: saved.certificateUrl ?? null,
+      receiptUrl: saved.receiptUrl ?? null,
+      emailStatus: wantEmail ? ('queued' as const) : null,
     };
   }
 

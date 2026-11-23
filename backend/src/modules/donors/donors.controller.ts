@@ -95,16 +95,18 @@ export class DonorsController {
 
   @Post('manual')
   @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({
-    summary: 'Issue offline donation certificate / 80G (admin)',
+    summary: 'Add offline / foreign donor (admin)',
     description:
-      'Generates donation certificate PDF and 80G receipt (when PAN is provided) for an offline donor. Does not create a donors database row — returns PDF base64 for download and can email the donor.',
+      'Creates a paid donors ledger row, stores certificate (+ 80G when Indian donor has PAN) on the donor, and can queue the thank-you email.',
   })
-  @ApiCreatedResponse({ description: 'Offline donation PDFs (base64)' })
+  @ApiOkResponse({ description: 'Donor saved with document URLs' })
   async issueOfflineDocuments(@Body() dto: CreateManualDonationDto) {
     const data = await this.donorsService.issueOfflineDocuments(dto);
     return {
-      statusCode: HttpStatus.CREATED,
+      statusCode: HttpStatus.OK,
+      message: 'Donor added',
       data,
     };
   }

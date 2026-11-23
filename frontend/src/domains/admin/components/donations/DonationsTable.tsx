@@ -102,9 +102,11 @@ export function DonationsTable({
                     <div className="font-semibold text-[#0F1C1D]">
                       {item.fullName}
                     </div>
-                    {item.city && (
+                    {(item.city || item.countryName) && (
                       <div className="text-[11px] text-[#8A847A]">
-                        {item.city}
+                        {[item.city, item.countryName]
+                          .filter(Boolean)
+                          .join(", ")}
                       </div>
                     )}
                   </td>

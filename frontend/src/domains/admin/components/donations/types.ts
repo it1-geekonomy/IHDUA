@@ -6,6 +6,9 @@ export type DonationStatusType = "pending" | "paid" | "failed" | "refunded";
 
 export type StatusFilter = "all" | DonationStatusType;
 
+/** India = INR donations; outside = foreign / non-INR. */
+export type OriginFilter = "all" | "india" | "outside";
+
 export const DONATION_STATUS_CONFIG: Record<
   string,
   { label: string; badgeCls: string; dotCls: string }

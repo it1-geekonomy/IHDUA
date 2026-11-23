@@ -64,7 +64,7 @@ export function DonationsHeader({
             className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#9739A8] px-3 text-xs font-figtree font-semibold text-white shadow-2xs hover:opacity-95 transition-opacity cursor-pointer"
           >
             <Plus className="h-3.5 w-3.5" />
-            <span>Issue offline PDFs</span>
+            <span>Add donor</span>
           </button>
         )}
       </div>
