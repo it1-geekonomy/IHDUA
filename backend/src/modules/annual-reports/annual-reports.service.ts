@@ -56,6 +56,7 @@ export class AnnualReportsService {
       const saved = await this.repo.save(entity);
       this.logger.log(`Created annual report with ID ${saved.id}`);
       this.chatbotSync.notify('annual_reports', saved.id);
+      this.chatbotSync.notify('annual_reports_index', 'all');
       return saved;
     } catch (err) {
       await this.cdn.delete(fileUrl);
@@ -144,6 +145,7 @@ export class AnnualReportsService {
 
     const saved = await this.repo.save(entity);
     this.chatbotSync.notify('annual_reports', saved.id);
+    this.chatbotSync.notify('annual_reports_index', 'all');
     return saved;
   }
 
@@ -152,11 +154,13 @@ export class AnnualReportsService {
     await this.repo.softRemove(entity);
     this.logger.log(`Soft-deleted annual report with ID ${id}`);
     this.chatbotSync.notify('annual_reports', id, 'delete');
+    this.chatbotSync.notify('annual_reports_index', 'all');
   }
 
   async restore(id: string): Promise<AnnualReport> {
     const restored = await restoreSoftDeleted(this.repo, id, 'Annual report');
-    this.chatbotSync.notify('annual_reports', id);
+    this.chatbotSync.notify('annual_reports', restored.id);
+    this.chatbotSync.notify('annual_reports_index', 'all');
     return restored;
   }
 }

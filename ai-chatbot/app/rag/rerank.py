@@ -75,6 +75,16 @@ def rerank(hits: list[dict], intents: set[str], question: str = "") -> list[dict
             bonus += 0.06
         if "history" in intents and any(k in title for k in ("milestone", "history", "annual report")):
             bonus += 0.06
+        if table in ("annual_reports", "annual_reports_index"):
+            bonus += 0.05
+            if "history" in intents or "annual report" in (question or "").lower():
+                bonus += 0.08
+            if question and _title_in_question(title, question):
+                bonus += 0.18
+            # Year mention e.g. "2018" in "Annual Report 2018"
+            year_hits = re.findall(r"\b(19|20)\d{2}\b", question or "")
+            if year_hits and any(y in title for y in year_hits):
+                bonus += 0.2
         if "stories" in intents and h.get("table") == "blogs":
             bonus += 0.06
         if "model_village" in intents and any(k in title or k in content for k in ("village", "green cover", "solar", "rejuvenation", "sanitation")):
