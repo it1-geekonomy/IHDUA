@@ -7,7 +7,7 @@ Donating online
 - First step: “Where are you donating from?” — choose India or Outside India.
 - India: donate in INR with Razorpay (UPI, cards, netbanking). Enter name, phone, email, city and address as prompted.
 - India PAN and address: for donations of ₹2,000 or more, PAN Card No. and Address are mandatory. Below ₹2,000, PAN is optional; enter PAN to receive an 80G tax receipt.
-- Outside India: online payment gateways cannot currently process foreign donations for IHDUA. After choosing Outside India and Donate Now, the site asks the donor to email the IHDUA Finance team at finance.ihdua@gmail.com. Finance shares the process and next steps for contributing from outside India. Donors can also use Contact Us.
+- Outside India: for donations from outside India, donors should contact the IHDUA Finance Team by email at finance.ihdua@gmail.com. Finance guides them through the donation process and shares the necessary bank details and instructions to complete the contribution. After choosing Outside India and Donate Now, the Donate form shows this path. Donors can also use Contact Us. Do not invent bank account numbers in chat — Finance shares those by email.
 - Do not invent or quote FCRA bank account numbers in chat. Direct overseas donors to the Donate form (Outside India) or to email finance.ihdua@gmail.com.
 - After a successful Razorpay payment (India), the donor receives a donation certificate by email. Indian donors who provide a valid PAN also receive an 80G tax receipt.
 - Overseas / foreign gifts do not carry the Indian 80G benefit. A thank-you certificate may be issued after Finance processes the donation; there is no 80G receipt for foreign donors.
