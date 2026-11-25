@@ -28,7 +28,5 @@ export const FOOTER_HEADQUARTERS = {
 };
 
 export const FOOTER_SOCIAL_LINKS = [
-  { name: "Instagram", href: "https://www.instagram.com/ihduadigital?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw%3D%3D", icon: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413452767-kc5yu-instagram-1-.svg" },
-  { name: "Twitter", href: "https://twitter.com/", icon:  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413486535-9mqwj-twitter-1-.svg" },
-  { name: "LinkedIn", href: "https://www.linkedin.com/", icon: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413518198-i97mx-linkedin-1-.svg"},
+  { name: "Instagram", href: "https://www.instagram.com/ihduadigital?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw%3D%3D", icon: "/footer/instagramicon.png" },
 ];
