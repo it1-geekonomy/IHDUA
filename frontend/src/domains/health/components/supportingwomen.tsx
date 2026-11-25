@@ -19,9 +19,9 @@ export default async function HealthCardsSection() {
 
   return (
     <ImageCardsSection
-      label="HEALTH INITIATIVES"
-      heading={["Supporting Women to", "Lead and Grow"]}
-      description="We create opportunities for women to strengthen their skills, participate in economic activities and enhance their decision-making power. Through initiatives such as microfinance and vocational training, IHDUA supports women in becoming equal stakeholders in their households and communities."
+      label="COMMUNITY HEALTH"
+      heading={["Better Health Through", "Awareness and Care"]}
+      description="IHDUA works to improve rural health awareness through educational sessions, preventive healthcare initiatives and medical camps. The focus is on helping individuals and families make informed health decisions and access essential medical support."
       items={items}
       categorySlug="health"
     />
