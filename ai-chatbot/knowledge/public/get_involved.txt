@@ -1,12 +1,49 @@
-Title: Get Involved with IHDUA
-Source: IHDUA website home page Get Involved section
+Title: Get Involved with IHDUA: Volunteering, Rural Residency, Partnerships and CSR
+Source: IHDUA website Home page Get Involved section and Contact Us page
 Website: /#get-involved
 
 How to get involved
-- There is no separate Get Involved website page at /getinvolved. That path is not a real content page.
-- On the IHDUA website, “Get Involved” is the yellow section on the Home page: /#get-involved
-- Ways to take part:
-  1. Donate — open the Donate page at /donate (India via Razorpay; Outside India via FCRA remittance).
-  2. Volunteer — use the Contact Us page at /contact and choose Volunteer Opportunities.
-  3. Partner — use the Contact Us page at /contact and choose Partnership & Collaboration.
-- Footer “Get Involved” links also point to Donate (/donate) and Home for Volunteer / Partner (scrolls to Get Involved).
+- There is no separate Get Involved website page at /getinvolved. On the IHDUA website, "Get Involved" is on the Home page at /#get-involved.
+- There are three main paths to get involved:
+  1. Donate — open the Donate page at /donate (India via Razorpay; Outside India: email Finance at finance.ihdua@gmail.com).
+  2. Volunteer — click "Apply as Volunteer" in the Get Involved section (/#get-involved), or use the Contact Us page (/contact) and choose "Volunteer Opportunities".
+  3. Partner — click "Initiate Partnership" in the Get Involved section (/#get-involved), or use the Contact Us page (/contact) and choose "Partnership & Collaboration" or "CSR Projects".
+
+Volunteering and the Rural Residency Programme
+- How can I apply for the rural residency programme or become a volunteer?
+  - Apply using the "Apply as Volunteer" form in the Get Involved section on the Home page (/#get-involved), or submit an enquiry on the Contact Us page (/contact) under "Volunteer Opportunities".
+  - The volunteer application form collects your full name, email, phone number, area of interest, skills, and an optional resume upload.
+- What is the rural residency programme and where do volunteers work?
+  - IHDUA invites volunteers to apply their engineering, medical, or digital skills directly through its rural residency programme located in Mysore (Mysuru) district, Karnataka.
+- Who can volunteer? Can engineering students, software engineers, medical professionals, or international volunteers apply?
+  - Yes. Engineering students, software engineers / digital professionals, medical professionals, educators, and other skilled individuals are welcome to apply.
+  - International volunteers and people interested in short-duration volunteering can also apply via the "Apply as Volunteer" form (/#get-involved) or Contact Us (/contact) and mention their location, availability, and duration so the IHDUA team can advise on suitable opportunities.
+- What skills are required to become a volunteer? What kind of work can volunteers contribute?
+  - No single mandatory qualification is listed; IHDUA welcomes engineering, medical, digital, teaching, and community-support skills.
+  - Volunteer areas of interest on the application form include:
+    - Teaching & Education
+    - Healthcare & Medical Camps
+    - Community Outreach
+    - Women Empowerment
+    - Agriculture & Sustainability
+    - Youth Development
+    - Event Support
+    - Design & Digital Marketing
+    - Administration & Operations
+    - Other
+
+Corporate Partnerships, CSR Funding and Academic Research Partnerships
+- Does IHDUA accept CSR funding? Can corporates sponsor educational programmes or complete rural development projects?
+  - Yes. IHDUA welcomes Corporate CSR integrations, corporate partnerships, and programme sponsorships — including sponsoring rural education programmes (such as School Essentials or Rural School Transformation) and complete rural development projects (such as Watershed Development or Organic Farming).
+- Does IHDUA support academic research partnerships?
+  - Yes. IHDUA explicitly supports academic research partnerships and NGO / non-profit collaborations aligning resource networks with village-led proposals.
+- Partnership types listed on the website:
+  - CSR Partnership
+  - NGO / Non-Profit Collaboration
+  - Academic Partnership
+  - Corporate Partnership
+  - Programme Sponsorship
+  - Infrastructure Development
+  - Other
+- How can a company or organisation initiate a partnership or CSR collaboration?
+  - Click "Initiate Partnership" in the Get Involved section on the Home page (/#get-involved), or use the Contact Us page (/contact) and select "Partnership & Collaboration" or "CSR Projects".

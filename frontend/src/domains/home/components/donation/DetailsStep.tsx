@@ -21,6 +21,7 @@ type DetailsStepProps = Pick<
   | "phoneCountryCode"
   | "phoneCountryDial"
   | "isIndia"
+  | "requiresPanAndAddress"
   | "fullName"
   | "mobile"
   | "email"
@@ -65,6 +66,7 @@ export function DetailsStep({
   setFrequency,
   recurringAvailable,
   isIndia,
+  requiresPanAndAddress,
   phoneCountryCode,
   fullName,
   mobile,
@@ -212,7 +214,8 @@ export function DetailsStep({
           {isIndia && (
             <div>
               <FormInput
-                label="PAN (for 80G Tax Exemption)"
+                label="PAN Card No."
+                required={requiresPanAndAddress}
                 placeholder="e.g. ABCDE1234F"
                 maxLength={10}
                 value={taxId}
@@ -222,7 +225,9 @@ export function DetailsStep({
                 disabled={isPaying}
               />
               <p className="mt-1 text-[11px] leading-snug text-[#6B7280]">
-                Optional. Add your PAN to receive an 80G receipt and claim tax deduction.
+                {requiresPanAndAddress
+                  ? DONATION_COPY.taxIdRequiredHint
+                  : "Optional. Add your PAN to receive an 80G receipt and claim tax deduction."}
               </p>
             </div>
           )}
@@ -230,6 +235,7 @@ export function DetailsStep({
 
         <FormInput
           label="Address Line"
+          required={requiresPanAndAddress}
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           disabled={isPaying}

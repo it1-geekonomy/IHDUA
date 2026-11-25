@@ -106,12 +106,17 @@ def hybrid_retrieve(
         keywords.extend(["model village", "green cover", "rejuvenation"])
     if "contact" in intents:
         keywords.extend(["contact"])
+    if "volunteer" in intents:
+        keywords.extend(["get involved", "volunteer", "rural residency", "partnership", "csr"])
     if "leadership" in intents:
         keywords.extend(["leadership"])
     if "impact" in intents:
         keywords.extend(["impact numbers"])
     if "history" in intents:
-        keywords.extend(["milestones", "annual reports"])
+        keywords.extend(["milestones", "established", "founded", "founding"])
+        # Only pull annual-report rows when the visitor actually asks about reports
+        if "annual" in (question or "").lower():
+            keywords.extend(["annual reports", "annual report"])
 
     # Always match significant question words against document titles
     # (fixes "explain about School Essentials" missing donate intent).
@@ -131,6 +136,10 @@ def hybrid_retrieve(
                 and overlap >= 0.5
             ):
                 kh = {**kh, "similarity": max(float(kh.get("similarity") or 0), 0.72 + 0.2 * overlap)}
+            if kh.get("table") == "organizational_documents" and overlap >= 0.4:
+                kh = {**kh, "similarity": max(float(kh.get("similarity") or 0), 0.74 + 0.2 * overlap)}
+            if kh.get("table") in ("annual_reports", "annual_reports_index") and overlap >= 0.4:
+                kh = {**kh, "similarity": max(float(kh.get("similarity") or 0), 0.74 + 0.2 * overlap)}
             if cid not in all_hits or kh["similarity"] > all_hits[cid]["similarity"]:
                 all_hits[cid] = kh
 

@@ -108,7 +108,7 @@ export function AdminLoginForm() {
         <div className="mb-6 flex flex-col items-center text-center">
           <Link href="/" className="transition-opacity hover:opacity-90">
             <Image
-              src="/idhualogo1.png"
+              src= "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413686489-3alsb-frame-6.svg"
               alt="IHDUA Logo"
               width={160}
               height={60}

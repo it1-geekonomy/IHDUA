@@ -162,7 +162,7 @@ export const ADMIN_COPY = {
   usersSubtitle: "Authorized admin accounts with system management privileges.",
   donationsTitle: "Donation Transactions",
   donationsSubtitle:
-    "Online donation ledger. Issue certificate / 80G PDFs for offline donors without saving a ledger row.",
+    "Donation ledger (online + offline). Use Add donor for cash, bank, or foreign donations — certificate / 80G are saved on the record.",
   emptyUsers: "No admin users found.",
   emptyDonations: "No donations recorded yet.",
   loading: "Loading portal…",

@@ -254,14 +254,14 @@ export default function Overlayform({ onClose }: OverlayformProps) {
             >
               <div className="overlayform-img-in absolute inset-0">
                 <Image
-                  src="/overlayform/mobileimg1.png"
+                  src= "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795415287658-lqhda-mobileimg1.webp"
                   alt="Family supported by IHDUA"
                   fill
                   className="object-cover object-center lg:hidden"
                   sizes="380px"
                 />
                 <Image
-                  src="/overlayform/formimg.png"
+                  src="https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795415204957-ts1v5-formimg.webp"
                   alt="Family supported by IHDUA"
                   fill
                   className="hidden object-cover object-center lg:block"

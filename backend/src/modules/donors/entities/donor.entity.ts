@@ -32,6 +32,15 @@ export class Donor extends BaseEntity {
   @Column({ type: 'varchar', length: 100, nullable: true })
   city: string | null;
 
+  @ApiPropertyOptional({ example: 'US' })
+  @Index('idx_donors_country_code')
+  @Column({ name: 'country_code', type: 'varchar', length: 10, nullable: true })
+  countryCode: string | null;
+
+  @ApiPropertyOptional({ example: 'United States' })
+  @Column({ name: 'country_name', type: 'varchar', length: 255, nullable: true })
+  countryName: string | null;
+
   @ApiPropertyOptional({ example: 'Supporting rural healthcare' })
   @Column({ type: 'text', nullable: true })
   message: string | null;

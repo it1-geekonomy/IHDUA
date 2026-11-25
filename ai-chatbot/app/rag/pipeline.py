@@ -143,6 +143,12 @@ def _answer(
         for h in hits
     ):
         intents = set(intents) | {"donate"}
+    # Named annual report → history intent so rerank prefers report docs
+    q_lower = search_text.lower()
+    if any(
+        h.get("table") in ("annual_reports", "annual_reports_index") for h in hits
+    ) and ("annual report" in q_lower or any(ch.isdigit() for ch in search_text)):
+        intents = set(intents) | {"history"}
     ranked = vector_store.with_neighbor_chunks(rerank(hits, intents, question=search_text))
 
     # 6. Generate answer

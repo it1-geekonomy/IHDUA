@@ -201,37 +201,75 @@ def _milestones_doc(rows: list[dict]) -> dict | None:
     }
 
 
-def _annual_reports_doc(rows: list[dict]) -> dict | None:
+def _annual_report_doc(row: dict) -> dict:
+    """One published annual report — enough for 'explain / what is Annual Report YYYY'."""
+    title = (row.get("title") or "Annual Report").strip()
+    year = str(row.get("report_year") or "").strip()
+    url = "/about"
+    parts = [
+        _header(title, "Annual Report", url, row),
+        f"This is IHDUA's published annual report titled “{title}”.\n",
+    ]
+    if year:
+        parts.append(f"Report year / period: {year}.\n")
+    parts.append(
+        "What it covers: IHDUA's activities, programmes, impact and achievements for that year "
+        "(education, community development, livelihoods and related work, as reported for the period).\n"
+        "The full detailed content is in the PDF. Visitors can view and download this report on the "
+        "About Us page (/about) under Transparency → Our Documents → Annual Reports.\n"
+        "If asked to explain this report, say that it is available on About Us, state the title and year, "
+        "summarise that it reviews that year's work, and direct them to download the PDF there. "
+        "Do not invent programme numbers or chapter details that are not in this text.\n"
+    )
+    return {
+        "table": "annual_reports",
+        "source_id": str(row["id"]),
+        "title": title,
+        "url": url,
+        "category": "Annual Report",
+        "content": "".join(parts),
+    }
+
+
+def _annual_reports_index_doc(rows: list[dict]) -> dict | None:
     if not rows:
         return None
     title = "IHDUA Annual Reports"
     lines = [f"• {r['title']} ({r['report_year']})" for r in rows]
     return {
-        "table": "annual_reports",
+        "table": "annual_reports_index",
         "source_id": AGGREGATE_ID,
         "title": title,
         "url": "/about",
         "category": "Governance",
         "content": _header(title, "Governance", "/about", _latest(rows))
-        + "Annual reports published by IHDUA, available to view and download on the About Us page:\n"
-        + "\n".join(lines),
+        + "Annual reports published by IHDUA, available to view and download on the About Us page "
+        "(/about) under Transparency → Our Documents → Annual Reports:\n"
+        + "\n".join(lines)
+        + "\nEach report reviews IHDUA's activities and achievements for that year. "
+        "Open the matching PDF on About Us for the full contents.\n",
     }
 
 
-def _documents_doc(rows: list[dict]) -> dict | None:
-    if not rows:
-        return None
-    title = "IHDUA Organizational Documents"
-    lines = [f"• {r['title']}" for r in rows]
+def _organizational_document_doc(row: dict) -> dict:
+    """One official organisational document (e.g. Private Trust, 80G, FCRA certificate)."""
+    title = (row.get("title") or "Organizational Document").strip()
+    parts = [
+        _header(title, "Governance", "/about", row),
+        f"{title} is an official organisational document published by IHDUA.\n",
+        "It is available to view on the About Us page (/about) under Transparency → "
+        "Our Documents → Organizational Documents.\n",
+        "Only the document name and where to view it are published in IHDUA's information. "
+        "For a verified copy or questions about its contents, direct visitors to the About Us page "
+        "or the Contact Us page.\n",
+    ]
     return {
         "table": "organizational_documents",
-        "source_id": AGGREGATE_ID,
+        "source_id": str(row["id"]),
         "title": title,
         "url": "/about",
         "category": "Governance",
-        "content": _header(title, "Governance", "/about", _latest(rows))
-        + "Official organizational documents published by IHDUA, available to view on the About Us page:\n"
-        + "\n".join(lines),
+        "content": "".join(parts),
     }
 
 
@@ -444,6 +482,18 @@ _ROW_TABLES: dict[str, tuple[str, str, Callable[[dict], dict]]] = {
         "id",
         _interactive_programme_doc,
     ),
+    "annual_reports": (
+        "SELECT id, title, report_year, updated_at FROM annual_reports "
+        f"WHERE {_PUBLISHED} ORDER BY report_year DESC, sort_order",
+        "id",
+        _annual_report_doc,
+    ),
+    "organizational_documents": (
+        f"SELECT id, title, updated_at FROM organizational_documents WHERE {_PUBLISHED} "
+        "ORDER BY sort_order, created_at",
+        "id",
+        _organizational_document_doc,
+    ),
 }
 
 # Small tables indexed as one combined document so "list all ..." questions get every row.
@@ -463,15 +513,10 @@ _AGGREGATE_TABLES: dict[str, tuple[str, Callable[[list[dict]], dict | None]]] = 
         "ORDER BY year, created_at",
         _milestones_doc,
     ),
-    "annual_reports": (
+    "annual_reports_index": (
         f"SELECT title, report_year, updated_at FROM annual_reports WHERE {_PUBLISHED} "
         "ORDER BY report_year DESC, sort_order",
-        _annual_reports_doc,
-    ),
-    "organizational_documents": (
-        f"SELECT title, updated_at FROM organizational_documents WHERE {_PUBLISHED} "
-        "ORDER BY sort_order, created_at",
-        _documents_doc,
+        _annual_reports_index_doc,
     ),
     "funding_projects_index": (
         "SELECT title, total_label, updated_at FROM funding_projects "
@@ -499,10 +544,11 @@ def load_table(table: str, source_id: str | None = None) -> list[dict]:
         doc = build(_rows(sql))
         return [doc] if doc else []
 
-    sql, id_column, build_row = _ROW_TABLES[table]
+    sql, _id_column, build_row = _ROW_TABLES[table]
     params: dict = {}
     if source_id:
-        sql = f"{sql} AND {id_column}::text = :sid"
+        # Wrap instead of appending: the base query may already end with ORDER BY.
+        sql = f"SELECT * FROM ({sql}) AS src WHERE src.id::text = :sid"
         params["sid"] = source_id
     docs = []
     for row in _rows(sql, params):

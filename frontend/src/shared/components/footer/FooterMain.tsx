@@ -79,7 +79,7 @@ export function FooterMain() {
           <div className="flex justify-center lg:justify-start">
             <Link href="/" onClick={handleHomeClick} aria-label="IHDUA Home">
               <img
-                src="/idhualogo1.png"
+                src= "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413686489-3alsb-frame-6.svg"
                 alt="IHDUA logo"
                 className="h-20 w-40 object-contain transition-opacity hover:opacity-90"
               />

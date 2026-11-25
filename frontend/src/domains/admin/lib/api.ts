@@ -71,6 +71,8 @@ export type AdminDonationRow = {
   pan: string | null;
   address?: string | null;
   city: string | null;
+  countryCode?: string | null;
+  countryName?: string | null;
   message: string | null;
   amount: string;
   currency: string;
@@ -413,6 +415,9 @@ export type CreateManualDonationInput = {
   email: string;
   amount: string;
   currency?: string;
+  /** IN = India (80G possible). Anything else = foreign (certificate only). */
+  countryCode?: string;
+  countryName?: string;
   donationCategory?: string;
   pan?: string;
   address?: string;
@@ -425,6 +430,7 @@ export type CreateManualDonationInput = {
 };
 
 export type OfflineDonationDocsResult = {
+  donorId: string;
   receiptNumber: string;
   fullName: string;
   email: string;
@@ -433,15 +439,12 @@ export type OfflineDonationDocsResult = {
   donationCategory: string;
   pan: string | null;
   donatedAt: string;
-  hasCertificate: boolean;
-  hasReceipt: boolean;
-  certificateBase64: string;
-  receiptBase64: string | null;
-  emailStatus: "sent" | "skipped" | "error" | "quota" | null;
-  emailDetail: string | null;
+  certificateUrl: string | null;
+  receiptUrl: string | null;
+  emailStatus: "sent" | "skipped" | "error" | "quota" | "queued" | null;
 };
 
-/** Admin: generate offline certificate (+ 80G if PAN). Does not store a donors row. */
+/** Admin: add offline/foreign donor; PDFs are stored on the donor record. */
 export async function issueOfflineDonationDocs(
   token: string,
   input: CreateManualDonationInput,
@@ -454,14 +457,26 @@ export async function issueOfflineDonationDocs(
 }
 
 export function downloadBase64Pdf(base64: string, filename: string) {
-  const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+  const clean = (base64 || "").replace(/\s/g, "");
+  if (!clean) {
+    throw new Error("PDF data is empty — nothing to download.");
+  }
+  const binary = atob(clean);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i);
+  }
   const blob = new Blob([bytes], { type: "application/pdf" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
+  a.rel = "noopener";
+  a.style.display = "none";
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+  window.setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 
 export type SubscriptionsQueryParams = {

@@ -66,6 +66,22 @@ export class CreateManualDonationDto {
   currency?: DonationCurrencyCode;
 
   @ApiPropertyOptional({
+    example: 'IN',
+    description:
+      'Donor origin. Use IN for India (80G eligible with PAN). Any other code = foreign (certificate only, no 80G).',
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(10)
+  countryCode?: string;
+
+  @ApiPropertyOptional({ example: 'India' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  countryName?: string;
+
+  @ApiPropertyOptional({
     example: 'School Essentials — Lunch bag or exam fees',
     description: 'Cause / funding project label shown on certificate & 80G',
   })
@@ -131,8 +147,8 @@ export class CreateManualDonationDto {
 
   @ApiPropertyOptional({
     description:
-      'Queue thank-you email with certificate (+ 80G when PAN is present). Default true.',
-    default: true,
+      'When true, queue thank-you email with certificate (+ 80G when PAN is present). Default false.',
+    default: false,
   })
   @IsOptional()
   @IsBoolean()

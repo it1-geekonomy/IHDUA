@@ -22,6 +22,8 @@ export function DonationsManager() {
     onSearchChange,
     statusFilter,
     onStatusFilterChange,
+    originFilter,
+    onOriginFilterChange,
     totalRaisedINR,
     loading,
     error,
@@ -69,6 +71,8 @@ export function DonationsManager() {
         onSearchChange={onSearchChange}
         statusFilter={statusFilter}
         onStatusFilterChange={onStatusFilterChange}
+        originFilter={originFilter}
+        onOriginFilterChange={onOriginFilterChange}
         limit={limit}
         onLimitChange={setLimit}
       />

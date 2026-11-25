@@ -13,8 +13,10 @@ export type FcraBankDetails = {
   sortCode: string;
 };
 
+/** IHDUA Finance team — foreign / overseas donation enquiries. */
 export const FCRA_CONTACT_EMAIL =
-  process.env.NEXT_PUBLIC_FCRA_CONTACT_EMAIL?.trim() || "info@ihdua.org";
+  process.env.NEXT_PUBLIC_FCRA_CONTACT_EMAIL?.trim() ||
+  "finance.ihdua@gmail.com";
 
 export const FCRA_BANK_DETAILS: FcraBankDetails = {
   accountName:
