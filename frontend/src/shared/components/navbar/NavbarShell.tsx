@@ -124,7 +124,7 @@ export default function NavbarShell() {
               className="flex shrink-0 items-center gap-3"
             >
               <Image
-                src="/idhualogo1.png"
+                src= "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413686489-3alsb-frame-6.svg"
                 alt="IHDUA logo"
                 width={140}
                 height={140}

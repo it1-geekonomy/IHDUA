@@ -55,10 +55,19 @@ export type DonationReceipt = {
   recurringEvery?: string;
 };
 
+/** INR donations of this amount or more require PAN + address (tax compliance). */
+const PAN_ADDRESS_REQUIRED_FROM_INR = 2000;
+
 function isValidTaxId(value: string) {
   const trimmed = value.trim().toUpperCase();
-  if (!trimmed) return true;
+  if (!trimmed) return false;
   return /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(trimmed);
+}
+
+function requiresPanAndAddress(isIndia: boolean, amountDigits: string) {
+  if (!isIndia || !amountDigits) return false;
+  const amount = Number(amountDigits);
+  return Number.isFinite(amount) && amount >= PAN_ADDRESS_REQUIRED_FROM_INR;
 }
 
 function isValidPhone(localNumber: string, countryCode: string) {
@@ -301,6 +310,15 @@ export function useDonationForm() {
       return null;
     }
 
+    const panAddressRequired = requiresPanAndAddress(isIndia, amount);
+    if (panAddressRequired) {
+      if (!panOrAadhaar || !address.trim()) {
+        setStatusTone("error");
+        setStatusMessage(DONATION_COPY.panAddressRequired);
+        return null;
+      }
+    }
+
     if (isIndia && panOrAadhaar && !isValidTaxId(panOrAadhaar)) {
       setStatusTone("error");
       setStatusMessage(DONATION_COPY.invalidTaxId);
@@ -528,6 +546,10 @@ export function useDonationForm() {
     statusMessage,
     statusTone,
     showLargeAmountHint: currency === "INR" && usingCustom && isCroreOrAbove(customDigits),
+    requiresPanAndAddress: requiresPanAndAddress(
+      isIndia,
+      amountDigitsFromDisplay(chosenAmount),
+    ),
     setCurrency,
     setCountryCode,
     setPhoneCountryCode,

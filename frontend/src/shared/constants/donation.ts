@@ -77,9 +77,12 @@ export const DONATION_COPY = {
   country: "Country",
   mobile: "Mobile Number",
   email: "Email Address",
-  taxId: "PAN / Aadhaar (optional, for 80G)",
+  taxId: "PAN Card No.",
   taxIdHint:
-    "Provide PAN or Aadhaar to receive an 80G tax exemption certificate (India).",
+    "Provide PAN to receive an 80G tax exemption certificate (India).",
+  taxIdRequiredHint: "Required for donations of ₹2,000 or more.",
+  panAddressRequired:
+    "For donations of ₹2,000 or more, PAN Card No. and Address are mandatory.",
   internationalNote:
     "Overseas donors use FCRA bank remittance. Online Razorpay checkout is for India (INR) only.",
   fcraTitle: "Donate via FCRA wire transfer",
@@ -89,12 +92,14 @@ export const DONATION_COPY = {
     "When a forex transfer is initiated, INR should not be chosen. Use a currency other than INR (for example USD, EUR, AUD or GBP).",
   fcraPolicyNote:
     "The details below are mandatory. Your donation cannot be processed until you send us this information. We do not encourage anonymous donations as a policy.",
-  // TEMP: shown instead of FCRA details until overseas account is ready for live
-  fcraPendingTitle: "International payments are in progress",
+  // Foreign donations: email Finance (not automated via payment gateway)
+  fcraPendingTitle: "Foreign donations",
   fcraPendingBody:
-    "Overseas donations are being set up and are not available on the website yet. Please check back soon, or contact us if you would like to contribute from outside India.",
+    "For donations from outside India, please contact our Finance Team by email. They will guide you through the donation process and share the necessary bank details and instructions to complete your contribution.",
   fcraPendingHint:
-    "For now, online donations are available for donors in India via Razorpay.",
+    "Online donations on this website are available for donors in India via Razorpay.",
+  fcraFinanceLabel: "IHDUA Finance team",
+  fcraEmailCta: "Email Finance team",
   paySecurely: "Pay Securely",
   paying: "Opening secure checkout…",
   verifying: "Confirming payment…",
@@ -105,7 +110,7 @@ export const DONATION_COPY = {
   paymentSuccess: "Thank you! Your donation was successful.",
   paymentFailed: "Payment could not be completed. Please try again.",
   fillRequired: "Please enter your name, mobile number, and email to continue.",
-  invalidTaxId: "Enter a valid 10-character PAN (e.g. ABCDE1234F), or leave it blank.",
+  invalidTaxId: "Enter a valid 10-character PAN (e.g. ABCDE1234F).",
   invalidPhone: "Enter a valid mobile number for the selected country.",
   bgImage:  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795078754023-3m1qi-ctabg-img.webp",
 } as const;

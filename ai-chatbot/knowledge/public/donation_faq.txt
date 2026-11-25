@@ -1,0 +1,33 @@
+Title: Donation FAQ: Amounts, Payment Security, Tax Exemption and Required Details
+Source: IHDUA website Donate page and Contact Us page
+Website: /donate
+
+Can I donate ₹500 or ₹2,500?
+- Yes. ₹500 and ₹2,500 are preset amounts for donors in India (presets: ₹500, ₹1,500, ₹2,500, and ₹5,000).
+- Choose a preset on the Donate page (/donate), or type another amount in the "Other amount" box.
+- Donors in India pay in INR through Razorpay (UPI, cards, netbanking).
+
+What is the minimum donation amount?
+- The website does not publish a separate minimum amount.
+- The Donate page offers preset amounts of ₹500, ₹1,500, ₹2,500, and ₹5,000 for India, and you can enter another amount.
+- For questions about a specific amount, contact IHDUA through the Contact Us page (/contact).
+
+Can I donate ₹10 crore or make a very large donation?
+- Yes, IHDUA welcomes major donations, institutional grants, and full-project sponsorships.
+- For very large donations (such as ₹10 crore or major corporate/CSR contributions), please contact the IHDUA Finance Team at finance.ihdua@gmail.com or reach out via the Contact Us page (/contact) so the team can coordinate bank transfer details, documentation, and project alignment directly.
+
+Can I make a general donation instead of choosing a project?
+- Yes. On the Donate page (/donate), choose "General donation" to give without picking a project or a component (line item).
+
+Is online payment secure?
+- Yes. Online donations from India are processed securely through Razorpay (supporting UPI, debit/credit cards, and netbanking). IHDUA does not store your card or banking credentials on its servers.
+
+Can I donate without sharing my details? What information is required to make a donation?
+- No, anonymous donations without contact details are not supported on the Donate form.
+- Donors provide their name, email, and phone number (and city/address as prompted) so IHDUA can issue the donation receipt/certificate.
+- For donations from India of ₹2,000 or more, PAN Card No. and Address are mandatory. Below ₹2,000, PAN is optional (provide PAN to receive an 80G tax receipt).
+
+Can I get a 100% tax exemption?
+- IHDUA does not guarantee a 100% tax exemption.
+- Donations from India in INR with a valid PAN are eligible for an 80G tax receipt under Section 80G of the Indian Income Tax Act. The applicable deduction percentage is governed by Indian income tax law — please consult a qualified tax advisor for your specific eligibility.
+- Donations from outside India do not carry the Indian Section 80G tax benefit.

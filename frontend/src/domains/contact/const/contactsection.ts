@@ -26,28 +26,28 @@ export interface ContactItem {
 
 export const CONTACT_ITEMS: ContactItem[] = [
   {
-    iconSrc: "/contact/office.png",
+    iconSrc: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413016097-39tcg-fi_798008.svg",
     alt: "Office",
     title: "Our Offices",
     lines: [
       { text: "IHDUA Center, Mysore–Ooty Road," },
-      { text: "Mysore, Karnataka 570008, India", flagSrc: "/contact/india.png", flagAlt: "India" },
+      { text: "Mysore, Karnataka 570008, India", flagSrc: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413052598-ro23c-fi_14009677.svg", flagAlt: "India" },
     ],
   },
   {
-    iconSrc: "/contact/office.png",
+    iconSrc: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413016097-39tcg-fi_798008.svg",
     alt: "Office",
     title: "",
     lines: [
       { text: "IHDUA - 360 E Randolph St, Apt 3701" },
       { text: "Chicago, IL 60601" },
-      { text: "+1 (312) 819-0691", flagSrc: "/contact/usa.png", flagAlt: "United States" },
+      { text: "+1 (312) 819-0691", flagSrc:"https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413080047-mrvti-group-1-.svg", flagAlt: "United States" },
     ],
   },
-  { iconSrc: "/contact/phone.png", alt: "Phone", title: "Phone", lines: [{ text: "+91 821 248 1234" }] },
-  { iconSrc: "/contact/message.png", alt: "Email", title: "Email", lines: [{ text: "info@ihdua.org" }] },
+  { iconSrc: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413125006-lqs97-fi_10146676.svg", alt: "Phone", title: "Phone", lines: [{ text: "+91 821 248 1234" }] },
+  { iconSrc:  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413212940-1y6n8-fi_11502370.svg", alt: "Email", title: "Email", lines: [{ text: "info@ihdua.org" }] },
   {
-    iconSrc: "/contact/clock.png",
+    iconSrc: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413248573-qrvt6-fi_3416094.svg",
     alt: "Office Hours",
     title: "Office Hours",
     lines: [{ text: "Monday – Saturday" }, { text: "9:00 AM – 5:00 PM" }],

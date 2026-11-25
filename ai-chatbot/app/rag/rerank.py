@@ -14,6 +14,34 @@ def _title_in_question(title: str, question: str) -> bool:
     return sum(1 for w in words if w in q) >= max(1, (len(words) + 1) // 2)
 
 
+_FAQ_STOP = {
+    "can", "i", "the", "a", "an", "is", "are", "what", "how", "do", "does", "to", "of", "for",
+    "in", "my", "me", "you", "it", "instead", "choosing", "make", "get", "there", "any",
+    "where", "who", "which", "and", "or", "with", "using", "be", "on", "this", "that",
+    "your", "we", "our", "about", "ihdua",
+}
+
+
+def _question_words(text: str) -> set[str]:
+    return {w for w in re.findall(r"[a-z0-9]+", (text or "").lower()) if w not in _FAQ_STOP}
+
+
+def _faq_match(content: str, question: str) -> bool:
+    """True when a question line in the document closely matches the visitor's question."""
+    qwords = _question_words(question)
+    if len(qwords) < 2:
+        return False
+    for line in (content or "").splitlines():
+        line = line.strip()
+        if not line.endswith("?"):
+            continue
+        lwords = _question_words(line)
+        common = len(qwords & lwords)
+        if common >= 2 and common / min(len(qwords), len(lwords)) >= 0.5:
+            return True
+    return False
+
+
 def rerank(hits: list[dict], intents: set[str], question: str = "") -> list[dict]:
     if not hits:
         return []
@@ -75,6 +103,27 @@ def rerank(hits: list[dict], intents: set[str], question: str = "") -> list[dict
             bonus += 0.06
         if "history" in intents and any(k in title for k in ("milestone", "history", "annual report")):
             bonus += 0.06
+        if "volunteer" in intents and table == "knowledge" and "get involved" in title:
+            bonus += 0.25
+        # FAQ-style knowledge docs: a matching "question?" line beats generic project pages
+        if table == "knowledge" and _faq_match(h.get("content") or "", question):
+            bonus += 0.25
+
+        if table == "organizational_documents":
+            bonus += 0.05
+            if question and _title_in_question(title, question):
+                bonus += 0.18
+
+        if table in ("annual_reports", "annual_reports_index"):
+            bonus += 0.05
+            if "history" in intents or "annual report" in (question or "").lower():
+                bonus += 0.08
+            if question and _title_in_question(title, question):
+                bonus += 0.18
+            # Year mention e.g. "2018" in "Annual Report 2018"
+            year_hits = re.findall(r"\b(19|20)\d{2}\b", question or "")
+            if year_hits and any(y in title for y in year_hits):
+                bonus += 0.2
         if "stories" in intents and h.get("table") == "blogs":
             bonus += 0.06
         if "model_village" in intents and any(k in title or k in content for k in ("village", "green cover", "solar", "rejuvenation", "sanitation")):

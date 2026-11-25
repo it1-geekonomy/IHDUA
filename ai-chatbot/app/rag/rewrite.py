@@ -25,16 +25,44 @@ def rewrite_query(query: str, history: list[dict], unanswered: str = "") -> str:
         return query
 
     words = query.strip().split()
-    if len(words) > 8 or not _FOLLOW_UP_RE.search(query):
+    q_low = query.lower()
+    is_short_followup = len(words) <= 8 and ("ihdua" not in q_low)
+    if len(words) > 8 or (not _FOLLOW_UP_RE.search(query) and not is_short_followup):
         return query
 
-    last_user = last_turn(history, "user")
-    last_assistant = last_turn(history, "assistant")
-    # A previous question the bot couldn't answer is no useful context.
-    if unanswered and last_assistant.strip() == unanswered.strip():
+    # Find the most recent answered user turn so a prior refusal doesn't break the chain
+    last_user = ""
+    last_assistant = ""
+    pairs = []
+    pending_user = None
+    for m in history:
+        role = m.get("role")
+        content = (m.get("content") or "").strip()
+        if role == "user":
+            pending_user = content
+        elif role == "assistant" and pending_user is not None:
+            pairs.append((pending_user, content))
+            pending_user = None
+    for u_msg, a_msg in reversed(pairs):
+        if unanswered and a_msg == unanswered.strip():
+            continue
+        last_user = u_msg
+        last_assistant = a_msg
+        break
+    if not last_user:
         return query
 
     additions = []
+    # Include the conversation's opening topic (within recent 3 turns) if the immediate last_user is also a short follow-up
+    anchor_user = ""
+    if len(pairs) >= 2 and len(last_user.split()) <= 8:
+        for u_msg, a_msg in pairs[-3:-1]:
+            if unanswered and a_msg == unanswered.strip():
+                continue
+            anchor_user = u_msg
+            break
+    if anchor_user and anchor_user != last_user:
+        additions.append(anchor_user)
     if last_user:
         additions.append(last_user)
 
@@ -82,6 +110,10 @@ def build_multi_queries(query: str, intents: set[str], original: str = "") -> li
         queries.append("IHDUA impact numbers statistics villages reached people trained")
     if "history" in intents:
         queries.append("IHDUA milestones history journey by year annual reports")
+        if "annual" in (original or query).lower():
+            queries.append(
+                "IHDUA Annual Report PDF About Us Transparency Our Documents download"
+            )
     if "stories" in intents:
         queries.append("IHDUA blogs field stories articles")
     if "education" in intents:
@@ -100,12 +132,15 @@ def build_multi_queries(query: str, intents: set[str], original: str = "") -> li
         queries.append("Free medical camps healthcare doctor awareness diagnostics")
     if "donate" in intents:
         queries.append(
-            "How to donate online project-based funding projects component breakup "
-            "general donation 80G tax benefit receipt recurring donation /donate"
+            "How to donate online India Razorpay Outside India finance.ihdua@gmail.com "
+            "PAN address ₹2000 80G tax benefit receipt recurring donation /donate"
         )
         queries.append(
             "IHDUA funding projects Donate page published project summary "
             "total amount sought component-wise funding breakup"
+        )
+        queries.append(
+            "Foreign donation Outside India FCRA Finance team email no Razorpay overseas"
         )
     if "model_village" in intents:
         queries.append("Model village rejuvenation increase the green cover tree plantation sanitation")
