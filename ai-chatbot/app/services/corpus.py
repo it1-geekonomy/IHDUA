@@ -10,8 +10,11 @@ log = logging.getLogger(__name__)
 # Everything else comes from the CMS database or the live website.
 _KNOWLEDGE_PAGES = {
     "donations_80g_tax": ("/donate", "Donation"),
+    "donation_faq": ("/donate", "Donation"),
+    "foreign_donations_faq": ("/donate", "Donation"),
     "legal_certifications_12a_80g_fcra": ("/about", "Governance"),
     "get_involved": ("/#get-involved", "Get Involved"),
+    "ihdua_profile": ("/about", "About"),
 }
 
 
@@ -29,6 +32,10 @@ def load_knowledge_files() -> list[dict]:
             continue
         url, category = _KNOWLEDGE_PAGES.get(path.stem.lower(), ("/about", "Knowledge"))
         title = path.stem.replace("_", " ").title()
+        # Use the file's own "Title:" line when present (it is the retrieval-friendly name).
+        first_line = raw.splitlines()[0]
+        if first_line.lower().startswith("title:"):
+            title = first_line.split(":", 1)[1].strip() or title
         docs.append(
             {
                 "table": "knowledge",
