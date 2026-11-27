@@ -45,7 +45,7 @@ export const CONTACT_ITEMS: ContactItem[] = [
     ],
   },
   { iconSrc: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413125006-lqs97-fi_10146676.svg", alt: "Phone", title: "Phone", lines: [{ text: "+91 821 248 1234" }] },
-  { iconSrc:  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413212940-1y6n8-fi_11502370.svg", alt: "Email", title: "Email", lines: [{ text: "info@ihdua.org" }] },
+  { iconSrc:  "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413212940-1y6n8-fi_11502370.svg", alt: "Email", title: "Email", lines: [{ text: "admin@ihdua.org" }] },
   {
     iconSrc: "https://pub-a6675db0619c4dcfa4dbe2528e4f1daa.r2.dev/website/impact/1795413248573-qrvt6-fi_3416094.svg",
     alt: "Office Hours",
