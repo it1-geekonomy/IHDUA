@@ -103,11 +103,20 @@ export function FooterMain() {
                 aria-label={social.name}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-white transition-opacity hover:opacity-90"
               >
-                <img
-                  src={social.icon}
-                  alt={`${social.name} icon`}
-                  className="h-5 w-5 object-contain"
-                />
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#9739A8"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-5 w-5"
+                  aria-hidden="true"
+                >
+                  <rect x="2.5" y="2.5" width="19" height="19" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17.5" cy="6.5" r="1" fill="#9739A8" stroke="none" />
+                </svg>
               </a>
             ))}
           </div>
