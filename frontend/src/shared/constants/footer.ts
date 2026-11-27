@@ -21,8 +21,8 @@ export const FOOTER_GET_INVOLVED: FooterLink[] = [
 
 export const FOOTER_HEADQUARTERS = {
   address: "IHDUA Center, Mysore-Ooty Road, Mysore, Karnataka 570008, India",
-  email: "info@ihdua.org",
-  emailLink: "mailto:info@ihdua.org",
+  email: "admin@ihdua.org",
+  emailLink: "mailto:admin@ihdua.org",
   phone: "+91 821 248 1234",
   phoneLink: "tel:+918212481234",
 };
